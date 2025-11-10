@@ -8,60 +8,55 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* NAJA - Serene Islamic Lifestyle App Design System */
-    /* Warm neutrals inspired by Islamic architecture */
-    --background: 35 20% 97%;
-    --foreground: 200 15% 12%;
+    /* NAJA - Modern Islamic Lifestyle Design System */
+    --background: 240 8% 97%;
+    --foreground: 220 10% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 200 15% 12%;
+    --card-foreground: 220 10% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 200 15% 12%;
+    --popover-foreground: 220 10% 15%;
 
-    /* Soft olive/sage accent - prayer, reflection */
-    --primary: 145 25% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Lime green accent - vibrant, energetic */
+    --primary: 68 58% 62%;
+    --primary-foreground: 220 10% 15%;
 
-    /* Sand/stone secondary */
-    --secondary: 35 15% 90%;
-    --secondary-foreground: 200 15% 12%;
+    /* Lavender for secondary actions */
+    --secondary: 250 30% 75%;
+    --secondary-foreground: 220 10% 15%;
 
-    /* Muted slate */
-    --muted: 200 10% 85%;
-    --muted-foreground: 200 10% 45%;
+    /* Light gray for muted elements */
+    --muted: 220 10% 90%;
+    --muted-foreground: 220 8% 50%;
 
-    /* Warm accent for highlights */
-    --accent: 35 30% 88%;
-    --accent-foreground: 200 15% 12%;
+    /* Charcoal for dark cards */
+    --accent: 220 12% 18%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Soft borders */
-    --border: 200 10% 90%;
-    --input: 200 10% 90%;
-    --ring: 145 25% 55%;
+    --border: 220 10% 88%;
+    --input: 220 10% 88%;
+    --ring: 68 58% 62%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem;
 
-    /* Success - gentle green */
-    --success: 145 40% 50%;
-    --success-foreground: 0 0% 100%;
+    /* Success - lime green */
+    --success: 68 58% 62%;
+    --success-foreground: 220 10% 15%;
 
-    /* Warning - warm sand */
-    --warn: 40 75% 60%;
-    --warn-foreground: 200 15% 12%;
+    /* Warning */
+    --warn: 40 90% 60%;
+    --warn-foreground: 220 10% 15%;
 
-    /* Subtle gradient backgrounds */
-    --gradient-subtle: linear-gradient(180deg, hsl(35 20% 97%) 0%, hsl(35 15% 95%) 100%);
-    
     /* Smooth transitions */
-    --transition-smooth: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* Elevated shadow */
-    --shadow-soft: 0 2px 8px -2px hsl(200 15% 12% / 0.08);
-    --shadow-elevated: 0 4px 16px -4px hsl(200 15% 12% / 0.12);
+    /* Soft shadows */
+    --shadow-soft: 0 2px 12px -2px hsl(220 10% 15% / 0.08);
+    --shadow-card: 0 4px 20px -4px hsl(220 10% 15% / 0.1);
   }
 }
 
@@ -72,5 +67,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
