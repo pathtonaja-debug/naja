@@ -3,17 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  Home, 
-  BookOpen, 
-  Heart, 
-  UserCircle,
   Plus,
   Bell,
   Calendar as CalendarIcon,
   ArrowRight,
   Clock,
-  Sparkles
+  Sparkles,
+  Heart
 } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 
 const Dashboard = () => {
   const prayerTimes = [
@@ -251,39 +249,7 @@ const Dashboard = () => {
         </Card>
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 w-full max-w-md">
-        <div className="bg-foreground rounded-full px-8 py-4 shadow-2xl">
-          <div className="flex justify-around items-center">
-            {[
-              { icon: Home, active: true },
-              { icon: BookOpen, active: false },
-              { icon: CalendarIcon, active: false },
-              { icon: UserCircle, active: false },
-            ].map((item, index) => (
-              <Button
-                key={index}
-                size="icon"
-                variant="ghost"
-                className={`rounded-full w-12 h-12 relative ${
-                  item.active
-                    ? "bg-card hover:bg-card/90"
-                    : "hover:bg-accent-foreground/10"
-                }`}
-              >
-                <item.icon 
-                  className={`w-5 h-5 ${
-                    item.active ? "text-foreground" : "text-accent-foreground/60"
-                  }`} 
-                />
-                {item.active && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
-                )}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 };
