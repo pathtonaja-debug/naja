@@ -4,14 +4,27 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, Bell, Flame } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import { listHabits, toggleHabit } from "@/services/db";
+import { useState, useEffect } from "react";
 
 const Habits = () => {
-  const habits = [
-    { name: "Salah on Time", streak: 7, completed: true, color: "bg-primary" },
-    { name: "Dhikr 33×", streak: 5, completed: true, color: "bg-secondary" },
-    { name: "Qur'an 2 Pages", streak: 3, completed: false, color: "bg-accent" },
-    { name: "Gratitude Note", streak: 12, completed: false, color: "bg-primary/20" },
-  ];
+  const [habits, setHabits] = useState<any[]>([]);
+
+  async function load() {
+    const data = await listHabits();
+    setHabits(data);
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function handleToggle(id: string) {
+    await toggleHabit(id);
+    load();
+  }
+
+  const completed = habits.filter(h => h.completed).length;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -40,12 +53,21 @@ const Habits = () => {
 
       {/* Main Content */}
       <main className="px-6 space-y-4">
+        {/* Progress Summary */}
+        <Card className="border-border bg-card rounded-[2rem] p-5 shadow-card">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-1">Today's Progress</p>
+            <p className="text-3xl font-bold text-foreground">{completed}/{habits.length}</p>
+            <p className="text-sm text-muted-foreground mt-1">habits completed</p>
+          </div>
+        </Card>
+
         {/* Habits List */}
-        {habits.map((habit, i) => (
-          <Card key={i} className="border-border bg-card rounded-[2rem] p-5 shadow-card">
+        {habits.map((habit) => (
+          <Card key={habit.id} className="border-border bg-card rounded-[2rem] p-5 shadow-card">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-2xl ${habit.color} flex items-center justify-center shrink-0`}>
+                <div className={`w-12 h-12 rounded-2xl ${habit.completed ? 'bg-primary' : 'bg-muted'} flex items-center justify-center shrink-0`}>
                   <span className="text-lg">{habit.completed ? "✓" : "○"}</span>
                 </div>
                 <div>
@@ -59,6 +81,7 @@ const Habits = () => {
               <Button
                 size="icon"
                 variant="ghost"
+                onClick={() => handleToggle(habit.id)}
                 className="rounded-full w-10 h-10 bg-muted hover:bg-muted/80"
               >
                 <span className="text-lg">{habit.completed ? "✓" : "+"}</span>

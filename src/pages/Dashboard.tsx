@@ -12,21 +12,19 @@ import {
   Heart
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
+import { useState, useEffect } from "react";
 
 const Dashboard = () => {
-  const prayerTimes = [
-    { name: "Fajr", time: "05:32 AM", completed: true },
-    { name: "Dhuhr", time: "12:45 PM", completed: true },
-    { name: "Asr", time: "03:58 PM", completed: false, isNext: true },
-    { name: "Maghrib", time: "06:15 PM", completed: false },
-    { name: "Isha", time: "07:42 PM", completed: false },
-  ];
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const [dhikrCount, setDhikrCount] = useState(0);
 
-  const statusCounts = {
-    completed: 2,
-    upcoming: 3,
-    onHold: 0,
-  };
+  useEffect(() => {
+    (async () => {
+      const times = await getTodayPrayerTimes();
+      setPrayerTimes(times);
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -57,62 +55,59 @@ const Dashboard = () => {
       <main className="px-6 space-y-4">
         {/* Next Prayer Card - Dark */}
         <Card className="relative overflow-hidden bg-accent border-none shadow-card rounded-[2rem] p-6 pb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="w-14 h-14 border-2 border-muted/20">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-muted/10 text-accent-foreground">
-                  🕌
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-accent-foreground font-medium text-lg mb-1">Next Prayer</h3>
-                <div className="flex items-center gap-2 text-accent-foreground/70 text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>03:58 PM - 04:30 PM</span>
+          {prayerTimes ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Avatar className="w-14 h-14 border-2 border-muted/20">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-muted/10 text-accent-foreground">
+                    🕌
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-accent-foreground font-medium text-lg mb-1">Next: {prayerTimes.next}</h3>
+                  <div className="flex items-center gap-2 text-accent-foreground/70 text-sm">
+                    <Clock className="w-4 h-4" />
+                    <span>In {prayerTimes.nextInMinutes} minutes</span>
+                  </div>
                 </div>
               </div>
+              <Button 
+                size="icon" 
+                className="rounded-full w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground shrink-0"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </Button>
             </div>
-            <Button 
-              size="icon" 
-              className="rounded-full w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground shrink-0"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
+          ) : (
+            <div className="text-accent-foreground">Loading prayer times...</div>
+          )}
           <div 
             className="absolute bottom-0 left-0 right-0 h-2 bg-primary/30 rounded-b-[2rem]"
             style={{ clipPath: 'ellipse(50% 100% at 50% 100%)' }}
           />
         </Card>
 
-        {/* Status Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
-          <Badge 
-            variant="outline" 
-            className="rounded-full px-4 py-2 border-none bg-primary text-primary-foreground font-medium whitespace-nowrap"
-          >
-            Completed
-            <span className="ml-2 bg-primary-foreground/20 px-2 py-0.5 rounded-full text-xs">
-              {statusCounts.completed}
-            </span>
-          </Badge>
-          <Badge 
-            variant="outline" 
-            className="rounded-full px-4 py-2 border-border bg-muted text-foreground font-medium whitespace-nowrap"
-          >
-            Upcoming
-            <span className="ml-2 bg-foreground/10 px-2 py-0.5 rounded-full text-xs">
-              {statusCounts.upcoming}
-            </span>
-          </Badge>
-          <Badge 
-            variant="outline" 
-            className="rounded-full px-4 py-2 border-border bg-background text-muted-foreground font-medium whitespace-nowrap"
-          >
-            On hold
-          </Badge>
-        </div>
+        {/* Prayer Times Display */}
+        {prayerTimes && (
+          <Card className="border-border bg-card rounded-[2rem] p-5 shadow-card">
+            <h3 className="text-foreground font-medium text-lg mb-4">Today's Prayers</h3>
+            <div className="grid grid-cols-5 gap-2 text-center">
+              {[
+                { name: 'Fajr', time: prayerTimes.fajr },
+                { name: 'Dhuhr', time: prayerTimes.dhuhr },
+                { name: 'Asr', time: prayerTimes.asr },
+                { name: 'Maghrib', time: prayerTimes.maghrib },
+                { name: 'Isha', time: prayerTimes.isha }
+              ].map((prayer) => (
+                <div key={prayer.name} className="flex flex-col items-center gap-1">
+                  <span className="text-xs text-muted-foreground">{prayer.name}</span>
+                  <span className="text-sm font-medium text-foreground">{prayer.time}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
         {/* Prayer Cards - Lavender */}
         <Card className="relative overflow-hidden bg-secondary border-none shadow-card rounded-[2rem] p-6 pb-10">
@@ -190,33 +185,33 @@ const Dashboard = () => {
 
         {/* Dhikr Counter - Lime Green */}
         <Card className="relative overflow-hidden bg-primary/20 border-none shadow-card rounded-[2rem] p-6 pb-10">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <h3 className="text-foreground font-medium text-lg mb-3">
-                Evening Dhikr
+          <div className="flex items-center justify-center flex-col gap-4">
+            <div className="text-center">
+              <h3 className="text-foreground font-medium text-lg mb-2">
+                Dhikr Counter
               </h3>
-              <div className="flex items-center gap-2 text-foreground/70 text-sm mb-4">
+              <div className="flex items-center justify-center gap-2 text-foreground/70 text-sm mb-4">
                 <Sparkles className="w-4 h-4" />
                 <span>SubhanAllah × 33</span>
               </div>
-              <Badge className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                In Progress
-              </Badge>
             </div>
-            <div className="flex gap-2">
+            <div className="text-6xl font-bold text-foreground mb-4">
+              {dhikrCount}
+            </div>
+            <div className="flex gap-3">
               <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full w-10 h-10 bg-card hover:bg-card/80"
+                onClick={() => setDhikrCount(dhikrCount + 1)}
+                className="rounded-full px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                <CalendarIcon className="w-4 h-4" />
+                <Plus className="w-5 h-5 mr-2" />
+                Tap
               </Button>
               <Button 
-                size="icon" 
-                variant="ghost" 
-                className="rounded-full w-10 h-10 bg-card hover:bg-card/80"
+                onClick={() => setDhikrCount(0)}
+                variant="ghost"
+                className="rounded-full px-6 py-6 bg-card hover:bg-card/80"
               >
-                <ArrowRight className="w-4 h-4" />
+                Reset
               </Button>
             </div>
           </div>
