@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TopBar } from "@/components/ui/top-bar";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
@@ -8,8 +9,7 @@ import {
   Search, 
   Image as ImageIcon, 
   X,
-  Calendar,
-  Filter
+  Calendar
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -114,78 +114,75 @@ const Journal = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-background to-primary/5 px-6 pt-12 pb-8 rounded-b-[3rem]">
-        <div className="flex items-center justify-between mb-6">
-          <Avatar className="w-14 h-14 ring-2 ring-secondary/20">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-gradient-to-br from-secondary/20 to-primary/20 text-foreground font-medium">
-              N
-            </AvatarFallback>
-          </Avatar>
+      {/* Top Bar */}
+      <TopBar
+        avatarFallback="N"
+        rightElement={
           <div className="flex items-center gap-2">
             <Button 
               size="icon" 
-              className="rounded-full bg-primary hover:bg-primary/90 w-11 h-11 shadow-lg"
+              variant="ghost"
               onClick={() => setShowInput(!showInput)}
             >
-              <Plus className="w-5 h-5 text-primary-foreground" />
+              <Plus className="w-5 h-5" />
             </Button>
             <Button 
               size="icon" 
-              variant="ghost" 
-              className="rounded-full w-11 h-11 bg-card/50 hover:bg-card/80 backdrop-blur-sm"
+              variant="ghost"
             >
-              <Bell className="w-5 h-5 text-foreground" />
+              <Bell className="w-5 h-5" />
             </Button>
           </div>
-        </div>
+        }
+      />
 
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold text-foreground tracking-tight">
-            Reflection Journal
-          </h1>
-          <p className="text-muted-foreground">Your spiritual journey</p>
-        </div>
-      </header>
+      {/* Greeting Section */}
+      <div className="px-5 pt-2 pb-6">
+        <h1 className="text-[28px] leading-[32px] font-semibold text-foreground mb-1">
+          Reflection Journal
+        </h1>
+        <p className="text-[15px] leading-[22px] text-foreground-muted">
+          Your spiritual journey
+        </p>
+      </div>
 
       {/* Main Content */}
-      <main className="px-6 space-y-5 -mt-4">
+      <main className="px-5 space-y-5">
         {/* New Reflection Input */}
         {showInput && (
-          <Card className="border-border bg-card rounded-[1.5rem] p-5 shadow-lg">
+          <Card className="p-5">
             <div className="space-y-4">
               {/* Prompt Selection */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Choose a prompt</label>
+                <label className="text-[15px] leading-[22px] font-medium text-foreground">Choose a prompt</label>
                 <div className="grid grid-cols-4 gap-2">
                   {reflectionPrompts.map((prompt) => (
                     <button
                       key={prompt.id}
                       onClick={() => setSelectedPrompt(prompt)}
-                      className={`flex flex-col items-center gap-1 p-3 rounded-2xl border transition-all ${
+                      className={`flex flex-col items-center gap-1 p-3 rounded-card border transition-all duration-fast ease-ios active:scale-[0.98] ${
                         selectedPrompt.id === prompt.id
                           ? "border-primary bg-primary/10"
                           : "border-border bg-card hover:bg-muted/50"
                       }`}
                     >
                       <span className="text-2xl">{prompt.icon}</span>
-                      <span className="text-xs text-center text-foreground">{prompt.title}</span>
+                      <span className="text-[12px] leading-[18px] text-center text-foreground">{prompt.title}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Selected Prompt */}
-              <div className="p-4 rounded-xl bg-muted/50 border border-border">
-                <p className="text-sm text-muted-foreground italic">{selectedPrompt.prompt}</p>
+              <div className="p-4 rounded-card bg-muted/50 border border-border">
+                <p className="text-[12px] leading-[18px] text-foreground-muted italic">{selectedPrompt.prompt}</p>
               </div>
 
               {/* Mood Selection */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">How are you feeling?</label>
+                <label className="text-[15px] leading-[22px] font-medium text-foreground">How are you feeling?</label>
                 <Select value={selectedMood} onValueChange={setSelectedMood}>
-                  <SelectTrigger className="rounded-full">
+                  <SelectTrigger className="rounded-pill">
                     <SelectValue placeholder="Select mood" />
                   </SelectTrigger>
                   <SelectContent>
@@ -204,12 +201,12 @@ const Journal = () => {
                   <img 
                     src={photoPreview} 
                     alt="Preview" 
-                    className="w-full h-48 object-cover rounded-xl"
+                    className="w-full h-48 object-cover rounded-card"
                   />
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="absolute top-2 right-2 rounded-full w-8 h-8"
+                    className="absolute top-2 right-2 w-8 h-8"
                     onClick={() => {
                       setPhotoFile(null);
                       setPhotoPreview(null);
@@ -225,7 +222,7 @@ const Journal = () => {
                 placeholder="Write your reflection..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="min-h-[150px] border-border bg-background resize-none rounded-2xl"
+                className="min-h-[150px] resize-none rounded-card"
               />
 
               {/* Actions */}
@@ -241,7 +238,6 @@ const Journal = () => {
                   type="button"
                   size="icon"
                   variant="outline"
-                  className="rounded-full w-11 h-11"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <ImageIcon className="w-5 h-5" />
@@ -252,12 +248,11 @@ const Journal = () => {
                 
                 <Button 
                   onClick={() => setShowInput(false)} 
-                  variant="ghost" 
-                  className="rounded-full"
+                  variant="ghost"
                 >
                   Cancel
                 </Button>
-                <Button onClick={save} className="rounded-full bg-primary hover:bg-primary/90">
+                <Button onClick={save}>
                   Save Reflection
                 </Button>
               </div>
@@ -268,45 +263,39 @@ const Journal = () => {
         {/* Search & Filter */}
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
             <input
               type="text"
               placeholder="Search reflections..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-pill text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-fast"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Select value={filterMood} onValueChange={setFilterMood}>
-              <SelectTrigger className="w-[180px] rounded-full border-border">
-                <SelectValue placeholder="Filter by mood" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All moods</SelectItem>
-                {moodOptions.map((mood) => (
-                  <SelectItem key={mood.value} value={mood.value}>
-                    {mood.emoji} {mood.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <SegmentedControl
+            value={filterMood}
+            onValueChange={setFilterMood}
+            options={[
+              { label: "All", value: "all" },
+              ...moodOptions.slice(0, 3).map(mood => ({
+                label: mood.emoji,
+                value: mood.value
+              }))
+            ]}
+          />
         </div>
 
         {/* Journal Entries */}
         {filteredItems.length === 0 ? (
-          <Card className="border-border bg-card rounded-[1.5rem] p-8 text-center">
+          <Card className="p-8 text-center">
             <div className="text-4xl mb-4">📝</div>
-            <h3 className="text-foreground font-semibold mb-2">No reflections yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <h3 className="text-[22px] leading-[28px] font-semibold text-foreground mb-2">No reflections yet</h3>
+            <p className="text-[15px] leading-[22px] text-foreground-muted mb-4">
               Start your spiritual journey by writing your first reflection
             </p>
             <Button 
               onClick={() => setShowInput(true)}
-              className="rounded-full bg-primary hover:bg-primary/90"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Reflection
@@ -314,35 +303,35 @@ const Journal = () => {
           </Card>
         ) : (
           filteredItems.map((item) => (
-            <Card key={item.id} className="border-border bg-card rounded-[1.5rem] p-5 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={item.id} className="p-5 transition-all duration-fast ease-ios hover:shadow-elevation-2">
               {item.photo_url && (
                 <img 
                   src={item.photo_url} 
                   alt="Reflection" 
-                  className="w-full h-48 object-cover rounded-xl mb-4"
+                  className="w-full h-48 object-cover rounded-card mb-4"
                 />
               )}
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-card bg-primary/20 flex items-center justify-center shrink-0">
                   <span className="text-lg">
                     {moodOptions.find(m => m.value === item.mood)?.emoji || "📝"}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-foreground font-semibold">
+                    <h3 className="text-[15px] leading-[22px] font-semibold text-foreground">
                       {item.prompt || "Daily Reflection"}
                     </h3>
                     {item.mood && (
-                      <Badge variant="secondary" className="rounded-full text-xs">
+                      <Badge variant="secondary" className="rounded-pill text-[12px]">
                         {moodOptions.find(m => m.value === item.mood)?.label}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-foreground mb-3 whitespace-pre-wrap">
+                  <p className="text-[15px] leading-[22px] text-foreground mb-3 whitespace-pre-wrap">
                     {item.text}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 text-[12px] leading-[18px] text-foreground-muted">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{new Date(item.date).toLocaleDateString('en-US', {
                       weekday: 'long',

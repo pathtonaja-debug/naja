@@ -8,55 +8,89 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* NAJA - Modern Islamic Lifestyle Design System */
-    --background: 240 8% 97%;
-    --foreground: 220 10% 15%;
-
+    /* NAJA iOS 2025 Design System */
+    /* Base surfaces */
+    --background: 0 0% 97%;           /* #f7f7f6 */
+    --surface: 0 0% 100%;             /* #ffffff */
+    --foreground: 220 12% 9%;         /* #111316 - ink */
+    --foreground-muted: 220 7% 48%;   /* #6b7280 - ink-muted */
+    
+    /* Cards & Popovers */
     --card: 0 0% 100%;
-    --card-foreground: 220 10% 15%;
-
+    --card-foreground: 220 12% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 15%;
-
-    /* Lime green accent - vibrant, energetic */
-    --primary: 68 58% 62%;
-    --primary-foreground: 220 10% 15%;
-
-    /* Lavender for secondary actions */
-    --secondary: 250 30% 75%;
-    --secondary-foreground: 220 10% 15%;
-
-    /* Light gray for muted elements */
-    --muted: 220 10% 90%;
-    --muted-foreground: 220 8% 50%;
-
-    /* Charcoal for dark cards */
-    --accent: 220 12% 18%;
-    --accent-foreground: 0 0% 100%;
-
+    --popover-foreground: 220 12% 9%;
+    
+    /* Accents - iOS inspired palette */
+    --primary: 162 56% 61%;           /* #6ad3b1 - emerald */
+    --primary-foreground: 220 12% 9%;
+    
+    --secondary: 250 30% 82%;         /* #c9c1ea - lavender */
+    --secondary-foreground: 220 12% 9%;
+    
+    --accent: 0 0% 16%;               /* #2a2a2a - charcoal */
+    --accent-foreground: 0 0% 97%;
+    
+    --muted: 30 14% 91%;              /* #eae7e2 - sand */
+    --muted-foreground: 220 7% 48%;
+    
+    /* States */
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 10% 88%;
-    --input: 220 10% 88%;
-    --ring: 68 58% 62%;
-
-    --radius: 1.5rem;
-
-    /* Success - lime green */
-    --success: 68 58% 62%;
-    --success-foreground: 220 10% 15%;
-
-    /* Warning */
+    --success: 162 56% 61%;
+    --success-foreground: 220 12% 9%;
     --warn: 40 90% 60%;
-    --warn-foreground: 220 10% 15%;
-
-    /* Smooth transitions */
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --warn-foreground: 220 12% 9%;
     
-    /* Soft shadows */
-    --shadow-soft: 0 2px 12px -2px hsl(220 10% 15% / 0.08);
-    --shadow-card: 0 4px 20px -4px hsl(220 10% 15% / 0.1);
+    /* Borders & Inputs */
+    --border: 220 12% 9% / 0.06;      /* ultra-light line */
+    --input: 220 10% 88%;
+    --ring: 162 56% 61%;
+    
+    /* Glass effects */
+    --glass-bg: 0 0% 100% / 0.65;
+    --glass-border: 0 0% 100% / 0.25;
+    
+    /* Elevation shadows */
+    --elevation-1: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --elevation-2: 0 14px 36px rgba(0, 0, 0, 0.08);
+    
+    /* Radii */
+    --radius: 1.5rem;
+    --radius-card: 1.5rem;
+    --radius-pill: 9999px;
+    
+    /* Motion */
+    --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --duration-fast: 140ms;
+    --duration-medium: 220ms;
+    
+    /* Gradients */
+    --gradient-card: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.7));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 220 14% 6%;         /* #0f1113 */
+      --surface: 220 13% 10%;           /* #171a1e */
+      --foreground: 220 9% 96%;         /* #f5f6f7 */
+      --foreground-muted: 220 8% 66%;   /* #9aa3af */
+      
+      --card: 220 13% 10%;
+      --card-foreground: 220 9% 96%;
+      --popover: 220 13% 10%;
+      --popover-foreground: 220 9% 96%;
+      
+      --border: 220 9% 96% / 0.08;
+      
+      --glass-bg: 220 13% 10% / 0.6;
+      --glass-border: 0 0% 100% / 0.08;
+      
+      --elevation-1: 0 10px 28px rgba(0, 0, 0, 0.45);
+      --elevation-2: 0 18px 48px rgba(0, 0, 0, 0.55);
+      
+      --gradient-card: linear-gradient(180deg, rgba(23,26,30,0.9), rgba(15,17,19,0.7));
+    }
   }
 }
 

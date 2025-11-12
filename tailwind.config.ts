@@ -18,7 +18,11 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
+        foreground: {
+          DEFAULT: "hsl(var(--foreground))",
+          muted: "hsl(var(--foreground-muted))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -55,11 +59,39 @@ export default {
           DEFAULT: "hsl(var(--warn))",
           foreground: "hsl(var(--warn-foreground))",
         },
+        glass: {
+          DEFAULT: "hsl(var(--glass-bg))",
+          border: "hsl(var(--glass-border))",
+        },
       },
       borderRadius: {
+        card: "var(--radius-card)",
+        pill: "var(--radius-pill)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "elevation-1": "var(--elevation-1)",
+        "elevation-2": "var(--elevation-2)",
+      },
+      fontFamily: {
+        sans: [
+          "ui-sans-serif",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Display",
+          "Inter",
+          "system-ui",
+          "sans-serif",
+        ],
+      },
+      transitionDuration: {
+        fast: "var(--duration-fast)",
+        med: "var(--duration-medium)",
+      },
+      transitionTimingFunction: {
+        ios: "var(--easing)",
       },
       keyframes: {
         "accordion-down": {
