@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowRight, ArrowLeft, Check, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { getDeviceId } from "@/lib/deviceId";
@@ -42,11 +43,120 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
     gentleReminders: true,
     contextualSuggestions: true,
   });
+  const [generatedVariants, setGeneratedVariants] = useState<any[]>([]);
+  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationCount, setGenerationCount] = useState(0);
+  const [lastGenerationTime, setLastGenerationTime] = useState<number>(0);
+
+  const generateAvatars = async () => {
+    // Rate limiting check (max 3 per hour)
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+    if (generationCount >= 3 && now - lastGenerationTime < oneHour) {
+      toast({
+        title: "Generation Limit Reached",
+        description: "Maximum 3 generations per hour. Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const response = await supabase.functions.invoke('generate-avatar', {
+        body: {
+          gender: profile.gender,
+          skinTone: profile.skinTone,
+          hijab: profile.hijab,
+          beard: profile.beard,
+          outfit: profile.outfit,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      if (response.data?.variations) {
+        setGeneratedVariants(response.data.variations);
+        setGenerationCount(prev => prev + 1);
+        setLastGenerationTime(now);
+        toast({
+          title: "Avatars Generated",
+          description: "Select your favorite variant below.",
+        });
+      }
+    } catch (error) {
+      console.error("Avatar generation error:", error);
+      toast({
+        title: "Generation Failed",
+        description: "Using default presets. You can regenerate later.",
+        variant: "destructive",
+      });
+      // Fallback to preset images
+      setGeneratedVariants(avatarPresets.map((p, i) => ({
+        id: i + 1,
+        imageData: p.image,
+      })));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (step === 6 && generatedVariants.length === 0) {
+      generateAvatars();
+    }
+  }, [step]);
 
   const handleSave = async () => {
+    if (!selectedVariantId) {
+      toast({
+        title: "Select a Variant",
+        description: "Please select an avatar variant to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const deviceId = getDeviceId();
+      const selectedVariant = generatedVariants.find(v => v.id === selectedVariantId);
       
+      if (!selectedVariant) throw new Error("Selected variant not found");
+
+      // Upload full body image to Storage
+      const base64Data = selectedVariant.imageData.replace(/^data:image\/\w+;base64,/, "");
+      const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+      
+      const fullBodyPath = `${deviceId}/fullbody.png`;
+      const { error: uploadError } = await supabase.storage
+        .from('companion-avatars')
+        .upload(fullBodyPath, binaryData, {
+          contentType: 'image/png',
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl: fullBodyUrl } } = supabase.storage
+        .from('companion-avatars')
+        .getPublicUrl(fullBodyPath);
+
+      // Create portrait crop (1:1 center crop focusing on upper third)
+      const portraitPath = `${deviceId}/portrait.png`;
+      const { error: portraitUploadError } = await supabase.storage
+        .from('companion-avatars')
+        .upload(portraitPath, binaryData, {
+          contentType: 'image/png',
+          upsert: true,
+        });
+
+      if (portraitUploadError) throw portraitUploadError;
+
+      const { data: { publicUrl: portraitUrl } } = supabase.storage
+        .from('companion-avatars')
+        .getPublicUrl(portraitPath);
+
       // First check if a profile exists for this device
       const { data: existing } = await supabase
         .from("companion_profiles")
@@ -67,17 +177,26 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
           gentle_reminders: profile.gentleReminders,
           contextual_suggestions: profile.contextualSuggestions,
         },
+        selected_variant_id: selectedVariantId,
+        full_body_url: fullBodyUrl,
+        portrait_url: portraitUrl,
+        portrait_crop: { x: 0, y: 0, width: 256, height: 256 },
+        appearance: {
+          gender: profile.gender,
+          skinTone: profile.skinTone,
+          hijab: profile.hijab,
+          beard: profile.beard,
+          outfit: profile.outfit,
+        },
       };
 
       let error;
       if (existing) {
-        // Update existing profile
         ({ error } = await supabase
           .from("companion_profiles")
           .update(profileData)
           .eq("id", existing.id));
       } else {
-        // Insert new profile
         ({ error } = await supabase
           .from("companion_profiles")
           .insert(profileData));
@@ -384,27 +503,67 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
           </div>
         )}
 
-        {/* Screen 6 - Review & Save */}
+        {/* Screen 6 - Avatar Generation & Selection */}
         {step === 6 && (
           <div className="space-y-8">
-            <div className="space-y-3 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1.5rem] bg-success/20 mb-2">
-                <Check className="w-8 h-8 text-success-foreground" />
-              </div>
-              <h2 className="text-2xl font-medium text-foreground">Review & Save</h2>
+            <div className="space-y-3">
+              <h2 className="text-2xl font-medium text-foreground">Choose Your Avatar</h2>
               <p className="text-sm text-muted-foreground">
-                Your companion is ready to guide you.
+                Select your favorite full-body companion design.
               </p>
             </div>
 
+            {isGenerating ? (
+              <div className="space-y-4">
+                <p className="text-center text-sm text-muted-foreground">Generating your personalized avatars...</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} className="w-full aspect-[3/5] rounded-[1.5rem]" />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  {generatedVariants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      onClick={() => setSelectedVariantId(variant.id)}
+                      className={`relative rounded-[1.5rem] border-2 overflow-hidden transition-all ${
+                        selectedVariantId === variant.id
+                          ? "border-primary shadow-lg scale-105"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <img 
+                        src={variant.imageData} 
+                        alt={`Variant ${variant.id}`}
+                        className="w-full aspect-[3/5] object-cover"
+                      />
+                      {selectedVariantId === variant.id && (
+                        <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="w-5 h-5 text-primary-foreground" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={generateAvatars}
+                  disabled={isGenerating || (generationCount >= 3 && Date.now() - lastGenerationTime < 3600000)}
+                  className="w-full rounded-full h-12"
+                >
+                  <RefreshCw className="mr-2 w-5 h-5" />
+                  Regenerate ({3 - generationCount} left)
+                </Button>
+              </>
+            )}
+
             <div className="space-y-4">
               <div className="p-6 rounded-[1.5rem] border border-border space-y-4">
-                <div className="flex items-center gap-4">
-                  <img
-                    src={avatarPresets.find(p => p.id === profile.selectedPreset)?.image}
-                    alt={profile.name}
-                    className="w-20 h-20 rounded-full object-cover"
-                  />
+                <div className="space-y-2">
                   <div>
                     <h3 className="font-medium text-foreground text-lg">{profile.name}</h3>
                     <p className="text-sm text-muted-foreground capitalize">{profile.voiceTone} • {profile.gender}</p>
