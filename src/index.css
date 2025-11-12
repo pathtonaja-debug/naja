@@ -69,28 +69,26 @@ All colors MUST be HSL.
     --gradient-card: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.7));
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: 220 14% 6%;         /* #0f1113 */
-      --surface: 220 13% 10%;           /* #171a1e */
-      --foreground: 220 9% 96%;         /* #f5f6f7 */
-      --foreground-muted: 220 8% 66%;   /* #9aa3af */
-      
-      --card: 220 13% 10%;
-      --card-foreground: 220 9% 96%;
-      --popover: 220 13% 10%;
-      --popover-foreground: 220 9% 96%;
-      
-      --border: 220 9% 96% / 0.08;
-      
-      --glass-bg: 220 13% 10% / 0.6;
-      --glass-border: 0 0% 100% / 0.08;
-      
-      --elevation-1: 0 10px 28px rgba(0, 0, 0, 0.45);
-      --elevation-2: 0 18px 48px rgba(0, 0, 0, 0.55);
-      
-      --gradient-card: linear-gradient(180deg, rgba(23,26,30,0.9), rgba(15,17,19,0.7));
-    }
+  .dark {
+    --background: 220 14% 6%;         /* #0f1113 */
+    --surface: 220 13% 10%;           /* #171a1e */
+    --foreground: 220 9% 96%;         /* #f5f6f7 */
+    --foreground-muted: 220 8% 66%;   /* #9aa3af */
+    
+    --card: 220 13% 10%;
+    --card-foreground: 220 9% 96%;
+    --popover: 220 13% 10%;
+    --popover-foreground: 220 9% 96%;
+    
+    --border: 220 9% 96% / 0.08;
+    
+    --glass-bg: 220 13% 10% / 0.6;
+    --glass-border: 0 0% 100% / 0.08;
+    
+    --elevation-1: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --elevation-2: 0 18px 48px rgba(0, 0, 0, 0.55);
+    
+    --gradient-card: linear-gradient(180deg, rgba(23,26,30,0.9), rgba(15,17,19,0.7));
   }
 }
 

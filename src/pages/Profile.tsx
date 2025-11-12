@@ -4,11 +4,13 @@ import { TopBar } from "@/components/ui/top-bar";
 import { ListCell } from "@/components/ui/list-cell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Bell, Settings, Moon, Globe, User } from "lucide-react";
+import { Bell, Settings, Moon, Globe, User, Sun } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 const Profile = () => {
+  const { theme, setTheme } = useTheme();
   const [showHijri, setShowHijri] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const settings = [
@@ -54,6 +56,13 @@ const Profile = () => {
           
           {/* Quick Toggles */}
           <Card>
+            <ListCell
+              title="Dark Mode"
+              subtitle="Switch to dark theme"
+              leftElement={theme === "dark" ? <Moon className="w-5 h-5 text-foreground" /> : <Sun className="w-5 h-5 text-foreground" />}
+              rightElement={<Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />}
+              showChevron={false}
+            />
             <ListCell
               title="Show Hijri Date"
               subtitle="Display Islamic calendar"
