@@ -1,97 +1,77 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// Process base64 in chunks to prevent memory issues
-function processBase64Chunks(base64String: string, chunkSize = 32768) {
-  const chunks: Uint8Array[] = [];
-  let position = 0;
-  
-  while (position < base64String.length) {
-    const chunk = base64String.slice(position, position + chunkSize);
-    const binaryChunk = atob(chunk);
-    const bytes = new Uint8Array(binaryChunk.length);
-    
-    for (let i = 0; i < binaryChunk.length; i++) {
-      bytes[i] = binaryChunk.charCodeAt(i);
-    }
-    
-    chunks.push(bytes);
-    position += chunkSize;
-  }
-
-  const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-  const result = new Uint8Array(totalLength);
-  let offset = 0;
-
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.length;
-  }
-
-  return result;
-}
-
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: CORS });
   }
 
   try {
-    const { audio } = await req.json();
-    
-    if (!audio) {
-      throw new Error('No audio data provided');
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!apiKey) {
+      console.error("OPENAI_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "OPENAI_API_KEY not set" }),
+        { status: 500, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    const contentType = req.headers.get("content-type") ?? "";
+    let file: File | null = null;
+
+    if (contentType.includes("multipart/form-data")) {
+      const form = await req.formData();
+      const f = form.get("file");
+      if (f && f instanceof File) file = f;
+    } else if (contentType.startsWith("audio/")) {
+      const buf = await req.arrayBuffer();
+      file = new File([buf], "audio.webm", { type: contentType });
     }
 
-    // Process audio in chunks
-    const binaryAudio = processBase64Chunks(audio);
-    
-    // Prepare form data
-    const formData = new FormData();
-    const blob = new Blob([binaryAudio], { type: 'audio/webm' });
-    formData.append('file', blob, 'audio.webm');
-    formData.append('model', 'whisper-1');
+    if (!file) {
+      return new Response(
+        JSON.stringify({ error: "No audio file provided" }),
+        { status: 400, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
+    }
 
-    // Send to OpenAI via Lovable AI Gateway
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: formData,
+    const model = Deno.env.get("OPENAI_TRANSCRIBE_MODEL") ?? "whisper-1";
+
+    const body = new FormData();
+    body.append("file", file);
+    body.append("model", model);
+
+    console.log("Sending transcription request to OpenAI");
+    const resp = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}` },
+      body,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${errorText}`);
+    if (!resp.ok) {
+      const err = await resp.text();
+      console.error("OpenAI API error:", err);
+      return new Response(
+        JSON.stringify({ error: "OpenAI error", detail: err }),
+        { status: 502, headers: { ...CORS, "Content-Type": "application/json" } }
+      );
     }
 
-    const result = await response.json();
-
-    return new Response(
-      JSON.stringify({ text: result.text }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    console.error('Transcription error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    const json = await resp.json();
+    console.log("Transcription successful");
+    return new Response(JSON.stringify({ text: json.text ?? json }), {
+      headers: { ...CORS, "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    console.error("Server error:", e);
+    return new Response(JSON.stringify({ error: "Server crash", detail: String(e) }), {
+      status: 500,
+      headers: { ...CORS, "Content-Type": "application/json" },
+    });
   }
 });

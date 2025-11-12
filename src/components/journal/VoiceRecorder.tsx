@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { transcribeAudio } from "@/lib/transcribe";
 
 interface VoiceRecorderProps {
   onTranscription: (text: string) => void;
@@ -28,7 +29,7 @@ export const VoiceRecorder = ({ onTranscription }: VoiceRecorderProps) => {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
-        await transcribeAudio(audioBlob);
+        await handleTranscribe(audioBlob);
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -48,38 +49,15 @@ export const VoiceRecorder = ({ onTranscription }: VoiceRecorderProps) => {
     }
   };
 
-  const transcribeAudio = async (audioBlob: Blob) => {
+  const handleTranscribe = async (audioBlob: Blob) => {
     setIsProcessing(true);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      
-      reader.onloadend = async () => {
-        const base64Audio = (reader.result as string).split(',')[1];
-        
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/transcribe-audio`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-            },
-            body: JSON.stringify({ audio: base64Audio }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Transcription failed');
-        }
-
-        const { text } = await response.json();
-        onTranscription(text);
-        toast.success("Voice transcribed successfully");
-      };
+      const text = await transcribeAudio(audioBlob);
+      onTranscription(text);
+      toast.success("Voice transcribed successfully");
     } catch (error) {
       console.error("Transcription error:", error);
-      toast.error("Failed to transcribe audio");
+      toast.error("Failed to transcribe audio. Please ensure OPENAI_API_KEY is configured.");
     } finally {
       setIsProcessing(false);
     }
