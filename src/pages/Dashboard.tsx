@@ -15,22 +15,12 @@ import BottomNav from "@/components/BottomNav";
 import AICompanion from "@/components/AICompanion";
 import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
 import { saveDhikrSession } from "@/services/db";
-import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [dhikrCount, setDhikrCount] = useState(0);
   const [showAI, setShowAI] = useState(false);
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
 
   useEffect(() => {
     (async () => {
@@ -44,8 +34,6 @@ const Dashboard = () => {
       await saveDhikrSession("SubhanAllah", dhikrCount, 33);
     }
   };
-
-  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p>Loading...</p></div>;
 
   return (
     <div className="min-h-screen bg-background pb-24">

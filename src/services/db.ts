@@ -1,14 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getDeviceId } from "@/lib/deviceId";
 
 // Reflections
 export async function addReflection(entry: { date: string; text: string; prompt?: string }) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('reflections')
     .insert({
-      user_id: user.id,
+      device_id: deviceId,
       date: entry.date,
       text: entry.text,
       prompt: entry.prompt,
@@ -21,13 +21,12 @@ export async function addReflection(entry: { date: string; text: string; prompt?
 }
 
 export async function listReflections() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('reflections')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('device_id', deviceId)
     .order('date', { ascending: false });
     
   if (error) throw error;
@@ -36,13 +35,12 @@ export async function listReflections() {
 
 // Habits
 export async function listHabits() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const deviceId = getDeviceId();
   
   const { data: habits, error } = await supabase
     .from('habits')
     .select('*, habit_logs(*)')
-    .eq('user_id', user.id)
+    .eq('device_id', deviceId)
     .eq('is_active', true);
     
   if (error) throw error;
@@ -84,8 +82,7 @@ function calculateStreak(logs: any[]) {
 }
 
 export async function toggleHabit(id: string) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const deviceId = getDeviceId();
   
   const today = new Date().toISOString().split('T')[0];
   
@@ -94,8 +91,9 @@ export async function toggleHabit(id: string) {
     .from('habit_logs')
     .select('*')
     .eq('habit_id', id)
+    .eq('device_id', deviceId)
     .eq('date', today)
-    .single();
+    .maybeSingle();
     
   if (existingLog) {
     // Update existing log
@@ -111,7 +109,7 @@ export async function toggleHabit(id: string) {
       .from('habit_logs')
       .insert({
         habit_id: id,
-        user_id: user.id,
+        device_id: deviceId,
         date: today,
         completed: true,
       });
@@ -124,13 +122,12 @@ export async function toggleHabit(id: string) {
 
 // Duas
 export async function listDuas() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('duas')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('device_id', deviceId)
     .order('created_at', { ascending: false });
     
   if (error) throw error;
@@ -138,13 +135,12 @@ export async function listDuas() {
 }
 
 export async function saveDua(dua: { title: string; category: string; content: any }) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('duas')
     .insert({
-      user_id: user.id,
+      device_id: deviceId,
       title: dua.title,
       category: dua.category,
       content: dua.content,
@@ -158,13 +154,12 @@ export async function saveDua(dua: { title: string; category: string; content: a
 
 // Dhikr sessions
 export async function saveDhikrSession(phrase: string, count: number, target?: number) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('dhikr_sessions')
     .insert({
-      user_id: user.id,
+      device_id: deviceId,
       phrase,
       count,
       target,

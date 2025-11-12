@@ -17,8 +17,7 @@ import {
 import BottomNav from "@/components/BottomNav";
 import DuaBuilderFlow from "@/components/dua/DuaBuilderFlow";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { getDeviceId } from "@/lib/deviceId";
 import { useToast } from "@/hooks/use-toast";
 
 interface Dua {
@@ -32,8 +31,6 @@ interface Dua {
 }
 
 const Duas = () => {
-  const navigate = useNavigate();
-  const { user, loading } = useAuth();
   const { toast } = useToast();
   const [showBuilder, setShowBuilder] = useState(false);
   const [duas, setDuas] = useState<Dua[]>([]);
@@ -42,24 +39,17 @@ const Duas = () => {
   const [loadingDuas, setLoadingDuas] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-
-  useEffect(() => {
-    if (user) {
-      loadDuas();
-    }
-  }, [user]);
+    loadDuas();
+  }, []);
 
   const loadDuas = async () => {
     try {
-      setLoadingDuas(true);
+      const deviceId = getDeviceId();
+      
       const { data, error } = await supabase
         .from('duas')
         .select('*')
-        .eq('user_id', user!.id)
+        .eq('device_id', deviceId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -106,12 +96,6 @@ const Duas = () => {
     return matchesSearch && matchesCategory;
   });
 
-  if (loading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      <p className="text-muted-foreground">Loading...</p>
-    </div>;
-  }
-
   if (showBuilder) {
     return (
       <DuaBuilderFlow
@@ -130,14 +114,6 @@ const Duas = () => {
       <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              onClick={() => navigate('/dashboard')}
-              className="rounded-full"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
             <h1 className="text-xl font-semibold text-foreground">My Duas</h1>
           </div>
           <Button

@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           behavior_settings: Json | null
           created_at: string | null
+          device_id: string | null
           eye_color: string | null
           hair_color: string | null
           id: string
@@ -25,12 +26,13 @@ export type Database = {
           outfit: string | null
           skin_tone: string | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
           voice_tone: string | null
         }
         Insert: {
           behavior_settings?: Json | null
           created_at?: string | null
+          device_id?: string | null
           eye_color?: string | null
           hair_color?: string | null
           id?: string
@@ -38,12 +40,13 @@ export type Database = {
           outfit?: string | null
           skin_tone?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
           voice_tone?: string | null
         }
         Update: {
           behavior_settings?: Json | null
           created_at?: string | null
+          device_id?: string | null
           eye_color?: string | null
           hair_color?: string | null
           id?: string
@@ -51,7 +54,7 @@ export type Database = {
           outfit?: string | null
           skin_tone?: string | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
           voice_tone?: string | null
         }
         Relationships: [
@@ -69,28 +72,31 @@ export type Database = {
           count: number
           created_at: string | null
           date: string | null
+          device_id: string | null
           id: string
           phrase: string
           target: number | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           count: number
           created_at?: string | null
           date?: string | null
+          device_id?: string | null
           id?: string
           phrase: string
           target?: number | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           count?: number
           created_at?: string | null
           date?: string | null
+          device_id?: string | null
           id?: string
           phrase?: string
           target?: number | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -107,34 +113,37 @@ export type Database = {
           category: string | null
           content: Json
           created_at: string | null
+          device_id: string | null
           id: string
           is_favorite: boolean | null
           reminder_time: string | null
           title: string
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           category?: string | null
           content: Json
           created_at?: string | null
+          device_id?: string | null
           id?: string
           is_favorite?: boolean | null
           reminder_time?: string | null
           title: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           category?: string | null
           content?: Json
           created_at?: string | null
+          device_id?: string | null
           id?: string
           is_favorite?: boolean | null
           reminder_time?: string | null
           title?: string
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -152,27 +161,30 @@ export type Database = {
           count: number | null
           created_at: string | null
           date: string
+          device_id: string | null
           habit_id: string
           id: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           completed?: boolean | null
           count?: number | null
           created_at?: string | null
           date: string
+          device_id?: string | null
           habit_id: string
           id?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           completed?: boolean | null
           count?: number | null
           created_at?: string | null
           date?: string
+          device_id?: string | null
           habit_id?: string
           id?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -195,6 +207,7 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string | null
+          device_id: string | null
           frequency: string | null
           id: string
           is_active: boolean | null
@@ -202,11 +215,12 @@ export type Database = {
           reminder_time: string | null
           target_count: number | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           category?: string | null
           created_at?: string | null
+          device_id?: string | null
           frequency?: string | null
           id?: string
           is_active?: boolean | null
@@ -214,11 +228,12 @@ export type Database = {
           reminder_time?: string | null
           target_count?: number | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           category?: string | null
           created_at?: string | null
+          device_id?: string | null
           frequency?: string | null
           id?: string
           is_active?: boolean | null
@@ -226,7 +241,7 @@ export type Database = {
           reminder_time?: string | null
           target_count?: number | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -312,6 +327,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null
+          device_id: string | null
           display_name: string | null
           id: string
           language: string | null
@@ -325,6 +341,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          device_id?: string | null
           display_name?: string | null
           id: string
           language?: string | null
@@ -338,6 +355,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          device_id?: string | null
           display_name?: string | null
           id?: string
           language?: string | null
@@ -355,34 +373,37 @@ export type Database = {
         Row: {
           created_at: string | null
           date: string
+          device_id: string | null
           id: string
           photo_url: string | null
           prompt: string | null
           text: string
           updated_at: string | null
-          user_id: string
+          user_id: string | null
           voice_note_url: string | null
         }
         Insert: {
           created_at?: string | null
           date: string
+          device_id?: string | null
           id?: string
           photo_url?: string | null
           prompt?: string | null
           text: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
           voice_note_url?: string | null
         }
         Update: {
           created_at?: string | null
           date?: string
+          device_id?: string | null
           id?: string
           photo_url?: string | null
           prompt?: string | null
           text?: string
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
           voice_note_url?: string | null
         }
         Relationships: [

@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getDeviceId } from "@/lib/deviceId";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, eachDayOfInterval, isSameDay } from "date-fns";
 
 type TimePeriod = 'week' | 'month' | 'year' | 'all';
@@ -41,7 +41,6 @@ interface ProgressStats {
 
 const Progress = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
   const [period, setPeriod] = useState<TimePeriod>('week');
   const [stats, setStats] = useState<ProgressStats>({
     currentStreak: 0,
@@ -57,20 +56,11 @@ const Progress = () => {
   });
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-
-  useEffect(() => {
-    if (user) {
-      loadProgressStats();
-    }
-  }, [user, period]);
+    loadProgressStats();
+  }, [period]);
 
   const loadProgressStats = async () => {
-    if (!user) return;
-
+    const deviceId = getDeviceId();
     const now = new Date();
     let startDate: Date;
     let endDate: Date = now;
@@ -89,14 +79,14 @@ const Progress = () => {
         endDate = endOfYear(now);
         break;
       default:
-        startDate = new Date(user.created_at || now);
+        startDate = new Date(2025, 0, 1); // Default to start of year
     }
 
     // Fetch habit logs
     const { data: habitLogs } = await supabase
       .from('habit_logs')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('device_id', deviceId)
       .gte('date', format(startDate, 'yyyy-MM-dd'))
       .lte('date', format(endDate, 'yyyy-MM-dd'));
 
@@ -104,7 +94,7 @@ const Progress = () => {
     const { data: dhikrSessions } = await supabase
       .from('dhikr_sessions')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('device_id', deviceId)
       .gte('date', format(startDate, 'yyyy-MM-dd'))
       .lte('date', format(endDate, 'yyyy-MM-dd'));
 
@@ -171,12 +161,6 @@ const Progress = () => {
 
     return { currentStreak, bestStreak, totalDays: sortedDates.length };
   };
-
-  if (loading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      <p className="text-muted-foreground">Loading...</p>
-    </div>;
-  }
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const monthDays = eachDayOfInterval({ start: startOfMonth(new Date()), end: endOfMonth(new Date()) });

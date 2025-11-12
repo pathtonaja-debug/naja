@@ -35,8 +35,6 @@ const AICompanion = ({ onClose }: AICompanionProps) => {
     setLoading(true);
 
     try {
-      const { data: session } = await supabase.auth.getSession();
-      
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
         {

@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { getDeviceId } from "@/lib/deviceId";
 import avatar1 from "@/assets/avatar-preset-1.png";
 import avatar2 from "@/assets/avatar-preset-2.png";
 import avatar3 from "@/assets/avatar-preset-3.png";
@@ -44,28 +45,45 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
 
   const handleSave = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const deviceId = getDeviceId();
       
-      if (user) {
-        const { error } = await supabase
-          .from("companion_profiles")
-          .upsert({
-            user_id: user.id,
-            name: profile.name,
-            skin_tone: profile.skinTone,
-            hair_color: profile.hairColor,
-            eye_color: profile.eyeColor,
-            outfit: profile.outfit,
-            voice_tone: profile.voiceTone,
-            behavior_settings: {
-              faith_aligned: profile.faithAligned,
-              gentle_reminders: profile.gentleReminders,
-              contextual_suggestions: profile.contextualSuggestions,
-            },
-          });
+      // First check if a profile exists for this device
+      const { data: existing } = await supabase
+        .from("companion_profiles")
+        .select("id")
+        .eq("device_id", deviceId)
+        .maybeSingle();
 
-        if (error) throw error;
+      const profileData = {
+        device_id: deviceId,
+        name: profile.name,
+        skin_tone: profile.skinTone,
+        hair_color: profile.hairColor,
+        eye_color: profile.eyeColor,
+        outfit: profile.outfit,
+        voice_tone: profile.voiceTone,
+        behavior_settings: {
+          faith_aligned: profile.faithAligned,
+          gentle_reminders: profile.gentleReminders,
+          contextual_suggestions: profile.contextualSuggestions,
+        },
+      };
+
+      let error;
+      if (existing) {
+        // Update existing profile
+        ({ error } = await supabase
+          .from("companion_profiles")
+          .update(profileData)
+          .eq("id", existing.id));
+      } else {
+        // Insert new profile
+        ({ error } = await supabase
+          .from("companion_profiles")
+          .insert(profileData));
       }
+
+      if (error) throw error;
 
       toast({
         title: "Companion Updated",
