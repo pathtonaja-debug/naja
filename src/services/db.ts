@@ -1,81 +1,178 @@
-// TEMP in-memory store - swap with Supabase later
-
-interface Reflection {
-  id: string;
-  date: string;
-  text: string;
-  prompt?: string;
-}
-
-interface Habit {
-  id: string;
-  name: string;
-  completed: boolean;
-  streak: number;
-}
-
-interface Dua {
-  id: string;
-  title: string;
-  category: string;
-  content: string;
-}
-
-let reflections: Reflection[] = [
-  { id: '1', date: '2025-01-11', text: 'Alhamdulillah for another beautiful day...', prompt: 'Morning Gratitude' }
-];
-
-let habits: Habit[] = [
-  { id: '1', name: 'Salah on Time', completed: true, streak: 7 },
-  { id: '2', name: 'Dhikr 33×', completed: true, streak: 5 },
-  { id: '3', name: "Qur'an 2 Pages", completed: false, streak: 3 },
-  { id: '4', name: 'Gratitude Note', completed: false, streak: 12 }
-];
-
-let duas: Dua[] = [
-  { id: '1', title: 'Morning Protection', category: 'Protection', content: '' },
-  { id: '2', title: 'Gratitude Dua', category: 'Gratitude', content: '' },
-  { id: '3', title: 'Patience & Strength', category: 'Patience', content: '' },
-  { id: '4', title: 'Healing Dua', category: 'Healing', content: '' }
-];
+import { supabase } from "@/integrations/supabase/client";
 
 // Reflections
 export async function addReflection(entry: { date: string; text: string; prompt?: string }) {
-  const newReflection = { id: Date.now().toString(), ...entry };
-  reflections.unshift(newReflection);
-  return newReflection;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+  
+  const { data, error } = await supabase
+    .from('reflections')
+    .insert({
+      user_id: user.id,
+      date: entry.date,
+      text: entry.text,
+      prompt: entry.prompt,
+    })
+    .select()
+    .single();
+    
+  if (error) throw error;
+  return data;
 }
 
 export async function listReflections() {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return reflections;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  
+  const { data, error } = await supabase
+    .from('reflections')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('date', { ascending: false });
+    
+  if (error) throw error;
+  return data || [];
 }
 
 // Habits
 export async function listHabits() {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return habits;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  
+  const { data: habits, error } = await supabase
+    .from('habits')
+    .select('*, habit_logs(*)')
+    .eq('user_id', user.id)
+    .eq('is_active', true);
+    
+  if (error) throw error;
+  
+  // Calculate streaks from habit_logs
+  return (habits || []).map(habit => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayLog = habit.habit_logs?.find((log: any) => log.date === today);
+    
+    return {
+      id: habit.id,
+      name: habit.name,
+      completed: todayLog?.completed || false,
+      streak: calculateStreak(habit.habit_logs || []),
+    };
+  });
+}
+
+function calculateStreak(logs: any[]) {
+  const sortedLogs = logs
+    .filter(log => log.completed)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+  let streak = 0;
+  const today = new Date();
+  
+  for (const log of sortedLogs) {
+    const logDate = new Date(log.date);
+    const daysDiff = Math.floor((today.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff === streak) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  
+  return streak;
 }
 
 export async function toggleHabit(id: string) {
-  const habit = habits.find(h => h.id === id);
-  if (habit) {
-    habit.completed = !habit.completed;
-    if (habit.completed) {
-      habit.streak += 1;
-    }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+  
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Check if log exists
+  const { data: existingLog } = await supabase
+    .from('habit_logs')
+    .select('*')
+    .eq('habit_id', id)
+    .eq('date', today)
+    .single();
+    
+  if (existingLog) {
+    // Update existing log
+    const { error } = await supabase
+      .from('habit_logs')
+      .update({ completed: !existingLog.completed })
+      .eq('id', existingLog.id);
+      
+    if (error) throw error;
+  } else {
+    // Create new log
+    const { error } = await supabase
+      .from('habit_logs')
+      .insert({
+        habit_id: id,
+        user_id: user.id,
+        date: today,
+        completed: true,
+      });
+      
+    if (error) throw error;
   }
-  return habits;
+  
+  return listHabits();
 }
 
 // Duas
 export async function listDuas() {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return duas;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  
+  const { data, error } = await supabase
+    .from('duas')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+    
+  if (error) throw error;
+  return data || [];
 }
 
-export async function saveDua(dua: Omit<Dua, 'id'>) {
-  const newDua = { id: Date.now().toString(), ...dua };
-  duas.unshift(newDua);
-  return newDua;
+export async function saveDua(dua: { title: string; category: string; content: any }) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+  
+  const { data, error } = await supabase
+    .from('duas')
+    .insert({
+      user_id: user.id,
+      title: dua.title,
+      category: dua.category,
+      content: dua.content,
+    })
+    .select()
+    .single();
+    
+  if (error) throw error;
+  return data;
+}
+
+// Dhikr sessions
+export async function saveDhikrSession(phrase: string, count: number, target?: number) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+  
+  const { data, error } = await supabase
+    .from('dhikr_sessions')
+    .insert({
+      user_id: user.id,
+      phrase,
+      count,
+      target,
+      date: new Date().toISOString().split('T')[0],
+    })
+    .select()
+    .single();
+    
+  if (error) throw error;
+  return data;
 }

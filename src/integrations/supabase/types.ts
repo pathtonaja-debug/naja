@@ -14,16 +14,436 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companion_profiles: {
+        Row: {
+          behavior_settings: Json | null
+          created_at: string | null
+          eye_color: string | null
+          hair_color: string | null
+          id: string
+          name: string | null
+          outfit: string | null
+          skin_tone: string | null
+          updated_at: string | null
+          user_id: string
+          voice_tone: string | null
+        }
+        Insert: {
+          behavior_settings?: Json | null
+          created_at?: string | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          name?: string | null
+          outfit?: string | null
+          skin_tone?: string | null
+          updated_at?: string | null
+          user_id: string
+          voice_tone?: string | null
+        }
+        Update: {
+          behavior_settings?: Json | null
+          created_at?: string | null
+          eye_color?: string | null
+          hair_color?: string | null
+          id?: string
+          name?: string | null
+          outfit?: string | null
+          skin_tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          voice_tone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companion_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhikr_sessions: {
+        Row: {
+          count: number
+          created_at: string | null
+          date: string | null
+          id: string
+          phrase: string
+          target: number | null
+          user_id: string
+        }
+        Insert: {
+          count: number
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          phrase: string
+          target?: number | null
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          phrase?: string
+          target?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhikr_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      duas: {
+        Row: {
+          category: string | null
+          content: Json
+          created_at: string | null
+          id: string
+          is_favorite: boolean | null
+          reminder_time: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content: Json
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          reminder_time?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          reminder_time?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duas_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habit_logs: {
+        Row: {
+          completed: boolean | null
+          count: number | null
+          created_at: string | null
+          date: string
+          habit_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          count?: number | null
+          created_at?: string | null
+          date: string
+          habit_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          count?: number | null
+          created_at?: string | null
+          date?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "habit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          frequency: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          reminder_time: string | null
+          target_count: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          reminder_time?: string | null
+          target_count?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          reminder_time?: string | null
+          target_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          data: Json | null
+          id: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prayer_times_cache: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          latitude: number
+          longitude: number
+          method: Database["public"]["Enums"]["prayer_method"]
+          times: Json
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          latitude: number
+          longitude: number
+          method: Database["public"]["Enums"]["prayer_method"]
+          times: Json
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          method?: Database["public"]["Enums"]["prayer_method"]
+          times?: Json
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          id: string
+          language: string | null
+          latitude: number | null
+          longitude: number | null
+          notifications_enabled: boolean | null
+          prayer_method: Database["public"]["Enums"]["prayer_method"] | null
+          show_hijri: boolean | null
+          timezone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          language?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          notifications_enabled?: boolean | null
+          prayer_method?: Database["public"]["Enums"]["prayer_method"] | null
+          show_hijri?: boolean | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          language?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          notifications_enabled?: boolean | null
+          prayer_method?: Database["public"]["Enums"]["prayer_method"] | null
+          show_hijri?: boolean | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reflections: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          photo_url: string | null
+          prompt: string | null
+          text: string
+          updated_at: string | null
+          user_id: string
+          voice_note_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          photo_url?: string | null
+          prompt?: string | null
+          text: string
+          updated_at?: string | null
+          user_id: string
+          voice_note_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          photo_url?: string | null
+          prompt?: string | null
+          text?: string
+          updated_at?: string | null
+          user_id?: string
+          voice_note_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reflections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      prayer_method:
+        | "MWL"
+        | "ISNA"
+        | "Egypt"
+        | "Makkah"
+        | "Karachi"
+        | "Tehran"
+        | "Jafari"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +570,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      prayer_method: [
+        "MWL",
+        "ISNA",
+        "Egypt",
+        "Makkah",
+        "Karachi",
+        "Tehran",
+        "Jafari",
+      ],
+    },
   },
 } as const

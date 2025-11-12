@@ -5,19 +5,30 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Plus,
   Bell,
-  Calendar as CalendarIcon,
-  ArrowRight,
   Clock,
   Sparkles,
-  Heart
+  ArrowRight
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import AICompanion from "@/components/AICompanion";
 import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
+import { saveDhikrSession } from "@/services/db";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [dhikrCount, setDhikrCount] = useState(0);
+  const [showAI, setShowAI] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     (async () => {
@@ -25,6 +36,14 @@ const Dashboard = () => {
       setPrayerTimes(times);
     })();
   }, []);
+
+  const handleSaveDhikr = async () => {
+    if (dhikrCount > 0) {
+      await saveDhikrSession("SubhanAllah", dhikrCount, 33);
+    }
+  };
+
+  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center"><p>Loading...</p></div>;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -36,8 +55,8 @@ const Dashboard = () => {
             <AvatarFallback className="bg-muted">U</AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3">
-            <Button size="icon" className="rounded-full bg-foreground hover:bg-foreground/90 w-12 h-12">
-              <Plus className="w-5 h-5 text-background" />
+            <Button onClick={() => setShowAI(true)} size="icon" className="rounded-full bg-primary hover:bg-primary/90 w-12 h-12">
+              <Sparkles className="w-5 h-5 text-primary-foreground" />
             </Button>
             <Button size="icon" variant="ghost" className="rounded-full w-12 h-12 bg-muted hover:bg-muted/80">
               <Bell className="w-5 h-5 text-foreground" />
@@ -245,6 +264,7 @@ const Dashboard = () => {
       </main>
 
       <BottomNav />
+      {showAI && <AICompanion onClose={() => setShowAI(false)} />}
     </div>
   );
 };

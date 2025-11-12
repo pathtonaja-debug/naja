@@ -1,48 +1,63 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Heart, Clock, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="text-center space-y-10 max-w-2xl animate-fade-in">
-        {/* Hero Section */}
-        <div className="space-y-6">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] bg-primary/20 mb-2">
-            <span className="text-6xl">🌿</span>
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="p-6">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-8 h-8 text-primary" />
+            <h1 className="text-2xl font-bold text-foreground">NAJA</h1>
           </div>
-          <div className="space-y-3">
-            <h1 className="text-5xl md:text-6xl font-medium tracking-tight text-foreground">
-              NAJA
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto">
-              Your spiritual companion for reflection, prayer, and mindful Islamic living
-            </p>
-          </div>
+          <Button
+            onClick={() => navigate('/auth')}
+            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            Get Started
+          </Button>
         </div>
+      </header>
+      
+      <main className="flex-1 flex items-center justify-center p-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <Badge className="rounded-full bg-primary/20 text-primary border-primary/30 px-4 py-2">
+            Your Spiritual Companion
+          </Badge>
+          
+          <h2 className="text-5xl md:text-6xl font-bold text-foreground leading-tight">
+            Strengthen Your Faith<br />
+            <span className="text-primary">One Moment at a Time</span>
+          </h2>
+          
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            A mindful companion for Muslims seeking to deepen their spiritual practice through
+            reflection, habits, duas, and AI-powered guidance.
+          </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
-          <Button 
-            onClick={() => navigate("/onboarding")}
-            size="lg"
-            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-full h-14 text-base font-medium"
-          >
-            Begin Your Journey
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-          <Button 
-            onClick={() => navigate("/dashboard")}
-            variant="outline"
-            size="lg"
-            className="w-full sm:w-auto border-border hover:bg-muted px-8 rounded-full h-14 text-base font-medium"
-          >
-            View Dashboard
-          </Button>
-        </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <Button
+              onClick={() => navigate('/auth')}
+              size="lg"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground h-14 px-8"
+            >
+              Start Your Journey
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button
+              onClick={() => navigate('/dashboard')}
+              size="lg"
+              variant="outline"
+              className="rounded-full h-14 px-8"
+            >
+              View Demo
+            </Button>
+          </div>
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-8">
