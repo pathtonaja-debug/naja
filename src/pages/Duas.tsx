@@ -1,189 +1,334 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Bell, Search, Heart, ArrowLeft } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  Plus, 
+  Search, 
+  Heart, 
+  Clock, 
+  Sparkles,
+  ArrowLeft,
+  MoreVertical,
+  Star
+} from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { listDuas, saveDua } from "@/services/db";
-import { useState, useEffect } from "react";
+import DuaBuilderFlow from "@/components/dua/DuaBuilderFlow";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
-const steps = ["Praise", "Salawat", "Need", "Forgiveness", "Conclusion", "Amin"];
+interface Dua {
+  id: string;
+  title: string;
+  category: string | null;
+  content: any;
+  is_favorite: boolean;
+  reminder_time: string | null;
+  created_at: string;
+}
 
 const Duas = () => {
-  const [duas, setDuas] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const { toast } = useToast();
   const [showBuilder, setShowBuilder] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [duaTitle, setDuaTitle] = useState("");
-  const [duaContent, setDuaContent] = useState({
-    praise: "", salawat: "", need: "", forgive: "", end: "", amin: "Āmīn"
-  });
-
-  async function load() {
-    const data = await listDuas();
-    setDuas(data);
-  }
+  const [duas, setDuas] = useState<Dua[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [loadingDuas, setLoadingDuas] = useState(true);
 
   useEffect(() => {
-    load();
-  }, []);
-
-  function nextStep() {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      finishDua();
+    if (!loading && !user) {
+      navigate('/auth');
     }
-  }
+  }, [user, loading, navigate]);
 
-  function prevStep() {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
-  }
+  useEffect(() => {
+    if (user) {
+      loadDuas();
+    }
+  }, [user]);
 
-  async function finishDua() {
-    const content = Object.values(duaContent).join("\n\n");
-    await saveDua({
-      title: duaTitle || "Custom Dua",
-      category: "Personal",
-      content
-    });
-    setShowBuilder(false);
-    setCurrentStep(0);
-    setDuaTitle("");
-    setDuaContent({ praise: "", salawat: "", need: "", forgive: "", end: "", amin: "Āmīn" });
-    load();
-  }
+  const loadDuas = async () => {
+    try {
+      setLoadingDuas(true);
+      const { data, error } = await supabase
+        .from('duas')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false });
 
-  const stepKey = ["praise", "salawat", "need", "forgive", "end", "amin"][currentStep] as keyof typeof duaContent;
+      if (error) throw error;
+      setDuas(data || []);
+    } catch (error) {
+      console.error('Error loading duas:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load duas. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingDuas(false);
+    }
+  };
+
+  const toggleFavorite = async (duaId: string, currentFavorite: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('duas')
+        .update({ is_favorite: !currentFavorite })
+        .eq('id', duaId);
+
+      if (error) throw error;
+
+      setDuas(duas.map(d => 
+        d.id === duaId ? { ...d, is_favorite: !currentFavorite } : d
+      ));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update favorite status",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const categories = Array.from(new Set(duas.map(d => d.category).filter(Boolean))) as string[];
+  
+  const filteredDuas = duas.filter(dua => {
+    const matchesSearch = dua.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || dua.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      <p className="text-muted-foreground">Loading...</p>
+    </div>;
+  }
 
   if (showBuilder) {
     return (
-      <div className="min-h-screen bg-background pb-24">
-        <header className="px-6 pt-12 pb-6">
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            onClick={() => setShowBuilder(false)}
-            className="rounded-full w-12 h-12 bg-muted hover:bg-muted/80 mb-6"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-2xl font-medium text-foreground mb-2">
-            Build Your Dua
-          </h1>
-          <p className="text-sm text-muted-foreground">Step {currentStep + 1}/{steps.length}</p>
-        </header>
-
-        <main className="px-6 space-y-4">
-          {currentStep === 0 && (
-            <Input
-              placeholder="Give your dua a title..."
-              value={duaTitle}
-              onChange={(e) => setDuaTitle(e.target.value)}
-              className="mb-4 border-none bg-muted"
-            />
-          )}
-          
-          <Card className="border-border bg-card rounded-[2rem] p-5 shadow-card">
-            <h3 className="text-lg font-medium text-foreground mb-4">{steps[currentStep]}</h3>
-            <Textarea
-              placeholder={`Write ${steps[currentStep].toLowerCase()}...`}
-              value={duaContent[stepKey]}
-              onChange={(e) => setDuaContent({ ...duaContent, [stepKey]: e.target.value })}
-              className="min-h-[200px] border-none bg-muted resize-none"
-            />
-          </Card>
-
-          <div className="flex gap-3">
-            {currentStep > 0 && (
-              <Button 
-                onClick={prevStep}
-                variant="ghost"
-                className="flex-1 rounded-full"
-              >
-                Back
-              </Button>
-            )}
-            <Button 
-              onClick={nextStep}
-              className="flex-1 rounded-full"
-            >
-              {currentStep === steps.length - 1 ? "Finish" : "Next"}
-            </Button>
-          </div>
-        </main>
-        <BottomNav />
-      </div>
+      <DuaBuilderFlow
+        onComplete={() => {
+          setShowBuilder(false);
+          loadDuas();
+        }}
+        onCancel={() => setShowBuilder(false)}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <header className="px-6 pt-12 pb-6">
-        <div className="flex items-center justify-between mb-8">
-          <Avatar className="w-12 h-12">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-muted">U</AvatarFallback>
-          </Avatar>
+      <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Button 
               size="icon" 
-              className="rounded-full bg-foreground hover:bg-foreground/90 w-12 h-12"
-              onClick={() => setShowBuilder(true)}
+              variant="ghost" 
+              onClick={() => navigate('/dashboard')}
+              className="rounded-full"
             >
-              <Plus className="w-5 h-5 text-background" />
+              <ArrowLeft className="w-5 h-5" />
             </Button>
-            <Button size="icon" variant="ghost" className="rounded-full w-12 h-12 bg-muted hover:bg-muted/80">
-              <Bell className="w-5 h-5 text-foreground" />
-            </Button>
+            <h1 className="text-xl font-semibold text-foreground">My Duas</h1>
           </div>
+          <Button
+            onClick={() => setShowBuilder(true)}
+            className="rounded-full bg-primary hover:bg-primary/90 h-12 px-6"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            New Dua
+          </Button>
         </div>
 
-        <h1 className="text-2xl font-medium text-foreground mb-2">
-          Dua Library
-        </h1>
-        <p className="text-sm text-muted-foreground">Your personal collection</p>
-      </header>
-
-      {/* Main Content */}
-      <main className="px-6 space-y-4">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search duas by theme..."
-            className="w-full pl-12 pr-4 py-3 bg-muted border-none rounded-[2rem] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search duas..."
+            className="rounded-full pl-12 h-12"
           />
         </div>
+      </header>
+
+      <main className="px-6 pt-6 space-y-6">
+        {/* Categories */}
+        {categories.length > 0 && (
+          <ScrollArea className="w-full">
+            <div className="flex gap-2 pb-2">
+              <Badge
+                onClick={() => setSelectedCategory(null)}
+                className={`rounded-full cursor-pointer px-4 py-2 ${
+                  !selectedCategory
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                All
+              </Badge>
+              {categories.map((category) => (
+                <Badge
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`rounded-full cursor-pointer px-4 py-2 whitespace-nowrap ${
+                    selectedCategory === category
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {category}
+                </Badge>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
+
+        {/* Empty State */}
+        {filteredDuas.length === 0 && !loadingDuas && (
+          <Card className="border-border bg-card rounded-[2rem] p-12 text-center">
+            <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-10 h-10 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              {searchQuery || selectedCategory ? 'No duas found' : 'No duas yet'}
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              {searchQuery || selectedCategory
+                ? 'Try adjusting your search or filters'
+                : 'Start building your first personal dua'}
+            </p>
+            {!searchQuery && !selectedCategory && (
+              <Button
+                onClick={() => setShowBuilder(true)}
+                className="rounded-full bg-primary hover:bg-primary/90 px-8"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create Your First Dua
+              </Button>
+            )}
+          </Card>
+        )}
 
         {/* Duas List */}
-        {duas.map((dua, i) => (
-          <Card key={i} className="border-border bg-card rounded-[2rem] p-5 shadow-card">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="text-foreground font-medium">{dua.title}</h3>
-                  {dua.favorite && (
-                    <Heart className="w-4 h-4 text-primary fill-primary" />
+        <div className="space-y-4">
+          {filteredDuas.map((dua) => (
+            <Card key={dua.id} className="border-border bg-card rounded-[2rem] p-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {dua.title}
+                    </h3>
+                    {dua.is_favorite && (
+                      <Star className="w-4 h-4 text-primary fill-primary" />
+                    )}
+                  </div>
+                  {dua.category && (
+                    <Badge className="rounded-full bg-secondary/40 text-secondary-foreground mb-3">
+                      {dua.category}
+                    </Badge>
                   )}
                 </div>
-                <Badge className="rounded-full bg-primary/10 text-primary hover:bg-primary/15 border-primary/20">
-                  {dua.category}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => toggleFavorite(dua.id, dua.is_favorite)}
+                    className="rounded-full"
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${
+                        dua.is_favorite ? 'fill-primary text-primary' : 'text-muted-foreground'
+                      }`}
+                    />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="rounded-full">
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
+
+              {/* Preview of dua content */}
+              {dua.content?.step3_need && (
+                <div className="bg-muted/30 rounded-2xl p-4 mb-4">
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {dua.content.step3_need}
+                  </p>
+                </div>
+              )}
+
+              {/* Selected Names */}
+              {dua.content?.step1_selected_names?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {dua.content.step1_selected_names.map((name: any, idx: number) => (
+                    <Badge
+                      key={idx}
+                      className="rounded-full bg-primary/20 text-primary border-primary/30"
+                    >
+                      {name.transliteration}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                {dua.reminder_time && (
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{dua.reminder_time}</span>
+                  </div>
+                )}
+                <span>
+                  {new Date(dua.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* AI Suggestions Card */}
+        <Card className="border-border bg-secondary/20 rounded-[2rem] p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0">
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground mb-2">
+                Need inspiration?
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Get AI-powered suggestions for duas based on your current needs and emotions.
+              </p>
               <Button
-                size="icon"
-                variant="ghost"
-                className="rounded-full w-10 h-10 bg-muted hover:bg-muted/80"
+                variant="outline"
+                className="rounded-full"
+                onClick={() => {
+                  toast({
+                    title: "Coming soon",
+                    description: "AI suggestions feature is under development"
+                  });
+                }}
               >
-                <span className="text-lg">→</span>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Get Suggestions
               </Button>
             </div>
-          </Card>
-        ))}
+          </div>
+        </Card>
       </main>
 
       <BottomNav />
