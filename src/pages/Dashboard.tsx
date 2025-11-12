@@ -7,7 +7,9 @@ import {
   Bell,
   Clock,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Calendar as CalendarIcon,
+  Heart
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import AICompanion from "@/components/AICompanion";

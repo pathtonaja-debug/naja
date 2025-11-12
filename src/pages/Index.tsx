@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, BookOpen, Heart, Clock } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -98,6 +98,7 @@ const Index = () => {
           </Card>
         </div>
       </div>
+      </main>
     </div>
   );
 };
