@@ -161,38 +161,52 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
       
       if (!selectedVariant) throw new Error("Selected variant not found");
 
-      // Upload full body image to Storage
-      const base64Data = selectedVariant.imageData.replace(/^data:image\/\w+;base64,/, "");
-      const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      
-      const fullBodyPath = `${deviceId}/fullbody.png`;
-      const { error: uploadError } = await supabase.storage
-        .from('companion-avatars')
-        .upload(fullBodyPath, binaryData, {
-          contentType: 'image/png',
-          upsert: true,
-        });
+      let fullBodyUrl: string;
+      let portraitUrl: string;
 
-      if (uploadError) throw uploadError;
+      // Check if this is a generated avatar (base64) or preset (imported URL)
+      const isBase64 = selectedVariant.imageData.startsWith('data:image');
 
-      const { data: { publicUrl: fullBodyUrl } } = supabase.storage
-        .from('companion-avatars')
-        .getPublicUrl(fullBodyPath);
+      if (isBase64) {
+        // Upload generated avatar to Storage
+        const base64Data = selectedVariant.imageData.replace(/^data:image\/\w+;base64,/, "");
+        const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+        
+        const fullBodyPath = `${deviceId}/fullbody.png`;
+        const { error: uploadError } = await supabase.storage
+          .from('companion-avatars')
+          .upload(fullBodyPath, binaryData, {
+            contentType: 'image/png',
+            upsert: true,
+          });
 
-      // Create portrait crop (1:1 center crop focusing on upper third)
-      const portraitPath = `${deviceId}/portrait.png`;
-      const { error: portraitUploadError } = await supabase.storage
-        .from('companion-avatars')
-        .upload(portraitPath, binaryData, {
-          contentType: 'image/png',
-          upsert: true,
-        });
+        if (uploadError) throw uploadError;
 
-      if (portraitUploadError) throw portraitUploadError;
+        const { data: { publicUrl: fullBodyUrlFromStorage } } = supabase.storage
+          .from('companion-avatars')
+          .getPublicUrl(fullBodyPath);
+        fullBodyUrl = fullBodyUrlFromStorage;
 
-      const { data: { publicUrl: portraitUrl } } = supabase.storage
-        .from('companion-avatars')
-        .getPublicUrl(portraitPath);
+        // Create portrait crop (use same image for now)
+        const portraitPath = `${deviceId}/portrait.png`;
+        const { error: portraitUploadError } = await supabase.storage
+          .from('companion-avatars')
+          .upload(portraitPath, binaryData, {
+            contentType: 'image/png',
+            upsert: true,
+          });
+
+        if (portraitUploadError) throw portraitUploadError;
+
+        const { data: { publicUrl: portraitUrlFromStorage } } = supabase.storage
+          .from('companion-avatars')
+          .getPublicUrl(portraitPath);
+        portraitUrl = portraitUrlFromStorage;
+      } else {
+        // Using preset avatar - use the imported URL directly
+        fullBodyUrl = selectedVariant.imageData;
+        portraitUrl = selectedVariant.imageData;
+      }
 
       // First check if a profile exists for this device
       const { data: existing } = await supabase
