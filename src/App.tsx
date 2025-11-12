@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Journal from "./pages/Journal";
 import Habits from "./pages/Habits";
 import Duas from "./pages/Duas";
+import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/journal" element={<Journal />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/duas" element={<Duas />} />
+          <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
