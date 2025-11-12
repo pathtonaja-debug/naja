@@ -11,7 +11,6 @@ import Habits from "./pages/Habits";
 import Duas from "./pages/Duas";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +23,6 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/journal" element={<Journal />} />

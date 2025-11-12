@@ -3,14 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, MapPin, Check } from "lucide-react";
+import CompanionCustomization from "@/components/companion/CompanionCustomization";
 
 const Onboarding = () => {
   const [step, setStep] = useState(1);
+  const [showCompanion, setShowCompanion] = useState(false);
   const navigate = useNavigate();
 
   const handleComplete = () => {
     navigate("/dashboard");
   };
+
+  const handleSetupLocation = () => {
+    setShowCompanion(true);
+  };
+
+  if (showCompanion) {
+    return <CompanionCustomization onComplete={handleComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -76,14 +86,14 @@ const Onboarding = () => {
 
               <div className="space-y-3">
                 <Button 
-                  onClick={() => setStep(3)}
+                  onClick={handleSetupLocation}
                   className="w-full bg-foreground hover:bg-foreground/90 text-background rounded-full h-14 text-base font-medium"
                 >
                   Enable Location
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => setStep(3)}
+                  onClick={handleSetupLocation}
                   className="w-full border-border rounded-full h-14 text-base font-medium hover:bg-muted"
                 >
                   Set Manually
