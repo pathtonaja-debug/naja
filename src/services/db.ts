@@ -2,7 +2,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { getDeviceId } from "@/lib/deviceId";
 
 // Reflections
-export async function addReflection(entry: { date: string; text: string; prompt?: string }) {
+export async function addReflection(entry: { 
+  date: string; 
+  text: string; 
+  prompt?: string;
+  mood?: string;
+  photo_url?: string;
+  voice_note_url?: string;
+}) {
   const deviceId = getDeviceId();
   
   const { data, error } = await supabase
@@ -12,12 +19,33 @@ export async function addReflection(entry: { date: string; text: string; prompt?
       date: entry.date,
       text: entry.text,
       prompt: entry.prompt,
+      mood: entry.mood,
+      photo_url: entry.photo_url,
+      voice_note_url: entry.voice_note_url,
     })
     .select()
     .single();
     
   if (error) throw error;
   return data;
+}
+
+export async function uploadReflectionPhoto(file: File): Promise<string> {
+  const deviceId = getDeviceId();
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${deviceId}/${Date.now()}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('reflections')
+    .upload(fileName, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('reflections')
+    .getPublicUrl(fileName);
+
+  return publicUrl;
 }
 
 export async function listReflections() {

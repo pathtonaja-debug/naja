@@ -375,6 +375,7 @@ export type Database = {
           date: string
           device_id: string | null
           id: string
+          mood: string | null
           photo_url: string | null
           prompt: string | null
           text: string
@@ -387,6 +388,7 @@ export type Database = {
           date: string
           device_id?: string | null
           id?: string
+          mood?: string | null
           photo_url?: string | null
           prompt?: string | null
           text: string
@@ -399,6 +401,7 @@ export type Database = {
           date?: string
           device_id?: string | null
           id?: string
+          mood?: string | null
           photo_url?: string | null
           prompt?: string | null
           text?: string
