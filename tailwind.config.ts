@@ -14,11 +14,30 @@ export default {
     },
     extend: {
       colors: {
+        // New design system tokens
+        bg: "var(--bg)",
+        surface: "var(--surface)",
+        surfaceAlt: "var(--surface-alt)",
+        ink: "var(--text)",
+        inkMuted: "var(--text-muted)",
+        sage: {
+          DEFAULT: "var(--accent-sage)",
+          deep: "var(--accent-sage-deep)",
+        },
+        lavender: {
+          DEFAULT: "var(--accent-lavender)",
+          deep: "var(--accent-lavender-deep)",
+        },
+        chip: {
+          DEFAULT: "var(--chip)",
+          text: "var(--chip-text)",
+        },
+        
+        // Legacy tokens for compatibility
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
-        surface: "hsl(var(--surface))",
         foreground: {
           DEFAULT: "hsl(var(--foreground))",
           muted: "hsl(var(--foreground-muted))",
@@ -65,6 +84,7 @@ export default {
         },
       },
       borderRadius: {
+        xl2: "var(--radius-lg)",
         card: "var(--radius-card)",
         pill: "var(--radius-pill)",
         lg: "var(--radius)",
@@ -72,6 +92,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
+        soft: "var(--shadow-soft)",
+        chip: "var(--shadow-chip)",
         "elevation-1": "var(--elevation-1)",
         "elevation-2": "var(--elevation-2)",
       },
@@ -89,9 +111,11 @@ export default {
       transitionDuration: {
         fast: "var(--duration-fast)",
         med: "var(--duration-medium)",
+        nja: "160ms",
       },
       transitionTimingFunction: {
         ios: "var(--easing)",
+        nja: "cubic-bezier(.2,.7,.2,1)",
       },
       keyframes: {
         "accordion-down": {

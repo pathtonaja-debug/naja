@@ -1,10 +1,8 @@
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
 
 @layer base {
   :root {
@@ -98,7 +96,8 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-bg text-ink;
+    font-family: ui-sans-serif, -apple-system, "SF Pro Display", "Inter", system-ui, sans-serif;
   }
 
   /* Hide scrollbar but keep functionality */

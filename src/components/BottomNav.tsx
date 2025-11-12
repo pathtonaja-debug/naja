@@ -18,7 +18,7 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 w-full max-w-2xl z-50 pointer-events-none">
-      <div className="backdrop-blur-xl bg-glass border border-glass-border rounded-pill shadow-elevation-2 px-3 py-2 pointer-events-auto">
+      <div className="backdrop-blur-xl bg-surface/80 border border-border rounded-pill shadow-soft px-3 py-2 pointer-events-auto">
         <div className="flex justify-around items-center gap-2">
           {tabs.map((tab) => {
             const isActive = location.pathname === tab.path;
@@ -29,16 +29,16 @@ const BottomNav = () => {
                 variant="ghost"
                 onClick={() => navigate(tab.path)}
                 className={cn(
-                  "w-12 h-12 rounded-full transition-all duration-fast ease-ios",
+                  "w-12 h-12 rounded-full transition-all duration-nja ease-nja",
                   isActive
-                    ? "bg-surface shadow-elevation-1 hover:bg-surface/90"
-                    : "bg-transparent hover:bg-surface/50"
+                    ? "bg-sage shadow-soft hover:bg-sage/90"
+                    : "bg-transparent hover:bg-surfaceAlt"
                 )}
               >
                 <tab.icon 
                   className={cn(
                     "w-5 h-5 transition-colors",
-                    isActive ? "text-primary" : "text-foreground-muted"
+                    isActive ? "text-ink" : "text-inkMuted"
                   )} 
                 />
               </Button>

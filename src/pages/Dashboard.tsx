@@ -13,7 +13,6 @@ import {
   Heart
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import AICompanion from "@/components/AICompanion";
 import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
 import { saveDhikrSession } from "@/services/db";
 import { useState, useEffect } from "react";
@@ -21,7 +20,6 @@ import { useState, useEffect } from "react";
 const Dashboard = () => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [dhikrCount, setDhikrCount] = useState(0);
-  const [showAI, setShowAI] = useState(false);
   const [timeView, setTimeView] = useState("today");
 
   useEffect(() => {
@@ -38,37 +36,27 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-bg pb-24">
       {/* Top Bar */}
       <TopBar
         avatarFallback="N"
         rightElement={
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={() => setShowAI(true)} 
-              size="icon" 
-              variant="ghost"
-              className="w-11 h-11"
-            >
-              <Sparkles className="w-5 h-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost"
-              className="w-11 h-11"
-            >
-              <Bell className="w-5 h-5" />
-            </Button>
-          </div>
+          <Button 
+            size="icon" 
+            variant="ghost"
+            className="w-11 h-11"
+          >
+            <Bell className="w-5 h-5" />
+          </Button>
         }
       />
 
       {/* Greeting Section */}
       <div className="px-5 pt-2 pb-6">
-        <h1 className="text-[28px] leading-[32px] font-semibold text-foreground mb-1">
+        <h1 className="text-[28px] leading-[32px] font-semibold text-ink mb-1">
           Assalamu Alaikum
         </h1>
-        <p className="text-[15px] leading-[22px] text-foreground-muted">
+        <p className="text-[15px] leading-[22px] text-inkMuted">
           Saturday, January 11, 2025
         </p>
       </div>
@@ -88,32 +76,32 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="px-5 space-y-5">
-        {/* Next Prayer Card */}
-        <Card className="relative overflow-hidden bg-accent border-none p-6">
+        {/* Next Prayer Card - Sage */}
+        <Card className="relative overflow-hidden bg-sage border-sage-deep/20 p-6">
           {prayerTimes ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-accent-foreground/70 text-[12px] leading-[18px] font-medium">Next Prayer</p>
-                  <h2 className="text-accent-foreground text-[28px] leading-[32px] font-semibold">{prayerTimes.next}</h2>
+                  <p className="text-ink/70 text-[12px] leading-[18px] font-medium">Next Prayer</p>
+                  <h2 className="text-ink text-[28px] leading-[32px] font-semibold">{prayerTimes.next}</h2>
                 </div>
-                <div className="w-16 h-16 rounded-card bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+                <div className="w-16 h-16 rounded-xl2 bg-white/60 backdrop-blur-sm flex items-center justify-center shadow-soft">
                   <span className="text-3xl">🕌</span>
                 </div>
               </div>
               
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-accent-foreground/10 rounded-pill overflow-hidden">
-                  <div className="h-full bg-primary rounded-pill transition-all duration-med ease-ios" style={{ width: '65%' }} />
+                <div className="flex-1 h-2 bg-ink/10 rounded-pill overflow-hidden">
+                  <div className="h-full bg-sage-deep rounded-pill transition-all duration-med ease-ios" style={{ width: '65%' }} />
                 </div>
-                <div className="flex items-center gap-1.5 text-accent-foreground/80 text-[12px] leading-[18px] font-medium">
+                <div className="flex items-center gap-1.5 text-ink/80 text-[12px] leading-[18px] font-medium">
                   <Clock className="w-4 h-4" />
                   <span>{prayerTimes.nextInMinutes}m</span>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-accent-foreground/60">Loading prayer times...</div>
+            <div className="text-ink/60">Loading prayer times...</div>
           )}
         </Card>
 
@@ -129,11 +117,11 @@ const Dashboard = () => {
             ].map((prayer) => (
               <Card 
                 key={prayer.name} 
-                className="p-3 text-center transition-all duration-fast ease-ios hover:shadow-elevation-2 active:scale-[0.98]"
+                className="p-3 text-center transition-all duration-nja ease-nja hover:shadow-soft active:scale-[0.98]"
               >
                 <div className="text-2xl mb-2">{prayer.icon}</div>
-                <p className="text-[12px] leading-[18px] text-foreground-muted mb-1">{prayer.name}</p>
-                <p className="text-[12px] leading-[18px] font-semibold text-foreground">{prayer.time}</p>
+                <p className="text-[12px] leading-[18px] text-inkMuted mb-1">{prayer.name}</p>
+                <p className="text-[12px] leading-[18px] font-semibold text-ink">{prayer.time}</p>
               </Card>
             ))}
           </div>
@@ -149,8 +137,8 @@ const Dashboard = () => {
               strokeWidth={5}
             />
             <div className="mt-2 text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-foreground">{dhikrCount}</p>
-              <p className="text-[12px] leading-[18px] text-foreground-muted">Dhikr</p>
+              <p className="text-[15px] leading-[22px] font-medium text-ink">{dhikrCount}</p>
+              <p className="text-[12px] leading-[18px] text-inkMuted">Dhikr</p>
             </div>
           </Card>
 
@@ -162,8 +150,8 @@ const Dashboard = () => {
               strokeWidth={5}
             />
             <div className="mt-2 text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-foreground">3/5</p>
-              <p className="text-[12px] leading-[18px] text-foreground-muted">Prayers</p>
+              <p className="text-[15px] leading-[22px] font-medium text-ink">3/5</p>
+              <p className="text-[12px] leading-[18px] text-inkMuted">Prayers</p>
             </div>
           </Card>
 
@@ -171,18 +159,18 @@ const Dashboard = () => {
           <Card className="p-4 flex flex-col items-center justify-center">
             <div className="text-3xl mb-2">🔥</div>
             <div className="text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-foreground">7</p>
-              <p className="text-[12px] leading-[18px] text-foreground-muted">Day streak</p>
+              <p className="text-[15px] leading-[22px] font-medium text-ink">7</p>
+              <p className="text-[12px] leading-[18px] text-inkMuted">Day streak</p>
             </div>
           </Card>
         </div>
 
-        {/* Dhikr Counter - Interactive */}
-        <Card className="p-6">
+        {/* Dhikr Counter - Interactive - Lavender */}
+        <Card className="p-6 bg-lavender border-lavender-deep/20">
           <div className="text-center space-y-4">
             <div className="space-y-1">
-              <h3 className="text-[22px] leading-[28px] font-semibold text-foreground">Dhikr Counter</h3>
-              <div className="flex items-center justify-center gap-2 text-[12px] leading-[18px] text-foreground-muted">
+              <h3 className="text-[22px] leading-[28px] font-semibold text-ink">Dhikr Counter</h3>
+              <div className="flex items-center justify-center gap-2 text-[12px] leading-[18px] text-ink/70">
                 <Sparkles className="w-4 h-4" />
                 <span>SubhanAllah × 33</span>
               </div>
@@ -196,14 +184,14 @@ const Dashboard = () => {
                 strokeWidth={12}
               />
               <div className="mt-4">
-                <span className="text-[48px] leading-[52px] font-bold text-foreground">{dhikrCount}</span>
+                <span className="text-[48px] leading-[52px] font-bold text-ink">{dhikrCount}</span>
               </div>
             </div>
 
             <div className="flex gap-3 justify-center">
               <Button 
                 onClick={() => setDhikrCount(prev => Math.min(prev + 1, 33))}
-                className="px-8"
+                className="px-8 bg-chip text-chip-text shadow-chip hover:scale-[1.01] active:scale-[0.99] transition-transform duration-nja"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Tap
@@ -214,6 +202,7 @@ const Dashboard = () => {
                   setDhikrCount(0);
                 }}
                 variant="outline"
+                className="border-ink/20"
               >
                 Reset
               </Button>
@@ -222,14 +211,14 @@ const Dashboard = () => {
         </Card>
 
         {/* Daily Reflection */}
-        <Card className="p-5 transition-all duration-fast ease-ios hover:shadow-elevation-2 active:scale-[0.98] cursor-pointer">
+        <Card className="p-5 transition-all duration-nja ease-nja hover:shadow-soft active:scale-[0.98] cursor-pointer">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-card bg-secondary/30 flex items-center justify-center shrink-0">
-              <Heart className="w-6 h-6 text-foreground" />
+            <div className="w-12 h-12 rounded-xl2 bg-sage/40 flex items-center justify-center shrink-0">
+              <Heart className="w-6 h-6 text-ink" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-[15px] leading-[22px] font-semibold text-foreground mb-1">Morning Reflection</h3>
-              <div className="flex items-center gap-2 text-[12px] leading-[18px] text-foreground-muted">
+              <h3 className="text-[15px] leading-[22px] font-semibold text-ink mb-1">Morning Reflection</h3>
+              <div className="flex items-center gap-2 text-[12px] leading-[18px] text-inkMuted">
                 <Clock className="w-3.5 h-3.5" />
                 <span>10:00 AM - 10:30 AM</span>
               </div>
@@ -247,8 +236,8 @@ const Dashboard = () => {
         {/* Community Card */}
         <Card className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[15px] leading-[22px] font-semibold text-foreground">Community</h3>
-            <Badge className="rounded-pill bg-primary/10 text-primary border-primary/20 text-[12px]">
+            <h3 className="text-[15px] leading-[22px] font-semibold text-ink">Community</h3>
+            <Badge className="rounded-pill bg-sage/30 text-ink border-sage-deep/20 text-[12px]">
               3 active
             </Badge>
           </div>
@@ -257,7 +246,7 @@ const Dashboard = () => {
               {[1, 2, 3].map((i) => (
                 <div 
                   key={i} 
-                  className="w-11 h-11 rounded-full border-2 border-surface bg-muted flex items-center justify-center text-[15px] font-medium text-foreground-muted"
+                  className="w-11 h-11 rounded-full border-2 border-surface bg-surfaceAlt flex items-center justify-center text-[15px] font-medium text-inkMuted"
                 >
                   {i}
                 </div>
@@ -265,7 +254,7 @@ const Dashboard = () => {
             </div>
             <Button 
               size="sm"
-              className="h-9 px-4"
+              className="h-9 px-4 bg-chip text-chip-text shadow-chip"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Invite
@@ -275,7 +264,6 @@ const Dashboard = () => {
       </main>
 
       <BottomNav />
-      {showAI && <AICompanion onClose={() => setShowAI(false)} />}
     </div>
   );
 };

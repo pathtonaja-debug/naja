@@ -131,88 +131,65 @@ const AICompanion = ({ onClose }: AICompanionProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl h-[600px] flex flex-col rounded-[2rem] border-border bg-card shadow-card">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">NAJA Assistant</h2>
-              <p className="text-sm text-muted-foreground">Your spiritual companion</p>
+    <div className="h-full flex flex-col bg-surface">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 && (
+          <div className="text-center text-inkMuted py-12">
+            <p>Assalamu Alaikum! How can I support your spiritual journey today?</p>
+          </div>
+        )}
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] rounded-xl2 px-4 py-3 ${
+                msg.role === 'user'
+                  ? 'bg-chip text-chip-text shadow-chip'
+                  : 'bg-sage text-ink'
+              }`}
+            >
+              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
             </div>
           </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-sage text-ink rounded-xl2 px-4 py-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t border-border">
+        <div className="flex gap-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            placeholder="Ask for guidance, reflection prompts, dua suggestions..."
+            className="min-h-[60px] max-h-[120px] resize-none bg-bg border-border text-ink"
+            disabled={loading}
+          />
           <Button
-            onClick={onClose}
-            size="icon"
-            variant="ghost"
-            className="rounded-full"
+            onClick={sendMessage}
+            disabled={!input.trim() || loading}
+            className="rounded-full bg-chip text-chip-text hover:bg-chip/90 h-[60px] w-[60px] shrink-0 shadow-chip"
           >
-            <X className="w-5 h-5" />
+            <Send className="w-5 h-5" />
           </Button>
         </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.length === 0 && (
-            <div className="text-center text-muted-foreground py-12">
-              <p>Assalamu Alaikum! How can I support your spiritual journey today?</p>
-            </div>
-          )}
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                  msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-secondary-foreground'
-                }`}
-              >
-                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-              </div>
-            </div>
-          ))}
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-secondary text-secondary-foreground rounded-2xl px-4 py-3">
-                <Loader2 className="w-5 h-5 animate-spin" />
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input */}
-        <div className="p-6 border-t border-border">
-          <div className="flex gap-2">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              placeholder="Ask for guidance, reflection prompts, dua suggestions..."
-              className="min-h-[60px] max-h-[120px] resize-none bg-background border-border text-foreground"
-              disabled={loading}
-            />
-            <Button
-              onClick={sendMessage}
-              disabled={!input.trim() || loading}
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground h-[60px] w-[60px] shrink-0"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,54 @@
+/* NAJA Design System Tokens - Sage/Lavender/Charcoal Palette */
+
+:root {
+  /* Neutrals */
+  --bg: #F6F7F6;            /* app background (off-white) */
+  --surface: #FFFFFF;       /* cards/surfaces */
+  --surface-alt: #F0F1F3;   /* subtle blocks/chips */
+  --border: #E6E7EA;
+  --text: #121314;          /* primary ink */
+  --text-muted: #6C6F73;
+
+  /* Accents (reference look) */
+  --accent-sage: #D7E6A6;   /* pastel sage/olive (large task cards) */
+  --accent-sage-deep: #C7D67E; /* outlines/active */
+  --accent-lavender: #BEB5F0;  /* pastel lavender (secondary cards) */
+  --accent-lavender-deep: #A79CE5;
+
+  /* Charcoal "chip" / CTA style */
+  --chip: #1A1B1E;          /* deep charcoal pill */
+  --chip-text: #F4F5F7;
+
+  /* States */
+  --success: #60C28A;
+  --warning: #F2C94C;
+  --info: #6EA8FE;
+
+  /* Effects */
+  --shadow-soft: 0 8px 24px rgba(16,18,20,.06);
+  --shadow-chip: 0 6px 14px rgba(10,10,12,.18);
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --anim: cubic-bezier(.2,.7,.2,1) 160ms;
+}
+
+/* Dark mode */
+.dark {
+  --bg: #0F1113;
+  --surface: #15171A;
+  --surface-alt: #1B1E22;
+  --border: #2B2F34;
+  --text: #F2F3F5;
+  --text-muted: #A6AAB0;
+
+  --chip: #E9ECEF;
+  --chip-text: #111214;
+
+  /* keep pastels readable on dark by deepening */
+  --accent-sage: #C9DA83;
+  --accent-sage-deep: #B9CB6C;
+  --accent-lavender: #ACA2EA;
+  --accent-lavender-deep: #958BDE;
+  --shadow-soft: 0 10px 28px rgba(0,0,0,.45);
+  --shadow-chip: 0 8px 20px rgba(0,0,0,.5);
+}

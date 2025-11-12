@@ -19,20 +19,20 @@ const SegmentedControl = React.forwardRef<HTMLDivElement, SegmentedControlProps>
         )}
       >
         {options.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => onValueChange(option.value)}
-            className={cn(
-              "px-4 py-2 rounded-pill text-[15px] leading-[22px] font-medium",
-              "transition-all duration-fast ease-ios",
-              "min-w-[44px] min-h-[44px] flex items-center justify-center",
-              value === option.value
-                ? "bg-surface shadow-elevation-1 text-foreground"
-                : "text-foreground-muted hover:text-foreground"
-            )}
-          >
-            {option.label}
-          </button>
+    <button
+      key={option.value}
+      onClick={() => onValueChange(option.value)}
+      className={cn(
+        "px-4 py-2 rounded-pill text-[15px] leading-[22px] font-medium",
+        "transition-all duration-nja ease-nja",
+        "min-w-[44px] min-h-[44px] flex items-center justify-center",
+        value === option.value
+          ? "bg-surface shadow-soft text-ink"
+          : "text-inkMuted hover:text-ink"
+      )}
+    >
+      {option.label}
+    </button>
         ))}
       </div>
     );

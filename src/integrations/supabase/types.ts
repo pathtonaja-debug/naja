@@ -16,42 +16,57 @@ export type Database = {
     Tables: {
       companion_profiles: {
         Row: {
+          appearance: Json | null
           behavior_settings: Json | null
           created_at: string | null
           device_id: string | null
           eye_color: string | null
+          full_body_url: string | null
           hair_color: string | null
           id: string
           name: string | null
           outfit: string | null
+          portrait_crop: Json | null
+          portrait_url: string | null
+          selected_variant_id: number | null
           skin_tone: string | null
           updated_at: string | null
           user_id: string | null
           voice_tone: string | null
         }
         Insert: {
+          appearance?: Json | null
           behavior_settings?: Json | null
           created_at?: string | null
           device_id?: string | null
           eye_color?: string | null
+          full_body_url?: string | null
           hair_color?: string | null
           id?: string
           name?: string | null
           outfit?: string | null
+          portrait_crop?: Json | null
+          portrait_url?: string | null
+          selected_variant_id?: number | null
           skin_tone?: string | null
           updated_at?: string | null
           user_id?: string | null
           voice_tone?: string | null
         }
         Update: {
+          appearance?: Json | null
           behavior_settings?: Json | null
           created_at?: string | null
           device_id?: string | null
           eye_color?: string | null
+          full_body_url?: string | null
           hair_color?: string | null
           id?: string
           name?: string | null
           outfit?: string | null
+          portrait_crop?: Json | null
+          portrait_url?: string | null
+          selected_variant_id?: number | null
           skin_tone?: string | null
           updated_at?: string | null
           user_id?: string | null
