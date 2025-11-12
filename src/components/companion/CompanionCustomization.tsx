@@ -63,7 +63,19 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
     }
 
     setIsGenerating(true);
+    console.log('Starting avatar generation with params:', {
+      gender: profile.gender,
+      skinTone: profile.skinTone,
+      hijab: profile.hijab,
+      beard: profile.beard,
+      outfit: profile.outfit,
+    });
+
     try {
+      // Create AbortController with 90 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
+
       const response = await supabase.functions.invoke('generate-avatar', {
         body: {
           gender: profile.gender,
@@ -74,29 +86,54 @@ export default function CompanionCustomization({ onComplete }: CompanionCustomiz
         },
       });
 
-      if (response.error) throw response.error;
+      clearTimeout(timeoutId);
 
-      if (response.data?.variations) {
+      console.log('Avatar generation response:', response);
+
+      if (response.error) {
+        console.error('Response error:', response.error);
+        throw response.error;
+      }
+
+      if (!response.data) {
+        console.error('No data in response:', response);
+        throw new Error('No data returned from avatar generation');
+      }
+
+      if (response.data?.variations && response.data.variations.length > 0) {
+        console.log('Generated variants:', response.data.variations.length);
         setGeneratedVariants(response.data.variations);
         setGenerationCount(prev => prev + 1);
         setLastGenerationTime(now);
+        setSelectedVariantId(response.data.variations[0].id); // Auto-select first variant
         toast({
           title: "Avatars Generated",
           description: "Select your favorite variant below.",
         });
+      } else {
+        console.error('No variations in response:', response.data);
+        throw new Error('No variations generated');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Avatar generation error:", error);
+      const errorMessage = error?.message || 'Unknown error';
+      console.error('Error details:', errorMessage);
+      
       toast({
         title: "Generation Failed",
-        description: "Using default presets. You can regenerate later.",
+        description: errorMessage.includes('aborted') 
+          ? "Generation timed out. Using default presets."
+          : "Using default presets. You can regenerate later.",
         variant: "destructive",
       });
+      
       // Fallback to preset images
-      setGeneratedVariants(avatarPresets.map((p, i) => ({
+      const fallbackVariants = avatarPresets.map((p, i) => ({
         id: i + 1,
         imageData: p.image,
-      })));
+      }));
+      setGeneratedVariants(fallbackVariants);
+      setSelectedVariantId(fallbackVariants[0].id);
     } finally {
       setIsGenerating(false);
     }
