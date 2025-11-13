@@ -54,10 +54,9 @@ serve(async (req) => {
     });
 
     if (!resp.ok) {
-      const err = await resp.text();
-      console.error("OpenAI API error:", err);
+      console.error("[transcribe-audio] OpenAI API error:", resp.status);
       return new Response(
-        JSON.stringify({ error: "OpenAI error", detail: err }),
+        JSON.stringify({ error: "Transcription service error. Please try again." }),
         { status: 502, headers: { ...CORS, "Content-Type": "application/json" } }
       );
     }
@@ -68,10 +67,13 @@ serve(async (req) => {
       headers: { ...CORS, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("Server error:", e);
-    return new Response(JSON.stringify({ error: "Server crash", detail: String(e) }), {
-      status: 500,
-      headers: { ...CORS, "Content-Type": "application/json" },
-    });
+    console.error("[transcribe-audio] Error:", e);
+    return new Response(
+      JSON.stringify({ error: "Transcription failed. Please try again." }), 
+      {
+        status: 500,
+        headers: { ...CORS, "Content-Type": "application/json" },
+      }
+    );
   }
 });

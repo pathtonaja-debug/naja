@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { validateAvatarRequest } from "./validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +13,21 @@ serve(async (req) => {
   }
 
   try {
-    const { gender, skinTone, hijab, beard, outfit } = await req.json();
+    const body = await req.json();
+    
+    // Validate input
+    const validation = validateAvatarRequest(body);
+    if (!validation.isValid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }), 
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const { gender, skinTone, hijab, beard, outfit } = validation.validated!;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -111,11 +126,13 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("generate-avatar error:", error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("[generate-avatar] Error:", error);
+    return new Response(
+      JSON.stringify({ error: "Avatar generation failed. Please try again." }), 
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 });

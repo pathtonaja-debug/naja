@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getDeviceId } from "@/lib/deviceId";
+import { 
+  reflectionSchema, 
+  habitSchema, 
+  duaSchema, 
+  dhikrSessionSchema,
+  companionProfileSchema 
+} from "@/lib/validation";
 
 // Reflections
 export async function addReflection(entry: { 
@@ -10,18 +17,15 @@ export async function addReflection(entry: {
   photo_url?: string;
   voice_note_url?: string;
 }) {
+  // Validate input
+  const validated = reflectionSchema.parse(entry);
   const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('reflections')
     .insert({
       device_id: deviceId,
-      date: entry.date,
-      text: entry.text,
-      prompt: entry.prompt,
-      mood: entry.mood,
-      photo_url: entry.photo_url,
-      voice_note_url: entry.voice_note_url,
+      ...validated,
     })
     .select()
     .single();
@@ -163,15 +167,15 @@ export async function listDuas() {
 }
 
 export async function saveDua(dua: { title: string; category: string; content: any }) {
+  // Validate input
+  const validated = duaSchema.parse(dua);
   const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('duas')
     .insert({
       device_id: deviceId,
-      title: dua.title,
-      category: dua.category,
-      content: dua.content,
+      ...validated,
     })
     .select()
     .single();
@@ -182,15 +186,15 @@ export async function saveDua(dua: { title: string; category: string; content: a
 
 // Dhikr sessions
 export async function saveDhikrSession(phrase: string, count: number, target?: number) {
+  // Validate input
+  const validated = dhikrSessionSchema.parse({ phrase, count, target });
   const deviceId = getDeviceId();
   
   const { data, error } = await supabase
     .from('dhikr_sessions')
     .insert({
       device_id: deviceId,
-      phrase,
-      count,
-      target,
+      ...validated,
       date: new Date().toISOString().split('T')[0],
     })
     .select()
