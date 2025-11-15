@@ -1,54 +1,58 @@
-/* NAJA Design System Tokens - Sage/Lavender/Charcoal Palette */
+/* iOS-Inspired Design System */
 
 :root {
-  /* Neutrals */
-  --bg: #F6F7F6;            /* app background (off-white) */
-  --surface: #FFFFFF;       /* cards/surfaces */
-  --surface-alt: #F0F1F3;   /* subtle blocks/chips */
-  --border: #E6E7EA;
-  --text: #121314;          /* primary ink */
-  --text-muted: #6C6F73;
-
-  /* Accents (reference look) */
-  --accent-sage: #D7E6A6;   /* pastel sage/olive (large task cards) */
-  --accent-sage-deep: #C7D67E; /* outlines/active */
-  --accent-lavender: #BEB5F0;  /* pastel lavender (secondary cards) */
-  --accent-lavender-deep: #A79CE5;
-
-  /* Charcoal "chip" / CTA style */
-  --chip: #1A1B1E;          /* deep charcoal pill */
-  --chip-text: #F4F5F7;
-
+  /* Neutrals (exact HEX from spec) */
+  --ink-900: #1C1C1E;       /* iOS charcoal for titles */
+  --ink-700: #3A3A3C;       /* body text */
+  --ink-400: #8E8E93;       /* secondary text */
+  --panel: #F7F7F4;         /* card/background surfaces */
+  --canvas: #FFFEFB;        /* app background / off-white */
+  --stroke: #E8E8E3;        /* hairline borders/dividers */
+  
+  /* Pastel accents */
+  --pink: #F6C7DA;          /* primary brand / FAB / selection */
+  --lilac: #D7CCF1;         /* cards/chips */
+  --olive: #CFE19A;         /* chips/cards */
+  --butter: #F2E6A6;        /* cards/highlight */
+  --sky: #D6E6F8;           /* calendar/highlight */
+  --black-pill: #0E0E10;    /* primary pill buttons */
+  --white: #FFFFFF;
+  
   /* States */
-  --success: #60C28A;
-  --warning: #F2C94C;
-  --info: #6EA8FE;
-
-  /* Effects */
-  --shadow-soft: 0 8px 24px rgba(16,18,20,.06);
-  --shadow-chip: 0 6px 14px rgba(10,10,12,.18);
-  --radius-lg: 20px;
+  --success: #46C37B;
+  --warning: #FFCF5C;
+  --danger: #FF7A7A;
+  
+  /* Radii */
+  --radius-card: 24px;
+  --radius-chip: 14px;
+  --radius-input: 16px;
   --radius-pill: 999px;
+  
+  /* Shadows (iOS-like) */
+  --shadow-card: 0 8px 24px rgba(28,28,30,0.08);
+  --shadow-fab: 0 12px 32px rgba(28,28,30,0.14);
+  
+  /* Animation */
   --anim: cubic-bezier(.2,.7,.2,1) 160ms;
 }
 
 /* Dark mode */
 .dark {
-  --bg: #0F1113;
-  --surface: #15171A;
-  --surface-alt: #1B1E22;
-  --border: #2B2F34;
-  --text: #F2F3F5;
-  --text-muted: #A6AAB0;
-
-  --chip: #E9ECEF;
-  --chip-text: #111214;
-
-  /* keep pastels readable on dark by deepening */
-  --accent-sage: #C9DA83;
-  --accent-sage-deep: #B9CB6C;
-  --accent-lavender: #ACA2EA;
-  --accent-lavender-deep: #958BDE;
-  --shadow-soft: 0 10px 28px rgba(0,0,0,.45);
-  --shadow-chip: 0 8px 20px rgba(0,0,0,.5);
+  --ink-900: #F2F3F5;
+  --ink-700: #C7C7CC;
+  --ink-400: #8E8E93;
+  --panel: #1C1C1E;
+  --canvas: #0E0E10;
+  --stroke: #38383A;
+  
+  --pink: #E85C8F;
+  --lilac: #B8A8E8;
+  --olive: #B5D16A;
+  --butter: #E6D385;
+  --sky: #A8C8ED;
+  --black-pill: #F7F7F4;
+  
+  --shadow-card: 0 10px 28px rgba(0,0,0,.45);
+  --shadow-fab: 0 14px 36px rgba(0,0,0,.55);
 }

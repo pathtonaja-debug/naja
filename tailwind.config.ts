@@ -14,26 +14,26 @@ export default {
     },
     extend: {
       colors: {
-        // New design system tokens
-        bg: "var(--bg)",
-        surface: "var(--surface)",
-        surfaceAlt: "var(--surface-alt)",
-        ink: "var(--text)",
-        inkMuted: "var(--text-muted)",
-        sage: {
-          DEFAULT: "var(--accent-sage)",
-          deep: "var(--accent-sage-deep)",
+        // iOS Design System - Direct tokens
+        canvas: "var(--canvas)",
+        panel: "var(--panel)",
+        ink: {
+          DEFAULT: "var(--ink-900)",
+          900: "var(--ink-900)",
+          700: "var(--ink-700)",
+          400: "var(--ink-400)",
         },
-        lavender: {
-          DEFAULT: "var(--accent-lavender)",
-          deep: "var(--accent-lavender-deep)",
-        },
-        chip: {
-          DEFAULT: "var(--chip)",
-          text: "var(--chip-text)",
-        },
+        stroke: "var(--stroke)",
         
-        // Legacy tokens for compatibility
+        // Pastel accents
+        pink: "var(--pink)",
+        lilac: "var(--lilac)",
+        olive: "var(--olive)",
+        butter: "var(--butter)",
+        sky: "var(--sky)",
+        "black-pill": "var(--black-pill)",
+        
+        // Shadcn-compatible tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -78,24 +78,19 @@ export default {
           DEFAULT: "hsl(var(--warn))",
           foreground: "hsl(var(--warn-foreground))",
         },
-        glass: {
-          DEFAULT: "hsl(var(--glass-bg))",
-          border: "hsl(var(--glass-border))",
-        },
       },
       borderRadius: {
-        xl2: "var(--radius-lg)",
         card: "var(--radius-card)",
+        chip: "var(--radius-chip)",
+        input: "var(--radius-input)",
         pill: "var(--radius-pill)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        soft: "var(--shadow-soft)",
-        chip: "var(--shadow-chip)",
-        "elevation-1": "var(--elevation-1)",
-        "elevation-2": "var(--elevation-2)",
+        card: "var(--shadow-card)",
+        fab: "var(--shadow-fab)",
       },
       fontFamily: {
         sans: [
