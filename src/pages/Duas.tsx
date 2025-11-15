@@ -118,7 +118,7 @@ const Duas = () => {
           </div>
           <Button
             onClick={() => setShowBuilder(true)}
-            className="rounded-full bg-primary hover:bg-primary/90 h-12 px-6"
+            className="rounded-full bg-primary hover:bg-primary/90 h-12 px-6 whitespace-nowrap shrink-0"
           >
             <Plus className="w-5 h-5 mr-2" />
             New Dua
