@@ -6,110 +6,140 @@
 
 @layer base {
   :root {
-    /* iOS-Inspired Design System - HSL values */
-    /* Base surfaces */
-    --background: 45 100% 99%;        /* #FFFEFB - canvas */
-    --surface: 60 17% 96%;            /* #F7F7F4 - panel */
-    --foreground: 240 4% 11%;         /* #1C1C1E - ink-900 */
-    --foreground-muted: 240 2% 57%;   /* #8E8E93 - ink-400 */
+    /* ============================================ */
+    /* LIQUID GLASS DESIGN SYSTEM - iOS 26 (2025) */
+    /* ============================================ */
     
-    /* Cards & Popovers */
-    --card: 60 17% 96%;
-    --card-foreground: 240 4% 11%;
-    --popover: 60 17% 96%;
-    --popover-foreground: 240 4% 11%;
+    /* Base Canvas & Surfaces */
+    --background: 0 0% 98%;              /* #FAFAFA - ultra light canvas */
+    --surface: 0 0% 100%;                /* #FFFFFF - pure white surface */
+    --foreground: 220 9% 12%;            /* #1D1F24 - deep ink */
+    --foreground-muted: 220 5% 60%;      /* #94969C - medium gray */
     
-    /* Accents - pastel palette */
-    --primary: 73 56% 75%;            /* #CFE19A - olive */
-    --primary-foreground: 240 4% 11%;
+    /* Cards & Popovers - Liquid Glass */
+    --card: 0 0% 100%;
+    --card-foreground: 220 9% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 9% 12%;
     
-    --secondary: 260 58% 87%;         /* #D7CCF1 - lilac */
-    --secondary-foreground: 240 4% 11%;
+    /* Primary Accent - Soft Purple/Pink Glow */
+    --primary: 280 60% 70%;              /* #C084FC - soft purple */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 280 80% 85%;         /* lighter for glow effects */
     
-    --accent: 240 7% 6%;              /* #0E0E10 - black-pill */
+    /* Secondary Accent - Soft Sky Blue */
+    --secondary: 210 70% 75%;            /* #82BFFF - soft blue */
+    --secondary-foreground: 220 9% 12%;
+    
+    /* Muted & Subtle */
+    --muted: 220 5% 96%;                 /* #F5F5F6 - barely there */
+    --muted-foreground: 220 5% 45%;      /* #6E7077 */
+    
+    /* Accent - Dark Mode Compatible */
+    --accent: 220 9% 12%;
     --accent-foreground: 0 0% 100%;
     
-    --muted: 50 72% 80%;              /* #F2E6A6 - butter */
-    --muted-foreground: 240 2% 23%;   /* #3A3A3C - ink-700 */
-    
-    /* Additional pastels */
-    --pink: 336 75% 87%;              /* #F6C7DA */
-    --sky: 213 70% 90%;               /* #D6E6F8 */
-    
-    /* States */
-    --destructive: 0 70% 55%;
+    /* Status Colors */
+    --destructive: 0 75% 60%;
     --destructive-foreground: 0 0% 100%;
-    --success: 73 56% 75%;
-    --success-foreground: 240 4% 11%;
-    --warn: 50 72% 80%;
-    --warn-foreground: 240 4% 11%;
+    --success: 145 65% 55%;
+    --success-foreground: 0 0% 100%;
+    --warn: 40 90% 60%;
+    --warn-foreground: 220 9% 12%;
     
-    /* Borders & Inputs */
-    --border: 60 11% 90%;             /* #E8E8E3 - stroke */
-    --input: 60 11% 90%;
-    --ring: 73 56% 75%;
+    /* Borders - Subtle */
+    --border: 220 5% 90%;                /* #E3E4E6 - light stroke */
+    --input: 220 5% 92%;
+    --ring: 280 60% 70%;
     
-    /* Glass effects - frosted translucent */
-    --glass-bg: 0 0% 100% / 0.25;
-    --glass-border: 0 0% 100% / 0.15;
-    --glass-shadow: 0 12px 40px rgba(28, 28, 30, 0.1);
+    /* ============================================ */
+    /* LIQUID GLASS MATERIALS */
+    /* ============================================ */
     
-    /* Elevation shadows - softer */
-    --elevation-1: 0 4px 20px rgba(28, 28, 30, 0.06);
-    --elevation-2: 0 8px 32px rgba(28, 28, 30, 0.08);
-    --elevation-3: 0 16px 48px rgba(28, 28, 30, 0.12);
+    /* Glass Background - Translucent with blur */
+    --liquid-glass-bg: 0 0% 100% / 0.3;
+    --liquid-glass-border: 0 0% 100% / 0.18;
     
-    /* Radii - higher for modern look */
-    --radius: 1.5rem;
-    --radius-card: 1.75rem;
-    --radius-xl: 2rem;
-    --radius-pill: 9999px;
+    /* Glass Highlight - Top edge shimmer */
+    --liquid-glass-highlight-start: 0 0% 100% / 0.35;
+    --liquid-glass-highlight-end: 0 0% 100% / 0.05;
     
-    /* Compact spacing */
-    --spacing-section: 1rem;
-    --spacing-content: 0.75rem;
+    /* Glass Inner Glow - Subtle depth */
+    --liquid-glass-glow: 0 0% 100% / 0.08;
     
-    /* Motion */
-    --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
-    --duration-fast: 140ms;
-    --duration-medium: 220ms;
+    /* Glass Shadow - Soft, diffused elevation */
+    --liquid-glass-shadow: 0 20px 60px -15px rgba(29, 31, 36, 0.15);
     
-    /* Soft gradients - pastel blends */
-    --gradient-pink-butter: linear-gradient(135deg, hsl(336 75% 87%) 0%, hsl(50 72% 80%) 100%);
-    --gradient-lilac-sky: linear-gradient(135deg, hsl(260 58% 87%) 0%, hsl(213 70% 90%) 100%);
-    --gradient-olive-butter: linear-gradient(135deg, hsl(73 56% 75%) 0%, hsl(50 72% 80%) 100%);
-    --gradient-pink-lilac: linear-gradient(135deg, hsl(336 75% 87%) 0%, hsl(260 58% 87%) 100%);
-    --gradient-sky-pink: linear-gradient(135deg, hsl(213 70% 90%) 0%, hsl(336 75% 87%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(60 17% 96% / 0.6) 0%, hsl(45 100% 99% / 0.4) 100%);
+    /* Elevation Shadows - Extremely soft */
+    --elevation-1: 0 4px 24px -4px rgba(29, 31, 36, 0.06);
+    --elevation-2: 0 12px 40px -8px rgba(29, 31, 36, 0.08);
+    --elevation-3: 0 20px 60px -12px rgba(29, 31, 36, 0.12);
+    
+    /* ============================================ */
+    /* RADII - Apple 2025 Style */
+    /* ============================================ */
+    --radius: 1.375rem;                  /* 22px - default */
+    --radius-card: 1.875rem;             /* 30px - cards */
+    --radius-button: 1.75rem;            /* 28px - buttons */
+    --radius-xl: 2.5rem;                 /* 40px - large */
+    --radius-pill: 9999px;               /* full round */
+    
+    /* ============================================ */
+    /* MOTION - Spring Physics */
+    /* ============================================ */
+    --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --easing-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --duration-fast: 150ms;
+    --duration-medium: 250ms;
+    --duration-slow: 400ms;
+    
+    /* ============================================ */
+    /* SPACING - Compact & Breathable */
+    /* ============================================ */
+    --spacing-section: 0.875rem;         /* 14px */
+    --spacing-content: 0.625rem;         /* 10px */
+    --spacing-card-padding: 1.25rem;     /* 20px */
+    
+    /* ============================================ */
+    /* GRADIENTS - Soft, Atmospheric */
+    /* ============================================ */
+    --gradient-primary: linear-gradient(135deg, hsl(280 60% 70%) 0%, hsl(280 80% 85%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(210 70% 75%) 0%, hsl(210 80% 85%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100% / 0.6) 0%, hsl(0 0% 98% / 0.3) 100%);
+    --gradient-glass-shimmer: linear-gradient(135deg, hsla(0, 0%, 100%, 0.35) 0%, hsla(0, 0%, 100%, 0.05) 100%);
   }
 
   .dark {
-    --background: 240 7% 6%;          /* #0E0E10 */
-    --surface: 240 4% 11%;            /* #1C1C1E */
-    --foreground: 0 0% 100%;          /* #FFFFFF */
-    --foreground-muted: 240 2% 57%;   /* #8E8E93 */
+    /* Dark Mode - Liquid Glass on Dark Canvas */
+    --background: 220 12% 8%;            /* #13151A - deep dark */
+    --surface: 220 10% 12%;              /* #1D1F24 - card surface */
+    --foreground: 0 0% 98%;              /* #FAFAFA - near white */
+    --foreground-muted: 220 5% 65%;      /* #A1A3A8 */
     
-    --card: 240 4% 11%;
-    --card-foreground: 0 0% 100%;
-    --popover: 240 4% 11%;
-    --popover-foreground: 0 0% 100%;
+    --card: 220 10% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 10% 12%;
+    --popover-foreground: 0 0% 98%;
     
-    --border: 240 2% 23%;             /* #3A3A3C */
+    --border: 220 8% 20%;                /* #2D3036 */
     
-    --glass-bg: 240 4% 11% / 0.25;
-    --glass-border: 0 0% 100% / 0.08;
-    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    /* Dark Glass Materials */
+    --liquid-glass-bg: 220 10% 12% / 0.35;
+    --liquid-glass-border: 0 0% 100% / 0.1;
+    --liquid-glass-highlight-start: 0 0% 100% / 0.18;
+    --liquid-glass-highlight-end: 0 0% 100% / 0.03;
+    --liquid-glass-glow: 0 0% 100% / 0.06;
+    --liquid-glass-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.6);
     
-    --elevation-1: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --elevation-2: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --elevation-3: 0 16px 48px rgba(0, 0, 0, 0.65);
+    --elevation-1: 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+    --elevation-2: 0 12px 40px -8px rgba(0, 0, 0, 0.5);
+    --elevation-3: 0 20px 60px -12px rgba(0, 0, 0, 0.65);
     
-    --gradient-pink-butter: linear-gradient(135deg, hsl(336 75% 77% / 0.8) 0%, hsl(50 72% 70% / 0.8) 100%);
-    --gradient-lilac-sky: linear-gradient(135deg, hsl(260 58% 77% / 0.8) 0%, hsl(213 70% 80% / 0.8) 100%);
-    --gradient-olive-butter: linear-gradient(135deg, hsl(73 56% 65% / 0.8) 0%, hsl(50 72% 70% / 0.8) 100%);
-    --gradient-pink-lilac: linear-gradient(135deg, hsl(336 75% 77% / 0.8) 0%, hsl(260 58% 77% / 0.8) 100%);
-    --gradient-sky-pink: linear-gradient(135deg, hsl(213 70% 80% / 0.8) 0%, hsl(336 75% 77% / 0.8) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(240 4% 11% / 0.6) 0%, hsl(240 7% 6% / 0.4) 100%);
+    /* Dark Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(280 60% 60% / 0.9) 0%, hsl(280 70% 70% / 0.9) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(210 60% 65% / 0.9) 0%, hsl(210 70% 75% / 0.9) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(220 10% 12% / 0.6) 0%, hsl(220 12% 8% / 0.3) 100%);
+    --gradient-glass-shimmer: linear-gradient(135deg, hsla(0, 0%, 100%, 0.15) 0%, hsla(0, 0%, 100%, 0.02) 100%);
   }
 }
 
@@ -120,7 +150,55 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: ui-sans-serif, -apple-system, "SF Pro Display", "Inter", system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    font-feature-settings: 'ss01' 1, 'ss02' 1, 'cv01' 1, 'cv03' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Typography Scale - iOS 2025 */
+  .text-display {
+    @apply text-5xl font-bold tracking-tight;
+  }
+  
+  .text-large-title {
+    @apply text-4xl font-semibold tracking-tight;
+  }
+  
+  .text-title-1 {
+    @apply text-3xl font-semibold;
+  }
+  
+  .text-title-2 {
+    @apply text-2xl font-medium;
+  }
+  
+  .text-title-3 {
+    @apply text-xl font-medium;
+  }
+  
+  .text-headline {
+    @apply text-lg font-semibold;
+  }
+  
+  .text-body {
+    @apply text-base font-normal;
+  }
+  
+  .text-subheadline {
+    @apply text-sm font-medium;
+  }
+  
+  .text-footnote {
+    @apply text-xs font-normal;
+  }
+  
+  .text-caption-1 {
+    @apply text-xs font-normal;
+  }
+  
+  .text-caption-2 {
+    @apply text-[11px] font-normal;
   }
 
   /* Hide scrollbar but keep functionality */
@@ -131,5 +209,105 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* ============================================ */
+  /* LIQUID GLASS UTILITY CLASSES */
+  /* ============================================ */
+  
+  /* Main Liquid Glass Surface */
+  .liquid-glass {
+    @apply backdrop-blur-[40px] bg-[hsl(var(--liquid-glass-bg))] border border-[hsl(var(--liquid-glass-border))];
+    box-shadow: 
+      0 0 0 1px hsl(var(--liquid-glass-highlight-start)) inset,
+      0 20px 60px -15px rgba(29, 31, 36, 0.15);
+    position: relative;
+  }
+  
+  /* Glass Highlight (top shimmer) */
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--liquid-glass-highlight-start)) 0%,
+      hsl(var(--liquid-glass-highlight-end)) 100%
+    );
+    border-radius: inherit;
+  }
+  
+  /* Glass Inner Glow */
+  .liquid-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      hsl(var(--liquid-glass-glow)),
+      transparent 70%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  
+  /* Liquid Glass Variants */
+  .liquid-glass-light {
+    @apply liquid-glass;
+    background: hsl(0 0% 100% / 0.35);
+  }
+  
+  .liquid-glass-medium {
+    @apply liquid-glass;
+    background: hsl(0 0% 100% / 0.25);
+  }
+  
+  .liquid-glass-heavy {
+    @apply liquid-glass;
+    background: hsl(0 0% 100% / 0.45);
+  }
+  
+  /* Card Hover Effect - Gentle Scale */
+  .card-interactive {
+    @apply transition-transform duration-[var(--duration-medium)] ease-[var(--easing-smooth)];
+  }
+  
+  .card-interactive:active {
+    @apply scale-[1.02];
+  }
+  
+  /* Floating Action Button */
+  .fab {
+    @apply liquid-glass rounded-full shadow-elevation-3;
+    @apply transition-all duration-[var(--duration-medium)] ease-[var(--easing-spring)];
+  }
+  
+  .fab:active {
+    @apply scale-95;
+  }
+  
+  /* Primary Glow Ring */
+  .glow-ring {
+    box-shadow: 
+      0 0 0 4px hsl(var(--primary-glow) / 0.3),
+      0 0 0 8px hsl(var(--primary-glow) / 0.15);
+  }
+  
+  /* Compact Section Spacing */
+  .section-spacing {
+    @apply mb-[var(--spacing-section)];
+  }
+  
+  .content-spacing {
+    @apply space-y-[var(--spacing-content)];
   }
 }
