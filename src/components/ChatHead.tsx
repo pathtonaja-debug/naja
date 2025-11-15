@@ -77,7 +77,7 @@ const ChatHead = () => {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent 
           side="right" 
-          className="w-full sm:w-[420px] md:w-[480px] p-0 bg-surface/95 backdrop-blur-xl border-l border-border"
+          className="w-full sm:w-[420px] md:w-[480px] p-0 bg-background border-l border-border"
         >
           <SheetHeader className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
