@@ -134,8 +134,7 @@ const AICompanion = ({ onClose, isOpen = true }: AICompanionProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-surface">
-      {/* Messages */}
+    <div className="h-full flex flex-col bg-background">{/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-inkMuted py-12">
