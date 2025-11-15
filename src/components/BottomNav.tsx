@@ -18,8 +18,8 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 w-full max-w-2xl z-50 pointer-events-none">
-      <div className="backdrop-blur-2xl bg-white/25 border border-white/15 rounded-pill shadow-elevation-2 px-3 py-2 pointer-events-auto">
-        <div className="flex justify-around items-center gap-2">
+      <div className="liquid-glass rounded-pill px-4 py-2.5 pointer-events-auto">
+        <div className="flex justify-around items-center gap-1">
           {tabs.map((tab) => {
             const isActive = location.pathname === tab.path;
             return (
@@ -29,18 +29,15 @@ const BottomNav = () => {
                 variant="ghost"
                 onClick={() => navigate(tab.path)}
                 className={cn(
-                  "w-12 h-12 rounded-full transition-all duration-[220ms] ease-[cubic-bezier(0.2,0.8,0.2,1)]",
+                  "w-11 h-11 rounded-full transition-all",
+                  "duration-[var(--duration-medium)] ease-[var(--easing-smooth)]",
                   isActive
-                    ? "bg-pink shadow-elevation-2 hover:bg-pink/90"
-                    : "bg-transparent hover:bg-white/20"
+                    ? "bg-primary text-primary-foreground glow-ring"
+                    : "bg-transparent text-foreground/60 hover:bg-muted/50 hover:text-foreground"
                 )}
+                aria-label={tab.label}
               >
-                <tab.icon 
-                  className={cn(
-                    "w-5 h-5 transition-colors",
-                    isActive ? "text-foreground" : "text-foreground/60"
-                  )} 
-                />
+                <tab.icon className="w-5 h-5" />
               </Button>
             );
           })}

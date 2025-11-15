@@ -14,29 +14,7 @@ export default {
     },
     extend: {
       colors: {
-        // iOS-inspired design system tokens
-        canvas: "var(--canvas)",
-        panel: "var(--panel)",
-        stroke: "var(--stroke)",
-        ink: {
-          900: "var(--ink-900)",
-          700: "var(--ink-700)",
-          400: "var(--ink-400)",
-        },
-        
-        // Pastel accents
-        pink: "hsl(var(--pink))",
-        lilac: "hsl(var(--lilac))",
-        olive: "hsl(var(--olive))",
-        butter: "hsl(var(--butter))",
-        sky: "hsl(var(--sky))",
-        blackPill: "var(--black-pill)",
-        
-        // Legacy compatibility
-        bg: "var(--bg)",
-        surface: "var(--surface)",
-        
-        // Shadcn tokens
+        // Liquid Glass Design System - iOS 26 (2025)
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -48,6 +26,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -81,50 +60,47 @@ export default {
           DEFAULT: "hsl(var(--warn))",
           foreground: "hsl(var(--warn-foreground))",
         },
-        glass: {
-          DEFAULT: "hsl(var(--glass-bg))",
-          border: "hsl(var(--glass-border))",
+        'liquid-glass': {
+          DEFAULT: "hsl(var(--liquid-glass-bg))",
+          border: "hsl(var(--liquid-glass-border))",
+          glow: "hsl(var(--liquid-glass-glow))",
         },
       },
       borderRadius: {
-        xl2: "2rem",
-        xl3: "2.5rem",
-        card: "var(--radius-card)",
-        pill: "var(--radius-pill)",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        'card': 'var(--radius-card)',
+        'button': 'var(--radius-button)',
+        'pill': 'var(--radius-pill)',
+        'xl': 'var(--radius-xl)',
+        'lg': 'var(--radius)',
+        'md': 'calc(var(--radius) - 2px)',
+        'sm': 'calc(var(--radius) - 4px)',
       },
       boxShadow: {
-        soft: "var(--shadow-soft)",
-        chip: "var(--shadow-chip)",
-        "glass": "var(--glass-shadow)",
-        "elevation-1": "var(--elevation-1)",
-        "elevation-2": "var(--elevation-2)",
-        "elevation-3": "var(--elevation-3)",
+        'liquid-glass': 'var(--liquid-glass-shadow)',
+        'elevation-1': 'var(--elevation-1)',
+        'elevation-2': 'var(--elevation-2)',
+        'elevation-3': 'var(--elevation-3)',
       },
       backgroundImage: {
-        "gradient-pink-butter": "var(--gradient-pink-butter)",
-        "gradient-lilac-sky": "var(--gradient-lilac-sky)",
-        "gradient-olive-butter": "var(--gradient-olive-butter)",
-        "gradient-pink-lilac": "var(--gradient-pink-lilac)",
-        "gradient-sky-pink": "var(--gradient-sky-pink)",
-        "gradient-subtle": "var(--gradient-subtle)",
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
+        'gradient-subtle': 'var(--gradient-subtle)',
+        'gradient-glass-shimmer': 'var(--gradient-glass-shimmer)',
       },
       backdropBlur: {
-        xs: "2px",
-        xl: "20px",
-        "2xl": "40px",
+        'xs': '2px',
+        'xl': '20px',
+        '2xl': '40px',
+        '3xl': '60px',
       },
       fontFamily: {
         sans: [
-          "ui-sans-serif",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "SF Pro Display",
-          "Inter",
-          "system-ui",
-          "sans-serif",
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'SF Pro Display',
+          'system-ui',
+          'sans-serif',
         ],
       },
       transitionDuration: {
