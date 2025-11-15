@@ -36,7 +36,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-pink/30 via-sky/20 to-butter/30 pb-24">
       {/* Top Bar */}
       <TopBar
         avatarFallback="N"
@@ -52,17 +52,17 @@ const Dashboard = () => {
       />
 
       {/* Greeting Section */}
-      <div className="px-5 pt-2 pb-6">
-        <h1 className="text-[28px] leading-[32px] font-semibold text-ink mb-1">
+      <div className="px-6 pt-4 pb-8">
+        <h1 className="text-[34px] leading-[40px] font-bold text-foreground mb-2">
           Assalamu Alaikum
         </h1>
-        <p className="text-[15px] leading-[22px] text-inkMuted">
+        <p className="text-[17px] leading-[24px] text-foreground-muted font-medium">
           Saturday, January 11, 2025
         </p>
       </div>
 
       {/* Time View Segmented Control */}
-      <div className="px-5 pb-5">
+      <div className="px-6 pb-6">
         <SegmentedControl
           value={timeView}
           onValueChange={setTimeView}
@@ -75,39 +75,39 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <main className="px-5 space-y-5">
-        {/* Next Prayer Card - Sage */}
-        <Card className="relative overflow-hidden bg-sage border-sage-deep/20 p-6">
+      <main className="px-6 space-y-6">
+        {/* Next Prayer Card - Gradient */}
+        <Card className="relative overflow-hidden bg-gradient-to-br from-olive/40 via-butter/30 to-sky/40 border-white/30 p-8 backdrop-blur-2xl">
           {prayerTimes ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-ink/70 text-[12px] leading-[18px] font-medium">Next Prayer</p>
-                  <h2 className="text-ink text-[28px] leading-[32px] font-semibold">{prayerTimes.next}</h2>
+                <div className="space-y-2">
+                  <p className="text-foreground/60 text-[13px] leading-[18px] font-semibold uppercase tracking-wide">Next Prayer</p>
+                  <h2 className="text-foreground text-[32px] leading-[38px] font-bold">{prayerTimes.next}</h2>
                 </div>
-                <div className="w-16 h-16 rounded-xl2 bg-white/60 backdrop-blur-sm flex items-center justify-center shadow-soft">
-                  <span className="text-3xl">🕌</span>
+                <div className="w-20 h-20 rounded-[28px] bg-white/70 backdrop-blur-md flex items-center justify-center shadow-[0_8px_24px_rgba(28,28,30,0.1)] dark:bg-white/20">
+                  <span className="text-4xl">🕌</span>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-ink/10 rounded-pill overflow-hidden">
-                  <div className="h-full bg-sage-deep rounded-pill transition-all duration-med ease-ios" style={{ width: '65%' }} />
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-2.5 bg-white/40 rounded-pill overflow-hidden backdrop-blur-sm">
+                  <div className="h-full bg-gradient-to-r from-olive to-butter rounded-pill transition-all duration-[220ms] ease-[cubic-bezier(0.2,0.8,0.2,1)]" style={{ width: '65%' }} />
                 </div>
-                <div className="flex items-center gap-1.5 text-ink/80 text-[12px] leading-[18px] font-medium">
+                <div className="flex items-center gap-2 text-foreground/80 text-[13px] leading-[18px] font-bold px-3 py-1.5 rounded-pill bg-white/50 backdrop-blur-md">
                   <Clock className="w-4 h-4" />
                   <span>{prayerTimes.nextInMinutes}m</span>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-ink/60">Loading prayer times...</div>
+            <div className="text-foreground/60">Loading prayer times...</div>
           )}
         </Card>
 
         {/* Prayer Times Grid */}
         {prayerTimes && (
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-3">
             {[
               { name: 'Fajr', time: prayerTimes.fajr, icon: '🌅' },
               { name: 'Dhuhr', time: prayerTimes.dhuhr, icon: '☀️' },
@@ -117,81 +117,82 @@ const Dashboard = () => {
             ].map((prayer) => (
               <Card 
                 key={prayer.name} 
-                className="p-3 text-center transition-all duration-nja ease-nja hover:shadow-soft active:scale-[0.98]"
+                className="p-4 text-center backdrop-blur-2xl border-white/20"
               >
-                <div className="text-2xl mb-2">{prayer.icon}</div>
-                <p className="text-[12px] leading-[18px] text-inkMuted mb-1">{prayer.name}</p>
-                <p className="text-[12px] leading-[18px] font-semibold text-ink">{prayer.time}</p>
+                <div className="text-3xl mb-2">{prayer.icon}</div>
+                <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">{prayer.name}</p>
+                <p className="text-[14px] leading-[20px] font-bold text-foreground mt-1">{prayer.time}</p>
               </Card>
             ))}
           </div>
         )}
 
         {/* Stats & Habits Grid */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           {/* Dhikr Ring */}
-          <Card className="p-4 flex flex-col items-center justify-center">
+          <Card className="p-5 flex flex-col items-center justify-center backdrop-blur-2xl">
             <ProgressRing 
               progress={(dhikrCount / 33) * 100} 
-              size={56} 
-              strokeWidth={5}
+              size={64} 
+              strokeWidth={6}
             />
-            <div className="mt-2 text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-ink">{dhikrCount}</p>
-              <p className="text-[12px] leading-[18px] text-inkMuted">Dhikr</p>
+            <div className="mt-3 text-center">
+              <p className="text-[17px] leading-[24px] font-bold text-foreground">{dhikrCount}</p>
+              <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">Dhikr</p>
             </div>
           </Card>
 
           {/* Prayer Progress */}
-          <Card className="p-4 flex flex-col items-center justify-center">
+          <Card className="p-5 flex flex-col items-center justify-center backdrop-blur-2xl">
             <ProgressRing 
               progress={60} 
-              size={56} 
-              strokeWidth={5}
+              size={64} 
+              strokeWidth={6}
             />
-            <div className="mt-2 text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-ink">3/5</p>
-              <p className="text-[12px] leading-[18px] text-inkMuted">Prayers</p>
+            <div className="mt-3 text-center">
+              <p className="text-[17px] leading-[24px] font-bold text-foreground">3/5</p>
+              <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">Prayers</p>
             </div>
           </Card>
 
           {/* Streak */}
-          <Card className="p-4 flex flex-col items-center justify-center">
-            <div className="text-3xl mb-2">🔥</div>
+          <Card className="p-5 flex flex-col items-center justify-center backdrop-blur-2xl">
+            <div className="text-4xl mb-2">🔥</div>
             <div className="text-center">
-              <p className="text-[15px] leading-[22px] font-medium text-ink">7</p>
-              <p className="text-[12px] leading-[18px] text-inkMuted">Day streak</p>
+              <p className="text-[17px] leading-[24px] font-bold text-foreground">7</p>
+              <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">Streak</p>
             </div>
           </Card>
         </div>
 
-        {/* Dhikr Counter - Interactive - Lavender */}
-        <Card className="p-6 bg-lavender border-lavender-deep/20">
-          <div className="text-center space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-[22px] leading-[28px] font-semibold text-ink">Dhikr Counter</h3>
-              <div className="flex items-center justify-center gap-2 text-[12px] leading-[18px] text-ink/70">
-                <Sparkles className="w-4 h-4" />
+        {/* Dhikr Counter - Interactive - Gradient */}
+        <Card className="p-8 bg-gradient-to-br from-lilac/40 via-pink/30 to-sky/40 border-white/30 backdrop-blur-2xl">
+          <div className="text-center space-y-5">
+            <div className="space-y-2">
+              <h3 className="text-[26px] leading-[32px] font-bold text-foreground">Dhikr Counter</h3>
+              <div className="flex items-center justify-center gap-2 text-[14px] leading-[20px] text-foreground/70 font-semibold">
+                <Sparkles className="w-5 h-5" />
                 <span>SubhanAllah × 33</span>
               </div>
             </div>
 
             {/* Circular Progress */}
-            <div className="py-4">
+            <div className="py-6">
               <ProgressRing 
                 progress={(dhikrCount / 33) * 100}
-                size={160}
-                strokeWidth={12}
+                size={180}
+                strokeWidth={14}
               />
-              <div className="mt-4">
-                <span className="text-[48px] leading-[52px] font-bold text-ink">{dhikrCount}</span>
+              <div className="mt-5">
+                <span className="text-[56px] leading-[60px] font-bold text-foreground">{dhikrCount}</span>
               </div>
             </div>
 
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-4 justify-center">
               <Button 
                 onClick={() => setDhikrCount(prev => Math.min(prev + 1, 33))}
-                className="px-8 bg-chip text-chip-text shadow-chip hover:scale-[1.01] active:scale-[0.99] transition-transform duration-nja"
+                size="lg"
+                className="px-10 backdrop-blur-2xl"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Tap
@@ -202,7 +203,7 @@ const Dashboard = () => {
                   setDhikrCount(0);
                 }}
                 variant="outline"
-                className="border-ink/20"
+                size="lg"
               >
                 Reset
               </Button>
@@ -211,15 +212,15 @@ const Dashboard = () => {
         </Card>
 
         {/* Daily Reflection */}
-        <Card className="p-5 transition-all duration-nja ease-nja hover:shadow-soft active:scale-[0.98] cursor-pointer">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl2 bg-sage/40 flex items-center justify-center shrink-0">
-              <Heart className="w-6 h-6 text-ink" />
+        <Card className="p-6 backdrop-blur-2xl cursor-pointer active:scale-[0.98] transition-transform">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-[24px] bg-gradient-to-br from-pink/40 to-butter/40 backdrop-blur-md flex items-center justify-center shrink-0 shadow-elevation-2">
+              <Heart className="w-7 h-7 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-[15px] leading-[22px] font-semibold text-ink mb-1">Morning Reflection</h3>
-              <div className="flex items-center gap-2 text-[12px] leading-[18px] text-inkMuted">
-                <Clock className="w-3.5 h-3.5" />
+              <h3 className="text-[17px] leading-[24px] font-bold text-foreground mb-1">Morning Reflection</h3>
+              <div className="flex items-center gap-2 text-[14px] leading-[20px] text-foreground-muted font-semibold">
+                <Clock className="w-4 h-4" />
                 <span>10:00 AM - 10:30 AM</span>
               </div>
             </div>
@@ -228,16 +229,16 @@ const Dashboard = () => {
               variant="ghost"
               className="shrink-0"
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
         </Card>
 
         {/* Community Card */}
-        <Card className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[15px] leading-[22px] font-semibold text-ink">Community</h3>
-            <Badge className="rounded-pill bg-sage/30 text-ink border-sage-deep/20 text-[12px]">
+        <Card className="p-6 backdrop-blur-2xl">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-[17px] leading-[24px] font-bold text-foreground">Community</h3>
+            <Badge className="rounded-pill bg-white/50 backdrop-blur-md text-foreground border-white/30 text-[13px] px-3 py-1">
               3 active
             </Badge>
           </div>
@@ -246,7 +247,7 @@ const Dashboard = () => {
               {[1, 2, 3].map((i) => (
                 <div 
                   key={i} 
-                  className="w-11 h-11 rounded-full border-2 border-surface bg-surfaceAlt flex items-center justify-center text-[15px] font-medium text-inkMuted"
+                  className="w-12 h-12 rounded-full border-3 border-white/80 bg-gradient-to-br from-lilac/60 to-sky/60 backdrop-blur-md flex items-center justify-center text-[16px] font-bold text-foreground shadow-elevation-2"
                 >
                   {i}
                 </div>
@@ -254,7 +255,7 @@ const Dashboard = () => {
             </div>
             <Button 
               size="sm"
-              className="h-9 px-4 bg-chip text-chip-text shadow-chip"
+              className="backdrop-blur-2xl"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Invite
