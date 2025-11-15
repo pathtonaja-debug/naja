@@ -278,45 +278,119 @@ export type Database = {
           },
         ]
       }
+      habit_stats: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          device_id: string | null
+          habit_id: string
+          id: string
+          last_completed_date: string | null
+          longest_streak: number | null
+          monthly_breakdown: Json | null
+          total_completions: number | null
+          updated_at: string | null
+          user_id: string | null
+          weekly_breakdown: Json | null
+          yearly_breakdown: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          device_id?: string | null
+          habit_id: string
+          id?: string
+          last_completed_date?: string | null
+          longest_streak?: number | null
+          monthly_breakdown?: Json | null
+          total_completions?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          weekly_breakdown?: Json | null
+          yearly_breakdown?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          device_id?: string | null
+          habit_id?: string
+          id?: string
+          last_completed_date?: string | null
+          longest_streak?: number | null
+          monthly_breakdown?: Json | null
+          total_completions?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          weekly_breakdown?: Json | null
+          yearly_breakdown?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_stats_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: true
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habits: {
         Row: {
           category: string | null
+          color: string | null
           created_at: string | null
           device_id: string | null
           frequency: string | null
+          habit_time: string | null
           icon: string | null
           id: string
           is_active: boolean | null
+          is_all_day: boolean | null
           name: string
+          notes: string | null
           reminder_time: string | null
+          repeat_pattern: Json | null
+          sync_to_calendar: boolean | null
           target_count: number | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           category?: string | null
+          color?: string | null
           created_at?: string | null
           device_id?: string | null
           frequency?: string | null
+          habit_time?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_all_day?: boolean | null
           name: string
+          notes?: string | null
           reminder_time?: string | null
+          repeat_pattern?: Json | null
+          sync_to_calendar?: boolean | null
           target_count?: number | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           category?: string | null
+          color?: string | null
           created_at?: string | null
           device_id?: string | null
           frequency?: string | null
+          habit_time?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
+          is_all_day?: boolean | null
           name?: string
+          notes?: string | null
           reminder_time?: string | null
+          repeat_pattern?: Json | null
+          sync_to_calendar?: boolean | null
           target_count?: number | null
           updated_at?: string | null
           user_id?: string | null
