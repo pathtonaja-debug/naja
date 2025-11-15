@@ -13,10 +13,13 @@ interface Message {
 
 interface AICompanionProps {
   onClose: () => void;
+  isOpen?: boolean;
 }
 
-const AICompanion = ({ onClose }: AICompanionProps) => {
+const AICompanion = ({ onClose, isOpen = true }: AICompanionProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  
+  if (!isOpen) return null;
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
