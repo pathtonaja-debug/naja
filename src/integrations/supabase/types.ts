@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      calendar_items: {
+        Row: {
+          calendar_source: string | null
+          category: string
+          color: string | null
+          completion: number | null
+          created_at: string
+          device_id: string | null
+          end_date_time: string | null
+          id: string
+          is_all_day: boolean | null
+          notes: string | null
+          reminder: string | null
+          repeat_rule: string | null
+          start_date_time: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          calendar_source?: string | null
+          category: string
+          color?: string | null
+          completion?: number | null
+          created_at?: string
+          device_id?: string | null
+          end_date_time?: string | null
+          id?: string
+          is_all_day?: boolean | null
+          notes?: string | null
+          reminder?: string | null
+          repeat_rule?: string | null
+          start_date_time: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          calendar_source?: string | null
+          category?: string
+          color?: string | null
+          completion?: number | null
+          created_at?: string
+          device_id?: string | null
+          end_date_time?: string | null
+          id?: string
+          is_all_day?: boolean | null
+          notes?: string | null
+          reminder?: string | null
+          repeat_rule?: string | null
+          start_date_time?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       companion_profiles: {
         Row: {
           appearance: Json | null

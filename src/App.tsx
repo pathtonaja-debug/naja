@@ -8,6 +8,7 @@ import ChatHead from "./components/ChatHead";
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import Calendar from "./pages/Calendar";
 import Journal from "./pages/Journal";
 import Habits from "./pages/Habits";
 import Duas from "./pages/Duas";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/calendar" element={<Calendar />} />
             <Route path="/journal" element={<Journal />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/duas" element={<Duas />} />
