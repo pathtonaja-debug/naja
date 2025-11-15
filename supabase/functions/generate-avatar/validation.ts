@@ -20,11 +20,8 @@ export function validateAvatarRequest(body: any): {
     return { isValid: false, error: 'Invalid gender' };
   }
 
-  // Validate skin tone - accept both simple and detailed skin tone values
-  const validSkinTones = [
-    'light', 'medium', 'tan', 'deep',
-    'warm-brown', 'light-olive', 'fair', 'olive', 'brown', 'dark'
-  ];
+  // Validate skin tone
+  const validSkinTones = ['light', 'medium', 'tan', 'deep'];
   if (!skinTone || !validSkinTones.includes(skinTone)) {
     return { isValid: false, error: 'Invalid skin tone' };
   }
@@ -45,12 +42,8 @@ export function validateAvatarRequest(body: any): {
     }
   }
 
-  // Validate outfit - accept both simple and detailed outfit values
-  const validOutfits = [
-    'casual', 'formal', 'traditional',
-    'teal-abaya', 'lavender-dress', 'sand-abaya', 'olive-shirt',
-    'abaya', 'dress', 'shirt', 'thobe', 'tunic'
-  ];
+  // Validate outfit
+  const validOutfits = ['casual', 'formal', 'traditional'];
   if (!outfit || !validOutfits.includes(outfit)) {
     return { isValid: false, error: 'Invalid outfit' };
   }

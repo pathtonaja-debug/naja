@@ -5,23 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.96]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] leading-[22px] font-medium ring-offset-background transition-all duration-fast ease-ios focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-blackPill text-white rounded-[22px] shadow-soft hover:bg-blackPill/90",
-        destructive: "bg-danger text-white rounded-chip shadow-soft hover:bg-danger/90",
-        outline: "border border-stroke bg-transparent hover:bg-stroke/20 rounded-chip text-ink700",
-        secondary: "bg-lilac text-ink900 rounded-chip hover:bg-lilac/80",
-        ghost: "hover:bg-stroke/30 rounded-chip text-ink700",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 rounded-pill shadow-elevation-1",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-pill shadow-elevation-1",
+        outline: "border border-border bg-transparent hover:bg-muted/30 rounded-pill",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-pill shadow-elevation-1",
+        ghost: "hover:bg-muted/30 rounded-pill",
         link: "text-primary underline-offset-4 hover:underline",
-        pink: "bg-pink text-ink900 rounded-chip hover:bg-pink/80",
-        olive: "bg-olive text-ink900 rounded-chip hover:bg-olive/80",
       },
       size: {
-        default: "h-11 px-6 py-2.5 text-[15px] min-w-[44px]",
-        sm: "h-9 px-4 py-2 text-[13px] min-w-[44px]",
-        lg: "h-12 px-8 py-3 text-[18px] min-w-[44px]",
+        default: "h-11 px-6 py-2 min-w-[44px]",
+        sm: "h-9 px-4 min-w-[44px]",
+        lg: "h-12 px-8 min-w-[44px]",
         icon: "h-11 w-11 rounded-full",
       },
     },

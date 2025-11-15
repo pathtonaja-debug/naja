@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, BookOpen, Plus, Heart, UserCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Home, BookOpen, ListChecks, Heart, UserCircle, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNav = () => {
@@ -8,58 +9,41 @@ const BottomNav = () => {
 
   const tabs = [
     { icon: Home, path: "/dashboard", label: "Dashboard" },
-    { icon: BookOpen, path: "/habits", label: "Habits" },
-    { icon: null, path: "/add", label: "Add" }, // FAB placeholder
-    { icon: Heart, path: "/journal", label: "Journal" },
+    { icon: BookOpen, path: "/journal", label: "Journal" },
+    { icon: ListChecks, path: "/habits", label: "Habits" },
+    { icon: Heart, path: "/duas", label: "Duas" },
+    { icon: TrendingUp, path: "/progress", label: "Progress" },
     { icon: UserCircle, path: "/profile", label: "Profile" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="relative flex justify-center px-6 pb-6">
-        {/* Bottom bar with notch */}
-        <div className="relative w-full max-w-2xl">
-          {/* Main nav bar */}
-          <div className="bg-blackPill rounded-t-[14px] shadow-fab pt-3 pb-6 px-6 pointer-events-auto">
-            <div className="flex justify-around items-center relative">
-              {tabs.map((tab, idx) => {
-                // FAB in center
-                if (tab.icon === null && idx === 2) {
-                  return (
-                    <div key="fab" className="relative -mt-12">
-                      <button
-                        onClick={() => navigate("/duas")}
-                        className="w-[60px] h-[60px] rounded-full bg-pink shadow-fab flex items-center justify-center active:scale-95 transition-transform duration-300"
-                      >
-                        <Plus className="w-7 h-7 text-ink900" />
-                      </button>
-                    </div>
-                  );
-                }
-
-                const isActive = location.pathname === tab.path;
-                const Icon = tab.icon;
-                
-                return Icon ? (
-                  <button
-                    key={tab.path}
-                    onClick={() => navigate(tab.path)}
-                    className={cn(
-                      "flex flex-col items-center gap-1 transition-all duration-300 min-w-[44px] min-h-[44px] justify-center",
-                      isActive ? "opacity-100" : "opacity-65"
-                    )}
-                  >
-                    <Icon 
-                      className={cn(
-                        "w-6 h-6 transition-colors",
-                        isActive ? "text-white" : "text-white/65"
-                      )} 
-                    />
-                  </button>
-                ) : null;
-              })}
-            </div>
-          </div>
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 w-full max-w-2xl z-50 pointer-events-none">
+      <div className="backdrop-blur-xl bg-surface/80 border border-border rounded-pill shadow-soft px-3 py-2 pointer-events-auto">
+        <div className="flex justify-around items-center gap-2">
+          {tabs.map((tab) => {
+            const isActive = location.pathname === tab.path;
+            return (
+              <Button
+                key={tab.path}
+                size="icon"
+                variant="ghost"
+                onClick={() => navigate(tab.path)}
+                className={cn(
+                  "w-12 h-12 rounded-full transition-all duration-nja ease-nja",
+                  isActive
+                    ? "bg-sage shadow-soft hover:bg-sage/90"
+                    : "bg-transparent hover:bg-surfaceAlt"
+                )}
+              >
+                <tab.icon 
+                  className={cn(
+                    "w-5 h-5 transition-colors",
+                    isActive ? "text-ink" : "text-inkMuted"
+                  )} 
+                />
+              </Button>
+            );
+          })}
         </div>
       </div>
     </nav>
