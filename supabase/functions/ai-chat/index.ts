@@ -33,7 +33,7 @@ serve(async (req) => {
       .from('companion_profiles')
       .select('name, voice_tone, behavior_settings')
       .eq('user_id', user?.id)
-      .single();
+      .maybeSingle();
 
     const companionName = companion?.name || 'NAJA';
     const voiceTone = companion?.voice_tone || 'warm';
