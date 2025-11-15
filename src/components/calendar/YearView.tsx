@@ -47,9 +47,9 @@ const MonthCard = ({
   return (
     <Card
       className={cn(
-        "p-4 cursor-pointer transition-all active:scale-[0.98] backdrop-blur-2xl",
+        "p-4 cursor-pointer transition-all active:scale-[0.98] backdrop-blur-3xl",
         "bg-gradient-to-br from-white/20 to-white/10 border-white/15",
-        isToday(month) && "ring-2 ring-primary/50"
+        isToday(month) && "ring-2 ring-pink/40"
       )}
       onClick={onPress}
     >

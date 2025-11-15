@@ -28,7 +28,7 @@ export const CalendarItemCard = ({
   return (
     <Card
       className={cn(
-        "p-4 cursor-pointer transition-all active:scale-[0.98] backdrop-blur-2xl border-white/15",
+        "p-4 cursor-pointer transition-all active:scale-[0.98] backdrop-blur-3xl border-white/15",
         compact ? "p-3" : "p-4",
         isCompleted && "opacity-60"
       )}
