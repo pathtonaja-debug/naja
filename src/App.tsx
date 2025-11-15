@@ -10,7 +10,9 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Calendar from "./pages/Calendar";
 import Journal from "./pages/Journal";
-import Habits from "./pages/Habits";
+import HabitTracker from "./pages/HabitTracker";
+import HabitCategory from "./pages/HabitCategory";
+import HabitDetail from "./pages/HabitDetail";
 import Duas from "./pages/Duas";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
@@ -32,7 +34,9 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/journal" element={<Journal />} />
-            <Route path="/habits" element={<Habits />} />
+            <Route path="/habits" element={<HabitTracker />} />
+            <Route path="/habits/category/:category" element={<HabitCategory />} />
+            <Route path="/habits/detail/:habitId" element={<HabitDetail />} />
             <Route path="/duas" element={<Duas />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
