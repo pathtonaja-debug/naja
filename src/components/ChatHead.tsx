@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose, SheetDescription } from "@/components/ui/sheet";
 import AICompanion from "./AICompanion";
 import { supabase } from "@/integrations/supabase/client";
 import { getDeviceId } from "@/lib/deviceId";
@@ -35,9 +35,12 @@ const ChatHead = () => {
         .from("companion_profiles")
         .select("portrait_url, name")
         .eq("device_id", deviceId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading companion profile:", error);
+        return;
+      }
 
       if (data) {
         setPortraitUrl(data.portrait_url);
@@ -93,6 +96,9 @@ const ChatHead = () => {
                 </button>
               </SheetClose>
             </div>
+            <SheetDescription className="sr-only">
+              Chat with your AI companion for spiritual guidance and support
+            </SheetDescription>
           </SheetHeader>
           
           <div className="h-[calc(100vh-5rem)]">
