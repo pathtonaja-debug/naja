@@ -1,10 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const prayerTimesSchema = z.object({
+  latitude: z.number().min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"),
+  longitude: z.number().min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"),
+  method: z.enum(['MWL', 'ISNA', 'Egypt', 'Makkah', 'Karachi', 'Tehran', 'Jafari']).default('MWL'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format").optional()
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,11 +20,25 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude, method = 'MWL', date } = await req.json();
+    const body = await req.json();
     
-    if (!latitude || !longitude) {
-      throw new Error('Latitude and longitude are required');
+    // Validate input
+    const validation = prayerTimesSchema.safeParse(body);
+    if (!validation.success) {
+      console.error('Validation error:', validation.error.flatten());
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid request parameters', 
+          details: validation.error.flatten().fieldErrors 
+        }), 
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
+    
+    const { latitude, longitude, method, date } = validation.data;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
