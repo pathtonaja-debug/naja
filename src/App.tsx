@@ -21,6 +21,7 @@ import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import CompanionSetup from "./pages/CompanionSetup";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/companion-setup" element={<CompanionSetup />} />
             <Route
               path="/dashboard"
               element={
