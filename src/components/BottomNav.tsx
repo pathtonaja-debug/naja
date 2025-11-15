@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, BookOpen, Target, TrendingUp, UserCircle, Calendar } from "lucide-react";
+import { Home, BookOpen, Target, TrendingUp, UserCircle, Calendar, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNav = () => {
@@ -12,6 +12,7 @@ const BottomNav = () => {
     { icon: Calendar, path: "/calendar", label: "Calendar" },
     { icon: BookOpen, path: "/journal", label: "Journal" },
     { icon: Target, path: "/habits", label: "Habits" },
+    { icon: Heart, path: "/duas", label: "Duas" },
     { icon: TrendingUp, path: "/progress", label: "Progress" },
     { icon: UserCircle, path: "/profile", label: "Profile" },
   ];
