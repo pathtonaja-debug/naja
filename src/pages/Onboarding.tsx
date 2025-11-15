@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ArrowRight, MapPin, Check } from "lucide-react";
+import { Flower2 } from "lucide-react";
 import CompanionCustomization from "@/components/companion/CompanionCustomization";
 
 const Onboarding = () => {
@@ -14,8 +13,12 @@ const Onboarding = () => {
     navigate("/dashboard");
   };
 
-  const handleSetupLocation = () => {
-    setShowCompanion(true);
+  const handleContinue = () => {
+    if (step < 2) {
+      setStep(step + 1);
+    } else {
+      setShowCompanion(true);
+    }
   };
 
   if (showCompanion) {
@@ -23,128 +26,152 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <Card className="w-full max-w-md bg-card border-none shadow-card rounded-[2.5rem] p-8 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         {step === 1 && (
-          <div className="space-y-8 text-center">
-            <div className="space-y-4">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-primary/20">
-                <span className="text-5xl">🌿</span>
+          <div className="relative animate-fade-in">
+            {/* Gradient Card */}
+            <div className="rounded-[2.5rem] bg-gradient-to-b from-pink-200 via-purple-200 to-purple-400 p-8 shadow-2xl">
+              {/* Header */}
+              <div className="text-center space-y-2 mb-12">
+                <h1 className="text-3xl font-light text-gray-800">
+                  You just
+                </h1>
+                <h2 className="text-3xl font-medium text-pink-500">
+                  chose yourself
+                </h2>
+                <p className="text-xs tracking-wider text-gray-600 uppercase mt-3">
+                  Let's make it easier to keep going
+                </p>
               </div>
-              <h1 className="text-3xl font-medium tracking-tight text-foreground">
-                Welcome to NAJA
-              </h1>
-              <p className="text-muted-foreground leading-relaxed">
-                Your spiritual companion for prayer, reflection, and mindful Islamic living.
+
+              {/* Center Icon */}
+              <div className="flex justify-center mb-8">
+                <div className="w-24 h-24 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                  <Flower2 className="w-12 h-12 text-pink-400" />
+                </div>
+              </div>
+
+              {/* Badge */}
+              <div className="flex justify-center mb-6">
+                <div className="px-4 py-1.5 rounded-full bg-white/30 backdrop-blur-sm border border-white/50">
+                  <span className="text-xs text-white font-medium">✨ Just Friends</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-center text-sm text-white leading-relaxed px-2">
+                We'll show you what makes consistency finally feel possible. Your personal journey, your next workout, and how to see your progress.
               </p>
             </div>
 
-            <div className="space-y-3 pt-4">
+            {/* Action Buttons */}
+            <div className="mt-6 space-y-4">
               <Button 
-                onClick={() => setStep(2)}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 text-base font-medium"
+                onClick={handleContinue}
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-full h-14 text-base font-medium shadow-lg"
               >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5" />
+                Continue
               </Button>
-              <Button 
-                variant="ghost"
+              <button
                 onClick={handleComplete}
-                className="w-full text-muted-foreground hover:text-foreground rounded-full h-14"
+                className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
-                Skip for now
-              </Button>
+                Share my win
+              </button>
+            </div>
+
+            {/* Progress Indicator */}
+            <div className="flex justify-center mt-8">
+              <div className="w-16 h-1 bg-gray-900 rounded-full"></div>
             </div>
           </div>
         )}
 
         {step === 2 && (
-          <div className="space-y-8">
-            <div className="space-y-3 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1.5rem] bg-secondary/30 mb-2">
-                <MapPin className="w-8 h-8 text-secondary-foreground" />
-              </div>
-              <h2 className="text-2xl font-medium text-foreground">
-                Set Prayer Times
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                We'll use your location for accurate Salah times
-              </p>
+          <div className="relative animate-fade-in">
+            {/* Progress Counter */}
+            <div className="absolute -top-8 left-4 text-sm text-muted-foreground">
+              1 / 4
             </div>
+            <button 
+              onClick={() => setStep(1)}
+              className="absolute -top-8 right-4 text-xl text-muted-foreground hover:text-foreground"
+            >
+              ×
+            </button>
 
-            <div className="space-y-4">
-              <div className="p-5 rounded-[1.5rem] bg-primary/10 border border-primary/20">
-                <div className="flex gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-primary-foreground" />
+            {/* White Card */}
+            <div className="rounded-[2.5rem] bg-card border border-border p-8 shadow-xl">
+              {/* Header */}
+              <div className="text-center space-y-2 mb-12">
+                <h1 className="text-3xl font-light text-pink-500">
+                  Here starts
+                </h1>
+                <p className="text-xs tracking-wider text-muted-foreground uppercase">
+                  Your 21 day journey
+                </p>
+              </div>
+
+              {/* Progress Circles */}
+              <div className="flex justify-center gap-4 mb-12 mt-16">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-pink-500 flex items-center justify-center bg-pink-50">
+                    <span className="text-2xl">📅</span>
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Location services help provide accurate prayer times based on your timezone and calculation method.
-                  </p>
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-1 h-4 bg-pink-200"></div>
+                </div>
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-gray-200 flex items-center justify-center bg-gray-50">
+                    <span className="text-2xl">🎯</span>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-gray-200 flex items-center justify-center bg-gray-50">
+                    <span className="text-2xl">✨</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Button 
-                  onClick={handleSetupLocation}
-                  className="w-full bg-foreground hover:bg-foreground/90 text-background rounded-full h-14 text-base font-medium"
-                >
-                  Enable Location
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={handleSetupLocation}
-                  className="w-full border-border rounded-full h-14 text-base font-medium hover:bg-muted"
-                >
-                  Set Manually
-                </Button>
+              {/* Description */}
+              <div className="text-center space-y-3 mt-16">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  This shows every way you're showing up. Workouts, walks, stretches, even rest days. Nothing resets if you miss a day.
+                </p>
+                <p className="text-sm text-pink-500 font-medium">
+                  You're building momentum, and you'll see it here.
+                </p>
               </div>
             </div>
-          </div>
-        )}
 
-        {step === 3 && (
-          <div className="space-y-8">
-            <div className="space-y-3 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1.5rem] bg-success/20 mb-2">
-                <Check className="w-8 h-8 text-success-foreground" />
-              </div>
-              <h2 className="text-2xl font-medium text-foreground">
-                All Set! 🌙
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Your spiritual companion is ready. Begin your journey with reflection, dua, and mindful habits.
-              </p>
-            </div>
-
-            <div className="space-y-3 pt-4">
+            {/* Action Buttons */}
+            <div className="mt-6 space-y-4">
               <Button 
-                onClick={handleComplete}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 text-base font-medium"
+                onClick={handleContinue}
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-full h-14 text-base font-medium shadow-lg"
               >
-                Enter NAJA
-                <ArrowRight className="ml-2 w-5 h-5" />
+                Show me more
               </Button>
+              <button
+                onClick={handleComplete}
+                className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                I'll explore later
+              </button>
+            </div>
+
+            {/* Progress Indicator */}
+            <div className="flex justify-center mt-8">
+              <div className="flex gap-1.5">
+                <div className="w-8 h-1 bg-pink-500 rounded-full"></div>
+                <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
+                <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
+                <div className="w-8 h-1 bg-gray-300 rounded-full"></div>
+              </div>
             </div>
           </div>
         )}
-
-        {/* Progress Indicator */}
-        <div className="flex justify-center gap-2 mt-10">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === step 
-                  ? "w-8 bg-primary" 
-                  : i < step
-                  ? "w-1.5 bg-primary/50"
-                  : "w-1.5 bg-muted"
-              }`}
-            />
-          ))}
-        </div>
-      </Card>
+      </div>
     </div>
   );
 };
