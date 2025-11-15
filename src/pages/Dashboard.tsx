@@ -10,7 +10,12 @@ import {
   Clock,
   Sparkles,
   ArrowRight,
-  Heart
+  Heart,
+  Building2,
+  Target,
+  BookOpen,
+  Users,
+  Flame
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
@@ -85,8 +90,8 @@ const Dashboard = () => {
                   <p className="text-foreground/60 text-[13px] leading-[18px] font-semibold uppercase tracking-wide">Next Prayer</p>
                   <h2 className="text-foreground text-[32px] leading-[38px] font-bold">{prayerTimes.next}</h2>
                 </div>
-                <div className="w-20 h-20 rounded-[28px] bg-white/40 backdrop-blur-xl flex items-center justify-center shadow-[0_12px_32px_rgba(28,28,30,0.12)] dark:bg-white/15">
-                  <span className="text-4xl">🕌</span>
+                <div className="w-20 h-20 rounded-[28px] bg-white/30 backdrop-blur-2xl flex items-center justify-center shadow-[0_12px_32px_rgba(28,28,30,0.12)] dark:bg-white/20 border border-white/20">
+                  <Building2 className="w-10 h-10 text-pink" />
                 </div>
               </div>
               
@@ -109,19 +114,18 @@ const Dashboard = () => {
         {prayerTimes && (
           <div className="grid grid-cols-5 gap-3">
             {[
-              { name: 'Fajr', time: prayerTimes.fajr, icon: '🌅' },
-              { name: 'Dhuhr', time: prayerTimes.dhuhr, icon: '☀️' },
-              { name: 'Asr', time: prayerTimes.asr, icon: '🌤️' },
-              { name: 'Maghrib', time: prayerTimes.maghrib, icon: '🌆' },
-              { name: 'Isha', time: prayerTimes.isha, icon: '🌙' }
+              { name: 'Fajr', time: prayerTimes.fajr, gradient: 'from-sky/40 to-lilac/30' },
+              { name: 'Dhuhr', time: prayerTimes.dhuhr, gradient: 'from-butter/40 to-sky/30' },
+              { name: 'Asr', time: prayerTimes.asr, gradient: 'from-olive/40 to-butter/30' },
+              { name: 'Maghrib', time: prayerTimes.maghrib, gradient: 'from-pink/40 to-olive/30' },
+              { name: 'Isha', time: prayerTimes.isha, gradient: 'from-lilac/40 to-pink/30' }
             ].map((prayer) => (
               <Card 
                 key={prayer.name} 
-                className="p-4 text-center backdrop-blur-2xl border-white/15 bg-gradient-to-br from-white/20 to-white/10"
+                className={`p-4 text-center backdrop-blur-2xl border-white/15 bg-gradient-to-br ${prayer.gradient}`}
               >
-                <div className="text-3xl mb-2">{prayer.icon}</div>
-                <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">{prayer.name}</p>
-                <p className="text-[14px] leading-[20px] font-bold text-foreground mt-1">{prayer.time}</p>
+                <p className="text-[13px] leading-[18px] text-foreground/70 font-semibold mb-1">{prayer.name}</p>
+                <p className="text-[14px] leading-[20px] font-bold text-foreground">{prayer.time}</p>
               </Card>
             ))}
           </div>
@@ -157,7 +161,9 @@ const Dashboard = () => {
 
           {/* Streak */}
           <Card className="p-5 flex flex-col items-center justify-center backdrop-blur-2xl bg-gradient-to-br from-sky/40 to-lilac/30 border-sky/20">
-            <div className="text-4xl mb-2">🔥</div>
+            <div className="w-12 h-12 rounded-2xl bg-white/30 backdrop-blur-xl flex items-center justify-center mb-2 border border-white/20">
+              <Flame className="w-6 h-6 text-pink" />
+            </div>
             <div className="text-center">
               <p className="text-[17px] leading-[24px] font-bold text-foreground">7</p>
               <p className="text-[13px] leading-[18px] text-foreground-muted font-semibold">Streak</p>

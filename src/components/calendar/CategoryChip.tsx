@@ -9,12 +9,12 @@ interface CategoryChipProps {
 }
 
 const CATEGORY_STYLES: Record<CalendarCategory, string> = {
-  faith: "bg-primary/30 text-primary-foreground border-primary/20",
-  work: "bg-sky/30 text-foreground border-sky/20",
-  study: "bg-secondary/30 text-secondary-foreground border-secondary/20",
-  health: "bg-pink/30 text-foreground border-pink/20",
-  personal: "bg-muted/50 text-muted-foreground border-muted/30",
-  other: "bg-foreground/10 text-foreground border-border",
+  faith: "bg-lilac/30 text-foreground border-lilac/25",
+  work: "bg-sky/30 text-foreground border-sky/25",
+  study: "bg-butter/30 text-foreground border-butter/25",
+  health: "bg-pink/30 text-foreground border-pink/25",
+  personal: "bg-olive/30 text-foreground border-olive/25",
+  other: "bg-foreground/15 text-foreground border-foreground/20",
 };
 
 export const CategoryChip = ({ category, size = "sm", className }: CategoryChipProps) => {
@@ -22,7 +22,7 @@ export const CategoryChip = ({ category, size = "sm", className }: CategoryChipP
     <Badge
       variant="outline"
       className={cn(
-        "rounded-pill backdrop-blur-xl border font-semibold",
+        "rounded-pill backdrop-blur-2xl border font-semibold",
         size === "sm" ? "text-[11px] px-2 py-0.5" : "text-[13px] px-3 py-1",
         CATEGORY_STYLES[category],
         className

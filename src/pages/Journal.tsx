@@ -113,7 +113,7 @@ const Journal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-sky/30 via-lilac/20 to-butter/30 pb-24">
       {/* Top Bar */}
       <TopBar
         avatarFallback="N"
