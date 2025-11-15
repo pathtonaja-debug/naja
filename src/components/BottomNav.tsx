@@ -12,6 +12,7 @@ const BottomNav = () => {
     { icon: Calendar, path: "/calendar", label: "Calendar" },
     { icon: BookOpen, path: "/journal", label: "Journal" },
     { icon: ListChecks, path: "/habits", label: "Habits" },
+    { icon: TrendingUp, path: "/progress", label: "Progress" },
     { icon: Heart, path: "/duas", label: "Duas" },
     { icon: UserCircle, path: "/profile", label: "Profile" },
   ];
