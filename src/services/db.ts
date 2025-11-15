@@ -148,8 +148,119 @@ export async function toggleHabit(id: string) {
       
     if (error) throw error;
   }
+}
+
+export async function createHabit(habit: {
+  name: string;
+  category?: string;
+  frequency?: string;
+  icon?: string;
+  target_count?: number;
+}): Promise<any> {
+  const deviceId = getDeviceId();
   
-  return listHabits();
+  const { data, error } = await supabase
+    .from('habits')
+    .insert({
+      name: habit.name,
+      category: habit.category || 'spiritual',
+      frequency: habit.frequency || 'daily',
+      target_count: habit.target_count || 1,
+      device_id: deviceId,
+      is_active: true
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateHabit(id: string, updates: any): Promise<any> {
+  const { data, error } = await supabase
+    .from('habits')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteHabit(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('habits')
+    .update({ is_active: false })
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
+export async function getHabitProgress(userId?: string, days: number = 7): Promise<any> {
+  const deviceId = getDeviceId();
+  const endDate = new Date().toISOString().split('T')[0];
+  const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const { data: habits, error: habitsError } = await supabase
+    .from('habits')
+    .select('id, name')
+    .eq('device_id', deviceId)
+    .eq('is_active', true);
+
+  if (habitsError) throw habitsError;
+
+  const habitIds = habits?.map(h => h.id) || [];
+  
+  const { data: logs, error: logsError } = await supabase
+    .from('habit_logs')
+    .select('*')
+    .in('habit_id', habitIds)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true });
+
+  if (logsError) throw logsError;
+
+  return { habits, logs };
+}
+
+export async function initializeDefaultHabits(): Promise<void> {
+  const deviceId = getDeviceId();
+  
+  // Check if user already has habits
+  const { data: existing } = await supabase
+    .from('habits')
+    .select('id')
+    .eq('device_id', deviceId)
+    .limit(1);
+
+  if (existing && existing.length > 0) return;
+
+  // Create default habits
+  const defaults = [
+    { name: 'Fajr Prayer', category: 'prayer', icon: 'sunrise' },
+    { name: 'Dhuhr Prayer', category: 'prayer', icon: 'sun' },
+    { name: 'Asr Prayer', category: 'prayer', icon: 'sun' },
+    { name: 'Maghrib Prayer', category: 'prayer', icon: 'sunset' },
+    { name: 'Isha Prayer', category: 'prayer', icon: 'moon' },
+    { name: 'Quran Reading', category: 'spiritual', icon: 'book-open', target_count: 10 },
+    { name: 'Daily Dhikr', category: 'spiritual', icon: 'heart', target_count: 100 },
+    { name: 'Morning Dua', category: 'spiritual', icon: 'hand' },
+    { name: 'Gratitude Journal', category: 'personal', icon: 'sparkles' },
+    { name: 'Good Deed', category: 'personal', icon: 'star' }
+  ];
+
+  const { error } = await supabase
+    .from('habits')
+    .insert(defaults.map(d => ({
+      ...d,
+      device_id: deviceId,
+      frequency: 'daily',
+      is_active: true
+    })));
+
+  if (error) throw error;
 }
 
 // Duas
