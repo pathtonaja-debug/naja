@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -9,24 +8,31 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-blackPill text-white rounded-[22px] shadow-soft hover:bg-blackPill/90",
-        destructive: "bg-danger text-white rounded-chip shadow-soft hover:bg-danger/90",
-        outline: "border border-stroke bg-transparent hover:bg-stroke/20 rounded-chip text-ink700",
-        secondary: "bg-lilac text-ink900 rounded-chip hover:bg-lilac/80",
-        ghost: "hover:bg-stroke/30 rounded-chip text-ink700",
-        link: "text-primary underline-offset-4 hover:underline",
+        // Black pill - primary action button
+        pill: "bg-blackPill text-white rounded-[22px] shadow-soft hover:bg-blackPill/90 text-[18px] leading-[24px]",
+        
+        // Pastel chips
         pink: "bg-pink text-ink900 rounded-chip hover:bg-pink/80",
+        lilac: "bg-lilac text-ink900 rounded-chip hover:bg-lilac/80",
         olive: "bg-olive text-ink900 rounded-chip hover:bg-olive/80",
+        butter: "bg-butter text-ink900 rounded-chip hover:bg-butter/80",
+        sky: "bg-sky text-ink900 rounded-chip hover:bg-sky/80",
+        
+        // Ghost/minimal
+        ghost: "hover:bg-stroke/30 rounded-chip text-ink700",
+        
+        // Outline
+        outline: "border border-stroke bg-transparent hover:bg-stroke/20 rounded-chip text-ink700",
       },
       size: {
-        default: "h-11 px-6 py-2.5 text-[15px] min-w-[44px]",
-        sm: "h-9 px-4 py-2 text-[13px] min-w-[44px]",
-        lg: "h-12 px-8 py-3 text-[18px] min-w-[44px]",
+        default: "h-11 px-6 py-2.5 min-w-[44px]",
+        sm: "h-9 px-4 py-2 min-w-[44px] text-[15px]",
+        lg: "h-12 px-8 py-3 min-w-[44px] text-[18px]",
         icon: "h-11 w-11 rounded-full",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "pill",
       size: "default",
     },
   },
