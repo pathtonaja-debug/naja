@@ -65,7 +65,7 @@ const Dashboard = () => {
       </main>
 
       <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
-      <BottomNav />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };

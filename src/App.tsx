@@ -19,6 +19,8 @@ import HabitDetail from "./pages/HabitDetail";
 import Duas from "./pages/Duas";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
+import Quran from "./pages/Quran";
+import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import CompanionSetup from "./pages/CompanionSetup";
@@ -141,6 +143,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/quran"
+              element={
+                <ProtectedRoute>
+                  <Quran />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <Community />
                 </ProtectedRoute>
               }
             />

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import AICompanion from "@/components/AICompanion";
 import { 
   ArrowLeft,
   Calendar as CalendarIcon,
@@ -42,6 +43,7 @@ interface ProgressStats {
 const Progress = () => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<TimePeriod>('week');
+  const [companionOpen, setCompanionOpen] = useState(false);
   const [stats, setStats] = useState<ProgressStats>({
     currentStreak: 0,
     bestStreak: 0,
@@ -444,7 +446,8 @@ const Progress = () => {
         </Card>
       </main>
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };

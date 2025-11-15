@@ -3,6 +3,7 @@ import { Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { TopBar } from "@/components/ui/top-bar";
 import BottomNav from "@/components/BottomNav";
+import AICompanion from "@/components/AICompanion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CategoryCard from "@/components/habits/CategoryCard";
@@ -37,6 +38,7 @@ export default function HabitTracker() {
   const [categories, setCategories] = useState<CategoryProgress[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
+  const [companionOpen, setCompanionOpen] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -171,7 +173,8 @@ export default function HabitTracker() {
         onSuccess={loadData}
       />
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 }

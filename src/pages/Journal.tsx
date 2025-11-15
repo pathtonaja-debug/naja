@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TopBar } from "@/components/ui/top-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Badge } from "@/components/ui/badge";
+import AICompanion from "@/components/AICompanion";
 import { 
   Plus, 
   Bell, 
@@ -30,6 +31,7 @@ const Journal = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [companionOpen, setCompanionOpen] = useState(false);
   const [filterMood, setFilterMood] = useState<string>("all");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -347,7 +349,8 @@ const Journal = () => {
         )}
       </main>
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };
