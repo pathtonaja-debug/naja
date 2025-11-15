@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import { TopBar } from "@/components/ui/top-bar";
-import { Bell, Calendar as CalendarIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import BottomNav from "@/components/BottomNav";
-import AICompanionButton from "@/components/AICompanionButton";
 import AICompanion from "@/components/AICompanion";
+import { UserHeader } from "@/components/dashboard/UserHeader";
 import { NextPrayerWidget } from "@/components/dashboard/NextPrayerWidget";
-import { TodaySchedule } from "@/components/dashboard/TodaySchedule";
-import { QuickStats } from "@/components/dashboard/QuickStats";
-import { DhikrCounter } from "@/components/dashboard/DhikrCounter";
-import { ReflectionPrompt } from "@/components/dashboard/ReflectionPrompt";
-import { CollapsibleSection } from "@/components/ui/collapsible-section";
-import { format } from "date-fns";
+import { AICompanionCard } from "@/components/dashboard/AICompanionCard";
+import { QuickTools } from "@/components/dashboard/QuickTools";
+import { TodaysOverview } from "@/components/dashboard/TodaysOverview";
+import { YourInsights } from "@/components/dashboard/YourInsights";
+import { HabitTrackerPreview } from "@/components/dashboard/HabitTrackerPreview";
+import { PrayerTimesList } from "@/components/dashboard/PrayerTimesList";
+import { JournalEntryPreview } from "@/components/dashboard/JournalEntryPreview";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -33,57 +31,37 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/10 to-background pb-24">
-      <TopBar
-        avatarFallback="N"
-        rightElement={
-          <div className="flex items-center gap-2">
-            <Button size="icon" variant="ghost">
-              <Bell className="w-5 h-5" />
-            </Button>
-            {hasCompanion && (
-              <AICompanionButton onClick={() => setCompanionOpen(true)} />
-            )}
-          </div>
-        }
+    <div className="min-h-screen bg-background pb-24">
+      <UserHeader
+        userName="Aisha Rahman"
+        hasCompanion={hasCompanion}
+        onCompanionClick={() => setCompanionOpen(true)}
       />
 
-      <div className="px-5 pt-2 pb-4">
-        <h1 className="text-large-title text-foreground mb-1">
-          As-salamu alaykum
-        </h1>
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4 text-foreground-muted" />
-          <p className="text-body text-foreground-muted">
-            {format(new Date(), "EEEE, MMMM d, yyyy")}
-          </p>
+      <main className="space-y-0">
+        <div className="px-5 py-3">
+          <NextPrayerWidget />
         </div>
-      </div>
 
-      <main className="px-5 space-y-3">
-        <NextPrayerWidget />
+        {hasCompanion && (
+          <AICompanionCard
+            name="Noor"
+            onChatClick={() => setCompanionOpen(true)}
+            onSettingsClick={() => navigate("/companion-setup")}
+          />
+        )}
 
-        <CollapsibleSection title="Today's Schedule" defaultOpen>
-          <TodaySchedule />
-        </CollapsibleSection>
+        <QuickTools />
 
-        <CollapsibleSection title="Quick Stats">
-          <QuickStats />
-        </CollapsibleSection>
+        <TodaysOverview />
 
-        <CollapsibleSection title="Dhikr Counter">
-          <DhikrCounter />
-        </CollapsibleSection>
+        <YourInsights />
 
-        <CollapsibleSection title="Daily Reflection">
-          <ReflectionPrompt />
-        </CollapsibleSection>
+        <HabitTrackerPreview />
 
-        <CollapsibleSection title="Community">
-          <div className="liquid-glass p-6 rounded-card text-center text-foreground-muted">
-            <p className="text-body">Coming soon...</p>
-          </div>
-        </CollapsibleSection>
+        <PrayerTimesList />
+
+        <JournalEntryPreview />
       </main>
 
       <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
