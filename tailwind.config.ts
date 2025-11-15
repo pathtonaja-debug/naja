@@ -14,26 +14,29 @@ export default {
     },
     extend: {
       colors: {
-        // New design system tokens
-        bg: "var(--bg)",
-        surface: "var(--surface)",
-        surfaceAlt: "var(--surface-alt)",
-        ink: "var(--text)",
-        inkMuted: "var(--text-muted)",
-        sage: {
-          DEFAULT: "var(--accent-sage)",
-          deep: "var(--accent-sage-deep)",
-        },
-        lavender: {
-          DEFAULT: "var(--accent-lavender)",
-          deep: "var(--accent-lavender-deep)",
-        },
-        chip: {
-          DEFAULT: "var(--chip)",
-          text: "var(--chip-text)",
+        // iOS-inspired design system tokens
+        canvas: "var(--canvas)",
+        panel: "var(--panel)",
+        stroke: "var(--stroke)",
+        ink: {
+          900: "var(--ink-900)",
+          700: "var(--ink-700)",
+          400: "var(--ink-400)",
         },
         
-        // Legacy tokens for compatibility
+        // Pastel accents
+        pink: "var(--pink)",
+        lilac: "var(--lilac)",
+        olive: "var(--olive)",
+        butter: "var(--butter)",
+        sky: "var(--sky)",
+        blackPill: "var(--black-pill)",
+        
+        // Legacy compatibility
+        bg: "var(--bg)",
+        surface: "var(--surface)",
+        
+        // Shadcn tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
