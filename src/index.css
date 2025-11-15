@@ -278,21 +278,25 @@
   
   /* Card Hover Effect - Gentle Scale */
   .card-interactive {
-    @apply transition-transform duration-[var(--duration-medium)] ease-[var(--easing-smooth)];
+    transition-property: transform;
+    transition-duration: var(--duration-medium);
+    transition-timing-function: var(--easing-smooth);
   }
   
   .card-interactive:active {
-    @apply scale-[1.02];
+    transform: scale(1.02);
   }
   
   /* Floating Action Button */
   .fab {
     @apply liquid-glass rounded-full shadow-elevation-3;
-    @apply transition-all duration-[var(--duration-medium)] ease-[var(--easing-spring)];
+    transition-property: all;
+    transition-duration: var(--duration-medium);
+    transition-timing-function: var(--easing-spring);
   }
   
   .fab:active {
-    @apply scale-95;
+    transform: scale(0.95);
   }
   
   /* Primary Glow Ring */
