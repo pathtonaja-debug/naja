@@ -53,7 +53,7 @@ const ChatHead = () => {
       {/* ChatHead Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-4 right-4 z-50 w-11 h-11 rounded-full shadow-soft transition-all duration-nja ease-nja hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-deep"
+        className="fixed top-4 left-4 z-50 w-11 h-11 rounded-full shadow-soft transition-all duration-nja ease-nja hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-deep"
         aria-label={`Chat with ${companionName}`}
         title={`Chat with ${companionName} (⌘/)`}
       >
