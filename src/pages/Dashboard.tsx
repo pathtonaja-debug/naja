@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { TopBar } from "@/components/ui/top-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { CollapsibleSection } from "@/components/ui/collapsible-section";
 import { 
   Plus,
   Bell,
@@ -49,25 +50,25 @@ const Dashboard = () => {
           <Button 
             size="icon" 
             variant="ghost"
-            className="w-11 h-11"
+            className="w-9 h-9"
           >
             <Bell className="w-5 h-5" />
           </Button>
         }
       />
 
-      {/* Greeting Section */}
-      <div className="px-6 pt-4 pb-8">
-        <h1 className="text-[34px] leading-[40px] font-bold text-foreground mb-2">
+      {/* Greeting Section - Compact */}
+      <div className="px-5 pt-2 pb-3">
+        <h1 className="text-[28px] leading-[34px] font-bold text-foreground mb-1">
           Assalamu Alaikum
         </h1>
-        <p className="text-[17px] leading-[24px] text-foreground-muted font-medium">
+        <p className="text-[15px] leading-[20px] text-foreground-muted font-medium">
           Saturday, January 11, 2025
         </p>
       </div>
 
       {/* Time View Segmented Control */}
-      <div className="px-6 pb-6">
+      <div className="px-5 pb-3">
         <SegmentedControl
           value={timeView}
           onValueChange={setTimeView}
@@ -79,8 +80,8 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Main Content */}
-      <main className="px-6 space-y-6">
+      {/* Main Content - Reduced spacing */}
+      <main className="px-5 space-y-4">
         {/* Next Prayer Card - Gradient */}
         <Card className="relative overflow-hidden bg-gradient-pink-butter border-pink/20 p-8 backdrop-blur-2xl">
           {prayerTimes ? (

@@ -60,10 +60,14 @@
     --elevation-3: 0 16px 48px rgba(28, 28, 30, 0.12);
     
     /* Radii - higher for modern look */
-    --radius: 1.75rem;
-    --radius-card: 2rem;
-    --radius-xl: 2.5rem;
+    --radius: 1.5rem;
+    --radius-card: 1.75rem;
+    --radius-xl: 2rem;
     --radius-pill: 9999px;
+    
+    /* Compact spacing */
+    --spacing-section: 1rem;
+    --spacing-content: 0.75rem;
     
     /* Motion */
     --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
