@@ -14,34 +14,33 @@ export default {
     },
     extend: {
       colors: {
-        // New design system tokens
-        bg: "var(--bg)",
-        surface: "var(--surface)",
-        surfaceAlt: "var(--surface-alt)",
-        ink: "var(--text)",
-        inkMuted: "var(--text-muted)",
-        sage: {
-          DEFAULT: "var(--accent-sage)",
-          deep: "var(--accent-sage-deep)",
-        },
-        lavender: {
-          DEFAULT: "var(--accent-lavender)",
-          deep: "var(--accent-lavender-deep)",
-        },
-        chip: {
-          DEFAULT: "var(--chip)",
-          text: "var(--chip-text)",
-        },
+        // iOS-inspired palette
+        ink900: "hsl(var(--ink-900))",
+        ink700: "hsl(var(--ink-700))",
+        ink400: "hsl(var(--ink-400))",
+        panel: "hsl(var(--panel))",
+        canvas: "hsl(var(--canvas))",
+        stroke: "hsl(var(--stroke))",
         
-        // Legacy tokens for compatibility
+        // Pastel accents
+        pink: "hsl(var(--pink))",
+        lilac: "hsl(var(--lilac))",
+        olive: "hsl(var(--olive))",
+        butter: "hsl(var(--butter))",
+        sky: "hsl(var(--sky))",
+        blackPill: "hsl(var(--black-pill))",
+        
+        // States
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        danger: "hsl(var(--danger))",
+        
+        // Shadcn semantic tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
-        foreground: {
-          DEFAULT: "hsl(var(--foreground))",
-          muted: "hsl(var(--foreground-muted))",
-        },
+        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -70,32 +69,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warn: {
-          DEFAULT: "hsl(var(--warn))",
-          foreground: "hsl(var(--warn-foreground))",
-        },
-        glass: {
-          DEFAULT: "hsl(var(--glass-bg))",
-          border: "hsl(var(--glass-border))",
-        },
       },
       borderRadius: {
-        xl2: "var(--radius-lg)",
         card: "var(--radius-card)",
-        pill: "var(--radius-pill)",
+        chip: "var(--radius-chip)",
+        input: "var(--radius-input)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
+        card: "var(--shadow-card)",
+        fab: "var(--shadow-fab)",
         soft: "var(--shadow-soft)",
-        chip: "var(--shadow-chip)",
-        "elevation-1": "var(--elevation-1)",
-        "elevation-2": "var(--elevation-2)",
       },
       fontFamily: {
         sans: [
