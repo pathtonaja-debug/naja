@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AICompanion from "@/components/AICompanion";
 import { 
   Plus, 
   Search, 
@@ -37,6 +38,7 @@ const Duas = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loadingDuas, setLoadingDuas] = useState(true);
+  const [companionOpen, setCompanionOpen] = useState(false);
 
   useEffect(() => {
     loadDuas();
@@ -307,7 +309,8 @@ const Duas = () => {
         </Card>
       </main>
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Plus } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import AICompanion from "@/components/AICompanion";
 import { YearView } from "@/components/calendar/YearView";
 import { MonthView } from "@/components/calendar/MonthView";
 import { WeekView } from "@/components/calendar/WeekView";
@@ -41,6 +42,7 @@ const Calendar = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CalendarItem | undefined>();
   const [prefilledDate, setPrefilledDate] = useState<Date | undefined>();
+  const [companionOpen, setCompanionOpen] = useState(false);
 
   // Persist view selection
   useEffect(() => {
@@ -225,7 +227,8 @@ const Calendar = () => {
         prefilledDate={prefilledDate}
       />
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };

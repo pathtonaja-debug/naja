@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Bell, Settings, Moon, Globe, User, Sun } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import AICompanion from "@/components/AICompanion";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 
@@ -13,6 +14,7 @@ const Profile = () => {
   const { theme, setTheme } = useTheme();
   const [showHijri, setShowHijri] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [companionOpen, setCompanionOpen] = useState(false);
   const settings = [
     { icon: User, label: "Account Settings", subtitle: "Manage your profile" },
     { icon: Bell, label: "Notifications", subtitle: "Prayer & habit reminders" },
@@ -102,7 +104,8 @@ const Profile = () => {
         </div>
       </main>
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 };

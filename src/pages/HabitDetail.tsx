@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import BottomNav from "@/components/BottomNav";
+import AICompanion from "@/components/AICompanion";
 import { getHabitWithStats, getHabitLogs, deleteHabit } from "@/services/habitTracking";
 import type { Habit, HabitStats, HabitLog } from "@/services/habitTracking";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ export default function HabitDetail() {
   const [weeklyLogs, setWeeklyLogs] = useState<HabitLog[]>([]);
   const [monthlyLogs, setMonthlyLogs] = useState<HabitLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [companionOpen, setCompanionOpen] = useState(false);
 
   const loadData = async () => {
     if (!habitId) return;
@@ -256,7 +258,8 @@ export default function HabitDetail() {
         </motion.div>
       </div>
 
-      <BottomNav />
+      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
+      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
     </div>
   );
 }
