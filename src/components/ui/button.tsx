@@ -9,11 +9,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white/50 backdrop-blur-md text-foreground hover:bg-white/70 border border-white/30 rounded-pill shadow-[0_4px_16px_rgba(28,28,30,0.06)] dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20",
-        destructive: "bg-destructive/90 backdrop-blur-md text-destructive-foreground hover:bg-destructive border border-white/30 rounded-pill shadow-[0_4px_16px_rgba(28,28,30,0.06)]",
-        outline: "border border-white/30 bg-transparent backdrop-blur-md hover:bg-white/30 rounded-pill dark:border-white/20 dark:hover:bg-white/10",
-        secondary: "bg-secondary/80 backdrop-blur-md text-secondary-foreground hover:bg-secondary/90 border border-white/30 rounded-pill shadow-[0_4px_16px_rgba(28,28,30,0.06)]",
-        ghost: "hover:bg-white/30 backdrop-blur-md rounded-pill dark:hover:bg-white/10",
+        default: "bg-white/30 backdrop-blur-xl text-foreground hover:bg-white/50 border border-white/20 rounded-pill shadow-[0_8px_24px_rgba(28,28,30,0.08)] dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/15",
+        destructive: "bg-destructive/70 backdrop-blur-xl text-destructive-foreground hover:bg-destructive/90 border border-white/20 rounded-pill shadow-[0_8px_24px_rgba(28,28,30,0.08)]",
+        outline: "border border-white/20 bg-transparent backdrop-blur-xl hover:bg-white/20 rounded-pill dark:border-white/15 dark:hover:bg-white/10",
+        secondary: "bg-secondary/60 backdrop-blur-xl text-secondary-foreground hover:bg-secondary/80 border border-white/20 rounded-pill shadow-[0_8px_24px_rgba(28,28,30,0.08)]",
+        ghost: "hover:bg-white/20 backdrop-blur-xl rounded-pill dark:hover:bg-white/10",
         link: "text-foreground underline-offset-4 hover:underline",
       },
       size: {
