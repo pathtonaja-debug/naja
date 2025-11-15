@@ -25,11 +25,11 @@ export default {
         },
         
         // Pastel accents
-        pink: "var(--pink)",
-        lilac: "var(--lilac)",
-        olive: "var(--olive)",
-        butter: "var(--butter)",
-        sky: "var(--sky)",
+        pink: "hsl(var(--pink))",
+        lilac: "hsl(var(--lilac))",
+        olive: "hsl(var(--olive))",
+        butter: "hsl(var(--butter))",
+        sky: "hsl(var(--sky))",
         blackPill: "var(--black-pill)",
         
         // Legacy compatibility
@@ -87,7 +87,8 @@ export default {
         },
       },
       borderRadius: {
-        xl2: "var(--radius-lg)",
+        xl2: "2rem",
+        xl3: "2.5rem",
         card: "var(--radius-card)",
         pill: "var(--radius-pill)",
         lg: "var(--radius)",
@@ -97,8 +98,23 @@ export default {
       boxShadow: {
         soft: "var(--shadow-soft)",
         chip: "var(--shadow-chip)",
+        "glass": "var(--glass-shadow)",
         "elevation-1": "var(--elevation-1)",
         "elevation-2": "var(--elevation-2)",
+        "elevation-3": "var(--elevation-3)",
+      },
+      backgroundImage: {
+        "gradient-pink-butter": "var(--gradient-pink-butter)",
+        "gradient-lilac-sky": "var(--gradient-lilac-sky)",
+        "gradient-olive-butter": "var(--gradient-olive-butter)",
+        "gradient-pink-lilac": "var(--gradient-pink-lilac)",
+        "gradient-sky-pink": "var(--gradient-sky-pink)",
+        "gradient-subtle": "var(--gradient-subtle)",
+      },
+      backdropBlur: {
+        xs: "2px",
+        xl: "20px",
+        "2xl": "40px",
       },
       fontFamily: {
         sans: [

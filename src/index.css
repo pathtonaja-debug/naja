@@ -49,17 +49,20 @@
     --input: 60 11% 90%;
     --ring: 73 56% 75%;
     
-    /* Glass effects */
-    --glass-bg: 0 0% 100% / 0.65;
-    --glass-border: 0 0% 100% / 0.25;
+    /* Glass effects - frosted translucent */
+    --glass-bg: 0 0% 100% / 0.45;
+    --glass-border: 0 0% 100% / 0.18;
+    --glass-shadow: 0 8px 32px rgba(28, 28, 30, 0.08);
     
-    /* Elevation shadows */
-    --elevation-1: 0 8px 24px rgba(28, 28, 30, 0.06);
-    --elevation-2: 0 14px 36px rgba(28, 28, 30, 0.08);
+    /* Elevation shadows - softer */
+    --elevation-1: 0 4px 16px rgba(28, 28, 30, 0.04);
+    --elevation-2: 0 8px 24px rgba(28, 28, 30, 0.06);
+    --elevation-3: 0 12px 32px rgba(28, 28, 30, 0.08);
     
-    /* Radii */
-    --radius: 1.5rem;
-    --radius-card: 1.5rem;
+    /* Radii - higher for modern look */
+    --radius: 1.75rem;
+    --radius-card: 2rem;
+    --radius-xl: 2.5rem;
     --radius-pill: 9999px;
     
     /* Motion */
@@ -67,8 +70,13 @@
     --duration-fast: 140ms;
     --duration-medium: 220ms;
     
-    /* Gradients */
-    --gradient-card: linear-gradient(180deg, rgba(247,247,244,0.9), rgba(255,254,251,0.7));
+    /* Soft gradients - pastel blends */
+    --gradient-pink-butter: linear-gradient(135deg, hsl(336 75% 87%) 0%, hsl(50 72% 80%) 100%);
+    --gradient-lilac-sky: linear-gradient(135deg, hsl(260 58% 87%) 0%, hsl(213 70% 90%) 100%);
+    --gradient-olive-butter: linear-gradient(135deg, hsl(73 56% 75%) 0%, hsl(50 72% 80%) 100%);
+    --gradient-pink-lilac: linear-gradient(135deg, hsl(336 75% 87%) 0%, hsl(260 58% 87%) 100%);
+    --gradient-sky-pink: linear-gradient(135deg, hsl(213 70% 90%) 0%, hsl(336 75% 87%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(60 17% 96% / 0.6) 0%, hsl(45 100% 99% / 0.4) 100%);
   }
 
   .dark {
@@ -84,13 +92,20 @@
     
     --border: 240 2% 23%;             /* #3A3A3C */
     
-    --glass-bg: 240 4% 11% / 0.6;
-    --glass-border: 0 0% 100% / 0.08;
+    --glass-bg: 240 4% 11% / 0.4;
+    --glass-border: 0 0% 100% / 0.12;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     
-    --elevation-1: 0 10px 28px rgba(0, 0, 0, 0.45);
-    --elevation-2: 0 18px 48px rgba(0, 0, 0, 0.55);
+    --elevation-1: 0 4px 16px rgba(0, 0, 0, 0.35);
+    --elevation-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --elevation-3: 0 12px 32px rgba(0, 0, 0, 0.55);
     
-    --gradient-card: linear-gradient(180deg, rgba(28,28,30,0.9), rgba(14,14,16,0.7));
+    --gradient-pink-butter: linear-gradient(135deg, hsl(336 75% 77% / 0.8) 0%, hsl(50 72% 70% / 0.8) 100%);
+    --gradient-lilac-sky: linear-gradient(135deg, hsl(260 58% 77% / 0.8) 0%, hsl(213 70% 80% / 0.8) 100%);
+    --gradient-olive-butter: linear-gradient(135deg, hsl(73 56% 65% / 0.8) 0%, hsl(50 72% 70% / 0.8) 100%);
+    --gradient-pink-lilac: linear-gradient(135deg, hsl(336 75% 77% / 0.8) 0%, hsl(260 58% 77% / 0.8) 100%);
+    --gradient-sky-pink: linear-gradient(135deg, hsl(213 70% 80% / 0.8) 0%, hsl(336 75% 77% / 0.8) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(240 4% 11% / 0.6) 0%, hsl(240 7% 6% / 0.4) 100%);
   }
 }
 
