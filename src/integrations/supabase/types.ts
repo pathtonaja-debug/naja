@@ -284,6 +284,7 @@ export type Database = {
           created_at: string | null
           device_id: string | null
           frequency: string | null
+          icon: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -297,6 +298,7 @@ export type Database = {
           created_at?: string | null
           device_id?: string | null
           frequency?: string | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -310,6 +312,7 @@ export type Database = {
           created_at?: string | null
           device_id?: string | null
           frequency?: string | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
