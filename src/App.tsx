@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import ErrorBoundary from "./components/ErrorBoundary";
-import ChatHead from "./components/ChatHead";
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
@@ -16,14 +15,10 @@ import Journal from "./pages/Journal";
 import HabitTracker from "./pages/HabitTracker";
 import HabitCategory from "./pages/HabitCategory";
 import HabitDetail from "./pages/HabitDetail";
-import Duas from "./pages/Duas";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
-import Quran from "./pages/Quran";
-import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import CompanionSetup from "./pages/CompanionSetup";
 
 const queryClient = new QueryClient();
 
@@ -68,12 +63,10 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ChatHead />
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/companion-setup" element={<CompanionSetup />} />
             <Route
               path="/dashboard"
               element={
@@ -123,14 +116,6 @@ const App = () => (
               }
             />
             <Route
-              path="/duas"
-              element={
-                <ProtectedRoute>
-                  <Duas />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/progress"
               element={
                 <ProtectedRoute>
@@ -143,22 +128,6 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/quran"
-              element={
-                <ProtectedRoute>
-                  <Quran />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/community"
-              element={
-                <ProtectedRoute>
-                  <Community />
                 </ProtectedRoute>
               }
             />

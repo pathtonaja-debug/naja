@@ -1,15 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Home, BookOpen, Target, TrendingUp, UserCircle, Calendar, Heart, Menu, Bot, Users, Book } from "lucide-react";
+import { Home, Target, TrendingUp, UserCircle, Calendar, BookOpen, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-interface BottomNavProps {
-  onChatbotOpen?: () => void;
-}
-
-const BottomNav = ({ onChatbotOpen }: BottomNavProps) => {
+const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,15 +17,12 @@ const BottomNav = ({ onChatbotOpen }: BottomNavProps) => {
 
   const secondaryTabs = [
     { icon: TrendingUp, path: "/progress", label: "Progress" },
+    { icon: UserCircle, path: "/profile", label: "Profile" },
   ];
 
   const menuItems = [
     { icon: BookOpen, path: "/journal", label: "Journal" },
     { icon: Target, path: "/habits", label: "Habits" },
-    { icon: Heart, path: "/duas", label: "Duas" },
-    { icon: Book, path: "/quran", label: "Quran" },
-    { icon: Users, path: "/community", label: "Community" },
-    { icon: UserCircle, path: "/profile", label: "Profile" },
   ];
 
   const handleMenuItemClick = (path: string) => {
@@ -136,21 +129,6 @@ const BottomNav = ({ onChatbotOpen }: BottomNavProps) => {
                 </Button>
               );
             })}
-            
-            {/* Chatbot button */}
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={onChatbotOpen}
-              className={cn(
-                "w-11 h-11 rounded-full transition-all",
-                "duration-[var(--duration-medium)] ease-[var(--easing-smooth)]",
-                "bg-transparent text-foreground/60 hover:bg-muted/50 hover:text-foreground"
-              )}
-              aria-label="AI Companion"
-            >
-              <Bot className="w-5 h-5" />
-            </Button>
           </div>
         </div>
       </div>

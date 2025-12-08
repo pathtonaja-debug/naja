@@ -3,7 +3,6 @@ import { Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { TopBar } from "@/components/ui/top-bar";
 import BottomNav from "@/components/BottomNav";
-import AICompanion from "@/components/AICompanion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CategoryCard from "@/components/habits/CategoryCard";
@@ -11,26 +10,21 @@ import CreateHabitSheet from "@/components/habits/CreateHabitSheet";
 import { initializeDefaultHabits, getAllHabits, getCategoryProgress } from "@/services/habitTracking";
 import type { CategoryProgress } from "@/services/habitTracking";
 
+// MVP: Limit to 4 categories
+const MVP_CATEGORIES = ["Prayer", "Dhikr", "Reflection", "Quran"];
+
 const categoryIcons: Record<string, string> = {
-  "Salah": "sunrise",
-  "Quran": "book-open",
+  "Prayer": "sunrise",
   "Dhikr": "sparkles",
-  "Dua": "hand",
-  "Fasting": "moon",
-  "Charity": "heart",
-  "One good deed of the day": "smile",
-  "Custom": "target"
+  "Reflection": "heart",
+  "Quran": "book-open",
 };
 
 const categoryColors: Record<string, string> = {
-  "Salah": "#FFE5D9",
-  "Quran": "#BDB2FF",
+  "Prayer": "#FFE5D9",
   "Dhikr": "#FFC6FF",
-  "Dua": "#CAFFBF",
-  "Fasting": "#9BF6FF",
-  "Charity": "#FFADAD",
-  "One good deed of the day": "#A0C4FF",
-  "Custom": "#E8EAED"
+  "Reflection": "#CAFFBF",
+  "Quran": "#BDB2FF",
 };
 
 export default function HabitTracker() {
@@ -38,14 +32,15 @@ export default function HabitTracker() {
   const [categories, setCategories] = useState<CategoryProgress[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
-  const [companionOpen, setCompanionOpen] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
     try {
       await initializeDefaultHabits();
       const progress = await getCategoryProgress();
-      setCategories(progress);
+      // Filter to MVP categories only
+      const mvpProgress = progress.filter(cat => MVP_CATEGORIES.includes(cat.category));
+      setCategories(mvpProgress);
     } catch (error) {
       console.error("Error loading habits:", error);
     } finally {
@@ -62,25 +57,23 @@ export default function HabitTracker() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-accent/5 pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <TopBar title="Habit Tracker" />
 
-      <div className="px-4 pt-safe">
-        {/* Header */}
+      <div className="px-4 pt-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-[28px] font-bold text-foreground mb-1">
+          <h1 className="text-2xl font-bold text-foreground mb-1">
             Habit Tracker
           </h1>
-          <p className="text-[15px] text-muted-foreground">
-            Build consistency with faith
+          <p className="text-muted-foreground">
+            Build consistency with faith (max 4 habits)
           </p>
         </motion.div>
 
-        {/* Search */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -90,21 +83,20 @@ export default function HabitTracker() {
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
-              placeholder="Search categories..."
+              placeholder="Search habits..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 bg-background/40 backdrop-blur-xl border-border/50 rounded-2xl"
+              className="pl-12 h-12 rounded-2xl"
             />
           </div>
         </motion.div>
 
-        {/* Categories Grid */}
         {loading ? (
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="h-32 bg-background/40 backdrop-blur-xl rounded-3xl animate-pulse"
+                className="h-24 bg-muted rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -138,19 +130,18 @@ export default function HabitTracker() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
               <Search className="w-10 h-10 text-muted-foreground" />
             </div>
-            <h3 className="text-[17px] font-semibold text-foreground mb-2">
-              No categories found
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No habits found
             </h3>
-            <p className="text-[15px] text-muted-foreground">
+            <p className="text-muted-foreground">
               Try adjusting your search
             </p>
           </motion.div>
         )}
 
-        {/* Floating Add Button */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -173,8 +164,7 @@ export default function HabitTracker() {
         onSuccess={loadData}
       />
 
-      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
-      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
+      <BottomNav />
     </div>
   );
 }
