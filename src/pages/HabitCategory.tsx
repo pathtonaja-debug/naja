@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import HabitCard from "@/components/habits/HabitCard";
 import BottomNav from "@/components/BottomNav";
-import AICompanion from "@/components/AICompanion";
 import { getHabitsByCategory, getTodayHabitLogs, logHabitCompletion } from "@/services/habitTracking";
 import type { Habit, HabitLog } from "@/services/habitTracking";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ export default function HabitCategory() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<Map<string, HabitLog>>(new Map());
   const [loading, setLoading] = useState(true);
-  const [companionOpen, setCompanionOpen] = useState(false);
 
   const loadData = async () => {
     if (!category) return;
@@ -146,8 +144,7 @@ export default function HabitCategory() {
         )}
       </div>
 
-      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
-      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
+      <BottomNav />
     </div>
   );
 }

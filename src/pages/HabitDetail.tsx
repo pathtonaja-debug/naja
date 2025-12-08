@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit, Trash2, Calendar as CalendarIcon, Flame, Trophy, TrendingUp } from "lucide-react";
+import { ArrowLeft, Trash2, Flame, Trophy, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import BottomNav from "@/components/BottomNav";
-import AICompanion from "@/components/AICompanion";
 import { getHabitWithStats, getHabitLogs, deleteHabit } from "@/services/habitTracking";
 import type { Habit, HabitStats, HabitLog } from "@/services/habitTracking";
 import { toast } from "sonner";
@@ -21,7 +19,6 @@ export default function HabitDetail() {
   const [weeklyLogs, setWeeklyLogs] = useState<HabitLog[]>([]);
   const [monthlyLogs, setMonthlyLogs] = useState<HabitLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [companionOpen, setCompanionOpen] = useState(false);
 
   const loadData = async () => {
     if (!habitId) return;
@@ -258,8 +255,7 @@ export default function HabitDetail() {
         </motion.div>
       </div>
 
-      <AICompanion onClose={() => setCompanionOpen(false)} isOpen={companionOpen} />
-      <BottomNav onChatbotOpen={() => setCompanionOpen(true)} />
+      <BottomNav />
     </div>
   );
 }
