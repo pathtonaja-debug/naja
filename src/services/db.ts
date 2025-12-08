@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { getDeviceId } from "@/lib/deviceId";
+import { getAuthenticatedUserId } from "@/lib/auth";
 import { 
   reflectionSchema, 
   habitSchema, 
@@ -19,12 +19,12 @@ export async function addReflection(entry: {
 }) {
   // Validate input
   const validated = reflectionSchema.parse(entry);
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('reflections')
     .insert({
-      device_id: deviceId,
+      user_id: userId,
       ...validated,
     })
     .select()
@@ -35,9 +35,9 @@ export async function addReflection(entry: {
 }
 
 export async function uploadReflectionPhoto(file: File): Promise<string> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   const fileExt = file.name.split('.').pop();
-  const fileName = `${deviceId}/${Date.now()}.${fileExt}`;
+  const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
     .from('reflections')
@@ -53,12 +53,12 @@ export async function uploadReflectionPhoto(file: File): Promise<string> {
 }
 
 export async function listReflections() {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('reflections')
     .select('*')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .order('date', { ascending: false });
     
   if (error) throw error;
@@ -67,12 +67,12 @@ export async function listReflections() {
 
 // Habits
 export async function listHabits() {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data: habits, error } = await supabase
     .from('habits')
     .select('*, habit_logs(*)')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('is_active', true);
     
   if (error) throw error;
@@ -114,7 +114,7 @@ function calculateStreak(logs: any[]) {
 }
 
 export async function toggleHabit(id: string) {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const today = new Date().toISOString().split('T')[0];
   
@@ -123,7 +123,7 @@ export async function toggleHabit(id: string) {
     .from('habit_logs')
     .select('*')
     .eq('habit_id', id)
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('date', today)
     .maybeSingle();
     
@@ -141,7 +141,7 @@ export async function toggleHabit(id: string) {
       .from('habit_logs')
       .insert({
         habit_id: id,
-        device_id: deviceId,
+        user_id: userId,
         date: today,
         completed: true,
       });
@@ -157,7 +157,7 @@ export async function createHabit(habit: {
   icon?: string;
   target_count?: number;
 }): Promise<any> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habits')
@@ -166,7 +166,7 @@ export async function createHabit(habit: {
       category: habit.category || 'spiritual',
       frequency: habit.frequency || 'daily',
       target_count: habit.target_count || 1,
-      device_id: deviceId,
+      user_id: userId,
       is_active: true
     })
     .select()
@@ -198,14 +198,14 @@ export async function deleteHabit(id: string): Promise<void> {
 }
 
 export async function getHabitProgress(userId?: string, days: number = 7): Promise<any> {
-  const deviceId = getDeviceId();
+  const authenticatedUserId = await getAuthenticatedUserId();
   const endDate = new Date().toISOString().split('T')[0];
   const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const { data: habits, error: habitsError } = await supabase
     .from('habits')
     .select('id, name')
-    .eq('device_id', deviceId)
+    .eq('user_id', authenticatedUserId)
     .eq('is_active', true);
 
   if (habitsError) throw habitsError;
@@ -226,13 +226,13 @@ export async function getHabitProgress(userId?: string, days: number = 7): Promi
 }
 
 export async function initializeDefaultHabits(): Promise<void> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   // Check if user already has habits
   const { data: existing } = await supabase
     .from('habits')
     .select('id')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .limit(1);
 
   if (existing && existing.length > 0) return;
@@ -255,7 +255,7 @@ export async function initializeDefaultHabits(): Promise<void> {
     .from('habits')
     .insert(defaults.map(d => ({
       ...d,
-      device_id: deviceId,
+      user_id: userId,
       frequency: 'daily',
       is_active: true
     })));
@@ -265,12 +265,12 @@ export async function initializeDefaultHabits(): Promise<void> {
 
 // Duas
 export async function listDuas() {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('duas')
     .select('*')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
     
   if (error) throw error;
@@ -280,12 +280,12 @@ export async function listDuas() {
 export async function saveDua(dua: { title: string; category: string; content: any }) {
   // Validate input
   const validated = duaSchema.parse(dua);
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('duas')
     .insert({
-      device_id: deviceId,
+      user_id: userId,
       ...validated,
     })
     .select()
@@ -299,12 +299,12 @@ export async function saveDua(dua: { title: string; category: string; content: a
 export async function saveDhikrSession(phrase: string, count: number, target?: number) {
   // Validate input
   const validated = dhikrSessionSchema.parse({ phrase, count, target });
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('dhikr_sessions')
     .insert({
-      device_id: deviceId,
+      user_id: userId,
       ...validated,
       date: new Date().toISOString().split('T')[0],
     })

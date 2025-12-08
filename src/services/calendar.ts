@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { CalendarItem } from "@/types/calendar";
-import { getDeviceId } from "@/lib/deviceId";
+import { getAuthenticatedUserId } from "@/lib/auth";
 
 // Convert database format to app format
 const dbToCalendarItem = (item: any): CalendarItem => ({
@@ -24,29 +24,35 @@ const dbToCalendarItem = (item: any): CalendarItem => ({
 });
 
 // Convert app format to database format
-const calendarItemToDb = (item: Partial<CalendarItem>) => ({
-  type: item.type,
-  title: item.title,
-  notes: item.notes,
-  start_date_time: item.startDateTime,
-  end_date_time: item.endDateTime,
-  is_all_day: item.isAllDay,
-  category: item.category,
-  completion: item.completion,
-  calendar_source: item.calendarSource,
-  color: item.color,
-  repeat_rule: item.repeatRule,
-  reminder: item.reminder,
-  device_id: getDeviceId(),
-});
+const calendarItemToDb = async (item: Partial<CalendarItem>) => {
+  const userId = await getAuthenticatedUserId();
+  return {
+    type: item.type,
+    title: item.title,
+    notes: item.notes,
+    start_date_time: item.startDateTime,
+    end_date_time: item.endDateTime,
+    is_all_day: item.isAllDay,
+    category: item.category,
+    completion: item.completion,
+    calendar_source: item.calendarSource,
+    color: item.color,
+    repeat_rule: item.repeatRule,
+    reminder: item.reminder,
+    user_id: userId,
+  };
+};
 
 export const getCalendarItems = async (
   startDate: Date,
   endDate: Date
 ): Promise<CalendarItem[]> => {
+  const userId = await getAuthenticatedUserId();
+  
   const { data, error } = await supabase
     .from("calendar_items")
     .select("*")
+    .eq("user_id", userId)
     .gte("start_date_time", startDate.toISOString())
     .lte("start_date_time", endDate.toISOString())
     .order("start_date_time", { ascending: true });
@@ -68,9 +74,11 @@ export const getCalendarItemsByDate = async (date: Date): Promise<CalendarItem[]
 export const createCalendarItem = async (
   item: Omit<CalendarItem, "id" | "createdAt" | "updatedAt">
 ): Promise<CalendarItem> => {
+  const dbItem = await calendarItemToDb(item);
+  
   const { data, error } = await supabase
     .from("calendar_items")
-    .insert(calendarItemToDb(item))
+    .insert(dbItem)
     .select()
     .single();
 
@@ -82,9 +90,11 @@ export const updateCalendarItem = async (
   id: string,
   updates: Partial<CalendarItem>
 ): Promise<CalendarItem> => {
+  const dbUpdates = await calendarItemToDb(updates);
+  
   const { data, error } = await supabase
     .from("calendar_items")
-    .update(calendarItemToDb(updates))
+    .update(dbUpdates)
     .eq("id", id)
     .select()
     .single();
