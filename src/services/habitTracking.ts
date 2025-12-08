@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { getDeviceId } from "@/lib/deviceId";
+import { getAuthenticatedUserId } from "@/lib/auth";
 
 export interface Habit {
   id: string;
@@ -44,12 +44,12 @@ export interface CategoryProgress {
 
 // Get all habits
 export async function getAllHabits(): Promise<Habit[]> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habits')
     .select('*')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('is_active', true)
     .order('created_at', { ascending: true });
     
@@ -59,12 +59,12 @@ export async function getAllHabits(): Promise<Habit[]> {
 
 // Get habits by category
 export async function getHabitsByCategory(category: string): Promise<Habit[]> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habits')
     .select('*')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('category', category)
     .eq('is_active', true)
     .order('created_at', { ascending: true });
@@ -96,13 +96,13 @@ export async function getHabitWithStats(habitId: string) {
 
 // Create new habit
 export async function createHabit(habit: Omit<Habit, 'id' | 'created_at'>): Promise<Habit> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habits')
     .insert({
       ...habit,
-      device_id: deviceId,
+      user_id: userId,
       is_active: true
     })
     .select()
@@ -137,14 +137,14 @@ export async function deleteHabit(id: string): Promise<void> {
 
 // Log habit completion
 export async function logHabitCompletion(habitId: string, completed: boolean, count?: number): Promise<void> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   const today = new Date().toISOString().split('T')[0];
   
   const { data: existingLog } = await supabase
     .from('habit_logs')
     .select('*')
     .eq('habit_id', habitId)
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('date', today)
     .maybeSingle();
     
@@ -160,7 +160,7 @@ export async function logHabitCompletion(habitId: string, completed: boolean, co
       .from('habit_logs')
       .insert({
         habit_id: habitId,
-        device_id: deviceId,
+        user_id: userId,
         date: today,
         completed,
         count
@@ -172,13 +172,13 @@ export async function logHabitCompletion(habitId: string, completed: boolean, co
 
 // Get today's habit logs
 export async function getTodayHabitLogs(): Promise<HabitLog[]> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   const today = new Date().toISOString().split('T')[0];
   
   const { data, error } = await supabase
     .from('habit_logs')
     .select('*')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('date', today);
     
   if (error) throw error;
@@ -187,13 +187,13 @@ export async function getTodayHabitLogs(): Promise<HabitLog[]> {
 
 // Get habit logs for date range
 export async function getHabitLogs(habitId: string, startDate: string, endDate: string): Promise<HabitLog[]> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habit_logs')
     .select('*')
     .eq('habit_id', habitId)
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .gte('date', startDate)
     .lte('date', endDate)
     .order('date', { ascending: true });
@@ -204,13 +204,13 @@ export async function getHabitLogs(habitId: string, startDate: string, endDate: 
 
 // Get category progress for today
 export async function getCategoryProgress(): Promise<CategoryProgress[]> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   const today = new Date().toISOString().split('T')[0];
   
   const { data: habits } = await supabase
     .from('habits')
     .select('id, category')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('is_active', true);
     
   if (!habits) return [];
@@ -218,7 +218,7 @@ export async function getCategoryProgress(): Promise<CategoryProgress[]> {
   const { data: logs } = await supabase
     .from('habit_logs')
     .select('habit_id, completed')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .eq('date', today);
     
   const logMap = new Map(logs?.map(l => [l.habit_id, l.completed]) || []);
@@ -242,12 +242,12 @@ export async function getCategoryProgress(): Promise<CategoryProgress[]> {
 
 // Initialize default habits
 export async function initializeDefaultHabits(): Promise<void> {
-  const deviceId = getDeviceId();
+  const userId = await getAuthenticatedUserId();
   
   const { data: existing } = await supabase
     .from('habits')
     .select('id')
-    .eq('device_id', deviceId)
+    .eq('user_id', userId)
     .limit(1);
     
   if (existing && existing.length > 0) return;
@@ -269,7 +269,7 @@ export async function initializeDefaultHabits(): Promise<void> {
     .from('habits')
     .insert(defaults.map(d => ({
       ...d,
-      device_id: deviceId,
+      user_id: userId,
       frequency: 'daily',
       is_active: true,
       is_all_day: !d.habit_time,

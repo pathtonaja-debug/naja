@@ -32,7 +32,7 @@ export type Database = {
           title: string
           type: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           calendar_source?: string | null
@@ -51,7 +51,7 @@ export type Database = {
           title: string
           type: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           calendar_source?: string | null
@@ -70,9 +70,17 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "calendar_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       companion_profiles: {
         Row: {
@@ -151,7 +159,7 @@ export type Database = {
           id: string
           phrase: string
           target: number | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           count: number
@@ -161,7 +169,7 @@ export type Database = {
           id?: string
           phrase: string
           target?: number | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           count?: number
@@ -171,7 +179,7 @@ export type Database = {
           id?: string
           phrase?: string
           target?: number | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -194,7 +202,7 @@ export type Database = {
           reminder_time: string | null
           title: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           category?: string | null
@@ -206,7 +214,7 @@ export type Database = {
           reminder_time?: string | null
           title: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           category?: string | null
@@ -218,7 +226,7 @@ export type Database = {
           reminder_time?: string | null
           title?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -239,7 +247,7 @@ export type Database = {
           device_id: string | null
           habit_id: string
           id: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           completed?: boolean | null
@@ -249,7 +257,7 @@ export type Database = {
           device_id?: string | null
           habit_id: string
           id?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           completed?: boolean | null
@@ -259,7 +267,7 @@ export type Database = {
           device_id?: string | null
           habit_id?: string
           id?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -290,7 +298,7 @@ export type Database = {
           monthly_breakdown: Json | null
           total_completions: number | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           weekly_breakdown: Json | null
           yearly_breakdown: Json | null
         }
@@ -305,7 +313,7 @@ export type Database = {
           monthly_breakdown?: Json | null
           total_completions?: number | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           weekly_breakdown?: Json | null
           yearly_breakdown?: Json | null
         }
@@ -320,7 +328,7 @@ export type Database = {
           monthly_breakdown?: Json | null
           total_completions?: number | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           weekly_breakdown?: Json | null
           yearly_breakdown?: Json | null
         }
@@ -353,7 +361,7 @@ export type Database = {
           sync_to_calendar: boolean | null
           target_count: number | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           category?: string | null
@@ -373,7 +381,7 @@ export type Database = {
           sync_to_calendar?: boolean | null
           target_count?: number | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           category?: string | null
@@ -393,7 +401,7 @@ export type Database = {
           sync_to_calendar?: boolean | null
           target_count?: number | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -532,7 +540,7 @@ export type Database = {
           prompt: string | null
           text: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           voice_note_url: string | null
         }
         Insert: {
@@ -545,7 +553,7 @@ export type Database = {
           prompt?: string | null
           text: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           voice_note_url?: string | null
         }
         Update: {
@@ -558,7 +566,7 @@ export type Database = {
           prompt?: string | null
           text?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           voice_note_url?: string | null
         }
         Relationships: [

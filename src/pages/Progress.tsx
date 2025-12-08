@@ -6,7 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getDeviceId } from "@/lib/deviceId";
+import { getAuthenticatedUserId } from "@/lib/auth";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
 
 interface ProgressStats {
@@ -34,41 +34,45 @@ const Progress = () => {
   }, []);
 
   const loadProgressStats = async () => {
-    const deviceId = getDeviceId();
-    const now = new Date();
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    try {
+      const userId = await getAuthenticatedUserId();
+      const now = new Date();
+      const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
-    // Fetch habit logs for the week
-    const { data: habitLogs } = await supabase
-      .from('habit_logs')
-      .select('*')
-      .eq('device_id', deviceId)
-      .gte('date', format(weekStart, 'yyyy-MM-dd'))
-      .lte('date', format(weekEnd, 'yyyy-MM-dd'));
+      // Fetch habit logs for the week
+      const { data: habitLogs } = await supabase
+        .from('habit_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('date', format(weekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
 
-    // Calculate stats
-    const completedDays = habitLogs
-      ? [...new Set(habitLogs.filter(log => log.completed).map(log => log.date))]
-          .map(date => new Date(date))
-      : [];
+      // Calculate stats
+      const completedDays = habitLogs
+        ? [...new Set(habitLogs.filter(log => log.completed).map(log => log.date))]
+            .map(date => new Date(date))
+        : [];
 
-    const totalCompletions = habitLogs?.filter(log => log.completed).length || 0;
-    const weeklyConsistency = completedDays.length > 0 
-      ? Math.round((completedDays.length / 7) * 100) 
-      : 0;
+      const totalCompletions = habitLogs?.filter(log => log.completed).length || 0;
+      const weeklyConsistency = completedDays.length > 0 
+        ? Math.round((completedDays.length / 7) * 100) 
+        : 0;
 
-    // Calculate streaks
-    const { currentStreak, bestStreak } = calculateStreaks(completedDays);
+      // Calculate streaks
+      const { currentStreak, bestStreak } = calculateStreaks(completedDays);
 
-    setStats({
-      currentStreak,
-      bestStreak,
-      weeklyConsistency,
-      completedDays,
-      totalCompletions,
-      weeklyGoal: 7
-    });
+      setStats({
+        currentStreak,
+        bestStreak,
+        weeklyConsistency,
+        completedDays,
+        totalCompletions,
+        weeklyGoal: 7
+      });
+    } catch (error) {
+      console.error("Failed to load progress stats:", error);
+    }
   };
 
   const calculateStreaks = (dates: Date[]) => {
