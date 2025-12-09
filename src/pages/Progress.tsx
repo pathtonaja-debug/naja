@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getAuthenticatedUserId } from "@/lib/auth";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, subDays } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProgressStats {
   currentStreak: number;
@@ -20,6 +21,7 @@ interface ProgressStats {
 
 const Progress = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<ProgressStats>({
     currentStreak: 0,
     bestStreak: 0,
@@ -35,6 +37,7 @@ const Progress = () => {
 
   const loadProgressStats = async () => {
     try {
+      setLoading(true);
       const userId = await getAuthenticatedUserId();
       const now = new Date();
       const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -48,7 +51,7 @@ const Progress = () => {
         .gte('date', format(weekStart, 'yyyy-MM-dd'))
         .lte('date', format(weekEnd, 'yyyy-MM-dd'));
 
-      // Calculate stats
+      // Calculate unique completed days
       const completedDays = habitLogs
         ? [...new Set(habitLogs.filter(log => log.completed).map(log => log.date))]
             .map(date => new Date(date))
@@ -59,8 +62,18 @@ const Progress = () => {
         ? Math.round((completedDays.length / 7) * 100) 
         : 0;
 
-      // Calculate streaks
-      const { currentStreak, bestStreak } = calculateStreaks(completedDays);
+      // Fetch all habit logs for streak calculation (last 30 days)
+      const thirtyDaysAgo = format(subDays(now, 30), 'yyyy-MM-dd');
+      const { data: allLogs } = await supabase
+        .from('habit_logs')
+        .select('date, completed')
+        .eq('user_id', userId)
+        .eq('completed', true)
+        .gte('date', thirtyDaysAgo)
+        .order('date', { ascending: false });
+
+      // Calculate streaks properly
+      const { currentStreak, bestStreak } = calculateStreaks(allLogs || []);
 
       setStats({
         currentStreak,
@@ -72,41 +85,72 @@ const Progress = () => {
       });
     } catch (error) {
       console.error("Failed to load progress stats:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const calculateStreaks = (dates: Date[]) => {
-    if (dates.length === 0) return { currentStreak: 0, bestStreak: 0 };
+  const calculateStreaks = (logs: { date: string; completed: boolean }[]) => {
+    if (!logs || logs.length === 0) return { currentStreak: 0, bestStreak: 0 };
 
-    const sortedDates = dates.sort((a, b) => a.getTime() - b.getTime());
-    let currentStreak = 1;
-    let bestStreak = 1;
-    let tempStreak = 1;
+    // Get unique dates where habits were completed
+    const uniqueDates = [...new Set(logs.map(l => l.date))].sort().reverse();
+    
+    if (uniqueDates.length === 0) return { currentStreak: 0, bestStreak: 0 };
 
-    for (let i = 1; i < sortedDates.length; i++) {
-      const diffDays = Math.floor((sortedDates[i].getTime() - sortedDates[i-1].getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 1) {
-        tempStreak++;
-        bestStreak = Math.max(bestStreak, tempStreak);
-      } else {
-        tempStreak = 1;
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+
+    // Calculate current streak
+    let currentStreak = 0;
+    let checkDate = today;
+    
+    // Check if user completed today or yesterday (streak can continue from yesterday)
+    if (uniqueDates.includes(today)) {
+      checkDate = today;
+    } else if (uniqueDates.includes(yesterday)) {
+      checkDate = yesterday;
+    } else {
+      // Streak broken - no activity today or yesterday
+      return { currentStreak: 0, bestStreak: calculateBestStreak(uniqueDates) };
+    }
+
+    // Count consecutive days
+    for (let i = 0; i < 30; i++) {
+      const dateToCheck = format(subDays(new Date(checkDate), i), 'yyyy-MM-dd');
+      if (uniqueDates.includes(dateToCheck)) {
+        currentStreak++;
+      } else if (i > 0) {
+        break;
       }
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const lastDate = sortedDates[sortedDates.length - 1];
-    lastDate.setHours(0, 0, 0, 0);
-    const daysSinceLastActivity = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    const bestStreak = calculateBestStreak(uniqueDates);
 
-    if (daysSinceLastActivity <= 1) {
-      currentStreak = tempStreak;
-    } else {
-      currentStreak = 0;
+    return { currentStreak, bestStreak: Math.max(currentStreak, bestStreak) };
+  };
+
+  const calculateBestStreak = (dates: string[]) => {
+    if (dates.length === 0) return 0;
+
+    const sortedDates = dates.sort();
+    let maxStreak = 1;
+    let currentStreak = 1;
+
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prevDate = new Date(sortedDates[i - 1]);
+      const currDate = new Date(sortedDates[i]);
+      const diffDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+      } else {
+        currentStreak = 1;
+      }
     }
 
-    return { currentStreak, bestStreak };
+    return maxStreak;
   };
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -114,6 +158,26 @@ const Progress = () => {
     start: startOfWeek(new Date(), { weekStartsOn: 1 }), 
     end: endOfWeek(new Date(), { weekStartsOn: 1 }) 
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-24">
+        <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+          <div className="flex items-center gap-3">
+            <Button size="icon" variant="ghost" onClick={() => navigate('/dashboard')} className="rounded-full">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl font-semibold text-foreground">Progress</h1>
+          </div>
+        </header>
+        <main className="px-6 pt-6 space-y-6">
+          <Skeleton className="h-64 rounded-3xl" />
+          <Skeleton className="h-48 rounded-3xl" />
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -199,7 +263,7 @@ const Progress = () => {
 
         {/* Tips Card */}
         <Card className="border-border bg-card rounded-3xl p-6">
-          <h3 className="text-foreground font-medium text-lg mb-3">💡 Keep Going!</h3>
+          <h3 className="text-foreground font-medium text-lg mb-3">Keep Going!</h3>
           <p className="text-muted-foreground text-sm">
             Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
           </p>

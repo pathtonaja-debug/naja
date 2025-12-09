@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { z } from "zod";
+
+// Validation schemas
+const emailSchema = z.string().email("Please enter a valid email address");
+const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+const displayNameSchema = z.string().min(1, "Display name is required").max(100, "Display name too long");
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,15 +20,25 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard", { replace: true });
+      }
+      setCheckingSession(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        navigate("/dashboard", { replace: true });
       }
     });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -29,12 +46,19 @@ export default function Auth() {
     setLoading(true);
 
     try {
+      // Validate inputs
+      emailSchema.parse(email);
+      passwordSchema.parse(password);
+      if (isSignUp) {
+        displayNameSchema.parse(displayName);
+      }
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               display_name: displayName,
             },
@@ -42,7 +66,8 @@ export default function Auth() {
         });
 
         if (error) throw error;
-        toast.success("Account created! Please check your email to confirm.");
+        toast.success("Account created! Redirecting...");
+        navigate("/onboarding", { replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -51,19 +76,41 @@ export default function Auth() {
 
         if (error) throw error;
         toast.success("Welcome back!");
-        navigate("/");
+        navigate("/dashboard", { replace: true });
       }
     } catch (error: any) {
-      toast.error(error.message || "Authentication failed");
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+      } else if (error.message?.includes("User already registered")) {
+        toast.error("This email is already registered. Please sign in.");
+        setIsSignUp(false);
+      } else if (error.message?.includes("Invalid login credentials")) {
+        toast.error("Invalid email or password. Please try again.");
+      } else {
+        toast.error(error.message || "Authentication failed");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-almond/20 via-surface to-beige/20 p-4">
-      <Card className="w-full max-w-md backdrop-blur-xl bg-surface/80 border-stroke/30">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background p-4">
+      <Card className="w-full max-w-md backdrop-blur-xl bg-card/80 border-border/30">
         <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-3xl">🌿</span>
+            </div>
+          </div>
           <CardTitle className="text-2xl font-bold text-center">
             {isSignUp ? "Create Account" : "Welcome Back"}
           </CardTitle>
@@ -84,6 +131,7 @@ export default function Auth() {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   required={isSignUp}
+                  disabled={loading}
                 />
               </div>
             )}
@@ -96,6 +144,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -108,17 +157,26 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                disabled={loading}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {isSignUp ? "Creating Account..." : "Signing In..."}
+                </>
+              ) : (
+                isSignUp ? "Sign Up" : "Sign In"
+              )}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-inkMuted hover:text-ink transition-colors"
+              disabled={loading}
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {isSignUp
                 ? "Already have an account? Sign in"

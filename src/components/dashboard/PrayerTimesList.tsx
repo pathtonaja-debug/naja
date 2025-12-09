@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Check, Circle, Clock } from "lucide-react";
+import { Check, Circle, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
+import { usePrayerTimes } from "@/hooks/usePrayerTimes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PrayerItemProps {
   name: string;
@@ -38,36 +38,47 @@ function PrayerItem({ name, time, isCompleted, isNext }: PrayerItemProps) {
   );
 }
 
+function PrayerItemSkeleton() {
+  return (
+    <div className="flex items-center gap-4 p-4 rounded-card liquid-glass">
+      <Skeleton className="w-12 h-12 rounded-2xl" />
+      <Skeleton className="h-4 w-16 flex-1" />
+      <Skeleton className="h-4 w-12" />
+    </div>
+  );
+}
+
 export function PrayerTimesList() {
   const navigate = useNavigate();
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const { prayerTimes, loading } = usePrayerTimes();
 
-  useEffect(() => {
-    (async () => {
-      const times = await getTodayPrayerTimes();
-      setPrayerTimes(times);
-    })();
-  }, []);
+  if (loading) {
+    return (
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="h-6 w-28" />
+          <Skeleton className="h-8 w-20" />
+        </div>
+        <div className="space-y-2">
+          <PrayerItemSkeleton />
+          <PrayerItemSkeleton />
+          <PrayerItemSkeleton />
+          <PrayerItemSkeleton />
+          <PrayerItemSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   if (!prayerTimes) {
     return (
       <div className="px-5 py-4">
         <Card className="liquid-glass p-6">
-          <p className="text-body text-foreground-muted">Loading prayer times...</p>
+          <p className="text-body text-foreground-muted">Unable to load prayer times</p>
         </Card>
       </div>
     );
   }
-
-  const prayers = [
-    { name: "Fajr", time: prayerTimes.fajr, isCompleted: true },
-    { name: "Dhuhr", time: prayerTimes.dhuhr, isCompleted: true },
-    { name: "Asr", time: prayerTimes.asr, isCompleted: true },
-    { name: "Maghrib", time: prayerTimes.maghrib, isCompleted: false },
-    { name: "Isha", time: prayerTimes.isha, isCompleted: false },
-  ];
-
-  const nextPrayerIndex = prayers.findIndex(p => !p.isCompleted);
 
   return (
     <div className="px-5 py-4">
@@ -83,13 +94,13 @@ export function PrayerTimesList() {
         </Button>
       </div>
       <div className="space-y-2">
-        {prayers.map((prayer, index) => (
+        {prayerTimes.prayers.map((prayer) => (
           <PrayerItem
             key={prayer.name}
             name={prayer.name}
             time={prayer.time}
             isCompleted={prayer.isCompleted}
-            isNext={index === nextPrayerIndex}
+            isNext={prayer.isNext}
           />
         ))}
       </div>

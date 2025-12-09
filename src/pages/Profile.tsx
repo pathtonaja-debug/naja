@@ -6,26 +6,32 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, Moon, Sun, MapPin, LogOut } from "lucide-react";
+import { Bell, Moon, Sun, MapPin, LogOut, Loader2 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useProfile } from "@/hooks/useProfile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const { profile, loading, updateProfile } = useProfile();
+  
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
-    // Load saved preferences
-    setName(localStorage.getItem("user-name") || "");
-    setLocation(localStorage.getItem("user-location") || "");
+    if (profile) {
+      setName(profile.display_name || "");
+      setNotificationsEnabled(profile.notifications_enabled ?? true);
+    }
     
     // Get user email
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -33,18 +39,52 @@ const Profile = () => {
         setUserEmail(user.email);
       }
     });
-  }, []);
+  }, [profile]);
 
-  const handleSave = () => {
-    localStorage.setItem("user-name", name);
-    localStorage.setItem("user-location", location);
-    toast.success("Settings saved");
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const result = await updateProfile({
+        display_name: name.trim() || null,
+        notifications_enabled: notificationsEnabled,
+      });
+
+      if (result.success) {
+        toast.success("Settings saved");
+      } else {
+        toast.error(result.error || "Failed to save settings");
+      }
+    } catch (error) {
+      toast.error("Failed to save settings");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate("/auth", { replace: true });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-24">
+        <TopBar title="Settings" />
+        <div className="px-5 pb-6">
+          <Card className="p-6">
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-16 h-16 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+          </Card>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -92,9 +132,19 @@ const Profile = () => {
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., London, UK"
               />
+              <p className="text-xs text-muted-foreground">
+                Location is used to calculate accurate prayer times.
+              </p>
             </div>
-            <Button onClick={handleSave} className="w-full">
-              Save Changes
+            <Button onClick={handleSave} className="w-full" disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </Card>
         </div>
@@ -114,7 +164,15 @@ const Profile = () => {
               title="Notifications"
               subtitle="Prayer and habit reminders"
               leftElement={<Bell className="w-5 h-5 text-foreground" />}
-              rightElement={<Switch checked={notificationsEnabled} onCheckedChange={setNotificationsEnabled} />}
+              rightElement={
+                <Switch 
+                  checked={notificationsEnabled} 
+                  onCheckedChange={(checked) => {
+                    setNotificationsEnabled(checked);
+                    handleSave();
+                  }} 
+                />
+              }
               showChevron={false}
             />
           </Card>

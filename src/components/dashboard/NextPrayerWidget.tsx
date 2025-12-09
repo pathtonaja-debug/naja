@@ -1,26 +1,42 @@
 import { Card } from "@/components/ui/card";
 import { Building2, Clock } from "lucide-react";
-import { useState, useEffect } from "react";
-import { getTodayPrayerTimes, type PrayerTimes } from "@/services/prayer";
-import { cn } from "@/lib/utils";
+import { usePrayerTimes } from "@/hooks/usePrayerTimes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NextPrayerWidget() {
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const { prayerTimes, loading, countdown } = usePrayerTimes();
 
-  useEffect(() => {
-    (async () => {
-      const times = await getTodayPrayerTimes();
-      setPrayerTimes(times);
-    })();
-  }, []);
+  if (loading) {
+    return (
+      <Card className="liquid-glass p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-8 w-24" />
+          </div>
+          <Skeleton className="w-16 h-16 rounded-xl" />
+        </div>
+        <div className="flex items-center gap-3">
+          <Skeleton className="flex-1 h-2" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+      </Card>
+    );
+  }
 
   if (!prayerTimes) {
     return (
       <Card className="liquid-glass p-6">
-        <p className="text-body text-foreground-muted">Loading...</p>
+        <p className="text-body text-foreground-muted">Unable to load prayer times</p>
       </Card>
     );
   }
+
+  // Calculate progress (time elapsed since last prayer / time until next prayer)
+  const progressPercent = Math.max(
+    0,
+    Math.min(100, 100 - (prayerTimes.nextInMinutes / 180) * 100)
+  );
 
   return (
     <Card className="liquid-glass p-6 space-y-4">
@@ -39,13 +55,13 @@ export function NextPrayerWidget() {
       <div className="flex items-center gap-3">
         <div className="flex-1 h-2 bg-muted rounded-pill overflow-hidden">
           <div
-            className="h-full bg-gradient-primary rounded-pill transition-all"
-            style={{ width: "65%" }}
+            className="h-full bg-gradient-primary rounded-pill transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
         <div className="flex items-center gap-2 text-caption-2 text-foreground-muted px-3 py-1 rounded-pill liquid-glass">
           <Clock className="w-3 h-3" />
-          <span className="font-semibold">2h 15m</span>
+          <span className="font-semibold">{countdown}</span>
         </div>
       </div>
     </Card>

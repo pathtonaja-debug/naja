@@ -1,4 +1,6 @@
 import { CheckCircle2, ListChecks, HandMetal, Flame } from "lucide-react";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -28,7 +30,38 @@ function StatCard({ icon, label, value, total, color, bgColor }: StatCardProps) 
   );
 }
 
+function StatCardSkeleton() {
+  return (
+    <div className="liquid-glass p-5 rounded-card space-y-3">
+      <div className="flex items-center justify-between">
+        <Skeleton className="w-12 h-12 rounded-2xl" />
+        <Skeleton className="w-12 h-6 rounded-full" />
+      </div>
+      <div>
+        <Skeleton className="h-3 w-16 mb-1" />
+        <Skeleton className="h-5 w-20" />
+      </div>
+    </div>
+  );
+}
+
 export function TodaysOverview() {
+  const { stats, loading } = useDashboardStats();
+
+  if (loading) {
+    return (
+      <div className="px-5 py-4">
+        <Skeleton className="h-6 w-36 mb-4" />
+        <div className="grid grid-cols-2 gap-3">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-5 py-4">
       <h3 className="text-title-2 text-foreground font-semibold mb-4">Today's Overview</h3>
@@ -37,7 +70,7 @@ export function TodaysOverview() {
           icon={<CheckCircle2 className="w-6 h-6 text-primary" />}
           label="Prayers"
           value="Completed"
-          total="4/5"
+          total={`${stats.prayersCompleted}/${stats.prayersTotal}`}
           color="text-primary"
           bgColor="bg-primary/10"
         />
@@ -45,7 +78,7 @@ export function TodaysOverview() {
           icon={<ListChecks className="w-6 h-6 text-secondary" />}
           label="Habits"
           value="Tracked"
-          total="7/10"
+          total={`${stats.habitsCompleted}/${stats.habitsTotal}`}
           color="text-secondary"
           bgColor="bg-secondary/10"
         />
@@ -53,7 +86,7 @@ export function TodaysOverview() {
           icon={<HandMetal className="w-6 h-6 text-primary" />}
           label="Dhikr"
           value="Count"
-          total="250"
+          total={String(stats.dhikrCount)}
           color="text-primary"
           bgColor="bg-primary/10"
         />
@@ -61,7 +94,7 @@ export function TodaysOverview() {
           icon={<Flame className="w-6 h-6 text-accent" />}
           label="Day"
           value="Streak"
-          total="12"
+          total={String(stats.currentStreak)}
           color="text-accent"
           bgColor="bg-accent/10"
         />

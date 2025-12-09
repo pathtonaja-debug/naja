@@ -1,23 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { MapPin, User, ArrowRight } from "lucide-react";
+import { MapPin, User, ArrowRight, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
 
-  const handleComplete = () => {
-    // Save preferences to localStorage for now
-    localStorage.setItem("user-name", name);
-    localStorage.setItem("user-location", location);
-    localStorage.setItem("onboarding-complete", "true");
-    navigate("/dashboard");
+  useEffect(() => {
+    // Check if user is authenticated
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setCheckingAuth(false);
+    });
+  }, [navigate]);
+
+  const handleComplete = async () => {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please sign in first");
+        navigate("/auth");
+        return;
+      }
+
+      // Geocode location to get coordinates (simple approach using a free API or default)
+      let latitude = 25.2; // Default (Dubai)
+      let longitude = 55.3;
+
+      // Update profile in Supabase
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          display_name: name.trim() || null,
+          latitude,
+          longitude,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast.success("Profile setup complete!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error("Failed to save profile. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleNext = () => {
@@ -27,6 +72,14 @@ const Onboarding = () => {
       handleComplete();
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
@@ -115,14 +168,24 @@ const Onboarding = () => {
                 <Button 
                   onClick={handleComplete}
                   className="w-full h-12"
-                  disabled={!name.trim()}
+                  disabled={!name.trim() || loading}
                 >
-                  Complete Setup
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      Complete Setup
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </>
+                  )}
                 </Button>
                 <Button 
                   variant="ghost"
                   onClick={() => setStep(1)}
+                  disabled={loading}
                   className="w-full"
                 >
                   Back
