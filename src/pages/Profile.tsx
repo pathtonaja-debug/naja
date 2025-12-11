@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, Moon, Sun, MapPin, LogOut, Loader2 } from "lucide-react";
+import { Bell, Moon, Sun, MapPin, LogOut, Loader2, Calculator } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
@@ -15,17 +15,25 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useProfile } from "@/hooks/useProfile";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LocationSettingsSheet } from "@/components/settings/LocationSettingsSheet";
+import { PrayerMethodSheet, getPrayerMethodLabel } from "@/components/settings/PrayerMethodSheet";
+import type { Database } from "@/integrations/supabase/types";
+
+type PrayerMethod = Database["public"]["Enums"]["prayer_method"];
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const { profile, loading, updateProfile } = useProfile();
+  const { profile, loading, updateProfile, refetch } = useProfile();
   
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [saving, setSaving] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  
+  // Sheet states
+  const [locationSheetOpen, setLocationSheetOpen] = useState(false);
+  const [methodSheetOpen, setMethodSheetOpen] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -61,9 +69,43 @@ const Profile = () => {
     }
   };
 
+  const handleLocationSave = async (data: {
+    city: string | null;
+    country: string | null;
+    latitude: number | null;
+    longitude: number | null;
+  }) => {
+    const result = await updateProfile(data);
+    if (result.success) {
+      await refetch();
+    }
+    return result;
+  };
+
+  const handleMethodSave = async (method: PrayerMethod) => {
+    const result = await updateProfile({ prayer_method: method });
+    if (result.success) {
+      await refetch();
+    }
+    return result;
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/auth", { replace: true });
+  };
+
+  // Get location display text
+  const getLocationDisplay = () => {
+    if (profile?.city && profile?.country) {
+      return `${profile.city}, ${profile.country}`;
+    }
+    if (profile?.city) return profile.city;
+    if (profile?.country) return profile.country;
+    if (profile?.latitude && profile?.longitude) {
+      return `${profile.latitude.toFixed(2)}°, ${profile.longitude.toFixed(2)}°`;
+    }
+    return "Not set yet";
   };
 
   if (loading) {
@@ -121,21 +163,6 @@ const Profile = () => {
                 placeholder="Your name"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="location" className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                Location (for prayer times)
-              </Label>
-              <Input
-                id="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g., London, UK"
-              />
-              <p className="text-xs text-muted-foreground">
-                Location is used to calculate accurate prayer times.
-              </p>
-            </div>
             <Button onClick={handleSave} className="w-full" disabled={saving}>
               {saving ? (
                 <>
@@ -143,10 +170,32 @@ const Profile = () => {
                   Saving...
                 </>
               ) : (
-                "Save Changes"
+                "Save Name"
               )}
             </Button>
           </Card>
+        </div>
+
+        {/* Prayer & Location Settings */}
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Prayer & Location</h2>
+          <Card>
+            <ListCell
+              title="Location"
+              subtitle={getLocationDisplay()}
+              leftElement={<MapPin className="w-5 h-5 text-foreground" />}
+              onPress={() => setLocationSheetOpen(true)}
+            />
+            <ListCell
+              title="Prayer Method"
+              subtitle={getPrayerMethodLabel(profile?.prayer_method ?? null)}
+              leftElement={<Calculator className="w-5 h-5 text-foreground" />}
+              onPress={() => setMethodSheetOpen(true)}
+            />
+          </Card>
+          <p className="text-xs text-muted-foreground mt-2 px-2">
+            Location and prayer method are used to calculate accurate prayer times.
+          </p>
         </div>
 
         {/* Quick Settings */}
@@ -167,9 +216,9 @@ const Profile = () => {
               rightElement={
                 <Switch 
                   checked={notificationsEnabled} 
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={async (checked) => {
                     setNotificationsEnabled(checked);
-                    handleSave();
+                    await updateProfile({ notifications_enabled: checked });
                   }} 
                 />
               }
@@ -189,6 +238,25 @@ const Profile = () => {
           />
         </Card>
       </main>
+
+      {/* Location Settings Sheet */}
+      <LocationSettingsSheet
+        open={locationSheetOpen}
+        onOpenChange={setLocationSheetOpen}
+        currentCity={profile?.city ?? null}
+        currentCountry={profile?.country ?? null}
+        currentLatitude={profile?.latitude ?? null}
+        currentLongitude={profile?.longitude ?? null}
+        onSave={handleLocationSave}
+      />
+
+      {/* Prayer Method Sheet */}
+      <PrayerMethodSheet
+        open={methodSheetOpen}
+        onOpenChange={setMethodSheetOpen}
+        currentMethod={profile?.prayer_method ?? null}
+        onSave={handleMethodSave}
+      />
 
       <BottomNav />
     </div>

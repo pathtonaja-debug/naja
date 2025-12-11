@@ -11,6 +11,8 @@ export interface UserProfile {
   display_name: string | null;
   latitude: number | null;
   longitude: number | null;
+  city: string | null;
+  country: string | null;
   timezone: string | null;
   language: string | null;
   prayer_method: PrayerMethod | null;
