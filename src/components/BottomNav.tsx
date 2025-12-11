@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Home, Target, TrendingUp, UserCircle, Calendar, BookOpen, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const BottomNav = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const BottomNav = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const mainTabs = [
-    { icon: Home, path: "/dashboard", label: "Dashboard" },
+    { icon: Home, path: "/dashboard", label: "Home" },
     { icon: Calendar, path: "/calendar", label: "Calendar" },
   ];
 
@@ -31,106 +32,120 @@ const BottomNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 w-full max-w-2xl z-50 pointer-events-none">
-      <div className="liquid-glass rounded-pill px-4 py-2.5 pointer-events-auto">
-        <div className="flex justify-between items-center gap-2">
-          {/* Left tabs */}
-          <div className="flex items-center gap-1">
-            {mainTabs.map((tab) => {
-              const isActive = location.pathname === tab.path;
-              return (
-                <Button
-                  key={tab.path}
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => navigate(tab.path)}
-                  className={cn(
-                    "w-11 h-11 rounded-full transition-all",
-                    "duration-[var(--duration-medium)] ease-[var(--easing-smooth)]",
-                    isActive
-                      ? "bg-primary text-primary-foreground glow-ring"
-                      : "bg-transparent text-foreground/60 hover:bg-muted/50 hover:text-foreground"
-                  )}
-                  aria-label={tab.label}
-                >
-                  <tab.icon className="w-5 h-5" />
-                </Button>
-              );
-            })}
-          </div>
-
-          {/* Center menu button */}
-          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon"
-                className={cn(
-                  "w-12 h-12 rounded-full transition-all relative",
-                  "duration-[var(--duration-medium)] ease-[var(--easing-smooth)]",
-                  "bg-gradient-to-br from-primary to-primary/80",
-                  "text-primary-foreground shadow-lg hover:shadow-xl",
-                  "hover:scale-110 glow-ring"
-                )}
-                aria-label="More"
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-48 p-2 mb-2 animate-scale-in"
-              align="center"
-              side="top"
-              sideOffset={8}
+    <nav className="fixed bottom-4 left-4 right-4 z-50">
+      <div className="glass-card px-3 py-2 flex items-center justify-around max-w-md mx-auto">
+        {/* Left tabs */}
+        {mainTabs.map((tab) => {
+          const isActive = location.pathname === tab.path;
+          return (
+            <button
+              key={tab.path}
+              onClick={() => navigate(tab.path)}
+              className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors"
             >
-              <div className="flex flex-col gap-1">
-                {menuItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <Button
-                      key={item.path}
-                      variant="ghost"
-                      onClick={() => handleMenuItemClick(item.path)}
-                      className={cn(
-                        "w-full justify-start gap-3 h-10 transition-all",
-                        isActive
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                      )}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-primary/10 rounded-xl"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+              <tab.icon 
+                className={cn(
+                  "w-5 h-5 relative z-10 transition-colors",
+                  isActive ? "text-primary" : "text-foreground-muted"
+                )} 
+              />
+              <span 
+                className={cn(
+                  "text-[10px] font-medium relative z-10 transition-colors",
+                  isActive ? "text-primary" : "text-foreground-muted"
+                )}
+              >
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
 
-          {/* Right tabs */}
-          <div className="flex items-center gap-1">
-            {secondaryTabs.map((tab) => {
-              const isActive = location.pathname === tab.path;
-              return (
-                <Button
-                  key={tab.path}
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => navigate(tab.path)}
-                  className={cn(
-                    "w-11 h-11 rounded-full transition-all",
-                    "duration-[var(--duration-medium)] ease-[var(--easing-smooth)]",
-                    isActive
-                      ? "bg-primary text-primary-foreground glow-ring"
-                      : "bg-transparent text-foreground/60 hover:bg-muted/50 hover:text-foreground"
-                  )}
-                  aria-label={tab.label}
-                >
-                  <tab.icon className="w-5 h-5" />
-                </Button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Center menu button */}
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon"
+              className={cn(
+                "w-12 h-12 rounded-full transition-all",
+                "bg-primary text-primary-foreground",
+                "shadow-lg hover:shadow-xl hover:scale-105"
+              )}
+              aria-label="More"
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-48 p-2 mb-2 glass-card"
+            align="center"
+            side="top"
+            sideOffset={8}
+          >
+            <div className="flex flex-col gap-1">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    onClick={() => handleMenuItemClick(item.path)}
+                    className={cn(
+                      "w-full justify-start gap-3 h-10 rounded-lg transition-all",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-foreground-muted hover:text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Right tabs */}
+        {secondaryTabs.map((tab) => {
+          const isActive = location.pathname === tab.path;
+          return (
+            <button
+              key={tab.path}
+              onClick={() => navigate(tab.path)}
+              className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors"
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-primary/10 rounded-xl"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+              <tab.icon 
+                className={cn(
+                  "w-5 h-5 relative z-10 transition-colors",
+                  isActive ? "text-primary" : "text-foreground-muted"
+                )} 
+              />
+              <span 
+                className={cn(
+                  "text-[10px] font-medium relative z-10 transition-colors",
+                  isActive ? "text-primary" : "text-foreground-muted"
+                )}
+              >
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </nav>
   );
