@@ -5,11 +5,13 @@ import { NextPrayerWidget } from "@/components/dashboard/NextPrayerWidget";
 import { TodaysOverview } from "@/components/dashboard/TodaysOverview";
 import { HabitTrackerPreview } from "@/components/dashboard/HabitTrackerPreview";
 import { PrayerTimesList } from "@/components/dashboard/PrayerTimesList";
+import { PrayerTracker } from "@/components/dashboard/PrayerTracker";
 import { DhikrCounter } from "@/components/dashboard/DhikrCounter";
 import { useProfile } from "@/hooks/useProfile";
 import { initializeNotifications } from "@/services/notifications";
 import { syncAllHabitsToCalendar } from "@/services/calendarSync";
 import { Skeleton } from "@/components/ui/skeleton";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Dashboard = () => {
   const { profile, loading } = useProfile();
@@ -40,18 +42,33 @@ const Dashboard = () => {
 
       <main className="space-y-0">
         <div className="px-5 py-3">
-          <NextPrayerWidget />
+          <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load prayer widget</div>}>
+            <NextPrayerWidget />
+          </ErrorBoundary>
         </div>
 
-        <TodaysOverview />
+        <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load overview</div>}>
+          <TodaysOverview />
+        </ErrorBoundary>
 
-        <HabitTrackerPreview />
+        {/* 5-Prayer Individual Tracker */}
+        <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load prayer tracker</div>}>
+          <PrayerTracker />
+        </ErrorBoundary>
+
+        <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load habits</div>}>
+          <HabitTrackerPreview />
+        </ErrorBoundary>
 
         <div className="px-5 py-3">
-          <DhikrCounter />
+          <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load dhikr counter</div>}>
+            <DhikrCounter />
+          </ErrorBoundary>
         </div>
 
-        <PrayerTimesList />
+        <ErrorBoundary fallback={<div className="p-4 text-center text-muted-foreground">Unable to load prayer times</div>}>
+          <PrayerTimesList />
+        </ErrorBoundary>
       </main>
 
       <BottomNav />

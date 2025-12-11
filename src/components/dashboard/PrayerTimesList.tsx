@@ -28,22 +28,22 @@ function PrayerItem({ name, time, isCompleted, isNext }: PrayerItemProps) {
   const Icon = isNext ? Clock : isCompleted ? Check : Circle;
 
   return (
-    <div className={`flex items-center gap-4 p-4 rounded-card liquid-glass ${bgColor} transition-all`}>
-      <div className={`w-12 h-12 rounded-2xl ${iconBg} flex items-center justify-center flex-shrink-0`}>
-        <Icon className={`w-5 h-5 ${isNext ? "text-primary" : isCompleted ? "text-secondary" : "text-muted-foreground"}`} />
+    <div className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-card liquid-glass ${bgColor} transition-all`}>
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${iconBg} flex items-center justify-center flex-shrink-0`}>
+        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isNext ? "text-primary" : isCompleted ? "text-secondary" : "text-muted-foreground"}`} />
       </div>
-      <span className="text-body font-semibold text-foreground flex-1">{name}</span>
-      <span className="text-body text-foreground-muted font-medium">{time}</span>
+      <span className="text-sm sm:text-body font-semibold text-foreground flex-1">{name}</span>
+      <span className="text-sm sm:text-body text-foreground-muted font-medium">{time}</span>
     </div>
   );
 }
 
 function PrayerItemSkeleton() {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-card liquid-glass">
-      <Skeleton className="w-12 h-12 rounded-2xl" />
-      <Skeleton className="h-4 w-16 flex-1" />
-      <Skeleton className="h-4 w-12" />
+    <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-card liquid-glass">
+      <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl" />
+      <Skeleton className="h-4 w-14 sm:w-16 flex-1" />
+      <Skeleton className="h-4 w-10 sm:w-12" />
     </div>
   );
 }
@@ -82,18 +82,18 @@ export function PrayerTimesList() {
 
   return (
     <div className="px-5 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-title-2 text-foreground font-semibold">Prayer Times</h3>
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-lg sm:text-title-2 text-foreground font-semibold">Prayer Times</h3>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-primary"
+          className="text-primary text-sm"
           onClick={() => navigate("/calendar")}
         >
           Calendar
         </Button>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         {prayerTimes.prayers.map((prayer) => (
           <PrayerItem
             key={prayer.name}
