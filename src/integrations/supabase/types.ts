@@ -486,6 +486,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          city: string | null
+          country: string | null
           created_at: string | null
           device_id: string | null
           display_name: string | null
@@ -500,6 +502,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           device_id?: string | null
           display_name?: string | null
@@ -514,6 +518,8 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           device_id?: string | null
           display_name?: string | null
