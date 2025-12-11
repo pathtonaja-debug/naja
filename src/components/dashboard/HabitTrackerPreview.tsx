@@ -37,25 +37,25 @@ function HabitPreview({ icon, name, category, progress, total, completed }: Habi
   const iconElement = iconMap[icon] || iconMap.default;
 
   return (
-    <div className={`liquid-glass p-4 rounded-card ${colors.bg} border border-border/10`}>
-      <div className="flex items-center gap-4">
-        <div className={`w-14 h-14 rounded-2xl ${colors.iconBg} flex items-center justify-center flex-shrink-0 relative`}>
-          {iconElement}
+    <div className={`liquid-glass p-3 sm:p-4 rounded-card ${colors.bg} border border-border/10`}>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl ${colors.iconBg} flex items-center justify-center flex-shrink-0 relative`}>
+          <div className="w-5 h-5 sm:w-6 sm:h-6">{iconElement}</div>
           {completed && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-              <Check className="w-3 h-3 text-white" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
+              <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
             </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-body font-semibold text-foreground truncate">{name}</h4>
-          <p className="text-caption-2 text-foreground-muted">{category}</p>
+          <h4 className="text-sm sm:text-body font-semibold text-foreground truncate">{name}</h4>
+          <p className="text-[10px] sm:text-caption-2 text-foreground-muted">{category}</p>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-0.5 sm:gap-1">
           {Array.from({ length: Math.min(total, 7) }).map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full transition-colors ${
+              className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
                 i < progress ? colors.iconBg : "bg-muted"
               }`}
             />
@@ -68,16 +68,16 @@ function HabitPreview({ icon, name, category, progress, total, completed }: Habi
 
 function HabitSkeleton() {
   return (
-    <div className="liquid-glass p-4 rounded-card">
-      <div className="flex items-center gap-4">
-        <Skeleton className="w-14 h-14 rounded-2xl" />
+    <div className="liquid-glass p-3 sm:p-4 rounded-card">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Skeleton className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl" />
         <div className="flex-1">
-          <Skeleton className="h-4 w-24 mb-2" />
-          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-4 w-20 sm:w-24 mb-2" />
+          <Skeleton className="h-3 w-12 sm:w-16" />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-0.5 sm:gap-1">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-            <Skeleton key={i} className="w-2 h-2 rounded-full" />
+            <Skeleton key={i} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" />
           ))}
         </div>
       </div>
@@ -124,19 +124,19 @@ export function HabitTrackerPreview() {
 
   return (
     <div className="px-5 py-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-title-2 text-foreground font-semibold">Habit Tracker</h3>
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-lg sm:text-title-2 text-foreground font-semibold">Habit Tracker</h3>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-primary"
+          className="text-primary text-sm"
           onClick={() => navigate("/habits")}
         >
           <Plus className="w-4 h-4 mr-1" />
           Add
         </Button>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {loading ? (
           <>
             <HabitSkeleton />

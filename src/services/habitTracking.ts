@@ -240,7 +240,7 @@ export async function getCategoryProgress(): Promise<CategoryProgress[]> {
   }));
 }
 
-// Initialize default habits
+// Initialize default habits - MVP categories: Prayer, Dhikr, Reflection, Quran
 export async function initializeDefaultHabits(): Promise<void> {
   const userId = await getAuthenticatedUserId();
   
@@ -252,17 +252,20 @@ export async function initializeDefaultHabits(): Promise<void> {
     
   if (existing && existing.length > 0) return;
   
+  // MVP: 4 categories - Prayer (5 daily), Dhikr, Reflection, Quran
   const defaults = [
-    { name: 'Fajr', category: 'Salah', icon: 'sunrise', color: '#FFE5D9', habit_time: '05:00:00' },
-    { name: 'Dhuhr', category: 'Salah', icon: 'sun', color: '#FFD6A5', habit_time: '13:00:00' },
-    { name: 'Asr', category: 'Salah', icon: 'sun', color: '#FDFFB6', habit_time: '16:30:00' },
-    { name: 'Maghrib', category: 'Salah', icon: 'sunset', color: '#FFADAD', habit_time: '18:30:00' },
-    { name: 'Isha', category: 'Salah', icon: 'moon', color: '#9BF6FF', habit_time: '20:00:00' },
+    // 5 Daily Prayers - Category: Prayer
+    { name: 'Fajr', category: 'Prayer', icon: 'sunrise', color: '#FFE5D9', habit_time: '05:00:00' },
+    { name: 'Dhuhr', category: 'Prayer', icon: 'sun', color: '#FFD6A5', habit_time: '13:00:00' },
+    { name: 'Asr', category: 'Prayer', icon: 'sun', color: '#FDFFB6', habit_time: '16:30:00' },
+    { name: 'Maghrib', category: 'Prayer', icon: 'sunset', color: '#FFADAD', habit_time: '18:30:00' },
+    { name: 'Isha', category: 'Prayer', icon: 'moon', color: '#9BF6FF', habit_time: '20:00:00' },
+    // Quran Reading
     { name: 'Qur\'an Reading', category: 'Quran', icon: 'book-open', color: '#BDB2FF' },
+    // Dhikr
     { name: 'Daily Dhikr', category: 'Dhikr', icon: 'sparkles', color: '#FFC6FF', target_count: 100 },
-    { name: 'Morning Dua', category: 'Dua', icon: 'hand', color: '#CAFFBF' },
-    { name: 'Good Deed', category: 'One good deed of the day', icon: 'heart', color: '#A0C4FF' },
-    { name: 'Gratitude', category: 'Custom', icon: 'smile', color: '#FFD6A5' }
+    // Reflection/Gratitude
+    { name: 'Daily Reflection', category: 'Reflection', icon: 'heart', color: '#CAFFBF' },
   ];
   
   const { error } = await supabase
@@ -278,4 +281,43 @@ export async function initializeDefaultHabits(): Promise<void> {
     })));
     
   if (error) throw error;
+}
+
+// Get prayer habits with completion status
+export async function getPrayerHabits(): Promise<Array<Habit & { completed: boolean }>> {
+  const userId = await getAuthenticatedUserId();
+  const today = new Date().toISOString().split('T')[0];
+  
+  const { data: prayers } = await supabase
+    .from('habits')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('category', 'Prayer')
+    .eq('is_active', true)
+    .order('habit_time', { ascending: true });
+    
+  if (!prayers) return [];
+  
+  const { data: logs } = await supabase
+    .from('habit_logs')
+    .select('habit_id, completed')
+    .eq('user_id', userId)
+    .eq('date', today)
+    .in('habit_id', prayers.map(p => p.id));
+    
+  const logMap = new Map(logs?.map(l => [l.habit_id, l.completed]) || []);
+  
+  return prayers.map(prayer => ({
+    ...prayer,
+    completed: logMap.get(prayer.id) || false
+  }));
+}
+
+// Get prayer completion stats for today
+export async function getPrayerStats(): Promise<{ completed: number; total: number }> {
+  const prayers = await getPrayerHabits();
+  return {
+    total: prayers.length,
+    completed: prayers.filter(p => p.completed).length
+  };
 }
