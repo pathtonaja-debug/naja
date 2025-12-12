@@ -98,9 +98,14 @@ export default {
           'Inter',
           '-apple-system',
           'BlinkMacSystemFont',
-          'SF Pro Display',
           'system-ui',
           'sans-serif',
+        ],
+        display: [
+          'Playfair Display',
+          'Georgia',
+          'Times New Roman',
+          'serif',
         ],
       },
       transitionDuration: {
