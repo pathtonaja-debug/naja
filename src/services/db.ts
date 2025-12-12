@@ -8,7 +8,8 @@ import {
   companionProfileSchema 
 } from "@/lib/validation";
 
-// Reflections
+// ============== Reflections ==============
+
 export async function addReflection(entry: { 
   date: string; 
   text: string; 
@@ -45,11 +46,23 @@ export async function uploadReflectionPhoto(file: File): Promise<string> {
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabase.storage
+  // Use signed URL for private bucket (1 hour expiry)
+  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
     .from('reflections')
-    .getPublicUrl(fileName);
+    .createSignedUrl(fileName, 3600);
 
-  return publicUrl;
+  if (signedUrlError) throw signedUrlError;
+  
+  return signedUrlData.signedUrl;
+}
+
+export async function getReflectionPhotoUrl(filePath: string): Promise<string> {
+  const { data, error } = await supabase.storage
+    .from('reflections')
+    .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+  if (error) throw error;
+  return data.signedUrl;
 }
 
 export async function listReflections() {
@@ -65,7 +78,8 @@ export async function listReflections() {
   return data || [];
 }
 
-// Habits
+// ============== Habits ==============
+
 export async function listHabits() {
   const userId = await getAuthenticatedUserId();
   
@@ -80,7 +94,7 @@ export async function listHabits() {
   // Calculate streaks from habit_logs
   return (habits || []).map(habit => {
     const today = new Date().toISOString().split('T')[0];
-    const todayLog = habit.habit_logs?.find((log: any) => log.date === today);
+    const todayLog = habit.habit_logs?.find((log: { date: string }) => log.date === today);
     
     return {
       id: habit.id,
@@ -91,7 +105,7 @@ export async function listHabits() {
   });
 }
 
-function calculateStreak(logs: any[]) {
+function calculateStreak(logs: { date: string; completed: boolean }[]) {
   const sortedLogs = logs
     .filter(log => log.completed)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -156,16 +170,25 @@ export async function createHabit(habit: {
   frequency?: string;
   icon?: string;
   target_count?: number;
-}): Promise<any> {
+}): Promise<unknown> {
+  // Validate input using habitSchema
+  const validated = habitSchema.parse({
+    name: habit.name,
+    category: habit.category,
+    frequency: habit.frequency || 'daily',
+    target_count: habit.target_count || 1,
+  });
+  
   const userId = await getAuthenticatedUserId();
   
   const { data, error } = await supabase
     .from('habits')
     .insert({
-      name: habit.name,
-      category: habit.category || 'spiritual',
-      frequency: habit.frequency || 'daily',
-      target_count: habit.target_count || 1,
+      name: validated.name,
+      category: validated.category || 'spiritual',
+      frequency: validated.frequency,
+      target_count: validated.target_count,
+      icon: habit.icon || 'star',
       user_id: userId,
       is_active: true
     })
@@ -176,7 +199,28 @@ export async function createHabit(habit: {
   return data;
 }
 
-export async function updateHabit(id: string, updates: any): Promise<any> {
+export async function updateHabit(id: string, updates: {
+  name?: string;
+  category?: string;
+  frequency?: string;
+  icon?: string;
+  target_count?: number;
+  reminder_time?: string;
+  is_active?: boolean;
+}): Promise<unknown> {
+  // Build validation object for fields that have validation rules
+  const validationData: Record<string, unknown> = {};
+  if (updates.name !== undefined) validationData.name = updates.name;
+  if (updates.category !== undefined) validationData.category = updates.category;
+  if (updates.frequency !== undefined) validationData.frequency = updates.frequency;
+  if (updates.target_count !== undefined) validationData.target_count = updates.target_count;
+  if (updates.reminder_time !== undefined) validationData.reminder_time = updates.reminder_time;
+  
+  // Validate if there are validatable fields
+  if (Object.keys(validationData).length > 0) {
+    habitSchema.partial().parse(validationData);
+  }
+  
   const { data, error } = await supabase
     .from('habits')
     .update(updates)
@@ -197,7 +241,7 @@ export async function deleteHabit(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function getHabitProgress(userId?: string, days: number = 7): Promise<any> {
+export async function getHabitProgress(userId?: string, days: number = 7): Promise<{ habits: unknown[]; logs: unknown[] }> {
   const authenticatedUserId = await getAuthenticatedUserId();
   const endDate = new Date().toISOString().split('T')[0];
   const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -222,7 +266,7 @@ export async function getHabitProgress(userId?: string, days: number = 7): Promi
 
   if (logsError) throw logsError;
 
-  return { habits, logs };
+  return { habits: habits || [], logs: logs || [] };
 }
 
 export async function initializeDefaultHabits(): Promise<void> {
@@ -263,7 +307,8 @@ export async function initializeDefaultHabits(): Promise<void> {
   if (error) throw error;
 }
 
-// Duas
+// ============== Duas ==============
+
 export async function listDuas() {
   const userId = await getAuthenticatedUserId();
   
@@ -277,7 +322,7 @@ export async function listDuas() {
   return data || [];
 }
 
-export async function saveDua(dua: { title: string; category: string; content: any }) {
+export async function saveDua(dua: { title: string; category: string; content: Record<string, unknown> }) {
   // Validate input
   const validated = duaSchema.parse(dua);
   const userId = await getAuthenticatedUserId();
@@ -295,7 +340,8 @@ export async function saveDua(dua: { title: string; category: string; content: a
   return data;
 }
 
-// Dhikr sessions
+// ============== Dhikr Sessions ==============
+
 export async function saveDhikrSession(phrase: string, count: number, target?: number) {
   // Validate input
   const validated = dhikrSessionSchema.parse({ phrase, count, target });
@@ -313,4 +359,29 @@ export async function saveDhikrSession(phrase: string, count: number, target?: n
     
   if (error) throw error;
   return data;
+}
+
+// ============== Companion Avatars (Signed URLs) ==============
+
+export async function getCompanionAvatarUrl(filePath: string): Promise<string> {
+  const { data, error } = await supabase.storage
+    .from('companion-avatars')
+    .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+export async function uploadCompanionAvatar(file: File): Promise<string> {
+  const userId = await getAuthenticatedUserId();
+  const fileName = `${userId}/${Date.now()}-avatar.png`;
+  
+  const { error } = await supabase.storage
+    .from('companion-avatars')
+    .upload(fileName, file);
+
+  if (error) throw error;
+
+  // Return the file path - caller should use getCompanionAvatarUrl for URL
+  return fileName;
 }

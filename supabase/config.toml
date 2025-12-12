@@ -1,16 +1,7 @@
 project_id = "rdsudzwcdtawnrhhbecv"
 
 [functions.prayer-times]
-verify_jwt = false
-
-[functions.ai-chat]
 verify_jwt = true
 
 [functions.weekly-summary]
-verify_jwt = true
-
-[functions.transcribe-audio]
-verify_jwt = true
-
-[functions.generate-avatar]
 verify_jwt = true
