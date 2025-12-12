@@ -1,5 +1,4 @@
 @import './styles/tokens.css';
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,82 +7,82 @@
 @layer base {
   :root {
     /* ============================================ */
-    /* FLOWBLOX-INSPIRED DESIGN SYSTEM             */
-    /* Warm Cream + Sage Green + Elegant Typography */
+    /* WARM SERENE DESIGN SYSTEM - Earthy & Calm */
     /* ============================================ */
     
     /* Base Canvas & Surfaces - Warm Cream */
-    --background: 40 33% 96%;              /* #FAF5E8 - warm cream canvas */
-    --surface: 40 25% 98%;                 /* #FDFBF7 - warm white surface */
-    --foreground: 20 15% 12%;              /* #221F1A - warm charcoal */
-    --foreground-muted: 25 10% 45%;        /* #7A7068 - muted brown */
+    --background: 35 30% 96%;             /* #FAF8F5 - warm cream canvas */
+    --surface: 35 25% 98%;                /* #FDFCFA - warm white surface */
+    --foreground: 25 15% 15%;             /* #2B2520 - warm dark brown */
+    --foreground-muted: 25 10% 50%;       /* #8C8077 - muted brown */
     
     /* Cards & Popovers - Warm Glass */
-    --card: 40 25% 98%;
-    --card-foreground: 20 15% 12%;
-    --popover: 40 25% 98%;
-    --popover-foreground: 20 15% 12%;
+    --card: 35 25% 98%;
+    --card-foreground: 25 15% 15%;
+    --popover: 35 25% 98%;
+    --popover-foreground: 25 15% 15%;
     
-    /* Primary Accent - Soft Sage Green (like Flowblox) */
-    --primary: 75 35% 72%;                 /* #C5D5A6 - soft sage */
-    --primary-foreground: 75 20% 25%;      /* Dark sage for text on sage */
-    --primary-glow: 75 45% 80%;            /* Lighter sage for glow */
+    /* Primary Accent - Warm Gold/Amber */
+    --primary: 35 70% 50%;                /* #D4A43A - warm gold */
+    --primary-foreground: 35 25% 98%;
+    --primary-glow: 35 80% 70%;           /* lighter for glow effects */
     
-    /* Secondary Accent - Warm Terracotta */
-    --secondary: 25 50% 75%;               /* #D4B59C - terracotta */
-    --secondary-foreground: 25 15% 20%;
+    /* Secondary Accent - Soft Terracotta */
+    --secondary: 20 45% 65%;              /* #C9967A - terracotta */
+    --secondary-foreground: 25 15% 15%;
     
     /* Muted & Subtle */
-    --muted: 40 20% 93%;                   /* #F0EBE2 - warm muted */
-    --muted-foreground: 25 10% 45%;        /* #7A7068 */
+    --muted: 35 15% 93%;                  /* #EFEBE6 - warm muted */
+    --muted-foreground: 25 10% 45%;       /* #7D7469 */
     
-    /* Accent - Charcoal Dark (like Flowblox buttons) */
-    --accent: 20 15% 12%;                  /* #221F1A - charcoal */
-    --accent-foreground: 40 25% 98%;       /* Cream on charcoal */
+    /* Accent - Dark Warm */
+    --accent: 25 15% 15%;
+    --accent-foreground: 35 25% 98%;
     
     /* Status Colors */
-    --destructive: 0 60% 55%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --success: 145 50% 45%;
+    --success: 145 55% 45%;
     --success-foreground: 0 0% 100%;
-    --warn: 45 90% 55%;
-    --warn-foreground: 20 15% 12%;
+    --warn: 40 90% 55%;
+    --warn-foreground: 25 15% 15%;
     
     /* Borders - Warm Subtle */
-    --border: 40 18% 88%;                  /* #E8E2D8 - warm border */
-    --input: 40 18% 90%;
-    --ring: 75 35% 72%;                    /* Sage ring */
-    
-    /* ============================================ */
-    /* FLOWBLOX CARD COLORS */
-    /* ============================================ */
-    --sage-card: 75 35% 85%;               /* #D5E3C0 - Flowblox lime/sage */
-    --sage-card-foreground: 75 25% 30%;    /* Dark text on sage */
-    --cream-card: 45 40% 92%;              /* Soft cream card */
+    --border: 35 15% 88%;                 /* #E5E0DA - warm border */
+    --input: 35 15% 90%;
+    --ring: 35 70% 50%;
     
     /* ============================================ */
     /* GLASS MATERIALS - Warm Tones */
     /* ============================================ */
-    --liquid-glass-bg: 40 25% 98% / 0.8;
-    --liquid-glass-border: 40 20% 95% / 0.5;
-    --liquid-glass-highlight-start: 40 30% 100% / 0.6;
-    --liquid-glass-highlight-end: 40 30% 100% / 0.1;
-    --liquid-glass-glow: 40 40% 90% / 0.15;
-    --liquid-glass-shadow: 0 20px 60px -15px rgba(34, 31, 26, 0.12);
+    
+    /* Glass Background - Translucent with blur */
+    --liquid-glass-bg: 35 25% 98% / 0.75;
+    --liquid-glass-border: 35 20% 95% / 0.5;
+    
+    /* Glass Highlight - Top edge shimmer */
+    --liquid-glass-highlight-start: 35 30% 100% / 0.6;
+    --liquid-glass-highlight-end: 35 30% 100% / 0.1;
+    
+    /* Glass Inner Glow - Subtle warmth */
+    --liquid-glass-glow: 35 40% 90% / 0.15;
+    
+    /* Glass Shadow - Soft, warm elevation */
+    --liquid-glass-shadow: 0 20px 60px -15px rgba(43, 37, 32, 0.12);
     
     /* Elevation Shadows - Warm tinted */
-    --elevation-1: 0 4px 24px -4px rgba(34, 31, 26, 0.08);
-    --elevation-2: 0 12px 40px -8px rgba(34, 31, 26, 0.12);
-    --elevation-3: 0 20px 60px -12px rgba(34, 31, 26, 0.16);
+    --elevation-1: 0 4px 24px -4px rgba(43, 37, 32, 0.08);
+    --elevation-2: 0 12px 40px -8px rgba(43, 37, 32, 0.12);
+    --elevation-3: 0 20px 60px -12px rgba(43, 37, 32, 0.16);
     
     /* ============================================ */
-    /* RADII - Large, Soft Corners (Flowblox style) */
+    /* RADII - Soft, Rounded */
     /* ============================================ */
-    --radius: 1.5rem;                      /* 24px - default */
-    --radius-card: 2rem;                   /* 32px - cards */
-    --radius-button: 1.5rem;               /* 24px - buttons */
-    --radius-xl: 2.5rem;                   /* 40px - large */
-    --radius-pill: 9999px;                 /* full round */
+    --radius: 1.25rem;                    /* 20px - default */
+    --radius-card: 1.75rem;               /* 28px - cards */
+    --radius-button: 1.5rem;              /* 24px - buttons */
+    --radius-xl: 2.25rem;                 /* 36px - large */
+    --radius-pill: 9999px;                /* full round */
     
     /* ============================================ */
     /* MOTION - Spring Physics */
@@ -95,52 +94,54 @@
     --duration-slow: 400ms;
     
     /* ============================================ */
-    /* SPACING */
+    /* SPACING - Compact & Breathable */
     /* ============================================ */
-    --spacing-section: 1.5rem;
-    --spacing-content: 1rem;
-    --spacing-card-padding: 1.75rem;
+    --spacing-section: 1rem;
+    --spacing-content: 0.75rem;
+    --spacing-card-padding: 1.5rem;
     
     /* ============================================ */
-    /* GRADIENTS */
+    /* GRADIENTS - Warm, Atmospheric */
     /* ============================================ */
-    --gradient-primary: linear-gradient(135deg, hsl(75 35% 72%) 0%, hsl(75 45% 78%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(25 50% 75%) 0%, hsl(25 60% 80%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(40 25% 98% / 0.8) 0%, hsl(40 30% 96% / 0.4) 100%);
-    --gradient-hero: linear-gradient(180deg, hsla(20, 20%, 10%, 0) 0%, hsla(20, 20%, 5%, 0.75) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(35 70% 50%) 0%, hsl(35 80% 65%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(20 45% 65%) 0%, hsl(20 55% 75%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(35 25% 98% / 0.8) 0%, hsl(35 30% 96% / 0.4) 100%);
+    --gradient-glass-shimmer: linear-gradient(135deg, hsla(35, 30%, 100%, 0.5) 0%, hsla(35, 30%, 100%, 0.1) 100%);
+    --gradient-hero: linear-gradient(180deg, hsla(35, 30%, 20%, 0) 0%, hsla(35, 30%, 15%, 0.6) 100%);
   }
 
   .dark {
     /* Dark Mode - Warm Dark Canvas */
-    --background: 25 12% 8%;               /* #171310 */
-    --surface: 25 10% 12%;                 /* #211E1B */
-    --foreground: 40 20% 95%;              /* #F8F5F0 */
-    --foreground-muted: 25 10% 60%;        /* #A09488 */
+    --background: 25 15% 8%;              /* #171411 - warm dark */
+    --surface: 25 12% 12%;                /* #211D1A - warm surface */
+    --foreground: 35 20% 95%;             /* #F7F4F0 - warm white */
+    --foreground-muted: 25 10% 60%;       /* #9F9589 */
     
-    --card: 25 10% 12%;
-    --card-foreground: 40 20% 95%;
-    --popover: 25 10% 12%;
-    --popover-foreground: 40 20% 95%;
+    --card: 25 12% 12%;
+    --card-foreground: 35 20% 95%;
+    --popover: 25 12% 12%;
+    --popover-foreground: 35 20% 95%;
     
-    --border: 25 8% 20%;
-    
-    --sage-card: 75 20% 25%;               /* Dark sage */
-    --sage-card-foreground: 75 30% 85%;
+    --border: 25 10% 20%;                 /* #373230 */
     
     /* Dark Glass Materials */
-    --liquid-glass-bg: 25 10% 12% / 0.85;
-    --liquid-glass-border: 40 20% 95% / 0.1;
-    --liquid-glass-highlight-start: 40 20% 95% / 0.15;
-    --liquid-glass-highlight-end: 40 20% 95% / 0.03;
-    --liquid-glass-glow: 75 30% 60% / 0.1;
+    --liquid-glass-bg: 25 12% 12% / 0.85;
+    --liquid-glass-border: 35 20% 95% / 0.1;
+    --liquid-glass-highlight-start: 35 20% 95% / 0.15;
+    --liquid-glass-highlight-end: 35 20% 95% / 0.03;
+    --liquid-glass-glow: 35 30% 70% / 0.08;
     --liquid-glass-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
     
     --elevation-1: 0 4px 24px -4px rgba(0, 0, 0, 0.35);
     --elevation-2: 0 12px 40px -8px rgba(0, 0, 0, 0.45);
     --elevation-3: 0 20px 60px -12px rgba(0, 0, 0, 0.55);
     
-    --gradient-primary: linear-gradient(135deg, hsl(75 30% 40%) 0%, hsl(75 35% 50%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsla(25, 12%, 8%, 0) 0%, hsla(25, 12%, 5%, 0.85) 100%);
+    /* Dark Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(35 60% 45% / 0.9) 0%, hsl(35 70% 55% / 0.9) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(20 40% 55% / 0.9) 0%, hsl(20 50% 65% / 0.9) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(25 12% 12% / 0.6) 0%, hsl(25 15% 8% / 0.3) 100%);
+    --gradient-glass-shimmer: linear-gradient(135deg, hsla(35, 20%, 95%, 0.12) 0%, hsla(35, 20%, 95%, 0.02) 100%);
+    --gradient-hero: linear-gradient(180deg, hsla(25, 15%, 8%, 0) 0%, hsla(25, 15%, 5%, 0.8) 100%);
   }
 }
 
@@ -151,44 +152,31 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     font-feature-settings: 'ss01' 1, 'ss02' 1, 'cv01' 1, 'cv03' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* ============================================ */
-  /* TYPOGRAPHY - Flowblox Inspired */
-  /* ============================================ */
-  
-  /* Elegant Serif for headings */
-  .font-display {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  }
-  
+  /* Typography Scale */
   .text-display {
-    @apply text-5xl sm:text-6xl font-semibold tracking-tight;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-5xl font-bold tracking-tight;
   }
   
   .text-large-title {
-    @apply text-4xl sm:text-5xl font-semibold tracking-tight;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-4xl font-semibold tracking-tight;
   }
   
   .text-title-1 {
-    @apply text-3xl sm:text-4xl font-semibold;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-3xl font-semibold;
   }
   
   .text-title-2 {
-    @apply text-2xl sm:text-3xl font-medium;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-2xl font-medium;
   }
   
   .text-title-3 {
-    @apply text-xl sm:text-2xl font-medium;
-    font-family: 'Playfair Display', Georgia, serif;
+    @apply text-xl font-medium;
   }
   
   .text-headline {
@@ -196,7 +184,7 @@
   }
   
   .text-body {
-    @apply text-base font-normal leading-relaxed;
+    @apply text-base font-normal;
   }
   
   .text-subheadline {
@@ -213,17 +201,6 @@
   
   .text-caption-2 {
     @apply text-[11px] font-normal;
-  }
-  
-  /* Large Stats Numbers (Flowblox style) */
-  .text-stat {
-    @apply text-6xl sm:text-7xl font-light tracking-tight;
-    font-family: 'Playfair Display', Georgia, serif;
-  }
-  
-  .text-stat-small {
-    @apply text-4xl sm:text-5xl font-light tracking-tight;
-    font-family: 'Playfair Display', Georgia, serif;
   }
 
   /* Hide scrollbar but keep functionality */
@@ -243,34 +220,21 @@
   }
   
   /* ============================================ */
-  /* FLOWBLOX CARD STYLES */
+  /* GLASS UTILITY CLASSES */
   /* ============================================ */
   
-  /* Sage/Lime Card (main feature cards) */
-  .sage-card {
-    @apply rounded-card p-6 sm:p-8;
-    background: hsl(var(--sage-card));
-    color: hsl(var(--sage-card-foreground));
-  }
-  
-  /* Glass Card */
+  /* Main Glass Surface */
   .glass-card {
-    @apply backdrop-blur-2xl border border-border/40 rounded-card;
+    @apply backdrop-blur-2xl border border-border/50 rounded-card;
     background: hsl(var(--liquid-glass-bg));
     box-shadow: var(--elevation-2);
   }
   
   .glass-card-light {
     @apply backdrop-blur-xl rounded-card;
-    background: hsl(40 25% 98% / 0.7);
-    border: 1px solid hsl(40 20% 95% / 0.4);
+    background: hsl(35 25% 98% / 0.65);
+    border: 1px solid hsl(35 20% 95% / 0.4);
     box-shadow: var(--elevation-1);
-  }
-  
-  /* Cream Card */
-  .cream-card {
-    @apply rounded-card p-6 sm:p-8;
-    background: hsl(var(--cream-card));
   }
   
   /* Hero Card with Image */
@@ -294,7 +258,7 @@
   }
   
   .card-interactive:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--elevation-3);
   }
   
@@ -302,59 +266,30 @@
     transform: scale(0.98);
   }
   
-  /* ============================================ */
-  /* FLOWBLOX BUTTONS */
-  /* ============================================ */
-  
-  /* Charcoal Pill Button (Primary CTA) */
-  .pill-button {
-    @apply px-6 py-3 rounded-pill font-medium text-sm inline-flex items-center gap-2;
-    @apply bg-accent text-accent-foreground;
-    @apply transition-all duration-fast;
-    box-shadow: var(--elevation-1);
+  /* Floating Action Button */
+  .fab {
+    @apply glass-card rounded-full;
+    transition: all var(--duration-medium) var(--easing-spring);
   }
   
-  .pill-button:hover {
-    @apply opacity-90;
-    transform: translateY(-1px);
-    box-shadow: var(--elevation-2);
+  .fab:active {
+    transform: scale(0.95);
   }
   
-  .pill-button:active {
-    transform: scale(0.97);
+  /* Primary Glow Ring */
+  .glow-ring {
+    box-shadow: 
+      0 0 0 4px hsl(var(--primary-glow) / 0.25),
+      0 0 0 8px hsl(var(--primary-glow) / 0.1);
   }
   
-  .pill-button-secondary {
-    @apply pill-button;
-    @apply bg-muted text-foreground;
-    border: 1px solid hsl(var(--border));
+  /* Compact Section Spacing */
+  .section-spacing {
+    @apply mb-4;
   }
   
-  /* ============================================ */
-  /* IMAGE SECTIONS */
-  /* ============================================ */
-  
-  /* Full-bleed image section with overlay */
-  .image-section {
-    @apply relative overflow-hidden;
-  }
-  
-  .image-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      hsla(20, 15%, 10%, 0.2) 0%,
-      hsla(20, 15%, 5%, 0.7) 100%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  .image-section > * {
-    position: relative;
-    z-index: 2;
+  .content-spacing {
+    @apply space-y-3;
   }
   
   /* Warm Image Overlay */
@@ -374,44 +309,23 @@
     pointer-events: none;
   }
   
-  /* ============================================ */
-  /* UTILITY CLASSES */
-  /* ============================================ */
-  
-  .section-spacing {
-    @apply mb-6;
+  /* Pill Button */
+  .pill-button {
+    @apply px-5 py-2.5 rounded-pill font-medium text-sm;
+    @apply bg-accent text-accent-foreground;
+    @apply transition-all duration-fast;
   }
   
-  .content-spacing {
-    @apply space-y-4;
+  .pill-button:hover {
+    @apply opacity-90;
   }
   
-  /* Primary Glow Ring */
-  .glow-ring {
-    box-shadow: 
-      0 0 0 4px hsl(var(--primary-glow) / 0.25),
-      0 0 0 8px hsl(var(--primary-glow) / 0.1);
+  .pill-button:active {
+    @apply scale-95;
   }
   
-  /* Floating Action Button */
-  .fab {
-    @apply glass-card rounded-full;
-    transition: all var(--duration-medium) var(--easing-spring);
-  }
-  
-  .fab:active {
-    transform: scale(0.95);
-  }
-  
-  /* Divider with subtle styling */
-  .divider-subtle {
-    @apply h-px w-full;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      hsl(var(--border)) 20%,
-      hsl(var(--border)) 80%,
-      transparent 100%
-    );
+  .pill-button-secondary {
+    @apply pill-button;
+    @apply bg-muted text-foreground;
   }
 }

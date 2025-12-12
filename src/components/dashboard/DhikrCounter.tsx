@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAuthenticatedUserId } from "@/lib/auth";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import islamicArchitecture from "@/assets/islamic-architecture.jpg";
 
 export function DhikrCounter() {
   const [count, setCount] = useState(0);
@@ -39,7 +38,7 @@ export function DhikrCounter() {
     loadSession();
   }, []);
 
-  // Save session to database
+  // Save session to database (debounced)
   const saveSession = useCallback(async (newCount: number) => {
     setSaving(true);
     try {
@@ -81,12 +80,14 @@ export function DhikrCounter() {
     setCount(newCount);
     saveSession(newCount);
     
+    // Haptic feedback simulation via vibration if available
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
     
+    // Celebrate when reaching target
     if (newCount === target) {
-      toast.success("Target reached! SubhanAllah!");
+      toast.success("Target reached! SubhanAllah! 🎉");
     }
   };
 
@@ -106,98 +107,77 @@ export function DhikrCounter() {
   const progress = Math.min((count / target) * 100, 100);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-      className="relative rounded-card overflow-hidden"
-    >
-      {/* Background Image */}
-      <img 
-        src={islamicArchitecture} 
-        alt="Islamic architecture" 
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-      
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
-      
-      {/* Content */}
-      <div className="relative z-10 p-5 sm:p-7 space-y-5">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl sm:text-2xl font-display font-semibold text-white">
-            Dhikr Counter
-          </h3>
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            onClick={handleReset}
-            disabled={count === 0}
-            className="h-9 w-9 text-white/70 hover:text-white hover:bg-white/20"
+    <Card className="liquid-glass p-4 sm:p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-headline text-foreground">Dhikr Counter</h3>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          onClick={handleReset}
+          disabled={count === 0}
+          className="h-8 w-8 sm:h-9 sm:w-9"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </Button>
+      </div>
+
+      <div className="text-center space-y-4">
+        <div className="space-y-1">
+          <motion.p 
+            key={count}
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            className="text-5xl sm:text-6xl font-bold text-foreground"
           >
-            <RotateCcw className="w-4 h-4" />
+            {count}
+          </motion.p>
+          <p className="text-caption-1 text-foreground-muted">of {target}</p>
+        </div>
+
+        <div className="h-2 bg-muted rounded-pill overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.3 }}
+            className="h-full bg-gradient-primary"
+          />
+        </div>
+
+        <div className="flex items-center justify-center gap-3 sm:gap-4">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleDecrement}
+            disabled={count === 0}
+            className="h-10 w-10 sm:h-11 sm:w-11 rounded-full"
+          >
+            <Minus className="w-5 h-5" />
+          </Button>
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              size="lg"
+              onClick={handleIncrement}
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full text-xl sm:text-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+            >
+              +1
+            </Button>
+          </motion.div>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleIncrement}
+            className="h-10 w-10 sm:h-11 sm:w-11 rounded-full"
+          >
+            <Plus className="w-5 h-5" />
           </Button>
         </div>
-
-        <div className="text-center space-y-5">
-          {/* Counter Display - Flowblox stat style */}
-          <div className="sage-card p-6 sm:p-8 mx-auto max-w-xs">
-            <motion.p 
-              key={count}
-              initial={{ scale: 1.15 }}
-              animate={{ scale: 1 }}
-              className="text-stat text-primary-foreground"
-            >
-              {count}
-            </motion.p>
-            <p className="text-sm text-primary-foreground/70 font-medium mt-1">of {target}</p>
-            
-            {/* Progress Bar */}
-            <div className="h-2 bg-white/30 rounded-pill overflow-hidden mt-4">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
-                className="h-full bg-accent rounded-pill"
-              />
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="flex items-center justify-center gap-4">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={handleDecrement}
-              disabled={count === 0}
-              className="h-12 w-12 rounded-full bg-white/10 text-white hover:bg-white/20"
-            >
-              <Minus className="w-5 h-5" />
-            </Button>
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button
-                size="lg"
-                onClick={handleIncrement}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full text-xl sm:text-2xl bg-accent hover:bg-accent/90 text-accent-foreground shadow-elevation-2 font-display font-semibold"
-              >
-                +1
-              </Button>
-            </motion.div>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={handleIncrement}
-              className="h-12 w-12 rounded-full bg-white/10 text-white hover:bg-white/20"
-            >
-              <Plus className="w-5 h-5" />
-            </Button>
-          </div>
-          
-          {saving && (
-            <p className="text-xs text-white/50">Saving...</p>
-          )}
-        </div>
+        
+        {saving && (
+          <p className="text-caption-2 text-foreground-muted">Saving...</p>
+        )}
       </div>
-    </motion.div>
+    </Card>
   );
 }
