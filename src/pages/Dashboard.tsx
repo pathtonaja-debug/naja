@@ -11,6 +11,7 @@ import { initializeNotifications } from "@/services/notifications";
 import { syncAllHabitsToCalendar } from "@/services/calendarSync";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { motion } from "framer-motion";
 
 const Dashboard = () => {
   const { profile, loading } = useProfile();
@@ -25,14 +26,14 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-24">
-        <div className="mx-4 mt-4">
-          <Skeleton className="h-[280px] sm:h-[320px] rounded-card" />
+      <div className="min-h-screen bg-background pb-20">
+        <div className="mx-3 mt-3">
+          <Skeleton className="h-[200px] rounded-2xl" />
         </div>
-        <div className="p-4 space-y-4">
-          <Skeleton className="h-32 rounded-card" />
-          <Skeleton className="h-48 rounded-card" />
-          <Skeleton className="h-64 rounded-card" />
+        <div className="p-3 space-y-3">
+          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-32 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
         </div>
         <BottomNav />
       </div>
@@ -40,9 +41,14 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-28">
-      {/* Hero Section with Mosque Image */}
-      <ErrorBoundary fallback={<div className="h-[280px] bg-muted rounded-card mx-4 mt-4" />}>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background pb-20"
+    >
+      {/* Hero Section with Illustration */}
+      <ErrorBoundary fallback={<div className="h-[200px] bg-muted rounded-2xl mx-3 mt-3" />}>
         <HeroSection 
           userName={profile?.display_name || "User"}
           city={profile?.city || undefined}
@@ -50,36 +56,36 @@ const Dashboard = () => {
         />
       </ErrorBoundary>
       
-      {/* Content Sections */}
-      <div className="p-4 space-y-5">
+      {/* Content Sections - More Compact */}
+      <div className="space-y-1">
         {/* Today's Overview */}
-        <ErrorBoundary fallback={<div className="h-32 bg-muted rounded-card" />}>
+        <ErrorBoundary fallback={<div className="h-24 bg-muted rounded-xl mx-3" />}>
           <TodaysOverview />
         </ErrorBoundary>
 
         {/* 5-Prayer Individual Tracker */}
-        <ErrorBoundary fallback={<div className="h-32 bg-muted rounded-card" />}>
+        <ErrorBoundary fallback={<div className="h-28 bg-muted rounded-xl mx-3" />}>
           <PrayerTracker />
         </ErrorBoundary>
 
-        {/* Habit Tracker Preview */}
-        <ErrorBoundary fallback={<div className="h-48 bg-muted rounded-card" />}>
-          <HabitTrackerPreview />
-        </ErrorBoundary>
-
         {/* Dhikr Counter */}
-        <ErrorBoundary fallback={<div className="h-64 bg-muted rounded-card" />}>
+        <ErrorBoundary fallback={<div className="h-48 bg-muted rounded-xl mx-3" />}>
           <DhikrCounter />
         </ErrorBoundary>
 
+        {/* Habit Tracker Preview */}
+        <ErrorBoundary fallback={<div className="h-40 bg-muted rounded-xl mx-3" />}>
+          <HabitTrackerPreview />
+        </ErrorBoundary>
+
         {/* Prayer Times List */}
-        <ErrorBoundary fallback={<div className="h-64 bg-muted rounded-card" />}>
+        <ErrorBoundary fallback={<div className="h-48 bg-muted rounded-xl mx-3" />}>
           <PrayerTimesList />
         </ErrorBoundary>
       </div>
 
       <BottomNav />
-    </div>
+    </motion.div>
   );
 };
 
