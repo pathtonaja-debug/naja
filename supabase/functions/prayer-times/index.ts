@@ -45,7 +45,7 @@ serve(async (req) => {
     // Verify JWT and get user
     const authHeader = req.headers.get('authorization');
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
     // Create client with user's auth for verification
