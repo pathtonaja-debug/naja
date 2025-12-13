@@ -36,21 +36,20 @@ export function BeadsAnimation({ count, onIncrement, target }: BeadsAnimationPro
   const progress = Math.min((count / target) * 100, 100);
 
   return (
-    <div className="relative w-full py-4 overflow-hidden">
+    <div className="relative w-full py-6 overflow-visible">
       {/* Arc path visualization */}
       <svg 
         className="absolute inset-0 w-full h-full pointer-events-none" 
-        viewBox="0 0 300 100"
+        viewBox="0 0 300 120"
         preserveAspectRatio="xMidYMid meet"
       >
         {/* String/cord */}
         <path
-          d="M -20 50 Q 150 100 320 50"
+          d="M -20 60 Q 150 120 320 60"
           fill="none"
-          stroke="hsl(25 15% 30%)"
-          strokeWidth="1.5"
-          strokeDasharray="4 2"
-          opacity="0.4"
+          stroke="hsl(var(--foreground) / 0.2)"
+          strokeWidth="2"
+          strokeDasharray="6 3"
         />
       </svg>
 
@@ -61,18 +60,18 @@ export function BeadsAnimation({ count, onIncrement, target }: BeadsAnimationPro
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className="relative flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+        className="relative flex items-center justify-center cursor-grab active:cursor-grabbing select-none touch-pan-y"
       >
-        <div className="relative h-20 w-full flex items-end justify-center">
+        <div className="relative h-24 w-full flex items-end justify-center">
           {beadPositions.map((_, index) => {
             // Calculate position along arc
             const normalizedPos = (index / (BEAD_COUNT - 1)) - 0.5;
-            const xPos = normalizedPos * 260;
-            const yPos = Math.pow(normalizedPos * 2, 2) * 25;
+            const xPos = normalizedPos * 240;
+            const yPos = Math.pow(normalizedPos * 2, 2) * 30;
             
             // Size varies - larger in center
             const distFromCenter = Math.abs(normalizedPos);
-            const size = 28 - distFromCenter * 12;
+            const size = 32 - distFromCenter * 14;
             
             // Color intensity based on count
             const beadsFilled = Math.floor((count % BEAD_COUNT));
@@ -84,38 +83,41 @@ export function BeadsAnimation({ count, onIncrement, target }: BeadsAnimationPro
                 className="absolute"
                 style={{
                   left: `calc(50% + ${xPos}px)`,
-                  bottom: `${yPos + 10}px`,
+                  bottom: `${yPos + 12}px`,
                   width: size,
                   height: size,
+                  marginLeft: -size / 2,
                 }}
-                initial={{ scale: 0.8 }}
+                initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ 
-                  scale: isFilled ? 1.05 : 1,
-                  y: isFilled ? -2 : 0 
+                  scale: isFilled ? 1.1 : 1,
+                  opacity: 1,
+                  y: isFilled ? -3 : 0 
                 }}
                 transition={{ 
                   type: "spring", 
                   stiffness: 400, 
-                  damping: 25 
+                  damping: 25,
+                  delay: index * 0.02
                 }}
               >
                 {/* Bead */}
                 <div 
-                  className="w-full h-full rounded-full transition-colors duration-300"
+                  className="w-full h-full rounded-full transition-all duration-300 shadow-md"
                   style={{
                     background: isFilled 
-                      ? 'linear-gradient(135deg, hsl(25 85% 55%) 0%, hsl(30 75% 45%) 100%)'
-                      : 'linear-gradient(135deg, hsl(35 80% 60%) 0%, hsl(25 70% 50%) 100%)',
+                      ? 'linear-gradient(135deg, hsl(25 85% 55%) 0%, hsl(30 75% 40%) 100%)'
+                      : 'linear-gradient(135deg, hsl(35 60% 55%) 0%, hsl(25 50% 45%) 100%)',
                     boxShadow: isFilled 
-                      ? '0 4px 12px rgba(200, 100, 50, 0.4), inset 0 -3px 6px rgba(0,0,0,0.2)'
-                      : '0 2px 8px rgba(200, 120, 60, 0.3), inset 0 -2px 4px rgba(0,0,0,0.15)',
+                      ? '0 4px 16px rgba(180, 80, 40, 0.5), inset 0 -4px 8px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)'
+                      : '0 3px 10px rgba(150, 100, 60, 0.35), inset 0 -3px 6px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.15)',
                   }}
                 >
                   {/* Highlight */}
                   <div 
-                    className="absolute top-1 left-1 w-2 h-2 rounded-full opacity-60"
+                    className="absolute top-1 left-1.5 w-2.5 h-2.5 rounded-full"
                     style={{
-                      background: 'radial-gradient(circle, white 0%, transparent 70%)',
+                      background: 'radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%)',
                     }}
                   />
                 </div>
@@ -127,13 +129,13 @@ export function BeadsAnimation({ count, onIncrement, target }: BeadsAnimationPro
 
       {/* Swipe indicator */}
       <motion.div 
-        className="flex items-center justify-center mt-2 text-foreground-muted"
-        initial={{ opacity: 0.5 }}
-        animate={{ opacity: [0.5, 1, 0.5], x: [0, 5, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="flex items-center justify-center mt-4 text-muted-foreground"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0.4, 0.8, 0.4], x: [0, 8, 0] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <span className="text-[10px] mr-1">Swipe right to count</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <span className="text-xs mr-1.5">Swipe right to count</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>
       </motion.div>

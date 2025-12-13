@@ -17,6 +17,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LocationSettingsSheet } from "@/components/settings/LocationSettingsSheet";
 import { PrayerMethodSheet, getPrayerMethodLabel } from "@/components/settings/PrayerMethodSheet";
+import { motion } from "framer-motion";
+import palmsWatercolor from "@/assets/illustrations/palms-watercolor.png";
 import type { Database } from "@/integrations/supabase/types";
 
 type PrayerMethod = Database["public"]["Enums"]["prayer_method"];
@@ -31,7 +33,6 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   
-  // Sheet states
   const [locationSheetOpen, setLocationSheetOpen] = useState(false);
   const [methodSheetOpen, setMethodSheetOpen] = useState(false);
 
@@ -41,7 +42,6 @@ const Profile = () => {
       setNotificationsEnabled(profile.notifications_enabled ?? true);
     }
     
-    // Get user email
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user?.email) {
         setUserEmail(user.email);
@@ -95,7 +95,6 @@ const Profile = () => {
     navigate("/auth", { replace: true });
   };
 
-  // Get location display text
   const getLocationDisplay = () => {
     if (profile?.city && profile?.country) {
       return `${profile.city}, ${profile.country}`;
@@ -129,11 +128,31 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background pb-24 relative overflow-hidden"
+    >
+      {/* Watercolor decoration */}
+      <motion.img 
+        src={palmsWatercolor}
+        alt=""
+        className="absolute top-20 right-0 w-36 h-36 object-contain opacity-20 pointer-events-none"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 0.2, x: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      />
+
       <TopBar title="Settings" />
 
       {/* User Card */}
-      <div className="px-5 pb-6">
+      <motion.div 
+        className="px-5 pb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
         <Card className="p-6">
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16">
@@ -147,11 +166,15 @@ const Profile = () => {
             </div>
           </div>
         </Card>
-      </div>
+      </motion.div>
 
       <main className="px-5 space-y-6">
         {/* Profile Settings */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
           <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Profile</h2>
           <Card className="p-4 space-y-4">
             <div className="space-y-2">
@@ -174,10 +197,14 @@ const Profile = () => {
               )}
             </Button>
           </Card>
-        </div>
+        </motion.div>
 
         {/* Prayer & Location Settings */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Prayer & Location</h2>
           <Card>
             <ListCell
@@ -196,10 +223,14 @@ const Profile = () => {
           <p className="text-xs text-muted-foreground mt-2 px-2">
             Location and prayer method are used to calculate accurate prayer times.
           </p>
-        </div>
+        </motion.div>
 
         {/* Quick Settings */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
           <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Preferences</h2>
           <Card>
             <ListCell
@@ -225,21 +256,26 @@ const Profile = () => {
               showChevron={false}
             />
           </Card>
-        </div>
+        </motion.div>
 
         {/* Logout */}
-        <Card>
-          <ListCell
-            title="Log Out"
-            subtitle="Sign out of your account"
-            leftElement={<LogOut className="w-5 h-5 text-destructive" />}
-            onPress={handleLogout}
-            className="text-destructive"
-          />
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card>
+            <ListCell
+              title="Log Out"
+              subtitle="Sign out of your account"
+              leftElement={<LogOut className="w-5 h-5 text-destructive" />}
+              onPress={handleLogout}
+              className="text-destructive"
+            />
+          </Card>
+        </motion.div>
       </main>
 
-      {/* Location Settings Sheet */}
       <LocationSettingsSheet
         open={locationSheetOpen}
         onOpenChange={setLocationSheetOpen}
@@ -250,7 +286,6 @@ const Profile = () => {
         onSave={handleLocationSave}
       />
 
-      {/* Prayer Method Sheet */}
       <PrayerMethodSheet
         open={methodSheetOpen}
         onOpenChange={setMethodSheetOpen}
@@ -259,7 +294,7 @@ const Profile = () => {
       />
 
       <BottomNav />
-    </div>
+    </motion.div>
   );
 };
 

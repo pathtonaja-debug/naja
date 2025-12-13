@@ -9,6 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAuthenticatedUserId } from "@/lib/auth";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, subDays } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+import crescentWatercolor from "@/assets/illustrations/crescent-watercolor.png";
+import tasbihWatercolor from "@/assets/illustrations/tasbih-watercolor.png";
 
 interface ProgressStats {
   currentStreak: number;
@@ -43,7 +46,6 @@ const Progress = () => {
       const weekStart = startOfWeek(now, { weekStartsOn: 1 });
       const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
-      // Fetch habit logs for the week
       const { data: habitLogs } = await supabase
         .from('habit_logs')
         .select('*')
@@ -51,7 +53,6 @@ const Progress = () => {
         .gte('date', format(weekStart, 'yyyy-MM-dd'))
         .lte('date', format(weekEnd, 'yyyy-MM-dd'));
 
-      // Calculate unique completed days
       const completedDays = habitLogs
         ? [...new Set(habitLogs.filter(log => log.completed).map(log => log.date))]
             .map(date => new Date(date))
@@ -62,7 +63,6 @@ const Progress = () => {
         ? Math.round((completedDays.length / 7) * 100) 
         : 0;
 
-      // Fetch all habit logs for streak calculation (last 30 days)
       const thirtyDaysAgo = format(subDays(now, 30), 'yyyy-MM-dd');
       const { data: allLogs } = await supabase
         .from('habit_logs')
@@ -72,7 +72,6 @@ const Progress = () => {
         .gte('date', thirtyDaysAgo)
         .order('date', { ascending: false });
 
-      // Calculate streaks properly
       const { currentStreak, bestStreak } = calculateStreaks(allLogs || []);
 
       setStats({
@@ -93,7 +92,6 @@ const Progress = () => {
   const calculateStreaks = (logs: { date: string; completed: boolean }[]) => {
     if (!logs || logs.length === 0) return { currentStreak: 0, bestStreak: 0 };
 
-    // Get unique dates where habits were completed
     const uniqueDates = [...new Set(logs.map(l => l.date))].sort().reverse();
     
     if (uniqueDates.length === 0) return { currentStreak: 0, bestStreak: 0 };
@@ -101,21 +99,17 @@ const Progress = () => {
     const today = format(new Date(), 'yyyy-MM-dd');
     const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
-    // Calculate current streak
     let currentStreak = 0;
     let checkDate = today;
     
-    // Check if user completed today or yesterday (streak can continue from yesterday)
     if (uniqueDates.includes(today)) {
       checkDate = today;
     } else if (uniqueDates.includes(yesterday)) {
       checkDate = yesterday;
     } else {
-      // Streak broken - no activity today or yesterday
       return { currentStreak: 0, bestStreak: calculateBestStreak(uniqueDates) };
     }
 
-    // Count consecutive days
     for (let i = 0; i < 30; i++) {
       const dateToCheck = format(subDays(new Date(checkDate), i), 'yyyy-MM-dd');
       if (uniqueDates.includes(dateToCheck)) {
@@ -180,8 +174,31 @@ const Progress = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background pb-24 relative overflow-hidden"
+    >
+      {/* Watercolor decorations */}
+      <motion.img 
+        src={crescentWatercolor}
+        alt=""
+        className="absolute top-20 right-0 w-32 h-32 object-contain opacity-25 pointer-events-none"
+        initial={{ opacity: 0, rotate: -10 }}
+        animate={{ opacity: 0.25, rotate: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      />
+      <motion.img 
+        src={tasbihWatercolor}
+        alt=""
+        className="absolute bottom-40 left-0 w-28 h-28 object-contain opacity-20 pointer-events-none"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 0.2, x: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      />
+
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-6 py-4">
         <div className="flex items-center gap-3">
           <Button 
             size="icon" 
@@ -197,81 +214,113 @@ const Progress = () => {
 
       <main className="px-6 pt-6 space-y-6">
         {/* Current Streak Card */}
-        <Card className="bg-accent border-none rounded-3xl p-8 text-center">
-          <p className="text-accent-foreground/70 text-sm mb-4">Current Streak</p>
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <Flame className="w-10 h-10 text-primary" />
-            <span className="text-6xl font-bold text-accent-foreground">{stats.currentStreak}</span>
-          </div>
-          <p className="text-accent-foreground/70 text-lg mb-6">Days in a row</p>
-          
-          <div className="h-px bg-accent-foreground/10 my-6" />
-          
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.bestStreak}</p>
-              <p className="text-accent-foreground/70 text-sm">Best Streak</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="bg-accent border-none rounded-3xl p-8 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+            <div className="relative">
+              <p className="text-accent-foreground/70 text-sm mb-4">Current Streak</p>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Flame className="w-10 h-10 text-primary" />
+                </motion.div>
+                <span className="text-6xl font-bold text-accent-foreground">{stats.currentStreak}</span>
+              </div>
+              <p className="text-accent-foreground/70 text-lg mb-6">Days in a row</p>
+              
+              <div className="h-px bg-accent-foreground/10 my-6" />
+              
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.bestStreak}</p>
+                  <p className="text-accent-foreground/70 text-sm">Best Streak</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.weeklyConsistency}%</p>
+                  <p className="text-accent-foreground/70 text-sm">This Week</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.weeklyConsistency}%</p>
-              <p className="text-accent-foreground/70 text-sm">This Week</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
         {/* Weekly Summary Card */}
-        <Card className="border-border bg-card rounded-3xl p-6">
-          <h3 className="text-foreground font-medium text-lg mb-4">Weekly Summary</h3>
-          
-          <div className="grid grid-cols-7 gap-2 mb-6">
-            {weekDays.map((day, i) => {
-              const isCompleted = stats.completedDays.some(d => isSameDay(d, weekDates[i]));
-              const isToday = isSameDay(weekDates[i], new Date());
-              
-              return (
-                <div key={day} className="text-center">
-                  <p className="text-xs text-muted-foreground mb-2">{day}</p>
-                  <div className={`w-full h-2 rounded-full ${
-                    isCompleted ? 'bg-primary' : isToday ? 'bg-muted' : 'bg-muted/50'
-                  }`} />
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Weekly Consistency</span>
-                <span className="text-sm font-medium text-foreground">{stats.weeklyConsistency}%</span>
-              </div>
-              <ProgressBar value={stats.weeklyConsistency} className="h-2" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="border-border bg-card rounded-3xl p-6">
+            <h3 className="text-foreground font-medium text-lg mb-4">Weekly Summary</h3>
+            
+            <div className="grid grid-cols-7 gap-2 mb-6">
+              {weekDays.map((day, i) => {
+                const isCompleted = stats.completedDays.some(d => isSameDay(d, weekDates[i]));
+                const isToday = isSameDay(weekDates[i], new Date());
+                
+                return (
+                  <motion.div 
+                    key={day} 
+                    className="text-center"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.25 + i * 0.05 }}
+                  >
+                    <p className="text-xs text-muted-foreground mb-2">{day}</p>
+                    <div className={`w-full h-2 rounded-full transition-all ${
+                      isCompleted ? 'bg-primary' : isToday ? 'bg-muted' : 'bg-muted/50'
+                    }`} />
+                  </motion.div>
+                );
+              })}
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-border">
+            <div className="space-y-4">
               <div>
-                <p className="text-2xl font-bold text-foreground">{stats.totalCompletions}</p>
-                <p className="text-sm text-muted-foreground">Completions this week</p>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Weekly Consistency</span>
+                  <span className="text-sm font-medium text-foreground">{stats.weeklyConsistency}%</span>
+                </div>
+                <ProgressBar value={stats.weeklyConsistency} className="h-2" />
               </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">{stats.completedDays.length}/7</p>
-                <p className="text-sm text-muted-foreground">Active days</p>
+
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{stats.totalCompletions}</p>
+                  <p className="text-sm text-muted-foreground">Completions this week</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-foreground">{stats.completedDays.length}/7</p>
+                  <p className="text-sm text-muted-foreground">Active days</p>
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
         {/* Tips Card */}
-        <Card className="border-border bg-card rounded-3xl p-6">
-          <h3 className="text-foreground font-medium text-lg mb-3">Keep Going!</h3>
-          <p className="text-muted-foreground text-sm">
-            Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
-          </p>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="border-border bg-card rounded-3xl p-6">
+            <h3 className="text-foreground font-medium text-lg mb-3">Keep Going!</h3>
+            <p className="text-muted-foreground text-sm">
+              Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
+            </p>
+          </Card>
+        </motion.div>
       </main>
 
       <BottomNav />
-    </div>
+    </motion.div>
   );
 };
 

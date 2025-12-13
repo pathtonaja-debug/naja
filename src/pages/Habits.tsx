@@ -10,6 +10,9 @@ import WeeklyProgress from "@/components/habits/WeeklyProgress";
 import { listHabits, toggleHabit, initializeDefaultHabits } from "@/services/db";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import tasbihWatercolor from "@/assets/illustrations/tasbih-watercolor.png";
+import mosqueWatercolor from "@/assets/illustrations/mosque-watercolor.png";
 
 const iconMap: Record<string, any> = {
   'book-open': BookOpen,
@@ -64,164 +67,208 @@ const Habits = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-olive/30 via-butter/20 to-pink/30 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-foreground/60">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-olive/30 via-butter/20 to-pink/30 pb-24">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background pb-24 relative overflow-hidden"
+    >
+      {/* Watercolor decorations */}
+      <motion.img 
+        src={tasbihWatercolor}
+        alt=""
+        className="absolute top-20 right-0 w-32 h-32 object-contain opacity-20 pointer-events-none"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 0.2, x: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      />
+      <motion.img 
+        src={mosqueWatercolor}
+        alt=""
+        className="absolute bottom-40 left-0 w-28 h-28 object-contain opacity-15 pointer-events-none"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 0.15, x: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      />
+
       {/* Header */}
       <header className="px-6 pt-12 pb-6">
-        <div className="flex items-center justify-between mb-8">
-          <Avatar className="w-12 h-12 backdrop-blur-xl bg-white/30 border border-white/20">
+        <motion.div 
+          className="flex items-center justify-between mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Avatar className="w-12 h-12 border border-border">
             <AvatarImage src="" />
-            <AvatarFallback className="bg-transparent text-foreground">N</AvatarFallback>
+            <AvatarFallback className="bg-muted text-foreground">N</AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3">
             <Button 
               size="icon" 
               onClick={() => setShowAddSheet(true)}
-              className="rounded-full bg-foreground hover:bg-foreground/90 w-12 h-12 shadow-lg"
+              className="rounded-full w-12 h-12 shadow-lg"
             >
-              <Plus className="w-5 h-5 text-background" />
+              <Plus className="w-5 h-5" />
             </Button>
-            <Button size="icon" variant="ghost" className="rounded-full w-12 h-12 backdrop-blur-xl bg-white/30 hover:bg-white/40 border border-white/20">
+            <Button size="icon" variant="outline" className="rounded-full w-12 h-12">
               <Bell className="w-5 h-5 text-foreground" />
             </Button>
           </div>
-        </div>
+        </motion.div>
 
-        <h1 className="text-3xl font-semibold text-foreground mb-2">
-          Spiritual Habits
-        </h1>
-        <p className="text-sm text-foreground/60">Build consistency with faith</p>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h1 className="text-3xl font-semibold text-foreground mb-2">
+            Spiritual Habits
+          </h1>
+          <p className="text-sm text-muted-foreground">Build consistency with faith</p>
+        </motion.div>
       </header>
 
       {/* Main Content */}
       <main className="px-6 space-y-4">
         {/* Progress Summary */}
-        <Card className="backdrop-blur-3xl bg-gradient-to-br from-butter/40 to-olive/30 border-white/15 rounded-[2rem] p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-foreground/60 mb-1">Today's Progress</p>
-              <p className="text-4xl font-bold text-foreground">{completed}/{habits.length}</p>
-              <p className="text-sm text-foreground/60 mt-1">habits completed</p>
-            </div>
-            <ProgressRing 
-              progress={progress} 
-              size={100} 
-              strokeWidth={8}
-            />
-          </div>
-        </Card>
-
-        {/* AI Companion Insight */}
-        {completed > 0 && (
-          <Card className="backdrop-blur-3xl bg-gradient-to-br from-lilac/30 to-pink/20 border-white/15 rounded-[2rem] p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full backdrop-blur-xl bg-white/40 border border-white/20 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-lilac" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <Card className="bg-accent border-none rounded-3xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-accent-foreground/60 mb-1">Today's Progress</p>
+                <p className="text-4xl font-bold text-accent-foreground">{completed}/{habits.length}</p>
+                <p className="text-sm text-accent-foreground/60 mt-1">habits completed</p>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Your companion left you a message</p>
-                <p className="text-xs text-foreground/60 mt-0.5">Tap to view insight</p>
-              </div>
+              <ProgressRing 
+                progress={progress} 
+                size={100} 
+                strokeWidth={8}
+              />
             </div>
           </Card>
-        )}
+        </motion.div>
 
         {/* Empty State */}
         {habits.length === 0 && (
-          <Card className="backdrop-blur-3xl bg-gradient-to-br from-sky/30 to-butter/20 border-white/15 rounded-[2rem] p-8 text-center">
-            <div className="w-16 h-16 rounded-full backdrop-blur-xl bg-white/40 border border-white/20 mx-auto mb-4 flex items-center justify-center">
-              <Star className="w-8 h-8 text-butter" />
-            </div>
-            <h3 className="text-xl font-medium text-foreground mb-2">Let's build your spiritual habits</h3>
-            <p className="text-sm text-foreground/60 mb-6">Choose small, meaningful actions to strengthen your routine</p>
-            <Button 
-              onClick={() => setShowAddSheet(true)}
-              className="rounded-full bg-foreground text-background hover:bg-foreground/90"
-            >
-              Add Your First Habit
-            </Button>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="bg-card rounded-3xl p-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center">
+                <Star className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-medium text-foreground mb-2">Let's build your spiritual habits</h3>
+              <p className="text-sm text-muted-foreground mb-6">Choose small, meaningful actions to strengthen your routine</p>
+              <Button 
+                onClick={() => setShowAddSheet(true)}
+                className="rounded-full"
+              >
+                Add Your First Habit
+              </Button>
+            </Card>
+          </motion.div>
         )}
 
         {/* Habits List */}
-        {habits.map((habit, idx) => {
-          const gradients = [
-            'bg-gradient-to-br from-pink/30 to-lilac/20',
-            'bg-gradient-to-br from-sky/30 to-butter/20',
-            'bg-gradient-to-br from-olive/30 to-pink/20',
-            'bg-gradient-to-br from-lilac/30 to-sky/20',
-          ];
-          
-          const IconComponent = iconMap[habit.icon] || Star;
-          
-          return (
-            <Card 
-              key={habit.id} 
-              className={`backdrop-blur-3xl border-white/15 rounded-[2rem] p-5 transition-all duration-300 hover:scale-[1.02] ${gradients[idx % gradients.length]}`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={`w-14 h-14 rounded-2xl backdrop-blur-xl border border-white/20 flex items-center justify-center shrink-0 transition-all duration-300 ${
-                    habit.completed ? 'bg-olive/50 shadow-lg' : 'bg-white/40'
-                  }`}>
-                    {habit.completed ? (
-                      <CheckCircle2 className="w-7 h-7 text-olive" />
-                    ) : (
-                      <IconComponent className="w-7 h-7 text-foreground/70" />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-foreground font-semibold text-lg">{habit.name}</h3>
-                    {habit.streak > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-foreground/60 mt-1">
-                        <Flame className="w-4 h-4 text-pink" />
-                        <span>{habit.streak} day streak</span>
+        <AnimatePresence>
+          {habits.map((habit, idx) => {
+            const IconComponent = iconMap[habit.icon] || Star;
+            
+            return (
+              <motion.div
+                key={habit.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ delay: 0.1 + idx * 0.05 }}
+              >
+                <Card className="bg-card rounded-3xl p-5 transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        habit.completed ? 'bg-primary/20' : 'bg-muted'
+                      }`}>
+                        {habit.completed ? (
+                          <CheckCircle2 className="w-7 h-7 text-primary" />
+                        ) : (
+                          <IconComponent className="w-7 h-7 text-muted-foreground" />
+                        )}
                       </div>
-                    )}
+                      <div>
+                        <h3 className="text-foreground font-semibold text-lg">{habit.name}</h3>
+                        {habit.streak > 0 && (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                            <Flame className="w-4 h-4 text-orange-500" />
+                            <span>{habit.streak} day streak</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant={habit.completed ? "default" : "outline"}
+                      onClick={() => handleToggle(habit.id)}
+                      className="rounded-full w-12 h-12 transition-all duration-300 active:scale-95"
+                    >
+                      {habit.completed ? (
+                        <CheckCircle2 className="w-6 h-6" />
+                      ) : (
+                        <Circle className="w-6 h-6" />
+                      )}
+                    </Button>
                   </div>
-                </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handleToggle(habit.id)}
-                  className="rounded-full w-12 h-12 backdrop-blur-xl bg-white/30 hover:bg-white/50 border border-white/20 transition-all duration-300 active:scale-95"
-                >
-                  {habit.completed ? (
-                    <CheckCircle2 className="w-6 h-6 text-olive" />
-                  ) : (
-                    <Circle className="w-6 h-6 text-foreground/40" />
+                  {!habit.completed && (
+                    <Badge variant="secondary" className="rounded-full">
+                      Tap to complete
+                    </Badge>
                   )}
-                </Button>
-              </div>
-              {!habit.completed && (
-                <Badge className="rounded-full backdrop-blur-xl bg-white/40 text-foreground/70 border border-white/20">
-                  Tap to complete
-                </Badge>
-              )}
-            </Card>
-          );
-        })}
+                </Card>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
 
         {/* Weekly Progress */}
-        {habits.length > 0 && <WeeklyProgress />}
+        {habits.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <WeeklyProgress />
+          </motion.div>
+        )}
 
         {/* Add Habit Button */}
         {habits.length > 0 && (
-          <Card 
-            onClick={() => setShowAddSheet(true)}
-            className="backdrop-blur-3xl bg-gradient-to-br from-white/30 to-white/20 border-white/15 border-2 border-dashed rounded-[2rem] p-6 text-center cursor-pointer hover:bg-white/40 transition-all duration-300 active:scale-98"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
           >
-            <div className="flex items-center justify-center gap-2 text-foreground/70">
-              <Plus className="w-5 h-5" />
-              <span className="font-medium">Add New Habit</span>
-            </div>
-          </Card>
+            <Card 
+              onClick={() => setShowAddSheet(true)}
+              className="bg-card border-2 border-dashed border-border rounded-3xl p-6 text-center cursor-pointer hover:bg-muted/50 transition-all duration-300 active:scale-[0.98]"
+            >
+              <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                <Plus className="w-5 h-5" />
+                <span className="font-medium">Add New Habit</span>
+              </div>
+            </Card>
+          </motion.div>
         )}
       </main>
 
@@ -232,7 +279,7 @@ const Habits = () => {
       />
 
       <BottomNav />
-    </div>
+    </motion.div>
   );
 };
 
