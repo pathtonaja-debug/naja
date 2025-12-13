@@ -22,6 +22,8 @@ import {
   endOfDay,
 } from "date-fns";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import mosqueWatercolor from "@/assets/illustrations/mosque-watercolor.png";
 
 type ViewType = "week" | "day";
 
@@ -121,10 +123,30 @@ const Calendar = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background relative overflow-hidden"
+    >
+      {/* Watercolor decoration */}
+      <motion.img 
+        src={mosqueWatercolor}
+        alt=""
+        className="absolute top-0 right-0 w-48 h-48 object-contain opacity-20 pointer-events-none"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 0.2, x: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      />
+      
       <TopBar title="Calendar" />
 
-      <div className="px-6 pt-4 pb-6">
+      <motion.div 
+        className="px-6 pt-4 pb-6"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
         <SegmentedControl
           value={view}
           onValueChange={(value) => setView(value as ViewType)}
@@ -133,30 +155,47 @@ const Calendar = () => {
             { label: "Day", value: "day" },
           ]}
         />
-      </div>
+      </motion.div>
 
       <div className="pb-24">
         {view === "week" && (
-          <WeekView
-            week={currentDate}
-            items={items}
-            onWeekChange={setCurrentDate}
-            onItemPress={handleItemPress}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+          >
+            <WeekView
+              week={currentDate}
+              items={items}
+              onWeekChange={setCurrentDate}
+              onItemPress={handleItemPress}
+            />
+          </motion.div>
         )}
 
         {view === "day" && (
-          <DayView
-            day={currentDate}
-            items={items}
-            onDayChange={setCurrentDate}
-            onItemPress={handleItemPress}
-            onToggleComplete={handleToggleComplete}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+          >
+            <DayView
+              day={currentDate}
+              items={items}
+              onDayChange={setCurrentDate}
+              onItemPress={handleItemPress}
+              onToggleComplete={handleToggleComplete}
+            />
+          </motion.div>
         )}
       </div>
 
-      <div className="fixed bottom-24 right-6 z-40">
+      <motion.div 
+        className="fixed bottom-24 right-6 z-40"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, type: "spring", stiffness: 400 }}
+      >
         <Button
           size="icon"
           className="w-14 h-14 rounded-full shadow-lg"
@@ -164,7 +203,7 @@ const Calendar = () => {
         >
           <Plus className="w-6 h-6" />
         </Button>
-      </div>
+      </motion.div>
 
       <AddItemSheet
         open={sheetOpen}
@@ -175,7 +214,7 @@ const Calendar = () => {
       />
 
       <BottomNav />
-    </div>
+    </motion.div>
   );
 };
 

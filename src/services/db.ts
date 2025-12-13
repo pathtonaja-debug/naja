@@ -272,39 +272,48 @@ export async function getHabitProgress(userId?: string, days: number = 7): Promi
 export async function initializeDefaultHabits(): Promise<void> {
   const userId = await getAuthenticatedUserId();
   
-  // Check if user already has habits
-  const { data: existing } = await supabase
+  // Check if user already has any Prayer habits specifically (most critical)
+  const { data: existingPrayers } = await supabase
     .from('habits')
-    .select('id')
+    .select('name')
     .eq('user_id', userId)
-    .limit(1);
+    .eq('category', 'Prayer')
+    .eq('is_active', true);
 
-  if (existing && existing.length > 0) return;
+  // If user already has prayer habits, skip initialization
+  if (existingPrayers && existingPrayers.length >= 5) return;
 
-  // Create default habits
+  // Define default habits
   const defaults = [
-    { name: 'Fajr Prayer', category: 'prayer', icon: 'sunrise' },
-    { name: 'Dhuhr Prayer', category: 'prayer', icon: 'sun' },
-    { name: 'Asr Prayer', category: 'prayer', icon: 'sun' },
-    { name: 'Maghrib Prayer', category: 'prayer', icon: 'sunset' },
-    { name: 'Isha Prayer', category: 'prayer', icon: 'moon' },
-    { name: 'Quran Reading', category: 'spiritual', icon: 'book-open', target_count: 10 },
-    { name: 'Daily Dhikr', category: 'spiritual', icon: 'heart', target_count: 100 },
-    { name: 'Morning Dua', category: 'spiritual', icon: 'hand' },
-    { name: 'Gratitude Journal', category: 'personal', icon: 'sparkles' },
-    { name: 'Good Deed', category: 'personal', icon: 'star' }
+    { name: 'Fajr', category: 'Prayer', icon: 'sunrise' },
+    { name: 'Dhuhr', category: 'Prayer', icon: 'sun' },
+    { name: 'Asr', category: 'Prayer', icon: 'sun' },
+    { name: 'Maghrib', category: 'Prayer', icon: 'sunset' },
+    { name: 'Isha', category: 'Prayer', icon: 'moon' },
   ];
 
+  // Get existing habit names to avoid duplicates
+  const existingNames = new Set(existingPrayers?.map(h => h.name) || []);
+  
+  // Filter out habits that already exist
+  const habitsToCreate = defaults.filter(d => !existingNames.has(d.name));
+  
+  if (habitsToCreate.length === 0) return;
+
+  // Insert only missing habits
   const { error } = await supabase
     .from('habits')
-    .insert(defaults.map(d => ({
+    .insert(habitsToCreate.map(d => ({
       ...d,
       user_id: userId,
       frequency: 'daily',
       is_active: true
     })));
 
-  if (error) throw error;
+  // Ignore duplicate key errors (constraint will catch any race conditions)
+  if (error && !error.message.includes('duplicate key')) {
+    throw error;
+  }
 }
 
 // ============== Duas ==============
