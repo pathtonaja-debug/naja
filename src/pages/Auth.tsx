@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
+import { PasswordStrengthIndicator, validatePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
 
 // Validation schemas
 const emailSchema = z.string().email("Please enter a valid email address");
@@ -51,6 +52,13 @@ export default function Auth() {
       passwordSchema.parse(password);
       if (isSignUp) {
         displayNameSchema.parse(displayName);
+        // Validate password strength for signup
+        const strengthCheck = validatePasswordStrength(password);
+        if (!strengthCheck.valid) {
+          toast.error(strengthCheck.message);
+          setLoading(false);
+          return;
+        }
       }
 
       if (isSignUp) {
@@ -156,9 +164,10 @@ export default function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={isSignUp ? 8 : 6}
                 disabled={loading}
               />
+              {isSignUp && <PasswordStrengthIndicator password={password} />}
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
