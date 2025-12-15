@@ -94,11 +94,22 @@
     --duration-slow: 400ms;
     
     /* ============================================ */
-    /* SPACING - Compact & Breathable */
+    /* MOBILE SPACING SYSTEM */
     /* ============================================ */
-    --spacing-section: 1rem;
-    --spacing-content: 0.75rem;
-    --spacing-card-padding: 1.5rem;
+    --spacing-page: 1rem;           /* 16px - page horizontal padding */
+    --spacing-section: 0.75rem;     /* 12px - between sections */
+    --spacing-content: 0.5rem;      /* 8px - within sections */
+    --spacing-card: 0.875rem;       /* 14px - card internal padding */
+    --nav-height: 5.5rem;           /* 88px - bottom nav total height */
+    
+    /* ============================================ */
+    /* MOBILE TYPOGRAPHY SCALE */
+    /* ============================================ */
+    --text-page-title: 1.25rem;     /* 20px */
+    --text-section-title: 0.9375rem; /* 15px */
+    --text-body: 0.8125rem;         /* 13px */
+    --text-caption: 0.6875rem;      /* 11px */
+    --text-micro: 0.625rem;         /* 10px */
     
     /* ============================================ */
     /* GRADIENTS - Warm, Atmospheric */
@@ -158,50 +169,48 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Typography Scale */
-  .text-display {
-    @apply text-5xl font-bold tracking-tight;
+  /* Mobile-First Typography Scale */
+  .text-page-title {
+    font-size: var(--text-page-title);
+    @apply font-semibold tracking-tight;
   }
   
-  .text-large-title {
-    @apply text-4xl font-semibold tracking-tight;
+  .text-section-title {
+    font-size: var(--text-section-title);
+    @apply font-semibold;
   }
   
-  .text-title-1 {
-    @apply text-3xl font-semibold;
-  }
-  
-  .text-title-2 {
-    @apply text-2xl font-medium;
-  }
-  
-  .text-title-3 {
-    @apply text-xl font-medium;
-  }
-  
-  .text-headline {
-    @apply text-lg font-semibold;
+  .text-body-lg {
+    font-size: var(--text-body);
+    @apply font-medium;
   }
   
   .text-body {
-    @apply text-base font-normal;
+    font-size: var(--text-body);
+    @apply font-normal;
   }
   
-  .text-subheadline {
-    @apply text-sm font-medium;
+  .text-caption {
+    font-size: var(--text-caption);
+    @apply font-medium;
   }
   
-  .text-footnote {
-    @apply text-xs font-normal;
+  .text-micro {
+    font-size: var(--text-micro);
+    @apply font-medium;
   }
-  
-  .text-caption-1 {
-    @apply text-xs font-normal;
-  }
-  
-  .text-caption-2 {
-    @apply text-[11px] font-normal;
-  }
+
+  /* Legacy Typography (for compatibility) */
+  .text-display { @apply text-2xl font-bold tracking-tight; }
+  .text-large-title { @apply text-xl font-semibold tracking-tight; }
+  .text-title-1 { @apply text-lg font-semibold; }
+  .text-title-2 { @apply text-base font-medium; }
+  .text-title-3 { @apply text-sm font-medium; }
+  .text-headline { @apply text-sm font-semibold; }
+  .text-subheadline { @apply text-xs font-medium; }
+  .text-footnote { @apply text-[11px] font-normal; }
+  .text-caption-1 { @apply text-[11px] font-normal; }
+  .text-caption-2 { @apply text-[10px] font-normal; }
 
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {

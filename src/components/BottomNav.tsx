@@ -35,7 +35,7 @@ const BottomNav = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">
       {/* Desert dunes background */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none overflow-hidden">
         <motion.img 
           src={desertDunes} 
           alt="" 
@@ -49,8 +49,8 @@ const BottomNav = () => {
       </div>
 
       {/* Navigation bar */}
-      <div className="relative px-4 pb-6 pt-2">
-        <div className="glass-card px-4 py-2.5 flex items-center justify-around max-w-md mx-auto shadow-elevation-2">
+      <div className="relative px-4 pb-5 pt-1.5">
+        <div className="glass-card px-3 py-2 flex items-center justify-around max-w-md mx-auto shadow-elevation-2">
           {/* Left tabs */}
           {mainTabs.map((tab) => {
             const isActive = location.pathname === tab.path;
@@ -58,18 +58,18 @@ const BottomNav = () => {
               <button
                 key={tab.path}
                 onClick={() => navigate(tab.path)}
-                className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg transition-all"
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/15 rounded-xl"
+                    className="absolute inset-0 bg-primary/15 rounded-lg"
                     transition={{ type: "spring", duration: 0.5 }}
                   />
                 )}
                 <tab.icon 
                   className={cn(
-                    "w-5 h-5 relative z-10 transition-colors",
+                    "w-4.5 h-4.5 relative z-10 transition-colors",
                     isActive ? "text-primary" : "text-foreground-muted"
                   )} 
                 />
@@ -91,22 +91,22 @@ const BottomNav = () => {
               <Button
                 size="icon"
                 className={cn(
-                  "w-12 h-12 rounded-full transition-all",
+                  "w-10 h-10 rounded-full transition-all",
                   "bg-gradient-to-br from-primary to-secondary text-primary-foreground",
                   "shadow-lg hover:shadow-xl hover:scale-105"
                 )}
                 aria-label="More"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4 h-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-48 p-2 mb-2 glass-card"
+              className="w-40 p-1.5 mb-2 glass-card"
               align="center"
               side="top"
               sideOffset={8}
             >
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0.5">
                 {menuItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -115,13 +115,13 @@ const BottomNav = () => {
                       variant="ghost"
                       onClick={() => handleMenuItemClick(item.path)}
                       className={cn(
-                        "w-full justify-start gap-3 h-10 rounded-lg transition-all",
+                        "w-full justify-start gap-2 h-9 rounded-lg transition-all text-[13px]",
                         isActive
                           ? "bg-primary/10 text-primary font-medium"
                           : "text-foreground-muted hover:text-foreground hover:bg-muted/50"
                       )}
                     >
-                      <item.icon className="w-4 h-4" />
+                      <item.icon className="w-3.5 h-3.5" />
                       <span>{item.label}</span>
                     </Button>
                   );
@@ -137,18 +137,18 @@ const BottomNav = () => {
               <button
                 key={tab.path}
                 onClick={() => navigate(tab.path)}
-                className="relative flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg transition-all"
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/15 rounded-xl"
+                    className="absolute inset-0 bg-primary/15 rounded-lg"
                     transition={{ type: "spring", duration: 0.5 }}
                   />
                 )}
                 <tab.icon 
                   className={cn(
-                    "w-5 h-5 relative z-10 transition-colors",
+                    "w-4.5 h-4.5 relative z-10 transition-colors",
                     isActive ? "text-primary" : "text-foreground-muted"
                   )} 
                 />

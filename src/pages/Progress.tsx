@@ -198,52 +198,52 @@ const Progress = () => {
         transition={{ delay: 0.4, duration: 0.5 }}
       />
 
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-6 py-4">
-        <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-2.5">
+        <div className="flex items-center gap-2">
           <Button 
             size="icon" 
             variant="ghost" 
             onClick={() => navigate('/dashboard')}
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </Button>
-          <h1 className="text-xl font-semibold text-foreground">Progress</h1>
+          <h1 className="text-lg font-semibold text-foreground">Progress</h1>
         </div>
       </header>
 
-      <main className="px-6 pt-6 space-y-6">
+      <main className="px-4 pt-4 space-y-4">
         {/* Current Streak Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-accent border-none rounded-3xl p-8 text-center relative overflow-hidden">
+          <Card className="bg-accent border-none rounded-2xl p-5 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
             <div className="relative">
-              <p className="text-accent-foreground/70 text-sm mb-4">Current Streak</p>
-              <div className="flex items-center justify-center gap-3 mb-3">
+              <p className="text-accent-foreground/70 text-[13px] mb-3">Current Streak</p>
+              <div className="flex items-center justify-center gap-2 mb-2">
                 <motion.div
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Flame className="w-10 h-10 text-primary" />
+                  <Flame className="w-8 h-8 text-primary" />
                 </motion.div>
-                <span className="text-6xl font-bold text-accent-foreground">{stats.currentStreak}</span>
+                <span className="text-5xl font-bold text-accent-foreground">{stats.currentStreak}</span>
               </div>
-              <p className="text-accent-foreground/70 text-lg mb-6">Days in a row</p>
+              <p className="text-accent-foreground/70 text-base mb-4">Days in a row</p>
               
-              <div className="h-px bg-accent-foreground/10 my-6" />
+              <div className="h-px bg-accent-foreground/10 my-4" />
               
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.bestStreak}</p>
-                  <p className="text-accent-foreground/70 text-sm">Best Streak</p>
+                  <p className="text-2xl font-bold text-accent-foreground mb-0.5">{stats.bestStreak}</p>
+                  <p className="text-accent-foreground/70 text-[13px]">Best Streak</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-accent-foreground mb-1">{stats.weeklyConsistency}%</p>
-                  <p className="text-accent-foreground/70 text-sm">This Week</p>
+                  <p className="text-2xl font-bold text-accent-foreground mb-0.5">{stats.weeklyConsistency}%</p>
+                  <p className="text-accent-foreground/70 text-[13px]">This Week</p>
                 </div>
               </div>
             </div>
@@ -256,10 +256,10 @@ const Progress = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="border-border bg-card rounded-3xl p-6">
-            <h3 className="text-foreground font-medium text-lg mb-4">Weekly Summary</h3>
+          <Card className="border-border bg-card rounded-2xl p-4">
+            <h3 className="text-foreground font-medium text-[15px] mb-3">Weekly Summary</h3>
             
-            <div className="grid grid-cols-7 gap-2 mb-6">
+            <div className="grid grid-cols-7 gap-1.5 mb-4">
               {weekDays.map((day, i) => {
                 const isCompleted = stats.completedDays.some(d => isSameDay(d, weekDates[i]));
                 const isToday = isSameDay(weekDates[i], new Date());
@@ -272,8 +272,8 @@ const Progress = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.25 + i * 0.05 }}
                   >
-                    <p className="text-xs text-muted-foreground mb-2">{day}</p>
-                    <div className={`w-full h-2 rounded-full transition-all ${
+                    <p className="text-[10px] text-muted-foreground mb-1.5">{day}</p>
+                    <div className={`w-full h-1.5 rounded-full transition-all ${
                       isCompleted ? 'bg-primary' : isToday ? 'bg-muted' : 'bg-muted/50'
                     }`} />
                   </motion.div>
@@ -281,23 +281,23 @@ const Progress = () => {
               })}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">Weekly Consistency</span>
-                  <span className="text-sm font-medium text-foreground">{stats.weeklyConsistency}%</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[13px] text-muted-foreground">Weekly Consistency</span>
+                  <span className="text-[13px] font-medium text-foreground">{stats.weeklyConsistency}%</span>
                 </div>
-                <ProgressBar value={stats.weeklyConsistency} className="h-2" />
+                <ProgressBar value={stats.weeklyConsistency} className="h-1.5" />
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border">
+              <div className="flex items-center justify-between pt-3 border-t border-border">
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats.totalCompletions}</p>
-                  <p className="text-sm text-muted-foreground">Completions this week</p>
+                  <p className="text-xl font-bold text-foreground">{stats.totalCompletions}</p>
+                  <p className="text-[12px] text-muted-foreground">Completions this week</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-foreground">{stats.completedDays.length}/7</p>
-                  <p className="text-sm text-muted-foreground">Active days</p>
+                  <p className="text-xl font-bold text-foreground">{stats.completedDays.length}/7</p>
+                  <p className="text-[12px] text-muted-foreground">Active days</p>
                 </div>
               </div>
             </div>
@@ -310,9 +310,9 @@ const Progress = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="border-border bg-card rounded-3xl p-6">
-            <h3 className="text-foreground font-medium text-lg mb-3">Keep Going!</h3>
-            <p className="text-muted-foreground text-sm">
+          <Card className="border-border bg-card rounded-2xl p-4">
+            <h3 className="text-foreground font-medium text-[15px] mb-2">Keep Going!</h3>
+            <p className="text-muted-foreground text-[13px]">
               Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
             </p>
           </Card>

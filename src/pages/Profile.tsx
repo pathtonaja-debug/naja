@@ -148,48 +148,49 @@ const Profile = () => {
 
       {/* User Card */}
       <motion.div 
-        className="px-5 pb-6"
+        className="px-4 pb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16">
-              <AvatarFallback className="bg-primary/20 text-primary text-xl">
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-14 h-14">
+              <AvatarFallback className="bg-primary/20 text-primary text-lg">
                 {name ? name.charAt(0).toUpperCase() : "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-xl font-semibold text-foreground mb-1">{name || "User"}</h2>
-              <p className="text-sm text-muted-foreground">{userEmail}</p>
+              <h2 className="text-lg font-semibold text-foreground mb-0.5">{name || "User"}</h2>
+              <p className="text-[13px] text-muted-foreground">{userEmail}</p>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      <main className="px-5 space-y-6">
+      <main className="px-4 space-y-5">
         {/* Profile Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Profile</h2>
-          <Card className="p-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Profile</h2>
+          <Card className="p-3 space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-[13px]">Name</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
+                className="h-10 text-[13px]"
               />
             </div>
-            <Button onClick={handleSave} className="w-full" disabled={saving}>
+            <Button onClick={handleSave} className="w-full h-10 text-[13px]" disabled={saving}>
               {saving ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                   Saving...
                 </>
               ) : (
@@ -205,22 +206,22 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Prayer & Location</h2>
+          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Prayer & Location</h2>
           <Card>
             <ListCell
               title="Location"
               subtitle={getLocationDisplay()}
-              leftElement={<MapPin className="w-5 h-5 text-foreground" />}
+              leftElement={<MapPin className="w-4 h-4 text-foreground" />}
               onPress={() => setLocationSheetOpen(true)}
             />
             <ListCell
               title="Prayer Method"
               subtitle={getPrayerMethodLabel(profile?.prayer_method ?? null)}
-              leftElement={<Calculator className="w-5 h-5 text-foreground" />}
+              leftElement={<Calculator className="w-4 h-4 text-foreground" />}
               onPress={() => setMethodSheetOpen(true)}
             />
           </Card>
-          <p className="text-xs text-muted-foreground mt-2 px-2">
+          <p className="text-[11px] text-muted-foreground mt-1.5 px-1">
             Location and prayer method are used to calculate accurate prayer times.
           </p>
         </motion.div>
@@ -231,19 +232,19 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-lg font-semibold text-foreground mb-3 px-2">Preferences</h2>
+          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Preferences</h2>
           <Card>
             <ListCell
               title="Dark Mode"
               subtitle="Switch between light and dark theme"
-              leftElement={theme === "dark" ? <Moon className="w-5 h-5 text-foreground" /> : <Sun className="w-5 h-5 text-foreground" />}
+              leftElement={theme === "dark" ? <Moon className="w-4 h-4 text-foreground" /> : <Sun className="w-4 h-4 text-foreground" />}
               rightElement={<Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />}
               showChevron={false}
             />
             <ListCell
               title="Notifications"
               subtitle="Prayer and habit reminders"
-              leftElement={<Bell className="w-5 h-5 text-foreground" />}
+              leftElement={<Bell className="w-4 h-4 text-foreground" />}
               rightElement={
                 <Switch 
                   checked={notificationsEnabled} 
@@ -268,7 +269,7 @@ const Profile = () => {
             <ListCell
               title="Log Out"
               subtitle="Sign out of your account"
-              leftElement={<LogOut className="w-5 h-5 text-destructive" />}
+              leftElement={<LogOut className="w-4 h-4 text-destructive" />}
               onPress={handleLogout}
               className="text-destructive"
             />

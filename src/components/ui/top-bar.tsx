@@ -30,20 +30,20 @@ const TopBar = React.forwardRef<HTMLDivElement, TopBarProps>(
       <div
         ref={ref}
         className={cn(
-          "sticky top-0 z-40 px-5 py-3 transition-all duration-med ease-ios",
-          "flex items-center justify-between min-h-[60px]",
+          "sticky top-0 z-40 px-4 py-2.5 transition-all duration-med ease-ios",
+          "flex items-center justify-between min-h-[52px]",
           isScrolled && blurOnScroll && "backdrop-blur-xl bg-glass border-b border-border",
           className
         )}
         {...props}
       >
         {/* Left */}
-        <div className="flex items-center gap-3 min-w-[44px]">
+        <div className="flex items-center gap-2 min-w-[40px]">
           {leftElement || (
             avatarSrc !== undefined && (
-              <Avatar className="w-9 h-9">
+              <Avatar className="w-8 h-8">
                 <AvatarImage src={avatarSrc} />
-                <AvatarFallback className="text-sm">{avatarFallback || "U"}</AvatarFallback>
+                <AvatarFallback className="text-xs">{avatarFallback || "U"}</AvatarFallback>
               </Avatar>
             )
           )}
@@ -51,13 +51,13 @@ const TopBar = React.forwardRef<HTMLDivElement, TopBarProps>(
 
         {/* Center */}
         {title && (
-          <h1 className="text-[17px] leading-[22px] font-semibold text-foreground text-center flex-1">
+          <h1 className="text-[15px] leading-[20px] font-semibold text-foreground text-center flex-1">
             {title}
           </h1>
         )}
 
         {/* Right */}
-        <div className="flex items-center gap-2 min-w-[44px] justify-end">
+        <div className="flex items-center gap-1.5 min-w-[40px] justify-end">
           {rightElement}
         </div>
       </div>
