@@ -70,12 +70,12 @@ export function PrayerTracker() {
 
   if (loading) {
     return (
-      <div className="px-3 py-2">
+      <div className="px-4 py-1.5">
         <div className="liquid-glass rounded-xl p-3">
-          <Skeleton className="h-4 w-24 mb-3" />
+          <Skeleton className="h-3.5 w-20 mb-2" />
           <div className="flex justify-between gap-1">
             {[1, 2, 3, 4, 5].map(i => (
-              <Skeleton key={i} className="w-12 h-14 rounded-xl" />
+              <Skeleton key={i} className="w-11 h-12 rounded-lg" />
             ))}
           </div>
         </div>
@@ -88,12 +88,12 @@ export function PrayerTracker() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="px-3 py-2"
+      className="px-4 py-1.5"
     >
       <div className="liquid-glass rounded-xl p-3">
-        <div className="flex items-center justify-between mb-2.5">
-          <h3 className="text-sm font-semibold text-foreground">Daily Prayers</h3>
-          <span className="text-[10px] text-foreground-muted font-medium bg-muted/50 px-2 py-0.5 rounded-full">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-[13px] font-semibold text-foreground">Daily Prayers</h3>
+          <span className="text-[10px] text-foreground-muted font-medium bg-muted/50 px-1.5 py-0.5 rounded-full">
             {completedCount}/{prayers.length}
           </span>
         </div>
@@ -109,7 +109,7 @@ export function PrayerTracker() {
               whileTap={{ scale: 0.95 }}
               onClick={() => handleToggle(prayer.id, prayer.completed)}
               className={cn(
-                "flex flex-col items-center gap-1 p-1.5 rounded-xl transition-all flex-1 min-w-0",
+                "flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all flex-1 min-w-0",
                 prayer.completed 
                   ? "bg-primary/15" 
                   : "bg-muted/30 hover:bg-muted/50"
@@ -119,7 +119,7 @@ export function PrayerTracker() {
                 animate={prayer.completed ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 0.3 }}
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                  "w-7 h-7 rounded-full flex items-center justify-center transition-all",
                   prayer.completed
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "bg-muted/50 border border-border/30"
@@ -134,7 +134,7 @@ export function PrayerTracker() {
                       exit={{ scale: 0, rotate: 180 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Check className="w-4 h-4" strokeWidth={2.5} />
+                      <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -144,7 +144,7 @@ export function PrayerTracker() {
                       exit={{ opacity: 0 }}
                       className="text-muted-foreground"
                     >
-                      {prayerIcons[prayer.name] || <Circle className="w-3.5 h-3.5" />}
+                      {prayerIcons[prayer.name] || <Circle className="w-3 h-3" />}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -160,7 +160,7 @@ export function PrayerTracker() {
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-2.5 h-1 bg-muted/50 rounded-full overflow-hidden">
+        <div className="mt-2 h-1 bg-muted/50 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}

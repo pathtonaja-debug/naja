@@ -133,7 +133,7 @@ const Calendar = () => {
       <motion.img 
         src={mosqueWatercolor}
         alt=""
-        className="absolute top-0 right-0 w-48 h-48 object-contain opacity-20 pointer-events-none"
+        className="absolute top-0 right-0 w-36 h-36 object-contain opacity-20 pointer-events-none"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 0.2, x: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
@@ -142,7 +142,7 @@ const Calendar = () => {
       <TopBar title="Calendar" />
 
       <motion.div 
-        className="px-6 pt-4 pb-6"
+        className="px-4 pt-2 pb-4"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -191,17 +191,17 @@ const Calendar = () => {
       </div>
 
       <motion.div 
-        className="fixed bottom-24 right-6 z-40"
+        className="fixed bottom-24 right-4 z-40"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 400 }}
       >
         <Button
           size="icon"
-          className="w-14 h-14 rounded-full shadow-lg"
+          className="w-12 h-12 rounded-full shadow-lg"
           onClick={handleAddPress}
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-5 h-5" />
         </Button>
       </motion.div>
 

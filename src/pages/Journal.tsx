@@ -86,20 +86,20 @@ const Journal = () => {
       />
 
       <motion.div 
-        className="px-5 pt-2 pb-6"
+        className="px-4 pt-1 pb-4"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h1 className="text-2xl font-semibold text-foreground mb-1">
+        <h1 className="text-xl font-semibold text-foreground mb-0.5">
           Daily Reflections
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-[13px]">
           One entry per day to reflect on your journey
         </p>
       </motion.div>
 
-      <main className="px-5 space-y-5">
+      <main className="px-4 space-y-4">
         <AnimatePresence>
           {showInput && (
             <motion.div

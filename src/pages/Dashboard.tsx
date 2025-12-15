@@ -45,10 +45,10 @@ const Dashboard = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background pb-20"
+      className="min-h-screen bg-background pb-24"
     >
       {/* Hero Section with Illustration */}
-      <ErrorBoundary fallback={<div className="h-[200px] bg-muted rounded-2xl mx-3 mt-3" />}>
+      <ErrorBoundary fallback={<div className="h-[180px] bg-muted rounded-2xl mx-4 mt-3" />}>
         <HeroSection 
           userName={profile?.display_name || "User"}
           city={profile?.city || undefined}
@@ -56,30 +56,30 @@ const Dashboard = () => {
         />
       </ErrorBoundary>
       
-      {/* Content Sections - More Compact */}
-      <div className="space-y-1">
+      {/* Content Sections - Compact */}
+      <div className="space-y-0.5">
         {/* Today's Overview */}
-        <ErrorBoundary fallback={<div className="h-24 bg-muted rounded-xl mx-3" />}>
+        <ErrorBoundary fallback={<div className="h-20 bg-muted rounded-xl mx-4" />}>
           <TodaysOverview />
         </ErrorBoundary>
 
         {/* 5-Prayer Individual Tracker */}
-        <ErrorBoundary fallback={<div className="h-28 bg-muted rounded-xl mx-3" />}>
+        <ErrorBoundary fallback={<div className="h-24 bg-muted rounded-xl mx-4" />}>
           <PrayerTracker />
         </ErrorBoundary>
 
         {/* Dhikr Counter */}
-        <ErrorBoundary fallback={<div className="h-48 bg-muted rounded-xl mx-3" />}>
+        <ErrorBoundary fallback={<div className="h-40 bg-muted rounded-xl mx-4" />}>
           <DhikrCounter />
         </ErrorBoundary>
 
         {/* Habit Tracker Preview */}
-        <ErrorBoundary fallback={<div className="h-40 bg-muted rounded-xl mx-3" />}>
+        <ErrorBoundary fallback={<div className="h-32 bg-muted rounded-xl mx-4" />}>
           <HabitTrackerPreview />
         </ErrorBoundary>
 
         {/* Prayer Times List */}
-        <ErrorBoundary fallback={<div className="h-48 bg-muted rounded-xl mx-3" />}>
+        <ErrorBoundary fallback={<div className="h-40 bg-muted rounded-xl mx-4" />}>
           <PrayerTimesList />
         </ErrorBoundary>
       </div>
