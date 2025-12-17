@@ -1,19 +1,23 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { 
   format, 
-  addDays,
-  subDays,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
   isToday,
-  startOfDay,
-  differenceInMinutes,
+  addMonths,
+  subMonths,
+  getDay,
   parseISO
 } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CalendarItem } from "@/types/calendar";
-import { CalendarItemCard } from "./CalendarItemCard";
+import { useState, useMemo } from "react";
 
 interface DayViewProps {
   day: Date;
@@ -23,159 +27,192 @@ interface DayViewProps {
   onToggleComplete: (item: CalendarItem) => void;
 }
 
-const HOUR_HEIGHT = 80;
-const HOURS = Array.from({ length: 19 }, (_, i) => i + 5);
+// Mock Hijri date conversion
+const getHijriDate = (date: Date) => {
+  return { month: "Jumada Al-Awwal", year: 1447 };
+};
+
+// Event type colors for legend
+const eventTypes = [
+  { name: "Prayer Events", color: "bg-foreground" },
+  { name: "Study Sessions", color: "bg-primary" },
+  { name: "Community Events", color: "bg-muted-foreground" },
+];
 
 export const DayView = ({ day, items, onDayChange, onItemPress, onToggleComplete }: DayViewProps) => {
-  const dayEvents = items.filter(item => item.type === 'event' && !item.isAllDay);
-  const dayTasks = items.filter(item => item.type === 'task');
-  const allDayEvents = items.filter(item => item.type === 'event' && item.isAllDay);
+  const [currentMonth, setCurrentMonth] = useState(day);
+  const [selectedDate, setSelectedDate] = useState(day);
   
-  const getEventPosition = (item: CalendarItem) => {
-    const start = parseISO(item.startDateTime);
-    const end = item.endDateTime ? parseISO(item.endDateTime) : start;
-    
-    const dayStart = startOfDay(start);
-    const minutesFromMidnight = differenceInMinutes(start, dayStart);
-    const durationMinutes = differenceInMinutes(end, start);
-    
-    const top = ((minutesFromMidnight - 300) / 60) * HOUR_HEIGHT;
-    const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT, 40);
-    
-    return { top, height };
+  const hijri = getHijriDate(currentMonth);
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  const firstDayOfWeek = getDay(monthStart);
+  const paddingDays = Array(firstDayOfWeek).fill(null);
+
+  // Map items by date
+  const itemsByDate = useMemo(() => {
+    const map = new Map<string, CalendarItem[]>();
+    items.forEach(item => {
+      const dateKey = format(parseISO(item.startDateTime), 'yyyy-MM-dd');
+      if (!map.has(dateKey)) {
+        map.set(dateKey, []);
+      }
+      map.get(dateKey)!.push(item);
+    });
+    return map;
+  }, [items]);
+
+  // Calculate monthly progress
+  const monthlyStats = useMemo(() => {
+    const prayerEvents = items.filter(i => i.category?.toLowerCase() === 'prayer').length;
+    const studySessions = items.filter(i => i.category?.toLowerCase() === 'study').length;
+    const totalPrayers = 30 * 5; // 30 days * 5 prayers
+    return {
+      prayersCompleted: prayerEvents,
+      prayersTotal: totalPrayers,
+      studySessions,
+    };
+  }, [items]);
+
+  const handleMonthChange = (direction: 'prev' | 'next') => {
+    const newMonth = direction === 'prev' 
+      ? subMonths(currentMonth, 1) 
+      : addMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+  };
+
+  const handleDaySelect = (date: Date) => {
+    setSelectedDate(date);
+    onDayChange(date);
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 pb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-[28px] font-bold text-foreground">
-            {format(day, "EEEE d")}
-          </h2>
-          {isToday(day) && (
-            <Badge className="rounded-pill bg-primary/30 text-primary-foreground border-primary/20">
-              Today
-            </Badge>
-          )}
+    <div className="flex flex-col px-4">
+      {/* Month/Year Header */}
+      <div className="flex items-center justify-between py-3">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="w-8 h-8"
+          onClick={() => handleMonthChange('prev')}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <div className="text-center">
+          <p className="text-sm font-semibold text-foreground">{format(currentMonth, "MMMM yyyy")}</p>
+          <p className="text-xs text-muted-foreground">{hijri.month} {hijri.year}</p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => onDayChange(subDays(day, 1))}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => onDayChange(addDays(day, 1))}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="w-8 h-8"
+          onClick={() => handleMonthChange('next')}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
-        {/* All-Day Events */}
-        {allDayEvents.length > 0 && (
-          <div className="space-y-2">
-            {allDayEvents.map(event => (
-              <Card
-                key={event.id}
-                className="p-4 backdrop-blur-2xl border-white/15 cursor-pointer"
-                style={{ backgroundColor: event.color ? `${event.color}30` : undefined }}
-                onClick={() => onItemPress(event)}
-              >
-                <p className="text-[15px] font-semibold text-foreground">{event.title}</p>
-                <p className="text-[13px] text-foreground/60 mt-1">All day</p>
-              </Card>
-            ))}
-          </div>
-        )}
+      {/* Separator */}
+      <div className="h-px bg-border mb-3" />
 
-        {/* Timeline */}
-        <Card className="backdrop-blur-2xl border-white/15 overflow-hidden">
-          <div className="flex">
-            {/* Hour Labels */}
-            <div className="w-20 flex-shrink-0 border-r border-white/10">
-              {HOURS.map((hour) => (
-                <div
-                  key={hour}
-                  className="relative border-b border-white/5"
-                  style={{ height: HOUR_HEIGHT }}
-                >
-                  <span className="absolute -top-2 right-3 text-[13px] text-foreground/50 font-medium">
-                    {format(new Date().setHours(hour, 0), "h a")}
-                  </span>
+      {/* Day Headers */}
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName) => (
+          <div key={dayName} className="text-center text-[10px] text-muted-foreground font-medium">
+            {dayName}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-1 mb-4">
+        {paddingDays.map((_, i) => (
+          <div key={`pad-${i}`} className="aspect-square" />
+        ))}
+        
+        {days.map((date) => {
+          const dateKey = format(date, 'yyyy-MM-dd');
+          const dayItems = itemsByDate.get(dateKey) || [];
+          const isSelected = isSameDay(date, selectedDate);
+          const isCurrentDay = isToday(date);
+          const hasEvents = dayItems.length > 0;
+          const inCurrentMonth = isSameMonth(date, currentMonth);
+          
+          return (
+            <button
+              key={date.toISOString()}
+              onClick={() => handleDaySelect(date)}
+              className={cn(
+                "aspect-square flex flex-col items-center justify-center rounded-lg text-xs font-medium transition-all relative",
+                !inCurrentMonth && "text-muted-foreground/40",
+                inCurrentMonth && !isSelected && "text-foreground",
+                isSelected && "bg-foreground text-background",
+                !isSelected && isCurrentDay && "ring-1 ring-foreground",
+                !isSelected && hasEvents && "ring-1 ring-border bg-card",
+                !isSelected && !hasEvents && "hover:bg-muted"
+              )}
+            >
+              {format(date, "d")}
+              {hasEvents && !isSelected && (
+                <div className="absolute bottom-1 flex gap-0.5">
+                  {dayItems.slice(0, 3).map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="w-1 h-1 rounded-full"
+                      style={{ backgroundColor: item.color || 'currentColor' }}
+                    />
+                  ))}
                 </div>
-              ))}
+              )}
+              {isSelected && hasEvents && (
+                <div className="absolute bottom-1 w-1 h-1 rounded-full bg-background" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Event Types Legend */}
+      <Card className="p-3 bg-card border-border mb-4">
+        <h4 className="text-xs font-semibold text-foreground mb-2">Event Types</h4>
+        <div className="space-y-1.5">
+          {eventTypes.map((type, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div className={cn("w-2 h-2 rounded-full", type.color)} />
+              <span className="text-xs text-muted-foreground">{type.name}</span>
             </div>
+          ))}
+        </div>
+      </Card>
 
-            {/* Events Column */}
-            <div className="flex-1 relative">
-              {HOURS.map((hour) => (
-                <div
-                  key={hour}
-                  className="border-b border-white/5"
-                  style={{ height: HOUR_HEIGHT }}
-                />
-              ))}
-
-              {/* Event Cards */}
-              {dayEvents.map((event) => {
-                const { top, height } = getEventPosition(event);
-                
-                return (
-                  <button
-                    key={event.id}
-                    onClick={() => onItemPress(event)}
-                    className="absolute left-2 right-2 rounded-[16px] p-3 text-left transition-all active:scale-[0.98] shadow-elevation-2"
-                    style={{
-                      top: `${top}px`,
-                      height: `${height}px`,
-                      backgroundColor: event.color || 'hsl(var(--primary) / 0.4)',
-                      border: '1px solid hsl(var(--white) / 0.2)',
-                    }}
-                  >
-                    <p className="text-[15px] font-bold text-foreground line-clamp-2">
-                      {event.title}
-                    </p>
-                    <p className="text-[13px] text-foreground/80 mt-1">
-                      {format(parseISO(event.startDateTime), "h:mm a")}
-                      {event.endDateTime && ` - ${format(parseISO(event.endDateTime), "h:mm a")}`}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </Card>
-
-        {/* Tasks */}
-        {dayTasks.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-[20px] font-bold text-foreground">Today's Tasks</h3>
-            <div className="space-y-3">
-              {dayTasks.map((task) => (
-                <CalendarItemCard
-                  key={task.id}
-                  item={task}
-                  onPress={() => onItemPress(task)}
-                  onToggleComplete={() => onToggleComplete(task)}
-                  showTime={false}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {dayTasks.length === 0 && dayEvents.length === 0 && allDayEvents.length === 0 && (
-          <Card className="p-8 text-center backdrop-blur-2xl border-white/15">
-            <p className="text-foreground/60">No events or tasks for this day</p>
+      {/* Monthly Progress */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          {format(currentMonth, "MMMM")} Progress
+        </h3>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="p-3 bg-card border-border text-center">
+            <p className="text-lg font-bold text-foreground">
+              {monthlyStats.prayersCompleted}/{monthlyStats.prayersTotal}
+            </p>
+            <p className="text-[10px] text-muted-foreground mb-2">Prayers Completed</p>
+            <Progress 
+              value={(monthlyStats.prayersCompleted / monthlyStats.prayersTotal) * 100} 
+              className="h-1"
+            />
           </Card>
-        )}
+          
+          <Card className="p-3 bg-card border-border text-center">
+            <p className="text-lg font-bold text-foreground">{monthlyStats.studySessions}</p>
+            <p className="text-[10px] text-muted-foreground mb-2">Study Sessions</p>
+            <Progress 
+              value={Math.min((monthlyStats.studySessions / 10) * 100, 100)} 
+              className="h-1"
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );

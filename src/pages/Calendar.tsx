@@ -18,14 +18,13 @@ import {
 import {
   startOfWeek,
   endOfWeek,
-  startOfDay,
-  endOfDay,
+  startOfMonth,
+  endOfMonth,
 } from "date-fns";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import mosqueWatercolor from "@/assets/illustrations/mosque-watercolor.png";
 
-type ViewType = "week" | "day";
+type ViewType = "week" | "month";
 
 const Calendar = () => {
   const [view, setView] = useState<ViewType>(() => {
@@ -51,15 +50,12 @@ const Calendar = () => {
     try {
       let startDate: Date, endDate: Date;
 
-      switch (view) {
-        case "week":
-          startDate = startOfWeek(currentDate);
-          endDate = endOfWeek(currentDate);
-          break;
-        case "day":
-          startDate = startOfDay(currentDate);
-          endDate = endOfDay(currentDate);
-          break;
+      if (view === "week") {
+        startDate = startOfWeek(currentDate);
+        endDate = endOfWeek(currentDate);
+      } else {
+        startDate = startOfMonth(currentDate);
+        endDate = endOfMonth(currentDate);
       }
 
       const data = await getCalendarItems(startDate, endDate);
@@ -127,22 +123,12 @@ const Calendar = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background relative overflow-hidden"
+      className="min-h-screen bg-background"
     >
-      {/* Watercolor decoration */}
-      <motion.img 
-        src={mosqueWatercolor}
-        alt=""
-        className="absolute top-0 right-0 w-36 h-36 object-contain opacity-20 pointer-events-none"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 0.2, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      />
-      
-      <TopBar title="Calendar" />
+      <TopBar title="Islamic Calendar" />
 
       <motion.div 
-        className="px-4 pt-2 pb-4"
+        className="px-4 pt-2 pb-3"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -151,13 +137,13 @@ const Calendar = () => {
           value={view}
           onValueChange={(value) => setView(value as ViewType)}
           options={[
-            { label: "Week", value: "week" },
-            { label: "Day", value: "day" },
+            { label: "Weekly", value: "week" },
+            { label: "Monthly", value: "month" },
           ]}
         />
       </motion.div>
 
-      <div className="pb-24">
+      <div className="pb-32 overflow-y-auto">
         {view === "week" && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -173,7 +159,7 @@ const Calendar = () => {
           </motion.div>
         )}
 
-        {view === "day" && (
+        {view === "month" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -190,18 +176,19 @@ const Calendar = () => {
         )}
       </div>
 
+      {/* Full-width Add Event Button */}
       <motion.div 
-        className="fixed bottom-24 right-4 z-40"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        className="fixed bottom-20 left-4 right-4 z-40"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 400 }}
       >
         <Button
-          size="icon"
-          className="w-12 h-12 rounded-full shadow-lg"
+          className="w-full h-11 rounded-xl font-medium text-sm"
           onClick={handleAddPress}
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4 mr-2" />
+          Add Event
         </Button>
       </motion.div>
 
