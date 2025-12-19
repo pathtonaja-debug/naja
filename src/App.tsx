@@ -17,6 +17,9 @@ import HabitCategory from "./pages/HabitCategory";
 import HabitDetail from "./pages/HabitDetail";
 import Progress from "./pages/Progress";
 import Achievements from "./pages/Achievements";
+import Goals from "./pages/Goals";
+import Fintech from "./pages/Fintech";
+import Quiz from "./pages/Quiz";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -129,6 +132,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Achievements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/goals"
+              element={
+                <ProtectedRoute>
+                  <Goals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fintech"
+              element={
+                <ProtectedRoute>
+                  <Fintech />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/quiz"
+              element={
+                <ProtectedRoute>
+                  <Quiz />
                 </ProtectedRoute>
               }
             />

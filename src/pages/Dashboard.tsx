@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile, loading: profileLoading } = useProfile();
-  const { gamification, loading: gamificationLoading, refetch } = useGamification();
+  const { data: gamification, loading: gamificationLoading, refetch } = useGamification();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
   const [activeTab, setActiveTab] = useState<'quests' | 'goals' | 'learn'>('quests');
@@ -125,7 +125,7 @@ const Dashboard = () => {
           <GameXPBar 
             xp={gamification?.xp || 0}
             level={gamification?.level || 1}
-            streak={gamification?.streak_days || 0}
+            streak={gamification?.streakDays || 0}
           />
         </ErrorBoundary>
       </div>
@@ -271,7 +271,7 @@ const Dashboard = () => {
       <LevelUpModal 
         isOpen={showLevelUp} 
         onClose={() => setShowLevelUp(false)} 
-        level={newLevel} 
+        newLevel={newLevel} 
       />
 
       <BottomNav />
