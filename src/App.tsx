@@ -16,6 +16,7 @@ import HabitTracker from "./pages/HabitTracker";
 import HabitCategory from "./pages/HabitCategory";
 import HabitDetail from "./pages/HabitDetail";
 import Progress from "./pages/Progress";
+import Achievements from "./pages/Achievements";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -120,6 +121,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Progress />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <ProtectedRoute>
+                  <Achievements />
                 </ProtectedRoute>
               }
             />

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress as ProgressBar } from "@/components/ui/progress";
-import { ArrowLeft, Flame } from "lucide-react";
+import { ArrowLeft, Flame, Trophy, ChevronRight } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import crescentWatercolor from "@/assets/illustrations/crescent-watercolor.png";
 import tasbihWatercolor from "@/assets/illustrations/tasbih-watercolor.png";
+import { XPBar, AchievementCard, DailyQuiz, LevelUpModal } from "@/components/gamification";
+import { useGamification } from "@/hooks/useGamification";
 
 interface ProgressStats {
   currentStreak: number;
@@ -33,6 +35,18 @@ const Progress = () => {
     totalCompletions: 0,
     weeklyGoal: 7
   });
+  
+  const { 
+    data: gamificationData, 
+    achievements, 
+    userAchievements, 
+    earnedAchievementIds,
+    loading: gamificationLoading,
+    refetch: refetchGamification
+  } = useGamification();
+  
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [newLevel, setNewLevel] = useState(1);
 
   useEffect(() => {
     loadProgressStats();
@@ -147,13 +161,22 @@ const Progress = () => {
     return maxStreak;
   };
 
+  const handleQuizComplete = (xpEarned: number) => {
+    refetchGamification();
+  };
+
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const weekDates = eachDayOfInterval({ 
     start: startOfWeek(new Date(), { weekStartsOn: 1 }), 
     end: endOfWeek(new Date(), { weekStartsOn: 1 }) 
   });
 
-  if (loading) {
+  // Get recent achievements (last 3 earned)
+  const recentAchievements = userAchievements
+    .sort((a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime())
+    .slice(0, 3);
+
+  if (loading || gamificationLoading) {
     return (
       <div className="min-h-screen bg-background pb-24">
         <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
@@ -165,8 +188,9 @@ const Progress = () => {
           </div>
         </header>
         <main className="px-6 pt-6 space-y-6">
-          <Skeleton className="h-64 rounded-3xl" />
-          <Skeleton className="h-48 rounded-3xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-64 rounded-2xl" />
+          <Skeleton className="h-48 rounded-2xl" />
         </main>
         <BottomNav />
       </div>
@@ -184,17 +208,17 @@ const Progress = () => {
       <motion.img 
         src={crescentWatercolor}
         alt=""
-        className="absolute top-20 right-0 w-32 h-32 object-contain opacity-25 pointer-events-none"
+        className="absolute top-20 right-0 w-28 h-28 object-contain opacity-20 pointer-events-none"
         initial={{ opacity: 0, rotate: -10 }}
-        animate={{ opacity: 0.25, rotate: 0 }}
+        animate={{ opacity: 0.2, rotate: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       />
       <motion.img 
         src={tasbihWatercolor}
         alt=""
-        className="absolute bottom-40 left-0 w-28 h-28 object-contain opacity-20 pointer-events-none"
+        className="absolute bottom-40 left-0 w-24 h-24 object-contain opacity-15 pointer-events-none"
         initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 0.2, x: 0 }}
+        animate={{ opacity: 0.15, x: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
       />
 
@@ -213,40 +237,115 @@ const Progress = () => {
       </header>
 
       <main className="px-4 pt-4 space-y-4">
-        {/* Current Streak Card */}
+        {/* XP & Level Card */}
+        {gamificationData && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <XPBar 
+              level={gamificationData.level}
+              currentXP={gamificationData.xpProgress.current}
+              requiredXP={gamificationData.xpProgress.required}
+              percentage={gamificationData.xpProgress.percentage}
+              totalXP={gamificationData.xp}
+            />
+          </motion.div>
+        )}
+
+        {/* Daily Quiz */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-accent border-none rounded-2xl p-5 text-center relative overflow-hidden">
+          <DailyQuiz onComplete={handleQuizComplete} />
+        </motion.div>
+
+        {/* Current Streak Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="bg-accent border-none rounded-2xl p-4 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
             <div className="relative">
-              <p className="text-accent-foreground/70 text-[13px] mb-3">Current Streak</p>
-              <div className="flex items-center justify-center gap-2 mb-2">
+              <p className="text-accent-foreground/70 text-xs mb-2">Current Streak</p>
+              <div className="flex items-center justify-center gap-2 mb-1">
                 <motion.div
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Flame className="w-8 h-8 text-primary" />
+                  <Flame className="w-6 h-6 text-primary" />
                 </motion.div>
-                <span className="text-5xl font-bold text-accent-foreground">{stats.currentStreak}</span>
+                <span className="text-4xl font-bold text-accent-foreground">{stats.currentStreak}</span>
               </div>
-              <p className="text-accent-foreground/70 text-base mb-4">Days in a row</p>
+              <p className="text-accent-foreground/70 text-sm mb-3">Days in a row</p>
               
-              <div className="h-px bg-accent-foreground/10 my-4" />
+              <div className="h-px bg-accent-foreground/10 my-3" />
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-2xl font-bold text-accent-foreground mb-0.5">{stats.bestStreak}</p>
-                  <p className="text-accent-foreground/70 text-[13px]">Best Streak</p>
+                  <p className="text-xl font-bold text-accent-foreground">{stats.bestStreak}</p>
+                  <p className="text-accent-foreground/70 text-[11px]">Best Streak</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-accent-foreground mb-0.5">{stats.weeklyConsistency}%</p>
-                  <p className="text-accent-foreground/70 text-[13px]">This Week</p>
+                  <p className="text-xl font-bold text-accent-foreground">{stats.weeklyConsistency}%</p>
+                  <p className="text-accent-foreground/70 text-[11px]">This Week</p>
                 </div>
               </div>
             </div>
+          </Card>
+        </motion.div>
+
+        {/* Achievements Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <Card className="border-border bg-card rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-primary" />
+                <h3 className="text-foreground font-medium text-sm">Achievements</h3>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 text-xs text-muted-foreground"
+                onClick={() => navigate('/achievements')}
+              >
+                View All <ChevronRight className="w-3 h-3 ml-1" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl font-bold text-foreground">{userAchievements.length}</span>
+              <span className="text-xs text-muted-foreground">/ {achievements.length} earned</span>
+            </div>
+
+            {recentAchievements.length > 0 ? (
+              <div className="space-y-2">
+                {recentAchievements.map((ua) => (
+                  <AchievementCard
+                    key={ua.id}
+                    name={ua.achievement.name}
+                    description={ua.achievement.description}
+                    icon={ua.achievement.icon}
+                    xpReward={ua.achievement.xp_reward}
+                    earned={true}
+                    earnedAt={ua.earned_at}
+                    compact
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                Complete tasks to earn achievements!
+              </p>
+            )}
           </Card>
         </motion.div>
 
@@ -254,10 +353,10 @@ const Progress = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
         >
           <Card className="border-border bg-card rounded-2xl p-4">
-            <h3 className="text-foreground font-medium text-[15px] mb-3">Weekly Summary</h3>
+            <h3 className="text-foreground font-medium text-sm mb-3">Weekly Summary</h3>
             
             <div className="grid grid-cols-7 gap-1.5 mb-4">
               {weekDays.map((day, i) => {
@@ -270,7 +369,7 @@ const Progress = () => {
                     className="text-center"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.25 + i * 0.05 }}
+                    transition={{ delay: 0.35 + i * 0.05 }}
                   >
                     <p className="text-[10px] text-muted-foreground mb-1.5">{day}</p>
                     <div className={`w-full h-1.5 rounded-full transition-all ${
@@ -281,23 +380,23 @@ const Progress = () => {
               })}
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[13px] text-muted-foreground">Weekly Consistency</span>
-                  <span className="text-[13px] font-medium text-foreground">{stats.weeklyConsistency}%</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">Weekly Consistency</span>
+                  <span className="text-xs font-medium text-foreground">{stats.weeklyConsistency}%</span>
                 </div>
                 <ProgressBar value={stats.weeklyConsistency} className="h-1.5" />
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-border">
+              <div className="flex items-center justify-between pt-2 border-t border-border">
                 <div>
-                  <p className="text-xl font-bold text-foreground">{stats.totalCompletions}</p>
-                  <p className="text-[12px] text-muted-foreground">Completions this week</p>
+                  <p className="text-lg font-bold text-foreground">{stats.totalCompletions}</p>
+                  <p className="text-[10px] text-muted-foreground">Completions</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-foreground">{stats.completedDays.length}/7</p>
-                  <p className="text-[12px] text-muted-foreground">Active days</p>
+                  <p className="text-lg font-bold text-foreground">{stats.completedDays.length}/7</p>
+                  <p className="text-[10px] text-muted-foreground">Active days</p>
                 </div>
               </div>
             </div>
@@ -308,11 +407,11 @@ const Progress = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.35 }}
         >
           <Card className="border-border bg-card rounded-2xl p-4">
-            <h3 className="text-foreground font-medium text-[15px] mb-2">Keep Going!</h3>
-            <p className="text-muted-foreground text-[13px]">
+            <h3 className="text-foreground font-medium text-sm mb-2">Keep Going!</h3>
+            <p className="text-muted-foreground text-xs">
               Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
             </p>
           </Card>
@@ -320,6 +419,12 @@ const Progress = () => {
       </main>
 
       <BottomNav />
+      
+      <LevelUpModal 
+        isOpen={showLevelUp} 
+        newLevel={newLevel} 
+        onClose={() => setShowLevelUp(false)} 
+      />
     </motion.div>
   );
 };
