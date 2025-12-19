@@ -7,14 +7,13 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: "16px",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
       colors: {
-        // Design System Colors
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -26,7 +25,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          glow: "hsl(var(--primary-glow))",
+          soft: "hsl(var(--color-pink-soft))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -60,35 +59,26 @@ export default {
           DEFAULT: "hsl(var(--warn))",
           foreground: "hsl(var(--warn-foreground))",
         },
-        // Gelato Pastel Colors
-        gelato: {
-          pink: "hsl(var(--gelato-pink))",
-          green: "hsl(var(--gelato-green))",
-          yellow: "hsl(var(--gelato-yellow))",
-          blue: "hsl(var(--gelato-blue))",
-          lavender: "hsl(var(--gelato-lavender))",
-          peach: "hsl(var(--gelato-peach))",
-          "pink-dark": "hsl(var(--gelato-pink-dark))",
-          "green-dark": "hsl(var(--gelato-green-dark))",
-          "yellow-dark": "hsl(var(--gelato-yellow-dark))",
-          "blue-dark": "hsl(var(--gelato-blue-dark))",
-          "lavender-dark": "hsl(var(--gelato-lavender-dark))",
-          "peach-dark": "hsl(var(--gelato-peach-dark))",
-        },
-        // Legacy Pastel Colors (mapped to gelato)
+        // Exact palette colors
         pastel: {
-          mint: "hsl(var(--gelato-green))",
-          sage: "hsl(var(--gelato-green))",
-          sky: "hsl(var(--gelato-blue))",
-          lavender: "hsl(var(--gelato-lavender))",
-          rose: "hsl(var(--gelato-pink))",
-          peach: "hsl(var(--gelato-peach))",
-          butter: "hsl(var(--gelato-yellow))",
-          sand: "hsl(var(--gelato-peach))",
+          pink: "hsl(var(--color-pink))",
+          "pink-soft": "hsl(var(--color-pink-soft))",
+          "pink-dark": "hsl(var(--color-pink-dark))",
+          lavender: "hsl(var(--color-lavender))",
+          "lavender-soft": "hsl(var(--color-lavender-soft))",
+          green: "hsl(var(--color-green))",
+          "green-soft": "hsl(var(--color-green-soft))",
+          blue: "hsl(var(--color-blue))",
+          "blue-soft": "hsl(var(--color-blue-soft))",
+          yellow: "hsl(var(--color-yellow))",
+          "yellow-soft": "hsl(var(--color-yellow-soft))",
         },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          soft: "hsl(var(--gold-soft))",
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
         },
       },
       borderRadius: {
@@ -99,21 +89,12 @@ export default {
         'xl': 'var(--radius-xl)',
         '2xl': 'var(--radius-2xl)',
         'full': 'var(--radius-full)',
-        'card': 'var(--radius-xl)',
-        'button': 'var(--radius-lg)',
-        'pill': 'var(--radius-full)',
       },
       boxShadow: {
         'xs': 'var(--shadow-xs)',
-        'soft': 'var(--shadow-sm)',
-        'medium': 'var(--shadow-md)',
-        'large': 'var(--shadow-lg)',
-        'xl': 'var(--shadow-xl)',
-        'glow-pink': 'var(--shadow-glow-pink)',
-        'glow-blue': 'var(--shadow-glow-blue)',
-        'elevation-1': 'var(--shadow-sm)',
-        'elevation-2': 'var(--shadow-md)',
-        'elevation-3': 'var(--shadow-lg)',
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
       },
       spacing: {
         '1': 'var(--space-1)',
@@ -129,19 +110,12 @@ export default {
         'safe-bottom': 'var(--safe-bottom)',
       },
       fontFamily: {
-        sans: [
-          'SF Pro Display',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Inter',
-          'system-ui',
-          'sans-serif',
-        ],
+        sans: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'display': ['var(--font-display)', { lineHeight: '1.1', fontWeight: '700' }],
         'title-1': ['var(--font-title-1)', { lineHeight: '1.15', fontWeight: '700' }],
-        'title-2': ['var(--font-title-2)', { lineHeight: '1.2', fontWeight: '700' }],
+        'title-2': ['var(--font-title-2)', { lineHeight: '1.2', fontWeight: '600' }],
         'title-3': ['var(--font-title-3)', { lineHeight: '1.25', fontWeight: '600' }],
         'headline': ['var(--font-headline)', { lineHeight: '1.3', fontWeight: '600' }],
         'body-lg': ['var(--font-body)', { lineHeight: '1.5', fontWeight: '400' }],
@@ -161,7 +135,6 @@ export default {
       transitionTimingFunction: {
         'spring': 'var(--ease-spring)',
         'smooth': 'var(--ease-smooth)',
-        'bounce': 'var(--ease-bounce)',
         'ios': 'var(--ease-ios)',
       },
       keyframes: {
@@ -201,21 +174,22 @@ export default {
           "60%": { transform: "translateX(-2px)" },
           "80%": { transform: "translateX(2px)" },
         },
-        "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 12px hsl(var(--gelato-pink) / 0.3)" },
-          "50%": { boxShadow: "0 0 24px hsl(var(--gelato-pink) / 0.5)" },
-        },
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-6px)" },
         },
-        "confetti": {
-          "0%": { transform: "translateY(-100vh) rotate(0deg)", opacity: "1" },
-          "100%": { transform: "translateY(100vh) rotate(720deg)", opacity: "0" },
+        "slide-up": {
+          "0%": { transform: "translateY(16px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
         },
-        "checkmark": {
-          "0%": { strokeDashoffset: "24" },
-          "100%": { strokeDashoffset: "0" },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        "check-pop": {
+          "0%": { transform: "scale(0)" },
+          "50%": { transform: "scale(1.2)" },
+          "100%": { transform: "scale(1)" },
         },
         "progress-fill": {
           "0%": { width: "0%" },
@@ -229,14 +203,6 @@ export default {
           "0%": { transform: "scaleY(0)" },
           "100%": { transform: "scaleY(1)" },
         },
-        "slide-up": {
-          "0%": { transform: "translateY(16px)", opacity: "0" },
-          "100%": { transform: "translateY(0)", opacity: "1" },
-        },
-        "pulse-soft": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.7" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -247,15 +213,13 @@ export default {
         "pop": "pop 0.3s var(--ease-spring)",
         "bounce-soft": "bounce-soft 0.4s var(--ease-spring)",
         "shake": "shake 0.4s ease-out",
-        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
-        "confetti": "confetti 3s linear forwards",
-        "checkmark": "checkmark 0.3s ease-out forwards",
+        "slide-up": "slide-up 0.3s ease-out",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "check-pop": "check-pop 0.4s var(--ease-spring)",
         "progress-fill": "progress-fill 0.5s ease-out forwards",
         "ring-fill": "ring-fill 1s ease-out forwards",
         "bar-grow": "bar-grow 0.5s ease-out forwards",
-        "slide-up": "slide-up 0.3s ease-out",
-        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
       },
     },
   },
