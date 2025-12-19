@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* ============================================ */
-    /* PASTEL LUXURY DESIGN SYSTEM */
+    /* GELATO PASTEL DESIGN SYSTEM */
     /* ============================================ */
     
     /* Base Canvas & Surfaces */
@@ -22,24 +22,24 @@
     --popover: var(--surface-elevated);
     --popover-foreground: var(--text-primary);
     
-    /* Primary Accent - Mint/Teal */
+    /* Primary Accent - Pink */
     --primary: var(--accent-primary);
     --primary-foreground: var(--text-inverted);
-    --primary-glow: var(--pastel-mint);
+    --primary-glow: var(--gelato-pink);
     
-    /* Secondary Accent - Sky Blue */
-    --secondary: var(--pastel-sky);
+    /* Secondary Accent - Blue */
+    --secondary: var(--gelato-blue);
     --secondary-foreground: var(--text-primary);
     
     /* Muted & Subtle */
     --muted: var(--surface-tertiary);
     --muted-foreground: var(--text-secondary);
     
-    /* Accent - Mint Soft */
+    /* Accent - Pink Soft */
     --accent: var(--accent-primary-soft);
     --accent-foreground: var(--accent-primary);
     
-    /* Status Colors - Pastel */
+    /* Status Colors - Gelato */
     --destructive: var(--accent-error);
     --destructive-foreground: var(--text-inverted);
     --success: var(--accent-success);
@@ -51,6 +51,18 @@
     --border: var(--border-light);
     --input: var(--border-medium);
     --ring: var(--accent-primary);
+    
+    /* Gelato Pastels mapped */
+    --pastel-mint: var(--gelato-green);
+    --pastel-sage: var(--gelato-green);
+    --pastel-sky: var(--gelato-blue);
+    --pastel-lavender: var(--gelato-lavender);
+    --pastel-rose: var(--gelato-pink);
+    --pastel-peach: var(--gelato-peach);
+    --pastel-butter: var(--gelato-yellow);
+    --pastel-sand: var(--gelato-peach);
+    --gold: var(--gelato-yellow-dark);
+    --gold-soft: var(--gelato-yellow);
     
     /* ============================================ */
     /* RADII - Consistent */
@@ -71,12 +83,12 @@
     --duration-slow: 400ms;
     
     /* ============================================ */
-    /* SPACING */
+    /* SPACING - Compact */
     /* ============================================ */
-    --spacing-page: var(--space-4);
-    --spacing-section: var(--space-3);
+    --spacing-page: var(--space-3);
+    --spacing-section: var(--space-2);
     --spacing-content: var(--space-2);
-    --spacing-card: var(--space-4);
+    --spacing-card: var(--space-3);
     --nav-height: var(--safe-bottom);
     
     /* ============================================ */
@@ -96,19 +108,12 @@
     --elevation-3: var(--shadow-lg);
     
     /* ============================================ */
-    /* GLASS MATERIALS */
+    /* GRADIENTS - Gelato Pastel */
     /* ============================================ */
-    --liquid-glass-bg: var(--surface-elevated) / 0.85;
-    --liquid-glass-border: var(--border-light) / 0.5;
-    --liquid-glass-shadow: var(--shadow-lg);
-    
-    /* ============================================ */
-    /* GRADIENTS - Soft Pastel */
-    /* ============================================ */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--pastel-mint)) 0%, hsl(var(--pastel-sage)) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--pastel-sky)) 0%, hsl(var(--pastel-lavender)) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(var(--pastel-peach)) 0%, hsl(var(--pastel-rose)) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(var(--pastel-butter)) 0%, hsl(var(--gold-soft)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--gelato-pink)) 0%, hsl(var(--gelato-peach)) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--gelato-blue)) 0%, hsl(var(--gelato-lavender)) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(var(--gelato-peach)) 0%, hsl(var(--gelato-yellow)) 100%);
+    --gradient-green: linear-gradient(135deg, hsl(var(--gelato-green)) 0%, hsl(var(--gelato-blue)) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(var(--surface-elevated)) 0%, hsl(var(--surface-secondary)) 100%);
   }
 
@@ -124,9 +129,6 @@
     --popover-foreground: var(--text-primary);
     
     --border: var(--border-light);
-    
-    --liquid-glass-bg: var(--surface-elevated) / 0.9;
-    --liquid-glass-border: var(--border-light) / 0.3;
   }
 }
 
@@ -227,16 +229,51 @@
 
 @layer utilities {
   /* ============================================ */
-  /* iOS CARD STYLES */
+  /* GELATO BACKGROUNDS */
+  /* ============================================ */
+  
+  .bg-gelato-pink { background: hsl(var(--gelato-pink)); }
+  .bg-gelato-green { background: hsl(var(--gelato-green)); }
+  .bg-gelato-yellow { background: hsl(var(--gelato-yellow)); }
+  .bg-gelato-blue { background: hsl(var(--gelato-blue)); }
+  .bg-gelato-lavender { background: hsl(var(--gelato-lavender)); }
+  .bg-gelato-peach { background: hsl(var(--gelato-peach)); }
+  
+  .text-gelato-pink { color: hsl(var(--gelato-pink-dark)); }
+  .text-gelato-green { color: hsl(var(--gelato-green-dark)); }
+  .text-gelato-yellow { color: hsl(var(--gelato-yellow-dark)); }
+  .text-gelato-blue { color: hsl(var(--gelato-blue-dark)); }
+  .text-gelato-lavender { color: hsl(var(--gelato-lavender-dark)); }
+  .text-gelato-peach { color: hsl(var(--gelato-peach-dark)); }
+  
+  .border-gelato-pink { border-color: hsl(var(--gelato-pink)); }
+  .border-gelato-green { border-color: hsl(var(--gelato-green)); }
+  .border-gelato-yellow { border-color: hsl(var(--gelato-yellow)); }
+  .border-gelato-blue { border-color: hsl(var(--gelato-blue)); }
+  .border-gelato-lavender { border-color: hsl(var(--gelato-lavender)); }
+  .border-gelato-peach { border-color: hsl(var(--gelato-peach)); }
+  
+  /* Legacy Pastel Backgrounds (mapped to gelato) */
+  .bg-pastel-mint { background: hsl(var(--gelato-green)); }
+  .bg-pastel-sage { background: hsl(var(--gelato-green)); }
+  .bg-pastel-sky { background: hsl(var(--gelato-blue)); }
+  .bg-pastel-lavender { background: hsl(var(--gelato-lavender)); }
+  .bg-pastel-rose { background: hsl(var(--gelato-pink)); }
+  .bg-pastel-peach { background: hsl(var(--gelato-peach)); }
+  .bg-pastel-butter { background: hsl(var(--gelato-yellow)); }
+  .bg-pastel-sand { background: hsl(var(--gelato-peach)); }
+  
+  /* ============================================ */
+  /* IOS CARD STYLES - Compact */
   /* ============================================ */
   
   .ios-card {
-    @apply rounded-[var(--radius-xl)] bg-card;
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-sm);
   }
   
   .ios-card-elevated {
-    @apply rounded-[var(--radius-xl)] bg-card;
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-md);
   }
   
@@ -253,18 +290,18 @@
   
   /* Glass Card */
   .glass-card {
-    @apply backdrop-blur-xl rounded-[var(--radius-xl)];
-    background: hsl(var(--liquid-glass-bg));
-    border: 1px solid hsl(var(--liquid-glass-border));
+    @apply backdrop-blur-xl rounded-xl;
+    background: hsl(var(--surface-elevated) / 0.85);
+    border: 1px solid hsl(var(--border-light) / 0.5);
     box-shadow: var(--shadow-md);
   }
   
   /* ============================================ */
-  /* iOS BUTTON STYLES */
+  /* IOS BUTTON STYLES */
   /* ============================================ */
   
   .ios-button {
-    @apply rounded-[var(--radius-lg)] font-semibold;
+    @apply rounded-xl font-semibold;
     @apply transition-all;
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-spring);
@@ -276,26 +313,26 @@
   }
   
   .ios-button-primary {
-    @apply ios-button px-6 py-3;
-    background: linear-gradient(135deg, hsl(var(--accent-primary)) 0%, hsl(var(--pastel-sage)) 100%);
+    @apply ios-button px-4 py-2.5;
+    background: linear-gradient(135deg, hsl(var(--gelato-pink-dark)) 0%, hsl(var(--gelato-peach-dark)) 100%);
     color: hsl(var(--text-inverted));
   }
   
   .ios-button-secondary {
-    @apply ios-button px-6 py-3;
-    background: hsl(var(--accent-primary-soft));
-    color: hsl(var(--accent-primary));
+    @apply ios-button px-4 py-2.5;
+    background: hsl(var(--gelato-pink));
+    color: hsl(var(--gelato-pink-dark));
   }
   
   .ios-button-ghost {
-    @apply ios-button px-4 py-2;
+    @apply ios-button px-3 py-2;
     background: transparent;
-    color: hsl(var(--accent-primary));
+    color: hsl(var(--gelato-pink-dark));
   }
   
   /* Pill Button */
   .ios-pill {
-    @apply rounded-full px-5 py-2.5 font-semibold text-sm;
+    @apply rounded-full px-4 py-2 font-semibold text-xs;
     @apply transition-all;
     transition-duration: var(--duration-fast);
   }
@@ -303,19 +340,6 @@
   .ios-pill:active {
     transform: scale(0.95);
   }
-  
-  /* ============================================ */
-  /* PASTEL BACKGROUNDS */
-  /* ============================================ */
-  
-  .bg-pastel-mint { background: hsl(var(--pastel-mint)); }
-  .bg-pastel-sage { background: hsl(var(--pastel-sage)); }
-  .bg-pastel-sky { background: hsl(var(--pastel-sky)); }
-  .bg-pastel-lavender { background: hsl(var(--pastel-lavender)); }
-  .bg-pastel-rose { background: hsl(var(--pastel-rose)); }
-  .bg-pastel-peach { background: hsl(var(--pastel-peach)); }
-  .bg-pastel-butter { background: hsl(var(--pastel-butter)); }
-  .bg-pastel-sand { background: hsl(var(--pastel-sand)); }
   
   /* ============================================ */
   /* ANIMATION UTILITIES */
@@ -345,8 +369,16 @@
     animation: float 3s ease-in-out infinite;
   }
   
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
   }
   
   /* Reduce motion support */
@@ -357,14 +389,16 @@
     .animate-shake,
     .animate-glow,
     .animate-float,
-    .animate-sparkle {
+    .animate-pulse-soft,
+    .animate-slide-up,
+    .animate-scale-in {
       animation: none;
       transition: opacity 0.2s ease;
     }
   }
   
   /* ============================================ */
-  /* SPACING UTILITIES */
+  /* SPACING UTILITIES - Compact */
   /* ============================================ */
   
   .page-padding {
@@ -377,11 +411,11 @@
   }
   
   .section-gap {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
   
   .content-gap {
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 }
 
@@ -410,21 +444,21 @@
 
 @keyframes glow {
   0%, 100% { 
-    box-shadow: 0 0 16px hsl(var(--pastel-mint) / 0.3);
+    box-shadow: 0 0 12px hsl(var(--gelato-pink) / 0.3);
   }
   50% { 
-    box-shadow: 0 0 32px hsl(var(--pastel-mint) / 0.5);
+    box-shadow: 0 0 24px hsl(var(--gelato-pink) / 0.5);
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
-@keyframes sparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes confetti-fall {
@@ -443,7 +477,7 @@
 }
 
 @keyframes slide-up {
-  0% { transform: translateY(20px); opacity: 0; }
+  0% { transform: translateY(16px); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
 }
 
@@ -455,4 +489,14 @@
 @keyframes scale-in {
   0% { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes ring-progress {
+  0% { stroke-dashoffset: 282.74; }
+  100% { stroke-dashoffset: var(--ring-progress, 0); }
+}
+
+@keyframes bar-grow {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
 }
