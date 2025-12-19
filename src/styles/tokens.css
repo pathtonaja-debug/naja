@@ -1,64 +1,69 @@
 /* ============================================ */
-/* iOS 2025 DESIGN SYSTEM - Pastel Luxury */
+/* GELATO PASTEL DESIGN SYSTEM */
 /* ============================================ */
 
 :root {
   /* ============================================ */
-  /* PASTEL LUXURY PALETTE */
+  /* GELATO PASTEL PALETTE */
+  /* Pink: #FFCBE1, Green: #D6E5BD, Yellow: #F9E1A8 */
+  /* Blue: #BCD8EC, Lavender: #DCCCEC, Peach: #FFDAB4 */
   /* ============================================ */
+  
+  /* Core Pastels (HSL) */
+  --gelato-pink: 335 100% 90%;
+  --gelato-green: 83 47% 82%;
+  --gelato-yellow: 42 87% 82%;
+  --gelato-blue: 205 55% 83%;
+  --gelato-lavender: 270 47% 86%;
+  --gelato-peach: 30 100% 85%;
+  
+  /* Darker variants for text/accents */
+  --gelato-pink-dark: 335 60% 55%;
+  --gelato-green-dark: 83 35% 45%;
+  --gelato-yellow-dark: 42 70% 45%;
+  --gelato-blue-dark: 205 45% 45%;
+  --gelato-lavender-dark: 270 35% 50%;
+  --gelato-peach-dark: 30 70% 50%;
   
   /* Surface Hierarchy */
-  --surface-primary: 40 30% 98%;          /* Warm off-white */
-  --surface-secondary: 40 25% 96%;        /* Soft cream */
-  --surface-tertiary: 40 20% 93%;         /* Muted sand */
-  --surface-elevated: 0 0% 100%;          /* Pure white cards */
+  --surface-primary: 335 30% 97%;
+  --surface-secondary: 335 20% 95%;
+  --surface-tertiary: 335 15% 92%;
+  --surface-elevated: 0 0% 100%;
   
   /* Text Hierarchy */
-  --text-primary: 220 15% 15%;            /* Soft black */
-  --text-secondary: 220 10% 45%;          /* Muted */
-  --text-tertiary: 220 8% 60%;            /* Light */
-  --text-inverted: 0 0% 100%;             /* White */
+  --text-primary: 240 15% 15%;
+  --text-secondary: 240 10% 40%;
+  --text-tertiary: 240 8% 55%;
+  --text-inverted: 0 0% 100%;
   
-  /* Pastel Accents */
-  --pastel-mint: 160 45% 85%;             /* Soft mint green */
-  --pastel-sage: 145 35% 80%;             /* Sage green */
-  --pastel-sky: 200 55% 88%;              /* Soft sky blue */
-  --pastel-lavender: 260 45% 88%;         /* Soft lavender */
-  --pastel-rose: 350 50% 90%;             /* Soft rose */
-  --pastel-peach: 25 60% 88%;             /* Soft peach */
-  --pastel-butter: 45 65% 88%;            /* Soft butter */
-  --pastel-sand: 35 40% 85%;              /* Soft sand */
-  
-  /* Semantic Accents */
-  --accent-primary: 160 40% 50%;          /* Mint/Teal for primary actions */
-  --accent-primary-soft: 160 40% 90%;     /* Mint soft background */
-  --accent-secondary: 200 45% 55%;        /* Sky blue secondary */
-  --accent-secondary-soft: 200 45% 92%;   /* Sky blue soft */
-  --accent-success: 145 45% 55%;          /* Sage green success */
-  --accent-success-soft: 145 45% 92%;     /* Success soft */
-  --accent-warning: 40 70% 55%;           /* Warm gold warning */
-  --accent-warning-soft: 40 70% 92%;      /* Warning soft */
-  --accent-error: 350 45% 60%;            /* Muted rose error */
-  --accent-error-soft: 350 45% 94%;       /* Error soft */
-  
-  /* Gold Accents (sparingly) */
-  --gold: 40 65% 55%;
-  --gold-soft: 40 65% 92%;
+  /* Semantic Colors */
+  --accent-primary: 335 60% 55%;
+  --accent-primary-soft: 335 100% 94%;
+  --accent-secondary: 205 45% 50%;
+  --accent-secondary-soft: 205 55% 90%;
+  --accent-success: 83 45% 45%;
+  --accent-success-soft: 83 47% 88%;
+  --accent-warning: 42 75% 50%;
+  --accent-warning-soft: 42 87% 90%;
+  --accent-error: 350 55% 55%;
+  --accent-error-soft: 350 55% 92%;
   
   /* Borders & Dividers */
-  --border-light: 40 20% 92%;
-  --border-medium: 40 15% 88%;
-  --border-strong: 40 10% 82%;
+  --border-light: 335 15% 90%;
+  --border-medium: 335 10% 85%;
+  --border-strong: 335 8% 78%;
   
   /* ============================================ */
-  /* SHADOWS - Soft & Warm */
+  /* SHADOWS - Soft & Premium */
   /* ============================================ */
-  --shadow-xs: 0 1px 2px rgba(45, 40, 35, 0.04);
-  --shadow-sm: 0 2px 8px rgba(45, 40, 35, 0.06);
-  --shadow-md: 0 4px 16px rgba(45, 40, 35, 0.08);
-  --shadow-lg: 0 8px 32px rgba(45, 40, 35, 0.10);
-  --shadow-xl: 0 16px 48px rgba(45, 40, 35, 0.12);
-  --shadow-glow: 0 0 24px rgba(120, 180, 160, 0.25);
+  --shadow-xs: 0 1px 2px rgba(45, 40, 50, 0.03);
+  --shadow-sm: 0 2px 6px rgba(45, 40, 50, 0.05);
+  --shadow-md: 0 4px 12px rgba(45, 40, 50, 0.07);
+  --shadow-lg: 0 8px 24px rgba(45, 40, 50, 0.09);
+  --shadow-xl: 0 12px 40px rgba(45, 40, 50, 0.11);
+  --shadow-glow-pink: 0 0 20px rgba(255, 203, 225, 0.4);
+  --shadow-glow-blue: 0 0 20px rgba(188, 216, 236, 0.4);
   
   /* ============================================ */
   /* RADII - iOS Native */
@@ -67,8 +72,8 @@
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 18px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
   --radius-full: 9999px;
   
   /* ============================================ */
@@ -86,37 +91,37 @@
   --duration-slower: 600ms;
   
   /* ============================================ */
-  /* SPACING - 8pt Grid */
+  /* SPACING - Compact 6pt Grid */
   /* ============================================ */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 9px;
+  --space-4: 12px;
+  --space-5: 15px;
+  --space-6: 18px;
+  --space-8: 24px;
+  --space-10: 30px;
+  --space-12: 36px;
+  --space-16: 48px;
   
-  /* Page Layout */
-  --page-padding: 16px;
-  --safe-bottom: 88px;
+  /* Page Layout - Compact */
+  --page-padding: 12px;
+  --safe-bottom: 72px;
   
   /* ============================================ */
   /* TYPOGRAPHY - iOS Native Scale */
   /* ============================================ */
-  --font-display: 34px;
-  --font-title-1: 28px;
-  --font-title-2: 22px;
-  --font-title-3: 20px;
-  --font-headline: 17px;
-  --font-body: 17px;
-  --font-callout: 16px;
-  --font-subhead: 15px;
-  --font-footnote: 13px;
-  --font-caption-1: 12px;
-  --font-caption-2: 11px;
+  --font-display: 32px;
+  --font-title-1: 26px;
+  --font-title-2: 20px;
+  --font-title-3: 18px;
+  --font-headline: 16px;
+  --font-body: 15px;
+  --font-callout: 14px;
+  --font-subhead: 13px;
+  --font-footnote: 12px;
+  --font-caption-1: 11px;
+  --font-caption-2: 10px;
   
   /* Legacy mappings */
   --ink-900: hsl(var(--text-primary));
@@ -128,42 +133,39 @@
 }
 
 /* ============================================ */
-/* DARK MODE - Premium Dark */
+/* DARK MODE */
 /* ============================================ */
 .dark {
-  --surface-primary: 220 15% 8%;
-  --surface-secondary: 220 12% 12%;
-  --surface-tertiary: 220 10% 16%;
-  --surface-elevated: 220 12% 14%;
+  --surface-primary: 240 15% 8%;
+  --surface-secondary: 240 12% 11%;
+  --surface-tertiary: 240 10% 14%;
+  --surface-elevated: 240 12% 12%;
   
-  --text-primary: 220 15% 95%;
-  --text-secondary: 220 10% 65%;
-  --text-tertiary: 220 8% 50%;
+  --text-primary: 240 15% 95%;
+  --text-secondary: 240 10% 70%;
+  --text-tertiary: 240 8% 55%;
   
-  --border-light: 220 10% 18%;
-  --border-medium: 220 8% 22%;
-  --border-strong: 220 6% 28%;
+  --border-light: 240 10% 16%;
+  --border-medium: 240 8% 20%;
+  --border-strong: 240 6% 25%;
   
-  /* Darker pastels */
-  --pastel-mint: 160 30% 35%;
-  --pastel-sage: 145 25% 30%;
-  --pastel-sky: 200 35% 35%;
-  --pastel-lavender: 260 30% 35%;
-  --pastel-rose: 350 35% 35%;
-  --pastel-peach: 25 40% 35%;
-  --pastel-butter: 45 45% 35%;
-  --pastel-sand: 35 30% 30%;
+  /* Darker pastels for dark mode */
+  --gelato-pink: 335 45% 30%;
+  --gelato-green: 83 30% 28%;
+  --gelato-yellow: 42 50% 30%;
+  --gelato-blue: 205 35% 30%;
+  --gelato-lavender: 270 30% 32%;
+  --gelato-peach: 30 50% 32%;
   
-  --accent-primary-soft: 160 40% 20%;
-  --accent-secondary-soft: 200 45% 20%;
-  --accent-success-soft: 145 45% 18%;
-  --accent-warning-soft: 40 70% 20%;
-  --accent-error-soft: 350 45% 20%;
+  --accent-primary-soft: 335 40% 18%;
+  --accent-secondary-soft: 205 35% 18%;
+  --accent-success-soft: 83 35% 16%;
+  --accent-warning-soft: 42 45% 18%;
+  --accent-error-soft: 350 40% 18%;
   
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 24px rgba(120, 180, 160, 0.15);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
