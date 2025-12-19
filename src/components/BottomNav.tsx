@@ -1,171 +1,137 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Home, Target, TrendingUp, UserCircle, Calendar, BookOpen, Menu } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import desertDunes from "@/assets/illustrations/desert-dunes.png";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Home, BookHeart, GraduationCap, User, Plus,
+  Heart, BookOpen, PenLine, CalendarDays
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [quickActionOpen, setQuickActionOpen] = useState(false);
 
   const mainTabs = [
     { icon: Home, path: "/dashboard", label: "Home" },
-    { icon: Calendar, path: "/calendar", label: "Calendar" },
+    { icon: BookHeart, path: "/practices", label: "Practices" },
   ];
 
   const secondaryTabs = [
-    { icon: TrendingUp, path: "/progress", label: "Progress" },
-    { icon: UserCircle, path: "/profile", label: "Profile" },
+    { icon: GraduationCap, path: "/learn", label: "Learn" },
+    { icon: User, path: "/profile", label: "Profile" },
   ];
 
-  const menuItems = [
-    { icon: BookOpen, path: "/journal", label: "Journal" },
-    { icon: Target, path: "/habits", label: "Habits" },
+  const quickActions = [
+    { icon: Heart, path: "/practices", label: "Dhikr", hash: "#dhikr" },
+    { icon: BookOpen, path: "/practices", label: "Dua Builder", hash: "#dua" },
+    { icon: PenLine, path: "/journal", label: "Journal" },
+    { icon: CalendarDays, path: "/dates", label: "Dates" },
   ];
 
-  const handleMenuItemClick = (path: string) => {
-    navigate(path);
-    setMenuOpen(false);
+  const handleQuickAction = (action: typeof quickActions[0]) => {
+    setQuickActionOpen(false);
+    if (action.hash) {
+      navigate(action.path + action.hash);
+    } else {
+      navigate(action.path);
+    }
+  };
+
+  const NavButton = ({ icon: Icon, path, label }: { icon: typeof Home; path: string; label: string }) => {
+    const isActive = location.pathname === path;
+    return (
+      <button
+        onClick={() => navigate(path)}
+        className="relative flex flex-col items-center gap-0.5 py-2 px-4 rounded-xl transition-all"
+      >
+        {isActive && (
+          <motion.div
+            layoutId="activeNavTab"
+            className="absolute inset-0 bg-primary/10 rounded-xl"
+            transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
+          />
+        )}
+        <Icon 
+          className={cn(
+            "w-5 h-5 relative z-10 transition-colors",
+            isActive ? "text-primary" : "text-muted-foreground"
+          )} 
+        />
+        <span 
+          className={cn(
+            "text-[10px] font-medium relative z-10 transition-colors",
+            isActive ? "text-primary" : "text-muted-foreground"
+          )}
+        >
+          {label}
+        </span>
+      </button>
+    );
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
-      {/* Desert dunes background */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none overflow-hidden">
-        <motion.img 
-          src={desertDunes} 
-          alt="" 
-          className="w-full h-full object-cover object-top opacity-90"
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.5 }}
-        />
-        {/* Gradient fade at top */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-transparent" />
-      </div>
+    <>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
+        <div className="px-4 pb-4 pt-2">
+          <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl px-2 py-2 flex items-center justify-around max-w-md mx-auto shadow-lg">
+            {/* Left tabs */}
+            {mainTabs.map((tab) => (
+              <NavButton key={tab.path} {...tab} />
+            ))}
 
-      {/* Navigation bar */}
-      <div className="relative px-4 pb-5 pt-1.5">
-        <div className="glass-card px-3 py-2 flex items-center justify-around max-w-md mx-auto shadow-elevation-2">
-          {/* Left tabs */}
-          {mainTabs.map((tab) => {
-            const isActive = location.pathname === tab.path;
-            return (
-              <button
-                key={tab.path}
-                onClick={() => navigate(tab.path)}
-                className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg transition-all"
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/15 rounded-lg"
-                    transition={{ type: "spring", duration: 0.5 }}
-                  />
-                )}
-                <tab.icon 
-                  className={cn(
-                    "w-4.5 h-4.5 relative z-10 transition-colors",
-                    isActive ? "text-primary" : "text-foreground-muted"
-                  )} 
-                />
-                <span 
-                  className={cn(
-                    "text-[9px] font-medium relative z-10 transition-colors",
-                    isActive ? "text-primary" : "text-foreground-muted"
-                  )}
-                >
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-
-          {/* Center menu button */}
-          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon"
-                className={cn(
-                  "w-10 h-10 rounded-full transition-all",
-                  "bg-gradient-to-br from-primary to-secondary text-primary-foreground",
-                  "shadow-lg hover:shadow-xl hover:scale-105"
-                )}
-                aria-label="More"
-              >
-                <Menu className="w-4 h-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-40 p-1.5 mb-2 glass-card"
-              align="center"
-              side="top"
-              sideOffset={8}
+            {/* Center quick action button */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setQuickActionOpen(true)}
+              className={cn(
+                "w-12 h-12 rounded-full flex items-center justify-center",
+                "bg-gradient-to-br from-primary to-primary/80",
+                "text-primary-foreground shadow-lg shadow-primary/25",
+                "transition-transform hover:scale-105"
+              )}
+              aria-label="Quick Actions"
             >
-              <div className="flex flex-col gap-0.5">
-                {menuItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <Button
-                      key={item.path}
-                      variant="ghost"
-                      onClick={() => handleMenuItemClick(item.path)}
-                      className={cn(
-                        "w-full justify-start gap-2 h-9 rounded-lg transition-all text-[13px]",
-                        isActive
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-foreground-muted hover:text-foreground hover:bg-muted/50"
-                      )}
-                    >
-                      <item.icon className="w-3.5 h-3.5" />
-                      <span>{item.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
+              <Plus className="w-6 h-6" />
+            </motion.button>
 
-          {/* Right tabs */}
-          {secondaryTabs.map((tab) => {
-            const isActive = location.pathname === tab.path;
-            return (
-              <button
-                key={tab.path}
-                onClick={() => navigate(tab.path)}
-                className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg transition-all"
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/15 rounded-lg"
-                    transition={{ type: "spring", duration: 0.5 }}
-                  />
-                )}
-                <tab.icon 
-                  className={cn(
-                    "w-4.5 h-4.5 relative z-10 transition-colors",
-                    isActive ? "text-primary" : "text-foreground-muted"
-                  )} 
-                />
-                <span 
-                  className={cn(
-                    "text-[9px] font-medium relative z-10 transition-colors",
-                    isActive ? "text-primary" : "text-foreground-muted"
-                  )}
-                >
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
+            {/* Right tabs */}
+            {secondaryTabs.map((tab) => (
+              <NavButton key={tab.path} {...tab} />
+            ))}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Quick Action Sheet */}
+      <Sheet open={quickActionOpen} onOpenChange={setQuickActionOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl pb-safe">
+          <SheetHeader className="mb-4">
+            <SheetTitle className="text-lg">Quick Actions</SheetTitle>
+          </SheetHeader>
+          
+          <div className="grid grid-cols-2 gap-3 pb-4">
+            {quickActions.map((action, index) => (
+              <motion.button
+                key={action.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleQuickAction(action)}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-muted/50 border border-border/50 hover:bg-muted transition-colors"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <action.icon className="w-6 h-6 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-foreground">{action.label}</span>
+              </motion.button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 
