@@ -1,169 +1,43 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress as ProgressBar } from "@/components/ui/progress";
-import { ArrowLeft, Flame, Trophy, ChevronRight } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getAuthenticatedUserId } from "@/lib/auth";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, subDays } from "date-fns";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, subDays, subWeeks, startOfMonth, eachWeekOfInterval } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import crescentWatercolor from "@/assets/illustrations/crescent-watercolor.png";
-import tasbihWatercolor from "@/assets/illustrations/tasbih-watercolor.png";
-import { XPBar, AchievementCard, DailyQuiz, LevelUpModal } from "@/components/gamification";
-import { useGamification } from "@/hooks/useGamification";
+import { cn } from "@/lib/utils";
+
+interface HabitData {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  frequency: string;
+  completedDates: string[];
+}
 
 interface ProgressStats {
   currentStreak: number;
   bestStreak: number;
-  weeklyConsistency: number;
-  completedDays: Date[];
-  totalCompletions: number;
-  weeklyGoal: number;
+  successRate: number;
+  completedHabits: number;
 }
 
 const Progress = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'today' | 'weekly' | 'overall'>('weekly');
+  const [habits, setHabits] = useState<HabitData[]>([]);
   const [stats, setStats] = useState<ProgressStats>({
     currentStreak: 0,
     bestStreak: 0,
-    weeklyConsistency: 0,
-    completedDays: [],
-    totalCompletions: 0,
-    weeklyGoal: 7
+    successRate: 0,
+    completedHabits: 0
   });
-  
-  const { 
-    data: gamificationData, 
-    achievements, 
-    userAchievements, 
-    earnedAchievementIds,
-    loading: gamificationLoading,
-    refetch: refetchGamification
-  } = useGamification();
-  
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [newLevel, setNewLevel] = useState(1);
-
-  useEffect(() => {
-    loadProgressStats();
-  }, []);
-
-  const loadProgressStats = async () => {
-    try {
-      setLoading(true);
-      const userId = await getAuthenticatedUserId();
-      const now = new Date();
-      const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
-
-      const { data: habitLogs } = await supabase
-        .from('habit_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('date', format(weekStart, 'yyyy-MM-dd'))
-        .lte('date', format(weekEnd, 'yyyy-MM-dd'));
-
-      const completedDays = habitLogs
-        ? [...new Set(habitLogs.filter(log => log.completed).map(log => log.date))]
-            .map(date => new Date(date))
-        : [];
-
-      const totalCompletions = habitLogs?.filter(log => log.completed).length || 0;
-      const weeklyConsistency = completedDays.length > 0 
-        ? Math.round((completedDays.length / 7) * 100) 
-        : 0;
-
-      const thirtyDaysAgo = format(subDays(now, 30), 'yyyy-MM-dd');
-      const { data: allLogs } = await supabase
-        .from('habit_logs')
-        .select('date, completed')
-        .eq('user_id', userId)
-        .eq('completed', true)
-        .gte('date', thirtyDaysAgo)
-        .order('date', { ascending: false });
-
-      const { currentStreak, bestStreak } = calculateStreaks(allLogs || []);
-
-      setStats({
-        currentStreak,
-        bestStreak,
-        weeklyConsistency,
-        completedDays,
-        totalCompletions,
-        weeklyGoal: 7
-      });
-    } catch (error) {
-      console.error("Failed to load progress stats:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const calculateStreaks = (logs: { date: string; completed: boolean }[]) => {
-    if (!logs || logs.length === 0) return { currentStreak: 0, bestStreak: 0 };
-
-    const uniqueDates = [...new Set(logs.map(l => l.date))].sort().reverse();
-    
-    if (uniqueDates.length === 0) return { currentStreak: 0, bestStreak: 0 };
-
-    const today = format(new Date(), 'yyyy-MM-dd');
-    const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
-
-    let currentStreak = 0;
-    let checkDate = today;
-    
-    if (uniqueDates.includes(today)) {
-      checkDate = today;
-    } else if (uniqueDates.includes(yesterday)) {
-      checkDate = yesterday;
-    } else {
-      return { currentStreak: 0, bestStreak: calculateBestStreak(uniqueDates) };
-    }
-
-    for (let i = 0; i < 30; i++) {
-      const dateToCheck = format(subDays(new Date(checkDate), i), 'yyyy-MM-dd');
-      if (uniqueDates.includes(dateToCheck)) {
-        currentStreak++;
-      } else if (i > 0) {
-        break;
-      }
-    }
-
-    const bestStreak = calculateBestStreak(uniqueDates);
-
-    return { currentStreak, bestStreak: Math.max(currentStreak, bestStreak) };
-  };
-
-  const calculateBestStreak = (dates: string[]) => {
-    if (dates.length === 0) return 0;
-
-    const sortedDates = dates.sort();
-    let maxStreak = 1;
-    let currentStreak = 1;
-
-    for (let i = 1; i < sortedDates.length; i++) {
-      const prevDate = new Date(sortedDates[i - 1]);
-      const currDate = new Date(sortedDates[i]);
-      const diffDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diffDays === 1) {
-        currentStreak++;
-        maxStreak = Math.max(maxStreak, currentStreak);
-      } else {
-        currentStreak = 1;
-      }
-    }
-
-    return maxStreak;
-  };
-
-  const handleQuizComplete = (xpEarned: number) => {
-    refetchGamification();
-  };
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const weekDates = eachDayOfInterval({ 
@@ -171,26 +45,147 @@ const Progress = () => {
     end: endOfWeek(new Date(), { weekStartsOn: 1 }) 
   });
 
-  // Get recent achievements (last 3 earned)
-  const recentAchievements = userAchievements
-    .sort((a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime())
-    .slice(0, 3);
+  // Get last 8 weeks for heatmap
+  const weeksForHeatmap = useMemo(() => {
+    const weeks: Date[][] = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = startOfWeek(subWeeks(new Date(), i), { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+      weeks.push(eachDayOfInterval({ start: weekStart, end: weekEnd }));
+    }
+    return weeks;
+  }, []);
 
-  if (loading || gamificationLoading) {
+  useEffect(() => {
+    loadProgressData();
+  }, []);
+
+  const loadProgressData = async () => {
+    try {
+      setLoading(true);
+      const userId = await getAuthenticatedUserId();
+      
+      // Load habits
+      const { data: habitsData } = await supabase
+        .from('habits')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_active', true);
+
+      // Load habit logs for the last 60 days
+      const sixtyDaysAgo = format(subDays(new Date(), 60), 'yyyy-MM-dd');
+      const { data: logsData } = await supabase
+        .from('habit_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('completed', true)
+        .gte('date', sixtyDaysAgo);
+
+      // Map habits with their completed dates
+      const habitsWithLogs: HabitData[] = (habitsData || []).map(habit => ({
+        id: habit.id,
+        name: habit.name,
+        icon: habit.icon || '📋',
+        color: habit.color || 'pink',
+        frequency: habit.frequency || 'daily',
+        completedDates: (logsData || [])
+          .filter(log => log.habit_id === habit.id)
+          .map(log => log.date)
+      }));
+
+      setHabits(habitsWithLogs);
+
+      // Calculate stats
+      const allCompletedDates = [...new Set((logsData || []).map(log => log.date))];
+      const currentStreak = calculateCurrentStreak(allCompletedDates);
+      const bestStreak = calculateBestStreak(allCompletedDates);
+      const successRate = calculateSuccessRate(logsData || [], habitsData?.length || 1);
+      
+      setStats({
+        currentStreak,
+        bestStreak,
+        successRate,
+        completedHabits: logsData?.length || 0
+      });
+    } catch (error) {
+      console.error("Failed to load progress:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateCurrentStreak = (dates: string[]) => {
+    if (dates.length === 0) return 0;
+    const sortedDates = [...dates].sort().reverse();
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+    
+    let streak = 0;
+    let checkDate = sortedDates.includes(today) ? today : yesterday;
+    
+    if (!sortedDates.includes(today) && !sortedDates.includes(yesterday)) {
+      return 0;
+    }
+
+    for (let i = 0; i < 60; i++) {
+      const dateToCheck = format(subDays(new Date(checkDate), i), 'yyyy-MM-dd');
+      if (sortedDates.includes(dateToCheck)) {
+        streak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+    return streak;
+  };
+
+  const calculateBestStreak = (dates: string[]) => {
+    if (dates.length === 0) return 0;
+    const sortedDates = [...dates].sort();
+    let maxStreak = 1, currentStreak = 1;
+
+    for (let i = 1; i < sortedDates.length; i++) {
+      const diff = Math.round(
+        (new Date(sortedDates[i]).getTime() - new Date(sortedDates[i - 1]).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (diff === 1) {
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+      } else {
+        currentStreak = 1;
+      }
+    }
+    return maxStreak;
+  };
+
+  const calculateSuccessRate = (logs: any[], habitCount: number) => {
+    if (habitCount === 0) return 0;
+    const days = 30;
+    const expectedCompletions = days * habitCount;
+    const actualCompletions = logs.length;
+    return Math.min(100, Math.round((actualCompletions / expectedCompletions) * 100));
+  };
+
+  const getHabitColor = (color: string) => {
+    const colors: Record<string, { bg: string; fill: string }> = {
+      pink: { bg: 'bg-pastel-pink-soft', fill: 'bg-pastel-pink' },
+      blue: { bg: 'bg-pastel-blue-soft', fill: 'bg-pastel-blue' },
+      green: { bg: 'bg-pastel-green-soft', fill: 'bg-pastel-green' },
+      lavender: { bg: 'bg-pastel-lavender-soft', fill: 'bg-pastel-lavender' },
+      yellow: { bg: 'bg-pastel-yellow-soft', fill: 'bg-pastel-yellow' },
+    };
+    return colors[color] || colors.pink;
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-24">
-        <header className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Button size="icon" variant="ghost" onClick={() => navigate('/dashboard')} className="rounded-full">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-semibold text-foreground">Progress</h1>
-          </div>
+      <div className="min-h-screen bg-background pb-safe-bottom">
+        <header className="sticky top-0 z-10 bg-background px-4 py-3">
+          <h1 className="text-title-2 text-center text-foreground">Statistics</h1>
         </header>
-        <main className="px-6 pt-6 space-y-6">
-          <Skeleton className="h-24 rounded-2xl" />
-          <Skeleton className="h-64 rounded-2xl" />
-          <Skeleton className="h-48 rounded-2xl" />
+        <main className="px-4 space-y-3">
+          <Skeleton className="h-10 rounded-xl" />
+          <Skeleton className="h-24 rounded-xl" />
+          <Skeleton className="h-40 rounded-xl" />
         </main>
         <BottomNav />
       </div>
@@ -201,230 +196,190 @@ const Progress = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background pb-24 relative overflow-hidden"
+      className="min-h-screen bg-background pb-safe-bottom"
     >
-      {/* Watercolor decorations */}
-      <motion.img 
-        src={crescentWatercolor}
-        alt=""
-        className="absolute top-20 right-0 w-28 h-28 object-contain opacity-20 pointer-events-none"
-        initial={{ opacity: 0, rotate: -10 }}
-        animate={{ opacity: 0.2, rotate: 0 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      />
-      <motion.img 
-        src={tasbihWatercolor}
-        alt=""
-        className="absolute bottom-40 left-0 w-24 h-24 object-contain opacity-15 pointer-events-none"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 0.15, x: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-      />
-
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-2.5">
-        <div className="flex items-center gap-2">
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            onClick={() => navigate('/dashboard')}
-            className="rounded-full h-8 w-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <h1 className="text-lg font-semibold text-foreground">Progress</h1>
-        </div>
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-background px-4 py-3">
+        <h1 className="text-title-2 text-center text-foreground font-semibold">Statistics</h1>
       </header>
 
-      <main className="px-4 pt-4 space-y-4">
-        {/* XP & Level Card */}
-        {gamificationData && (
+      <main className="px-4 space-y-4">
+        {/* Tab Selector */}
+        <div className="flex bg-muted rounded-xl p-1">
+          {(['today', 'weekly', 'overall'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all capitalize",
+                activeTab === tab
+                  ? "bg-card shadow-sm text-foreground"
+                  : "text-muted-foreground"
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Summary Stats - Only show on Overall tab */}
+        {activeTab === 'overall' && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <XPBar 
-              level={gamificationData.level}
-              currentXP={gamificationData.xpProgress.current}
-              requiredXP={gamificationData.xpProgress.required}
-              percentage={gamificationData.xpProgress.percentage}
-              totalXP={gamificationData.xp}
-            />
+            <h3 className="text-headline font-semibold text-foreground mb-2">Summary:</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 bg-card border-border/50 rounded-xl">
+                <p className="text-caption text-muted-foreground">Current streak</p>
+                <p className="text-title-2 font-bold text-foreground">{stats.currentStreak} days</p>
+              </Card>
+              <Card className="p-3 bg-card border-border/50 rounded-xl">
+                <p className="text-caption text-muted-foreground">Success rate</p>
+                <p className="text-title-2 font-bold text-foreground">{stats.successRate}%</p>
+              </Card>
+              <Card className="p-3 bg-card border-border/50 rounded-xl">
+                <p className="text-caption text-muted-foreground">Best streak day</p>
+                <p className="text-title-2 font-bold text-foreground">{stats.bestStreak} days</p>
+              </Card>
+              <Card className="p-3 bg-card border-border/50 rounded-xl">
+                <p className="text-caption text-muted-foreground">Completed habits</p>
+                <p className="text-title-2 font-bold text-foreground">{stats.completedHabits}</p>
+              </Card>
+            </div>
           </motion.div>
         )}
 
-        {/* Daily Quiz */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <DailyQuiz onComplete={handleQuizComplete} />
-        </motion.div>
-
-        {/* Current Streak Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="bg-accent border-none rounded-2xl p-4 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-            <div className="relative">
-              <p className="text-accent-foreground/70 text-xs mb-2">Current Streak</p>
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Flame className="w-6 h-6 text-primary" />
-                </motion.div>
-                <span className="text-4xl font-bold text-accent-foreground">{stats.currentStreak}</span>
-              </div>
-              <p className="text-accent-foreground/70 text-sm mb-3">Days in a row</p>
-              
-              <div className="h-px bg-accent-foreground/10 my-3" />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xl font-bold text-accent-foreground">{stats.bestStreak}</p>
-                  <p className="text-accent-foreground/70 text-[11px]">Best Streak</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-accent-foreground">{stats.weeklyConsistency}%</p>
-                  <p className="text-accent-foreground/70 text-[11px]">This Week</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Achievements Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <Card className="border-border bg-card rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-primary" />
-                <h3 className="text-foreground font-medium text-sm">Achievements</h3>
-              </div>
+        {/* Habits List with Progress */}
+        <div className="space-y-3">
+          {habits.length === 0 ? (
+            <Card className="p-6 text-center bg-card border-border/50 rounded-xl">
+              <p className="text-muted-foreground">No habits yet. Create your first habit!</p>
               <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 text-xs text-muted-foreground"
-                onClick={() => navigate('/achievements')}
+                onClick={() => navigate('/habits')}
+                className="mt-3 bg-pastel-pink text-foreground hover:bg-pastel-pink/80"
               >
-                View All <ChevronRight className="w-3 h-3 ml-1" />
+                Add Habit
               </Button>
-            </div>
-            
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl font-bold text-foreground">{userAchievements.length}</span>
-              <span className="text-xs text-muted-foreground">/ {achievements.length} earned</span>
-            </div>
+            </Card>
+          ) : (
+            habits.map((habit, index) => (
+              <motion.div
+                key={habit.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card className="p-3 bg-card border-border/50 rounded-xl">
+                  {/* Habit Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{habit.icon}</span>
+                      <span className="font-medium text-foreground text-sm">{habit.name}</span>
+                    </div>
+                    <span className="text-caption text-muted-foreground capitalize">
+                      {habit.frequency === 'daily' ? 'Everyday' : habit.frequency}
+                    </span>
+                  </div>
 
-            {recentAchievements.length > 0 ? (
-              <div className="space-y-2">
-                {recentAchievements.map((ua) => (
-                  <AchievementCard
-                    key={ua.id}
-                    name={ua.achievement.name}
-                    description={ua.achievement.description}
-                    icon={ua.achievement.icon}
-                    xpReward={ua.achievement.xp_reward}
-                    earned={true}
-                    earnedAt={ua.earned_at}
-                    compact
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground text-center py-2">
-                Complete tasks to earn achievements!
-              </p>
-            )}
-          </Card>
-        </motion.div>
+                  {/* Weekly View - Circle indicators */}
+                  {activeTab === 'weekly' && (
+                    <div className="flex justify-between">
+                      {weekDays.map((day, i) => {
+                        const date = weekDates[i];
+                        const dateStr = format(date, 'yyyy-MM-dd');
+                        const isCompleted = habit.completedDates.includes(dateStr);
+                        const colorClasses = getHabitColor(habit.color);
+                        
+                        return (
+                          <div key={day} className="flex flex-col items-center gap-1">
+                            <span className="text-caption-1 text-muted-foreground">{day}</span>
+                            <motion.div
+                              initial={isCompleted ? { scale: 0 } : {}}
+                              animate={isCompleted ? { scale: 1 } : {}}
+                              className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                                isCompleted ? colorClasses.fill : "bg-muted/50"
+                              )}
+                            >
+                              {isCompleted && (
+                                <Check className="w-4 h-4 text-foreground" />
+                              )}
+                            </motion.div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
 
-        {/* Weekly Summary Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="border-border bg-card rounded-2xl p-4">
-            <h3 className="text-foreground font-medium text-sm mb-3">Weekly Summary</h3>
-            
-            <div className="grid grid-cols-7 gap-1.5 mb-4">
-              {weekDays.map((day, i) => {
-                const isCompleted = stats.completedDays.some(d => isSameDay(d, weekDates[i]));
-                const isToday = isSameDay(weekDates[i], new Date());
-                
-                return (
-                  <motion.div 
-                    key={day} 
-                    className="text-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.35 + i * 0.05 }}
-                  >
-                    <p className="text-[10px] text-muted-foreground mb-1.5">{day}</p>
-                    <div className={`w-full h-1.5 rounded-full transition-all ${
-                      isCompleted ? 'bg-primary' : isToday ? 'bg-muted' : 'bg-muted/50'
-                    }`} />
-                  </motion.div>
-                );
-              })}
-            </div>
+                  {/* Overall View - Heatmap Grid */}
+                  {activeTab === 'overall' && (
+                    <div className="space-y-1">
+                      {weekDays.map((day, dayIndex) => (
+                        <div key={day} className="flex items-center gap-1">
+                          <span className="text-caption-2 text-muted-foreground w-4">{day.charAt(0)}</span>
+                          <div className="flex gap-0.5 flex-1">
+                            {weeksForHeatmap.map((week, weekIndex) => {
+                              const date = week[dayIndex];
+                              const dateStr = format(date, 'yyyy-MM-dd');
+                              const isCompleted = habit.completedDates.includes(dateStr);
+                              const colorClasses = getHabitColor(habit.color);
+                              const isFuture = date > new Date();
+                              
+                              return (
+                                <motion.div
+                                  key={`${dayIndex}-${weekIndex}`}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ delay: (dayIndex * 8 + weekIndex) * 0.005 }}
+                                  className={cn(
+                                    "flex-1 aspect-square rounded-sm min-w-[10px] max-w-[14px]",
+                                    isFuture ? "bg-transparent" : isCompleted ? colorClasses.fill : colorClasses.bg
+                                  )}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-            <div className="space-y-2">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-muted-foreground">Weekly Consistency</span>
-                  <span className="text-xs font-medium text-foreground">{stats.weeklyConsistency}%</span>
-                </div>
-                <ProgressBar value={stats.weeklyConsistency} className="h-1.5" />
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <div>
-                  <p className="text-lg font-bold text-foreground">{stats.totalCompletions}</p>
-                  <p className="text-[10px] text-muted-foreground">Completions</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-foreground">{stats.completedDays.length}/7</p>
-                  <p className="text-[10px] text-muted-foreground">Active days</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Tips Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-        >
-          <Card className="border-border bg-card rounded-2xl p-4">
-            <h3 className="text-foreground font-medium text-sm mb-2">Keep Going!</h3>
-            <p className="text-muted-foreground text-xs">
-              Consistency is key. Even a small act of worship counts. Keep building your spiritual habits one day at a time.
-            </p>
-          </Card>
-        </motion.div>
+                  {/* Today View - Single day status */}
+                  {activeTab === 'today' && (
+                    <div className="flex items-center justify-center py-4">
+                      {(() => {
+                        const today = format(new Date(), 'yyyy-MM-dd');
+                        const isCompleted = habit.completedDates.includes(today);
+                        const colorClasses = getHabitColor(habit.color);
+                        
+                        return (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className={cn(
+                              "w-16 h-16 rounded-full flex items-center justify-center",
+                              isCompleted ? colorClasses.fill : "bg-muted/50 border-2 border-dashed border-muted-foreground/30"
+                            )}
+                          >
+                            {isCompleted ? (
+                              <Check className="w-8 h-8 text-foreground" />
+                            ) : (
+                              <span className="text-muted-foreground text-sm">Not done</span>
+                            )}
+                          </motion.div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </Card>
+              </motion.div>
+            ))
+          )}
+        </div>
       </main>
 
       <BottomNav />
-      
-      <LevelUpModal 
-        isOpen={showLevelUp} 
-        newLevel={newLevel} 
-        onClose={() => setShowLevelUp(false)} 
-      />
     </motion.div>
   );
 };
