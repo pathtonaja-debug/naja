@@ -21,14 +21,27 @@ export interface GuestProfile {
 }
 
 const DEFAULT_PROFILE: Omit<GuestProfile, 'id' | 'createdAt'> = {
-  displayName: 'Guest',
+  displayName: 'Traveler',
   level: 1,
   barakahPoints: 0,
   hasanatStreak: 0,
   lastActivityDate: null,
 };
 
-// Spiritual level titles
+// Spiritual level titles - exported as array and object
+export const SPIRITUAL_LEVELS = [
+  "The Seeker",
+  "The Steady Heart",
+  "The Growing Light",
+  "The Tranquil Soul",
+  "The Radiant Spirit",
+  "The Grounded Believer",
+  "The Beacon of Good",
+  "The Striving Soul",
+  "The Flourishing Faith",
+  "The Soul in Balance",
+];
+
 export const LEVEL_TITLES: Record<number, string> = {
   1: "The Seeker",
   2: "The Steady Heart",
@@ -80,7 +93,7 @@ export const getProgressInLevel = (points: number): { current: number; required:
   const nextThreshold = getPointsForNextLevel(level);
   const current = points - previousThreshold;
   const required = nextThreshold - previousThreshold;
-  
+
   return {
     current,
     required,
@@ -88,8 +101,25 @@ export const getProgressInLevel = (points: number): { current: number; required:
   };
 };
 
+// Daily stats storage
+const getDailyStatsKey = (): string => {
+  const today = new Date().toISOString().split('T')[0];
+  return `naja_daily_stats_${today}`;
+};
+
+interface DailyStats {
+  points: number;
+  actsCompleted: number;
+}
+
+const getDefaultDailyStats = (): DailyStats => ({
+  points: 0,
+  actsCompleted: 0,
+});
+
 export const useGuestProfile = () => {
   const [profile, setProfile] = useState<GuestProfile | null>(null);
+  const [dailyStats, setDailyStats] = useState<DailyStats>(getDefaultDailyStats());
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(() => {
@@ -120,6 +150,16 @@ export const useGuestProfile = () => {
       };
       localStorage.setItem('naja_guest_profile', JSON.stringify(newProfile));
       setProfile(newProfile);
+    }
+    
+    // Load daily stats
+    const dailyStored = localStorage.getItem(getDailyStatsKey());
+    if (dailyStored) {
+      try {
+        setDailyStats(JSON.parse(dailyStored));
+      } catch {
+        setDailyStats(getDefaultDailyStats());
+      }
     }
     
     setLoading(false);
@@ -167,8 +207,23 @@ export const useGuestProfile = () => {
       return updated;
     });
     
+    // Update daily stats
+    setDailyStats(current => {
+      const updated = { ...current, points: current.points + amount };
+      localStorage.setItem(getDailyStatsKey(), JSON.stringify(updated));
+      return updated;
+    });
+    
     return { leveledUp, newLevel };
   }, [profile?.level]);
+
+  const incrementActsCompleted = useCallback(() => {
+    setDailyStats(current => {
+      const updated = { ...current, actsCompleted: current.actsCompleted + 1 };
+      localStorage.setItem(getDailyStatsKey(), JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const updateStreak = useCallback(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -204,7 +259,11 @@ export const useGuestProfile = () => {
     });
   }, []);
 
-  const resetProfile = useCallback(() => {
+  const updateDisplayName = useCallback((name: string) => {
+    updateProfile({ displayName: name });
+  }, [updateProfile]);
+
+  const resetData = useCallback(() => {
     const id = getDeviceId();
     const newProfile: GuestProfile = {
       ...DEFAULT_PROFILE,
@@ -213,17 +272,39 @@ export const useGuestProfile = () => {
     };
     localStorage.setItem('naja_guest_profile', JSON.stringify(newProfile));
     setProfile(newProfile);
+    
+    // Clear daily stats
+    setDailyStats(getDefaultDailyStats());
+    localStorage.removeItem(getDailyStatsKey());
   }, []);
 
+  // Provide a safe profile with defaults
+  const safeProfile: GuestProfile = profile || {
+    id: '',
+    displayName: 'Traveler',
+    level: 1,
+    barakahPoints: 0,
+    hasanatStreak: 0,
+    lastActivityDate: null,
+    createdAt: new Date().toISOString(),
+  };
+
   return {
-    profile,
+    profile: safeProfile,
     loading,
     updateProfile,
     addBarakahPoints,
     updateStreak,
-    resetProfile,
+    resetProfile: resetData,
     refetch: loadProfile,
-    getLevelTitle: () => getLevelTitle(profile?.level || 1),
-    getProgress: () => getProgressInLevel(profile?.barakahPoints || 0),
+    getLevelTitle: () => getLevelTitle(safeProfile.level),
+    getProgress: () => getProgressInLevel(safeProfile.barakahPoints),
+    // Additional helpers for new UI
+    todayPoints: dailyStats.points,
+    actsCompleted: dailyStats.actsCompleted,
+    updatePoints: addBarakahPoints,
+    incrementActsCompleted,
+    updateDisplayName,
+    resetData,
   };
 };

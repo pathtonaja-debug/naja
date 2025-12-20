@@ -6,145 +6,50 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, Moon, Sun, MapPin, LogOut, Loader2, Calculator } from "lucide-react";
+import { 
+  Moon, Sun, Trash2, Trophy, TrendingUp, 
+  Star, Flame, Users
+} from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTheme } from "next-themes";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useProfile } from "@/hooks/useProfile";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LocationSettingsSheet } from "@/components/settings/LocationSettingsSheet";
-import { PrayerMethodSheet, getPrayerMethodLabel } from "@/components/settings/PrayerMethodSheet";
+import { useGuestProfile, SPIRITUAL_LEVELS } from "@/hooks/useGuestProfile";
 import { motion } from "framer-motion";
-import palmsWatercolor from "@/assets/illustrations/palms-watercolor.png";
-import type { Database } from "@/integrations/supabase/types";
-
-type PrayerMethod = Database["public"]["Enums"]["prayer_method"];
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const { profile, loading, updateProfile, refetch } = useProfile();
+  const { profile, updateDisplayName, resetData } = useGuestProfile();
   
-  const [name, setName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [name, setName] = useState(profile.displayName);
   const [saving, setSaving] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  
-  const [locationSheetOpen, setLocationSheetOpen] = useState(false);
-  const [methodSheetOpen, setMethodSheetOpen] = useState(false);
 
-  useEffect(() => {
-    if (profile) {
-      setName(profile.display_name || "");
-      setNotificationsEnabled(profile.notifications_enabled ?? true);
-    }
-    
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email) {
-        setUserEmail(user.email);
-      }
-    });
-  }, [profile]);
-
-  const handleSave = async () => {
+  const handleSave = () => {
     setSaving(true);
-    try {
-      const result = await updateProfile({
-        display_name: name.trim() || null,
-        notifications_enabled: notificationsEnabled,
-      });
+    updateDisplayName(name.trim() || 'Traveler');
+    toast.success("Name updated!");
+    setSaving(false);
+  };
 
-      if (result.success) {
-        toast.success("Settings saved");
-      } else {
-        toast.error(result.error || "Failed to save settings");
-      }
-    } catch (error) {
-      toast.error("Failed to save settings");
-    } finally {
-      setSaving(false);
+  const handleReset = () => {
+    if (confirm("Are you sure you want to reset all your data? This cannot be undone.")) {
+      resetData();
+      toast.success("Data reset successfully");
     }
   };
 
-  const handleLocationSave = async (data: {
-    city: string | null;
-    country: string | null;
-    latitude: number | null;
-    longitude: number | null;
-  }) => {
-    const result = await updateProfile(data);
-    if (result.success) {
-      await refetch();
-    }
-    return result;
-  };
-
-  const handleMethodSave = async (method: PrayerMethod) => {
-    const result = await updateProfile({ prayer_method: method });
-    if (result.success) {
-      await refetch();
-    }
-    return result;
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth", { replace: true });
-  };
-
-  const getLocationDisplay = () => {
-    if (profile?.city && profile?.country) {
-      return `${profile.city}, ${profile.country}`;
-    }
-    if (profile?.city) return profile.city;
-    if (profile?.country) return profile.country;
-    if (profile?.latitude && profile?.longitude) {
-      return `${profile.latitude.toFixed(2)}°, ${profile.longitude.toFixed(2)}°`;
-    }
-    return "Not set yet";
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background pb-24">
-        <TopBar title="Settings" />
-        <div className="px-5 pb-6">
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <Skeleton className="w-16 h-16 rounded-full" />
-              <div className="flex-1">
-                <Skeleton className="h-6 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-          </Card>
-        </div>
-        <BottomNav />
-      </div>
-    );
-  }
+  const levelTitle = SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker';
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background pb-24 relative overflow-hidden"
+      className="min-h-screen bg-pastel-cream pb-24"
     >
-      {/* Watercolor decoration */}
-      <motion.img 
-        src={palmsWatercolor}
-        alt=""
-        className="absolute top-20 right-0 w-36 h-36 object-contain opacity-20 pointer-events-none"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 0.2, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      />
-
-      <TopBar title="Settings" />
+      <TopBar title="Profile" />
 
       {/* User Card */}
       <motion.div 
@@ -153,87 +58,131 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="p-4">
+        <Card className="p-4 bg-white border-border/30">
           <div className="flex items-center gap-3">
-            <Avatar className="w-14 h-14">
-              <AvatarFallback className="bg-primary/20 text-primary text-lg">
-                {name ? name.charAt(0).toUpperCase() : "U"}
+            <Avatar className="w-16 h-16">
+              <AvatarFallback className="bg-pastel-lavender text-foreground text-xl font-bold">
+                {profile.displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-foreground mb-0.5">{name || "User"}</h2>
-              <p className="text-[13px] text-muted-foreground">{userEmail}</p>
+              <h2 className="text-lg font-bold text-foreground">{profile.displayName}</h2>
+              <p className="text-sm text-foreground/60">{levelTitle}</p>
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-xs text-foreground/50 flex items-center gap-1">
+                  <Star className="w-3 h-3 text-pastel-yellow" /> Level {profile.level}
+                </span>
+                <span className="text-xs text-foreground/50 flex items-center gap-1">
+                  <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} day streak
+                </span>
+              </div>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      <main className="px-4 space-y-5">
-        {/* Profile Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Profile</h2>
-          <Card className="p-3 space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-[13px]">Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="h-10 text-[13px]"
-              />
+      {/* Stats Overview */}
+      <motion.div
+        className="px-4 pb-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
+        <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Your Journey</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="p-4 bg-white border-border/30">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-pastel-lavender/50 flex items-center justify-center">
+                <Star className="w-4 h-4 text-pastel-lavender" />
+              </div>
+              <span className="text-xs text-foreground/60">Total Points</span>
             </div>
-            <Button onClick={handleSave} className="w-full h-10 text-[13px]" disabled={saving}>
-              {saving ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save Name"
-              )}
-            </Button>
+            <p className="text-2xl font-bold text-foreground">{profile.barakahPoints}</p>
+            <p className="text-[10px] text-foreground/40">Barakah Points</p>
           </Card>
-        </motion.div>
-
-        {/* Prayer & Location Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Prayer & Location</h2>
-          <Card>
-            <ListCell
-              title="Location"
-              subtitle={getLocationDisplay()}
-              leftElement={<MapPin className="w-4 h-4 text-foreground" />}
-              onPress={() => setLocationSheetOpen(true)}
-            />
-            <ListCell
-              title="Prayer Method"
-              subtitle={getPrayerMethodLabel(profile?.prayer_method ?? null)}
-              leftElement={<Calculator className="w-4 h-4 text-foreground" />}
-              onPress={() => setMethodSheetOpen(true)}
-            />
+          
+          <Card className="p-4 bg-white border-border/30">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                <Flame className="w-4 h-4 text-orange-500" />
+              </div>
+              <span className="text-xs text-foreground/60">Best Streak</span>
+            </div>
+            <p className="text-2xl font-bold text-foreground">{profile.hasanatStreak}</p>
+            <p className="text-[10px] text-foreground/40">Days in a row</p>
           </Card>
-          <p className="text-[11px] text-muted-foreground mt-1.5 px-1">
-            Location and prayer method are used to calculate accurate prayer times.
-          </p>
-        </motion.div>
+        </div>
+        
+        <p className="text-[10px] text-foreground/40 mt-2 text-center italic px-4">
+          Your niyyah is what matters — points are just a tool to help you stay consistent.
+        </p>
+      </motion.div>
 
-        {/* Quick Settings */}
+      {/* Quick Links */}
+      <motion.div
+        className="px-4 pb-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Card className="bg-white border-border/30">
+          <ListCell
+            title="Achievements"
+            subtitle="View your badges and milestones"
+            leftElement={<Trophy className="w-4 h-4 text-pastel-yellow" />}
+            onPress={() => navigate('/achievements')}
+          />
+          <ListCell
+            title="Progress & History"
+            subtitle="See your weekly stats"
+            leftElement={<TrendingUp className="w-4 h-4 text-pastel-green" />}
+            onPress={() => navigate('/progress')}
+          />
+          <ListCell
+            title="Leaderboard"
+            subtitle="See how you rank this week"
+            leftElement={<Users className="w-4 h-4 text-pastel-blue" />}
+            onPress={() => navigate('/leaderboard')}
+          />
+        </Card>
+      </motion.div>
+
+      <main className="px-4 space-y-4">
+        {/* Profile Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-[15px] font-semibold text-foreground mb-2 px-1">Preferences</h2>
-          <Card>
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Display Name</h2>
+          <Card className="p-3 space-y-3 bg-white border-border/30">
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-xs text-foreground/60">Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="h-10 text-sm bg-pastel-cream/50 border-border/30"
+              />
+            </div>
+            <Button onClick={handleSave} className="w-full h-10 text-sm" disabled={saving}>
+              Save Name
+            </Button>
+          </Card>
+          <p className="text-[10px] text-foreground/40 mt-1.5 px-1">
+            This name is stored locally on your device and shown on the leaderboard.
+          </p>
+        </motion.div>
+
+        {/* Preferences */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Preferences</h2>
+          <Card className="bg-white border-border/30">
             <ListCell
               title="Dark Mode"
               subtitle="Switch between light and dark theme"
@@ -241,58 +190,40 @@ const Profile = () => {
               rightElement={<Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />}
               showChevron={false}
             />
-            <ListCell
-              title="Notifications"
-              subtitle="Prayer and habit reminders"
-              leftElement={<Bell className="w-4 h-4 text-foreground" />}
-              rightElement={
-                <Switch 
-                  checked={notificationsEnabled} 
-                  onCheckedChange={async (checked) => {
-                    setNotificationsEnabled(checked);
-                    await updateProfile({ notifications_enabled: checked });
-                  }} 
-                />
-              }
-              showChevron={false}
-            />
           </Card>
         </motion.div>
 
-        {/* Logout */}
+        {/* Data Management */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.35 }}
         >
-          <Card>
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Data</h2>
+          <Card className="bg-white border-border/30">
             <ListCell
-              title="Log Out"
-              subtitle="Sign out of your account"
-              leftElement={<LogOut className="w-4 h-4 text-destructive" />}
-              onPress={handleLogout}
+              title="Reset All Data"
+              subtitle="Clear all progress and start fresh"
+              leftElement={<Trash2 className="w-4 h-4 text-destructive" />}
+              onPress={handleReset}
               className="text-destructive"
             />
           </Card>
         </motion.div>
+
+        {/* Anonymous Disclaimer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="p-4 rounded-2xl bg-pastel-blue/20 border border-pastel-blue/30"
+        >
+          <p className="text-xs text-foreground/60 text-center">
+            🔒 Your data is stored locally on this device. No account required. 
+            Your ID: <span className="font-mono text-[10px]">{profile.id.slice(0, 8)}...</span>
+          </p>
+        </motion.div>
       </main>
-
-      <LocationSettingsSheet
-        open={locationSheetOpen}
-        onOpenChange={setLocationSheetOpen}
-        currentCity={profile?.city ?? null}
-        currentCountry={profile?.country ?? null}
-        currentLatitude={profile?.latitude ?? null}
-        currentLongitude={profile?.longitude ?? null}
-        onSave={handleLocationSave}
-      />
-
-      <PrayerMethodSheet
-        open={methodSheetOpen}
-        onOpenChange={setMethodSheetOpen}
-        currentMethod={profile?.prayer_method ?? null}
-        onSave={handleMethodSave}
-      />
 
       <BottomNav />
     </motion.div>

@@ -1,281 +1,274 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { 
-  Trophy, Target, Coins, Brain, Settings, Bell,
-  ChevronRight, Sparkles
+  BookOpen, Heart, PenLine, GraduationCap, Calendar, 
+  ChevronRight, Flame, Star, Trophy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
-import { GameXPBar } from '@/components/game/GameXPBar';
-import { DailyPracticeModule } from '@/components/game/DailyPracticeModule';
-import { QuickQuizWidget } from '@/components/game/QuickQuizWidget';
-import { LevelUpModal } from '@/components/gamification/LevelUpModal';
-import { useGamification } from '@/hooks/useGamification';
-import { useProfile } from '@/hooks/useProfile';
-import { Skeleton } from '@/components/ui/skeleton';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
 import { cn } from '@/lib/utils';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { profile, loading: profileLoading } = useProfile();
-  const { data: gamification, loading: gamificationLoading, refetch } = useGamification();
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [newLevel, setNewLevel] = useState(1);
-  const [activeTab, setActiveTab] = useState<'quests' | 'goals' | 'learn'>('quests');
-
-  const handleXPGained = (amount: number) => {
-    // Refetch gamification data after XP is gained
-    refetch();
-  };
-
-  const loading = profileLoading || gamificationLoading;
+  const { profile, todayPoints, actsCompleted } = useGuestProfile();
 
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
+    if (hour < 12) return 'Assalamu Alaikum';
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   };
 
-  // Quick access modules
-  const quickModules = [
-    { 
-      id: 'achievements', 
-      title: 'Achievements', 
-      icon: <Trophy className="w-5 h-5" />, 
-      color: 'from-yellow-500 to-orange-500',
-      path: '/achievements'
-    },
-    { 
-      id: 'goals', 
-      title: 'Goals', 
-      icon: <Target className="w-5 h-5" />, 
-      color: 'from-blue-500 to-cyan-500',
-      path: '/goals'
-    },
-    { 
-      id: 'fintech', 
-      title: 'Finance', 
-      icon: <Coins className="w-5 h-5" />, 
-      color: 'from-green-500 to-emerald-500',
-      path: '/fintech'
-    },
-    { 
-      id: 'quiz', 
-      title: 'Quiz', 
-      icon: <Brain className="w-5 h-5" />, 
-      color: 'from-purple-500 to-indigo-500',
-      path: '/quiz'
-    },
+  // Quick access tiles
+  const quickTiles = [
+    { id: 'practices', title: 'Practices', icon: <Star className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-lavender' },
+    { id: 'dhikr', title: 'Dhikr', icon: <Heart className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-pink' },
+    { id: 'journal', title: 'Journal', icon: <PenLine className="w-5 h-5" />, path: '/journal', color: 'bg-pastel-yellow' },
+    { id: 'learn', title: 'Learn', icon: <GraduationCap className="w-5 h-5" />, path: '/learn', color: 'bg-pastel-blue' },
+    { id: 'dates', title: 'Dates', icon: <Calendar className="w-5 h-5" />, path: '/dates', color: 'bg-pastel-green' },
+    { id: 'quran', title: "Qur'an", icon: <BookOpen className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-lavender' },
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background pb-24">
-        <div className="p-4 space-y-4">
-          <Skeleton className="h-12 w-48" />
-          <Skeleton className="h-32 rounded-2xl" />
-          <Skeleton className="h-20 rounded-2xl" />
-          <div className="grid grid-cols-4 gap-3">
-            {[1,2,3,4].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
-          </div>
-          <Skeleton className="h-64 rounded-2xl" />
-        </div>
-        <BottomNav />
-      </div>
-    );
-  }
+  const levelProgress = profile.level < 10 
+    ? Math.floor((profile.barakahPoints % 100) / 100 * 100) 
+    : 100;
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pb-24"
+      className="min-h-screen bg-pastel-cream pb-24"
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <div>
-          <p className="text-xs text-muted-foreground">{getGreeting()}</p>
-          <h1 className="text-xl font-bold text-foreground">
-            {profile?.display_name || 'Player'}
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center"
+      <div className="px-4 pt-6 pb-4">
+        <p className="text-sm text-foreground/60">{getGreeting()}</p>
+        <h1 className="text-2xl font-bold text-foreground">
+          {profile.displayName}
+        </h1>
+      </div>
+
+      {/* Stats Cards Row */}
+      <div className="px-4 pb-4">
+        <div className="grid grid-cols-3 gap-3">
+          {/* Barakah Points */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <Bell className="w-5 h-5 text-muted-foreground" />
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/profile')}
-            className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center"
+            <div className="flex items-center gap-1.5 mb-1">
+              <Star className="w-4 h-4 text-pastel-yellow" />
+              <span className="text-xs text-foreground/60">Today</span>
+            </div>
+            <p className="text-xl font-bold text-foreground">{todayPoints}</p>
+            <p className="text-[10px] text-foreground/50">Barakah Points</p>
+          </motion.div>
+
+          {/* Hasanat Streak */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="p-3 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <Settings className="w-5 h-5 text-muted-foreground" />
-          </motion.button>
+            <div className="flex items-center gap-1.5 mb-1">
+              <Flame className="w-4 h-4 text-orange-500" />
+              <span className="text-xs text-foreground/60">Streak</span>
+            </div>
+            <p className="text-xl font-bold text-foreground">{profile.hasanatStreak}</p>
+            <p className="text-[10px] text-foreground/50">Hasanat Streak</p>
+          </motion.div>
+
+          {/* Acts Completed */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-3 rounded-2xl bg-white border border-border/30 shadow-sm"
+          >
+            <div className="flex items-center gap-1.5 mb-1">
+              <Trophy className="w-4 h-4 text-pastel-green" />
+              <span className="text-xs text-foreground/60">Done</span>
+            </div>
+            <p className="text-xl font-bold text-foreground">{actsCompleted}</p>
+            <p className="text-[10px] text-foreground/50">Acts today</p>
+          </motion.div>
         </div>
       </div>
 
-      {/* XP & Level Bar */}
-      <div className="px-4 py-2">
-        <ErrorBoundary fallback={<div className="h-32 bg-muted rounded-2xl" />}>
-          <GameXPBar 
-            xp={gamification?.xp || 0}
-            level={gamification?.level || 1}
-            streak={gamification?.streakDays || 0}
-          />
-        </ErrorBoundary>
+      {/* Level Progress Card */}
+      <div className="px-4 pb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-sm font-semibold text-foreground">{SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker'}</p>
+              <p className="text-xs text-foreground/50">Level {profile.level}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold text-foreground">{profile.barakahPoints}</p>
+              <p className="text-xs text-foreground/50">Total Points</p>
+            </div>
+          </div>
+          <div className="h-2 bg-pastel-lavender/30 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${levelProgress}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="h-full bg-pastel-lavender rounded-full"
+            />
+          </div>
+          <p className="text-[10px] text-foreground/40 mt-2 text-center italic">
+            Your niyyah is what matters — points are just a tool to help you stay consistent.
+          </p>
+        </motion.div>
       </div>
 
-      {/* Daily Quiz Widget */}
-      <div className="px-4 py-2">
-        <ErrorBoundary fallback={<div className="h-16 bg-muted rounded-2xl" />}>
-          <QuickQuizWidget onStartQuiz={() => navigate('/quiz')} />
-        </ErrorBoundary>
+      {/* Today's Acts for Allah */}
+      <div className="px-4 pb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-foreground">Today's Acts for Allah</h2>
+          <button 
+            onClick={() => navigate('/practices')}
+            className="text-xs text-foreground/60 flex items-center gap-1"
+          >
+            View all <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+        >
+          <TodaysActsPreview onNavigate={() => navigate('/practices')} />
+        </motion.div>
       </div>
 
-      {/* Quick Access Modules */}
-      <div className="px-4 py-2">
-        <div className="grid grid-cols-4 gap-2">
-          {quickModules.map((module, index) => (
+      {/* Quick Access Tiles */}
+      <div className="px-4 pb-4">
+        <h2 className="text-lg font-bold text-foreground mb-3">Quick Access</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {quickTiles.map((tile, index) => (
             <motion.button
-              key={module.id}
+              key={tile.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: 0.25 + index * 0.03 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(module.path)}
-              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-card/80 border border-border/50"
+              onClick={() => navigate(tile.path)}
+              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
             >
-              <div className={cn(
-                "w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white",
-                module.color
-              )}>
-                {module.icon}
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", tile.color)}>
+                {tile.icon}
               </div>
-              <span className="text-[10px] font-medium text-foreground">{module.title}</span>
+              <span className="text-xs font-medium text-foreground">{tile.title}</span>
             </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="px-4 py-2">
-        <div className="flex gap-2 p-1 rounded-xl bg-muted/30">
-          {(['quests', 'goals', 'learn'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all capitalize",
-                activeTab === tab
-                  ? "bg-card shadow-sm text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              {tab === 'quests' ? 'Daily Quests' : tab === 'goals' ? 'My Goals' : 'Learn'}
-            </button>
-          ))}
-        </div>
+      {/* Progress Snapshot */}
+      <div className="px-4 pb-4">
+        <h2 className="text-lg font-bold text-foreground mb-3">This Week</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+        >
+          <WeeklyProgressPreview />
+        </motion.div>
       </div>
-
-      {/* Tab Content */}
-      <div className="px-4 py-2">
-        <AnimatePresence mode="wait">
-          {activeTab === 'quests' && (
-            <motion.div
-              key="quests"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <ErrorBoundary fallback={<div className="h-64 bg-muted rounded-2xl" />}>
-                <DailyPracticeModule onXPGained={handleXPGained} />
-              </ErrorBoundary>
-            </motion.div>
-          )}
-
-          {activeTab === 'goals' && (
-            <motion.div
-              key="goals"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-4"
-            >
-              <div className="text-center py-8">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"
-                >
-                  <Target className="w-8 h-8 text-primary" />
-                </motion.div>
-                <h3 className="font-bold text-foreground">No Active Goals</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Set a spiritual goal and get an AI-generated plan
-                </p>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/goals')}
-                  className="mt-4 px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium text-sm"
-                >
-                  Set a Goal
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'learn' && (
-            <motion.div
-              key="learn"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-3"
-            >
-              {/* Learning Categories */}
-              {[
-                { title: 'Daily Quiz', desc: 'Test your Islamic knowledge', icon: <Brain className="w-5 h-5" />, path: '/quiz' },
-                { title: 'Ethical Finance', desc: 'Learn Islamic finance basics', icon: <Coins className="w-5 h-5" />, path: '/fintech' },
-                { title: 'Progress & Stats', desc: 'View your learning journey', icon: <Trophy className="w-5 h-5" />, path: '/progress' },
-              ].map((item, index) => (
-                <motion.button
-                  key={item.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate(item.path)}
-                  className="w-full p-4 rounded-2xl bg-card/80 border border-border/50 text-left flex items-center gap-3"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    {item.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-sm text-foreground">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </motion.button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Level Up Modal */}
-      <LevelUpModal 
-        isOpen={showLevelUp} 
-        onClose={() => setShowLevelUp(false)} 
-        newLevel={newLevel} 
-      />
 
       <BottomNav />
     </motion.div>
+  );
+};
+
+// Today's Acts Preview Component
+const TodaysActsPreview = ({ onNavigate }: { onNavigate: () => void }) => {
+  const acts = [
+    { name: 'Fajr Prayer', done: false },
+    { name: 'Dhuhr Prayer', done: false },
+    { name: 'Asr Prayer', done: false },
+    { name: 'Maghrib Prayer', done: false },
+    { name: 'Isha Prayer', done: false },
+  ];
+
+  return (
+    <div className="space-y-2">
+      {acts.slice(0, 3).map((act, i) => (
+        <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-pastel-cream/50 transition-colors">
+          <div className={cn(
+            "w-5 h-5 rounded-full border-2 flex items-center justify-center",
+            act.done ? "bg-pastel-green border-pastel-green" : "border-foreground/20"
+          )}>
+            {act.done && <span className="text-white text-xs">✓</span>}
+          </div>
+          <span className={cn("text-sm", act.done ? "text-foreground/50 line-through" : "text-foreground")}>
+            {act.name}
+          </span>
+        </div>
+      ))}
+      <button 
+        onClick={onNavigate}
+        className="w-full py-2 text-xs text-foreground/60 hover:text-foreground transition-colors"
+      >
+        + {acts.length - 3} more acts
+      </button>
+    </div>
+  );
+};
+
+// Weekly Progress Preview
+const WeeklyProgressPreview = () => {
+  const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const today = new Date().getDay();
+  
+  // Mock data - would come from local storage in real implementation
+  const weekData = [false, true, true, false, true, true, false];
+
+  return (
+    <div className="flex items-center justify-between">
+      {days.map((day, i) => {
+        const isToday = i === today;
+        const isComplete = weekData[i];
+        
+        return (
+          <div key={i} className="flex flex-col items-center gap-2">
+            <span className={cn(
+              "text-xs font-medium",
+              isToday ? "text-foreground" : "text-foreground/40"
+            )}>
+              {day}
+            </span>
+            <motion.div 
+              className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center border-2",
+                isComplete 
+                  ? "bg-pastel-green border-pastel-green" 
+                  : isToday 
+                    ? "border-pastel-pink bg-pastel-pink/20" 
+                    : "border-foreground/10"
+              )}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              {isComplete && <span className="text-white text-sm">✓</span>}
+            </motion.div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
