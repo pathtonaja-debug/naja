@@ -18,6 +18,10 @@ import Achievements from "./pages/Achievements";
 import Goals from "./pages/Goals";
 import Quiz from "./pages/Quiz";
 import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
+import Dua from "./pages/Dua";
+import Quran from "./pages/Quran";
+import Fintech from "./pages/Fintech";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +51,10 @@ const App = () => (
               <Route path="/goals" element={<Goals />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/dua" element={<Dua />} />
+              <Route path="/quran" element={<Quran />} />
+              <Route path="/fintech" element={<Fintech />} />
               
               {/* Legacy routes redirect */}
               <Route path="/calendar" element={<Navigate to="/dates" replace />} />

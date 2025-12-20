@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, Heart, PenLine, GraduationCap, Calendar, 
-  ChevronRight, Flame, Star, Trophy
+  ChevronRight, Flame, Star, Trophy, Coins
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
@@ -21,14 +21,16 @@ const Dashboard = () => {
     return 'Good evening';
   };
 
-  // Quick access tiles
+  // Quick access tiles - including Finance
   const quickTiles = [
     { id: 'practices', title: 'Practices', icon: <Star className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-lavender' },
-    { id: 'dhikr', title: 'Dhikr', icon: <Heart className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-pink' },
+    { id: 'quran', title: "Qur'an", icon: <BookOpen className="w-5 h-5" />, path: '/quran', color: 'bg-pastel-green' },
+    { id: 'dua', title: 'Dua', icon: <Heart className="w-5 h-5" />, path: '/dua', color: 'bg-pastel-pink' },
     { id: 'journal', title: 'Journal', icon: <PenLine className="w-5 h-5" />, path: '/journal', color: 'bg-pastel-yellow' },
     { id: 'learn', title: 'Learn', icon: <GraduationCap className="w-5 h-5" />, path: '/learn', color: 'bg-pastel-blue' },
-    { id: 'dates', title: 'Dates', icon: <Calendar className="w-5 h-5" />, path: '/dates', color: 'bg-pastel-green' },
-    { id: 'quran', title: "Qur'an", icon: <BookOpen className="w-5 h-5" />, path: '/practices', color: 'bg-pastel-lavender' },
+    { id: 'dates', title: 'Dates', icon: <Calendar className="w-5 h-5" />, path: '/dates', color: 'bg-pastel-lavender' },
+    { id: 'fintech', title: 'Finance', icon: <Coins className="w-5 h-5" />, path: '/fintech', color: 'bg-pastel-green' },
+    { id: 'progress', title: 'Progress', icon: <Trophy className="w-5 h-5" />, path: '/progress', color: 'bg-pastel-yellow' },
   ];
 
   const levelProgress = profile.level < 10 
@@ -155,7 +157,7 @@ const Dashboard = () => {
       {/* Quick Access Tiles */}
       <div className="px-4 pb-4">
         <h2 className="text-lg font-bold text-foreground mb-3">Quick Access</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           {quickTiles.map((tile, index) => (
             <motion.button
               key={tile.id}
@@ -164,12 +166,12 @@ const Dashboard = () => {
               transition={{ delay: 0.25 + index * 0.03 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(tile.path)}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+              className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white border border-border/30 shadow-sm"
             >
               <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", tile.color)}>
                 {tile.icon}
               </div>
-              <span className="text-xs font-medium text-foreground">{tile.title}</span>
+              <span className="text-[10px] font-medium text-foreground">{tile.title}</span>
             </motion.button>
           ))}
         </div>
