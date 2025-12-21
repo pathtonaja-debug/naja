@@ -93,7 +93,7 @@ const Dhikr = () => {
       setShowCompleted(true);
       
       // Award points
-      const points = BARAKAH_REWARDS.DHIKR_SESSION;
+      const points = BARAKAH_REWARDS.DHIKR_33;
       addBarakahPoints(points);
       
       // Update today's total
@@ -203,7 +203,7 @@ const Dhikr = () => {
                   className="flex items-center gap-2 mt-3 px-4 py-2 rounded-full bg-primary/10"
                 >
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_SESSION} Points</span>
+                  <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_33} Points</span>
                 </motion.div>
               </motion.div>
             )}

@@ -116,7 +116,7 @@ const Practices = () => {
     if (!prayerStates[id][option]) {
       let points = 0;
       if (option === 'onTime') points = BARAKAH_REWARDS.PRAYER_ON_TIME;
-      if (option === 'inCongregation') points = BARAKAH_REWARDS.PRAYER_CONGREGATION;
+      if (option === 'inCongregation') points = BARAKAH_REWARDS.PRAYER_IN_JAMAAH;
       if (points > 0) {
         addBarakahPoints(points);
         toast.success(`+${points} Barakah Points ✨`);
@@ -129,8 +129,8 @@ const Practices = () => {
     setSunnahStates(prev => ({ ...prev, [id]: newState }));
     
     if (newState) {
-      addBarakahPoints(BARAKAH_REWARDS.SUNNAH_COMPLETED);
-      toast.success(`+${BARAKAH_REWARDS.SUNNAH_COMPLETED} Barakah Points ✨`);
+      addBarakahPoints(BARAKAH_REWARDS.SUNNAH_PRAYER);
+      toast.success(`+${BARAKAH_REWARDS.SUNNAH_PRAYER} Barakah Points ✨`);
     }
   };
 
@@ -324,7 +324,7 @@ const Practices = () => {
                         </div>
                         <div className="text-right">
                           <span className="text-xs text-muted-foreground">{prayer.rakats}R</span>
-                          <p className="text-xs text-primary font-medium">+{BARAKAH_REWARDS.SUNNAH_COMPLETED}</p>
+                          <p className="text-xs text-primary font-medium">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</p>
                         </div>
                       </div>
                     </Card>
