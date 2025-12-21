@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
 import Dua from "./pages/Dua";
 import Quran from "./pages/Quran";
+import Dhikr from "./pages/Dhikr";
 import Fintech from "./pages/Fintech";
 import NotFound from "./pages/NotFound";
 
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/dua" element={<Dua />} />
               <Route path="/quran" element={<Quran />} />
+              <Route path="/dhikr" element={<Dhikr />} />
               <Route path="/fintech" element={<Fintech />} />
               
               {/* Legacy routes redirect */}
