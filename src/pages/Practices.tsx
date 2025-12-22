@@ -172,8 +172,8 @@ const Practices = () => {
       amount,
     };
     setSadaqahLogs(prev => [newLog, ...prev]);
-    addBarakahPoints(BARAKAH_REWARDS.GOOD_DEED);
-    toast.success(`Sadaqah logged! +${BARAKAH_REWARDS.GOOD_DEED} Barakah Points ✨`);
+    addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
+    toast.success(`Sadaqah logged! +${BARAKAH_REWARDS.CHARITY_GIVEN} Barakah Points ✨`);
     setExpandedSadaqah(null);
   };
 
