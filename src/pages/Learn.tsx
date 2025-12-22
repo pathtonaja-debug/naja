@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
+import { LESSON_CONTENT } from '@/data/lessonContent';
 
 interface Lesson {
   id: string;
@@ -400,12 +401,31 @@ const Learn = () => {
                 <p className="text-sm text-muted-foreground mt-1">{selectedLesson.description}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-muted/50 mb-6">
-                <p className="text-sm text-foreground leading-relaxed">
-                  This is a placeholder for the lesson content. In the full version, this would contain 
-                  educational material about {selectedLesson.title.toLowerCase()}, including text, 
-                  images, and interactive elements.
-                </p>
+              <div className="p-4 rounded-xl bg-muted/50 mb-6 max-h-64 overflow-y-auto">
+                {LESSON_CONTENT[selectedLesson.id] ? (
+                  <div className="space-y-4">
+                    {LESSON_CONTENT[selectedLesson.id].sections.map((section, idx) => (
+                      <div key={idx}>
+                        <h4 className="font-semibold text-sm mb-2">{section.heading}</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.content}</p>
+                        {section.keyPoints && (
+                          <ul className="mt-2 space-y-1">
+                            {section.keyPoints.map((point, i) => (
+                              <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                                <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
+                                {point}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-foreground leading-relaxed">
+                    Educational content about {selectedLesson.title.toLowerCase()}.
+                  </p>
+                )}
               </div>
 
               <div className="flex gap-3">
