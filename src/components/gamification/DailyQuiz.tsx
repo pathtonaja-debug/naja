@@ -8,17 +8,16 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDailyQuiz } from '@/hooks/useDailyQuiz';
-import { useGamification } from '@/hooks/useGamification';
-import { checkQuizAchievements } from '@/services/gamification';
+import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 
 interface DailyQuizProps {
-  onComplete?: (xpEarned: number) => void;
+  onComplete?: (pointsEarned: number) => void;
 }
 
 export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
   const { quiz, attempt, loading, generating, error, hasCompletedToday, submitQuiz, refetch } = useDailyQuiz();
-  const { addXP } = useGamification();
+  const { addBarakahPoints } = useGuestProfile();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -78,7 +77,7 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
             <Trophy className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground text-sm">Quiz Completed!</h3>
+            <h3 className="font-semibold text-foreground text-sm">Quiz Completed</h3>
             <p className="text-xs text-muted-foreground">{quiz.topic}</p>
           </div>
         </div>
@@ -89,13 +88,13 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
             <p className="text-xs text-muted-foreground">Correct answers</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-bold text-primary">+{attempt.xp_earned} XP</p>
-            <p className="text-xs text-muted-foreground">Earned today</p>
+            <p className="text-lg font-bold text-primary">+{attempt.points_earned}</p>
+            <p className="text-xs text-muted-foreground">Barakah Points</p>
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Come back tomorrow for a new quiz!
+          Come back tomorrow for a new quiz
         </p>
       </Card>
     );
@@ -120,17 +119,9 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
       setSubmitting(true);
       const result = await submitQuiz(selectedAnswers);
       if (result) {
-        await addXP(result.xpEarned);
-        
-        // Check for quiz achievements
-        // Get total quizzes passed (score >= 50%)
-        const passThreshold = Math.ceil(totalQuestions / 2);
-        if (result.score >= passThreshold) {
-          await checkQuizAchievements(1); // Will accumulate over time
-        }
-        
-        toast.success(`Quiz completed! +${result.xpEarned} XP`);
-        onComplete?.(result.xpEarned);
+        addBarakahPoints(result.pointsEarned);
+        toast.success(`Quiz completed. +${result.pointsEarned} Barakah Points`);
+        onComplete?.(result.pointsEarned);
       }
       setSubmitting(false);
     }
