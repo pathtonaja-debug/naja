@@ -6,7 +6,7 @@ import { Plus, Calendar, BookOpen } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BottomNav from "@/components/BottomNav";
-import { addReflection, listReflections } from "@/services/db";
+import { getReflections, addReflection as addLocalReflection, LocalReflection, addBarakahPoints, BARAKAH_REWARDS } from "@/services/localStore";
 import { reflectionPrompts, moodOptions } from "@/components/journal/ReflectionPrompts";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -17,11 +17,11 @@ const Journal = () => {
   const [text, setText] = useState("");
   const [selectedPrompt, setSelectedPrompt] = useState(reflectionPrompts[0]);
   const [selectedMood, setSelectedMood] = useState("");
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<LocalReflection[]>([]);
   const [showInput, setShowInput] = useState(false);
 
-  async function load() {
-    const reflections = await listReflections();
+  function load() {
+    const reflections = getReflections();
     setItems(reflections);
   }
 
@@ -29,21 +29,24 @@ const Journal = () => {
     load();
   }, []);
 
-  async function save() {
+  function save() {
     if (!text.trim()) {
       toast.error("Please write something");
       return;
     }
 
     try {
-      await addReflection({
+      addLocalReflection({
         date: new Date().toISOString().slice(0, 10),
         text,
         prompt: selectedPrompt.prompt,
         mood: selectedMood || selectedPrompt.mood,
       });
 
-      toast.success("Reflection saved");
+      // Award points for reflection
+      addBarakahPoints(BARAKAH_REWARDS.REFLECTION_WRITTEN);
+
+      toast.success("Reflection saved ✨");
       setText("");
       setSelectedMood("");
       setShowInput(false);

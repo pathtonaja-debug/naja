@@ -11,29 +11,16 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthenticatedUserId } from '@/lib/auth';
+import { 
+  getDuas, addDua as addLocalDua, updateDua as updateLocalDua, deleteDua as deleteLocalDua,
+  getDuaFolders, addDuaFolder as addLocalDuaFolder, deleteDuaFolder as deleteLocalDuaFolder,
+  LocalDua, LocalDuaFolder,
+  addBarakahPoints, BARAKAH_REWARDS
+} from '@/services/localStore';
 import { GuidedDuaWizard, GuidedDuaState } from '@/components/dua/GuidedDuaWizard';
 import { WriteOwnDua } from '@/components/dua/WriteOwnDua';
 import { SaveDuaSheet } from '@/components/dua/SaveDuaSheet';
 import { DUA_TOPICS } from '@/data/duaTopics';
-
-interface DuaFolder {
-  id: string;
-  name: string;
-  created_at: string;
-}
-
-interface SavedDua {
-  id: string;
-  title: string;
-  topic: string | null;
-  folder_id: string | null;
-  final_text: string;
-  is_favorite: boolean;
-  created_at: string;
-  selected_names: string[] | null;
-}
 
 type ViewMode = 'library' | 'builder-choice' | 'guided' | 'write-own';
 type LibraryTab = 'all' | 'folders' | 'favorites';
@@ -45,45 +32,28 @@ const Dua = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Data
-  const [folders, setFolders] = useState<DuaFolder[]>([]);
-  const [duas, setDuas] = useState<SavedDua[]>([]);
+  const [folders, setFolders] = useState<LocalDuaFolder[]>([]);
+  const [duas, setDuas] = useState<LocalDua[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // UI state
-  const [selectedDua, setSelectedDua] = useState<SavedDua | null>(null);
+  const [selectedDua, setSelectedDua] = useState<LocalDua | null>(null);
   const [expandedFolderId, setExpandedFolderId] = useState<string | null>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [pendingDua, setPendingDua] = useState<{ topic: string; finalText: string; state?: GuidedDuaState } | null>(null);
 
-  // Load data
+  // Load data from local storage
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  const loadData = () => {
     setIsLoading(true);
     try {
-      const userId = await getAuthenticatedUserId();
-      
-      // Load folders
-      const { data: foldersData, error: foldersError } = await supabase
-        .from('dua_folders')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      
-      if (foldersError) throw foldersError;
-      setFolders(foldersData || []);
-
-      // Load duas
-      const { data: duasData, error: duasError } = await supabase
-        .from('duas')
-        .select('id, title, topic, folder_id, final_text, is_favorite, created_at, selected_names')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      
-      if (duasError) throw duasError;
-      setDuas(duasData || []);
+      const localFolders = getDuaFolders();
+      const localDuas = getDuas();
+      setFolders(localFolders);
+      setDuas(localDuas);
     } catch (err) {
       console.error('Error loading data:', err);
       toast.error('Failed to load duas');
@@ -110,36 +80,30 @@ const Dua = () => {
     setShowSaveSheet(true);
   };
 
-  const handleSaveDua = async (folderId: string | null, isFavorite: boolean) => {
+  const handleSaveDua = (folderId: string | null, isFavorite: boolean) => {
     if (!pendingDua) return;
 
     try {
-      const userId = await getAuthenticatedUserId();
-      
-      const { data, error } = await supabase
-        .from('duas')
-        .insert({
-          user_id: userId,
-          title: pendingDua.topic,
-          topic: pendingDua.topic,
-          folder_id: folderId,
-          final_text: pendingDua.finalText,
-          is_favorite: isFavorite,
-          content: {},
-          selected_names: pendingDua.state?.selectedNames.map(n => n.transliteration) || [],
-          request_text: pendingDua.state?.requestText || null,
-          ummah_prayers: pendingDua.state?.ummahPrayers || [],
-          include_salawat: pendingDua.state?.includeSalawat || false,
-        })
-        .select()
-        .single();
+      const newDua = addLocalDua({
+        title: pendingDua.topic,
+        topic: pendingDua.topic,
+        folder_id: folderId,
+        final_text: pendingDua.finalText,
+        is_favorite: isFavorite,
+        selected_names: pendingDua.state?.selectedNames.map(n => n.transliteration) || [],
+        request_text: pendingDua.state?.requestText || null,
+        ummah_prayers: pendingDua.state?.ummahPrayers || [],
+        include_salawat: pendingDua.state?.includeSalawat || false,
+      });
 
-      if (error) throw error;
-
-      setDuas(prev => [data as SavedDua, ...prev]);
+      setDuas(prev => [newDua, ...prev]);
       setShowSaveSheet(false);
       setPendingDua(null);
       setViewMode('library');
+      
+      // Award points for creating dua
+      addBarakahPoints(BARAKAH_REWARDS.DUA_CREATED);
+      
       toast.success('Dua saved! ✨');
     } catch (err) {
       console.error('Error saving dua:', err);
@@ -147,20 +111,20 @@ const Dua = () => {
     }
   };
 
-  const toggleFavorite = async (duaId: string, e?: React.MouseEvent) => {
+  const handleCreateFolder = (name: string): LocalDuaFolder => {
+    const newFolder = addLocalDuaFolder(name);
+    setFolders(prev => [newFolder, ...prev]);
+    return newFolder;
+  };
+
+  const toggleFavorite = (duaId: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
     
     const dua = duas.find(d => d.id === duaId);
     if (!dua) return;
 
     try {
-      const { error } = await supabase
-        .from('duas')
-        .update({ is_favorite: !dua.is_favorite })
-        .eq('id', duaId);
-
-      if (error) throw error;
-
+      updateLocalDua(duaId, { is_favorite: !dua.is_favorite });
       setDuas(prev => prev.map(d => 
         d.id === duaId ? { ...d, is_favorite: !d.is_favorite } : d
       ));
@@ -174,15 +138,9 @@ const Dua = () => {
     }
   };
 
-  const deleteDua = async (duaId: string) => {
+  const deleteDua = (duaId: string) => {
     try {
-      const { error } = await supabase
-        .from('duas')
-        .delete()
-        .eq('id', duaId);
-
-      if (error) throw error;
-
+      deleteLocalDua(duaId);
       setDuas(prev => prev.filter(d => d.id !== duaId));
       setSelectedDua(null);
       toast.success('Dua deleted');
@@ -192,21 +150,9 @@ const Dua = () => {
     }
   };
 
-  const deleteFolder = async (folderId: string) => {
+  const deleteFolder = (folderId: string) => {
     try {
-      // First, remove folder_id from any duas in this folder
-      await supabase
-        .from('duas')
-        .update({ folder_id: null })
-        .eq('folder_id', folderId);
-
-      const { error } = await supabase
-        .from('dua_folders')
-        .delete()
-        .eq('id', folderId);
-
-      if (error) throw error;
-
+      deleteLocalDuaFolder(folderId);
       setFolders(prev => prev.filter(f => f.id !== folderId));
       setDuas(prev => prev.map(d => d.folder_id === folderId ? { ...d, folder_id: null } : d));
       toast.success('Folder deleted');
@@ -227,7 +173,6 @@ const Dua = () => {
     return matchesSearch;
   });
 
-  const favorites = duas.filter(d => d.is_favorite);
   const getDuasInFolder = (folderId: string) => duas.filter(d => d.folder_id === folderId);
 
   // Render based on view mode
@@ -510,50 +455,59 @@ const Dua = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+            className="fixed inset-0 bg-black/50 z-50 flex items-end"
             onClick={() => setSelectedDua(null)}
           >
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="w-full max-w-lg bg-background rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
+              className="bg-background w-full rounded-t-3xl max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">{selectedDua.title || 'My Dua'}</h2>
+              <div className="sticky top-0 bg-background z-10 px-4 py-4 border-b border-border flex items-center justify-between">
+                <h2 className="font-semibold text-lg">{selectedDua.title}</h2>
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => deleteDua(selectedDua.id)}
-                    className="p-2 rounded-full hover:bg-destructive/10"
+                    onClick={(e) => toggleFavorite(selectedDua.id, e)}
+                    className="p-2"
                   >
-                    <Trash2 className="w-5 h-5 text-destructive" />
+                    <Heart className={cn(
+                      "w-5 h-5",
+                      selectedDua.is_favorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+                    )} />
                   </button>
-                  <button onClick={() => setSelectedDua(null)}>
-                    <X className="w-5 h-5 text-muted-foreground" />
+                  <button 
+                    onClick={() => {
+                      deleteDua(selectedDua.id);
+                    }}
+                    className="p-2 text-destructive"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                  <button onClick={() => setSelectedDua(null)} className="p-2">
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
-
-              <div className="p-4 rounded-xl bg-muted/50 mb-4">
-                <p className="whitespace-pre-wrap leading-relaxed">
+              
+              <div className="p-4">
+                <p className="text-foreground whitespace-pre-wrap leading-relaxed">
                   {selectedDua.final_text}
                 </p>
-              </div>
-
-              <div className="flex gap-3">
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => toggleFavorite(selectedDua.id)}
-                >
-                  <Heart className={cn(
-                    "w-4 h-4 mr-2",
-                    selectedDua.is_favorite && "fill-primary text-primary"
-                  )} />
-                  {selectedDua.is_favorite ? 'Favorited' : 'Add to Favorites'}
-                </Button>
+                
+                {selectedDua.selected_names && selectedDua.selected_names.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-xs text-muted-foreground mb-2">Names of Allah used:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedDua.selected_names.map((name, i) => (
+                        <span key={i} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>
@@ -561,67 +515,60 @@ const Dua = () => {
       </AnimatePresence>
 
       {/* Save Sheet */}
-      <AnimatePresence>
-        {showSaveSheet && (
-          <SaveDuaSheet
-            isOpen={showSaveSheet}
-            onClose={() => {
-              setShowSaveSheet(false);
-              setPendingDua(null);
-            }}
-            onSave={handleSaveDua}
-            folders={folders}
-            onFolderCreated={(folder) => setFolders(prev => [folder as DuaFolder, ...prev])}
-          />
-        )}
-      </AnimatePresence>
+      <SaveDuaSheet
+        isOpen={showSaveSheet}
+        onClose={() => {
+          setShowSaveSheet(false);
+          setPendingDua(null);
+        }}
+        onSave={handleSaveDua}
+        folders={folders}
+        onFolderCreated={handleCreateFolder}
+      />
 
       <BottomNav />
     </motion.div>
   );
 };
 
-function DuaCard({ 
-  dua, 
-  onClick, 
-  onFavorite,
-  showFolder,
-  folderName,
-}: { 
-  dua: SavedDua; 
+// Dua Card Component
+interface DuaCardProps {
+  dua: LocalDua;
   onClick: () => void;
   onFavorite: (e: React.MouseEvent) => void;
   showFolder?: boolean;
   folderName?: string;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 rounded-2xl bg-card border border-border shadow-sm cursor-pointer"
-      onClick={onClick}
-    >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex-1">
-          <h3 className="font-semibold">{dua.title || 'My Dua'}</h3>
-          {showFolder && folderName && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              <Folder className="w-3 h-3" />
-              {folderName}
-            </span>
-          )}
-        </div>
-        <button onClick={onFavorite}>
-          <Heart className={cn(
-            "w-5 h-5 transition-colors",
-            dua.is_favorite ? "text-primary fill-primary" : "text-muted-foreground"
-          )} />
-        </button>
-      </div>
-      
-      <p className="text-sm text-muted-foreground line-clamp-3">{dua.final_text}</p>
-    </motion.div>
-  );
 }
+
+const DuaCard = ({ dua, onClick, onFavorite, showFolder, folderName }: DuaCardProps) => (
+  <button
+    onClick={onClick}
+    className="w-full p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/30 transition-all"
+  >
+    <div className="flex items-start justify-between gap-3">
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-foreground truncate">{dua.title}</h3>
+        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+          {dua.final_text}
+        </p>
+        {showFolder && folderName && (
+          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
+            <Folder className="w-3 h-3" />
+            <span>{folderName}</span>
+          </div>
+        )}
+      </div>
+      <button
+        onClick={onFavorite}
+        className="p-1.5 -mr-1.5 -mt-0.5"
+      >
+        <Heart className={cn(
+          "w-4 h-4",
+          dua.is_favorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+        )} />
+      </button>
+    </div>
+  </button>
+);
 
 export default Dua;
