@@ -4,21 +4,15 @@ import { X, Heart, Folder, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { getAuthenticatedUserId } from '@/lib/auth';
-
-interface DuaFolder {
-  id: string;
-  name: string;
-}
+import { LocalDuaFolder } from '@/services/localStore';
 
 interface SaveDuaSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (folderId: string | null, isFavorite: boolean) => void;
-  folders: DuaFolder[];
-  onFolderCreated: (folder: DuaFolder) => void;
+  folders: LocalDuaFolder[];
+  onFolderCreated: (name: string) => LocalDuaFolder;
   initialFavorite?: boolean;
 }
 
@@ -34,38 +28,22 @@ export function SaveDuaSheet({
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreateFolder = async () => {
+  const handleCreateFolder = () => {
     if (!newFolderName.trim()) {
       toast.error('Please enter a folder name');
       return;
     }
 
-    setIsCreating(true);
     try {
-      const userId = await getAuthenticatedUserId();
-      const { data, error } = await supabase
-        .from('dua_folders')
-        .insert({
-          user_id: userId,
-          name: newFolderName.trim(),
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      onFolderCreated({ id: data.id, name: data.name });
-      setSelectedFolderId(data.id);
+      const newFolder = onFolderCreated(newFolderName.trim());
+      setSelectedFolderId(newFolder.id);
       setNewFolderName('');
       setShowNewFolder(false);
       toast.success('Folder created!');
     } catch (err) {
       console.error('Error creating folder:', err);
       toast.error('Failed to create folder');
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -143,8 +121,8 @@ export function SaveDuaSheet({
                   onChange={(e) => setNewFolderName(e.target.value)}
                   autoFocus
                 />
-                <Button onClick={handleCreateFolder} disabled={isCreating}>
-                  {isCreating ? '...' : 'Add'}
+                <Button onClick={handleCreateFolder}>
+                  Add
                 </Button>
                 <Button variant="outline" onClick={() => setShowNewFolder(false)}>
                   Cancel

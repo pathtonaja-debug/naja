@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getAuthenticatedUserId } from '@/lib/auth';
+import { getTodayQuizAttempt, addQuizAttempt, addBarakahPoints, BARAKAH_REWARDS } from '@/services/localStore';
 
 interface QuizQuestion {
   question: string;
@@ -18,11 +18,10 @@ interface DailyQuiz {
 
 interface QuizAttempt {
   id: string;
-  quiz_id: string;
+  quiz_date: string;
   score: number;
   total_questions: number;
   answers: number[];
-  xp_earned: number;
   completed_at: string;
 }
 
@@ -39,9 +38,14 @@ export const useDailyQuiz = () => {
       setError(null);
 
       const today = new Date().toISOString().split('T')[0];
-      const userId = await getAuthenticatedUserId();
 
-      // Check if quiz exists for today
+      // Check local storage for today's attempt first
+      const localAttempt = getTodayQuizAttempt();
+      if (localAttempt) {
+        setAttempt(localAttempt);
+      }
+
+      // Try to fetch quiz from Supabase (public read)
       let { data: existingQuiz, error: quizError } = await supabase
         .from('daily_quizzes')
         .select('*')
@@ -49,28 +53,34 @@ export const useDailyQuiz = () => {
         .single();
 
       if (quizError && quizError.code !== 'PGRST116') {
-        throw quizError;
+        // Non-404 error - might be network issue
+        console.error('Quiz fetch error:', quizError);
       }
 
       if (!existingQuiz) {
-        // Generate new quiz via edge function
+        // Try to generate new quiz via edge function
         setGenerating(true);
-        const { data: funcData, error: funcError } = await supabase.functions.invoke('daily-quiz');
-        
-        if (funcError) {
-          throw new Error(funcError.message || 'Failed to generate quiz');
+        try {
+          const { data: funcData, error: funcError } = await supabase.functions.invoke('daily-quiz');
+          
+          if (funcError) {
+            throw new Error(funcError.message || 'Failed to generate quiz');
+          }
+          
+          if (funcData?.error) {
+            throw new Error(funcData.error);
+          }
+          
+          existingQuiz = funcData;
+        } catch (genError) {
+          console.error('Quiz generation failed:', genError);
+          setError('Quiz unavailable. Please try again later.');
+          return;
         }
-        
-        if (funcData?.error) {
-          throw new Error(funcData.error);
-        }
-        
-        existingQuiz = funcData;
         setGenerating(false);
       }
 
       if (existingQuiz) {
-        // Parse questions if it's a string
         const questions = typeof existingQuiz.questions === 'string' 
           ? JSON.parse(existingQuiz.questions) 
           : existingQuiz.questions;
@@ -79,21 +89,6 @@ export const useDailyQuiz = () => {
           ...existingQuiz,
           questions
         });
-
-        // Check if user has already attempted this quiz
-        const { data: existingAttempt } = await supabase
-          .from('quiz_attempts')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('quiz_id', existingQuiz.id)
-          .single();
-
-        if (existingAttempt) {
-          const answers = typeof existingAttempt.answers === 'string'
-            ? JSON.parse(existingAttempt.answers)
-            : existingAttempt.answers;
-          setAttempt({ ...existingAttempt, answers });
-        }
       }
     } catch (err) {
       console.error('Failed to fetch quiz:', err);
@@ -112,8 +107,6 @@ export const useDailyQuiz = () => {
     if (!quiz) return null;
 
     try {
-      const userId = await getAuthenticatedUserId();
-      
       // Calculate score
       let score = 0;
       quiz.questions.forEach((q, i) => {
@@ -122,37 +115,24 @@ export const useDailyQuiz = () => {
         }
       });
 
-      // Calculate XP: 25 per correct answer + 50 bonus for perfect score
-      const baseXP = score * 25;
-      const perfectBonus = score === quiz.questions.length ? 50 : 0;
-      const xpEarned = baseXP + perfectBonus;
+      // Calculate points
+      const basePoints = score * BARAKAH_REWARDS.QUIZ_CORRECT_ANSWER;
+      const perfectBonus = score === quiz.questions.length ? BARAKAH_REWARDS.QUIZ_PERFECT_SCORE : 0;
+      const xpEarned = basePoints + perfectBonus;
 
-      // Save attempt
-      const { data: newAttempt, error: attemptError } = await supabase
-        .from('quiz_attempts')
-        .insert({
-          user_id: userId,
-          quiz_id: quiz.id,
-          score,
-          total_questions: quiz.questions.length,
-          answers,
-          xp_earned: xpEarned
-        })
-        .select()
-        .single();
-
-      if (attemptError) {
-        if (attemptError.code === '23505') {
-          // Already submitted
-          return null;
-        }
-        throw attemptError;
-      }
-
-      setAttempt({
-        ...newAttempt,
-        answers
+      // Save attempt locally
+      const today = new Date().toISOString().split('T')[0];
+      const newAttempt = addQuizAttempt({
+        quiz_date: today,
+        score,
+        total_questions: quiz.questions.length,
+        answers,
       });
+
+      setAttempt(newAttempt);
+
+      // Award points
+      addBarakahPoints(xpEarned);
 
       return { score, xpEarned };
     } catch (err) {
