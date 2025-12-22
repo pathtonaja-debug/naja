@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BookOpen, ChevronLeft, Plus, Minus, Target, Trophy, 
-  Star, Check, TrendingUp, Heart, Brain, Award
+  Star, Check, TrendingUp, Heart, Brain, Award, Search, X, ChevronRight
 } from 'lucide-react';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
+import { QURAN_SURAHS, FEATURED_AYAHS } from '@/data/quranData';
 
 interface QuranProgress {
   todayPages: number;
@@ -22,9 +24,9 @@ interface QuranProgress {
   khatams: number;
   streak: number;
   history: Record<string, number>;
-  // Hifdh tracking
   hifdhJuz: number[];
   totalMemorized: number;
+  readSurahs: number[];
 }
 
 const TOTAL_QURAN_PAGES = 604;
@@ -34,7 +36,7 @@ const TOTAL_JUZ = 30;
 const Quran = () => {
   const navigate = useNavigate();
   const { addBarakahPoints } = useGuestProfile();
-  const [activeTab, setActiveTab] = useState<'reading' | 'hifdh' | 'khatam'>('reading');
+  const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'hifdh' | 'khatam'>('reading');
   const [progress, setProgress] = useState<QuranProgress>({
     todayPages: 0,
     dailyGoal: 5,
@@ -45,8 +47,11 @@ const Quran = () => {
     history: {},
     hifdhJuz: [],
     totalMemorized: 0,
+    readSurahs: [],
   });
   const [showGoalModal, setShowGoalModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSurah, setSelectedSurah] = useState<typeof QURAN_SURAHS[0] | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('naja_quran_progress_v2');
@@ -145,17 +150,44 @@ const Quran = () => {
     });
   };
 
+  const toggleSurahRead = (surahNumber: number) => {
+    const isRead = progress.readSurahs.includes(surahNumber);
+    let newReadSurahs: number[];
+    
+    if (isRead) {
+      newReadSurahs = progress.readSurahs.filter(s => s !== surahNumber);
+    } else {
+      newReadSurahs = [...progress.readSurahs, surahNumber];
+      toast.success(`Surah marked as read! 📖`, {
+        description: `+${BARAKAH_REWARDS.QURAN_PAGE} Barakah Points`
+      });
+      addBarakahPoints(BARAKAH_REWARDS.QURAN_PAGE);
+    }
+
+    saveProgress({
+      ...progress,
+      readSurahs: newReadSurahs,
+    });
+  };
+
   const updateGoal = (newGoal: number) => {
     saveProgress({ ...progress, dailyGoal: newGoal });
     setShowGoalModal(false);
     toast.success(`Daily goal set to ${newGoal} pages`);
   };
 
+  const filteredSurahs = QURAN_SURAHS.filter(surah => 
+    surah.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    surah.englishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    surah.number.toString().includes(searchQuery)
+  );
+
   const todayProgress = progress.dailyGoal > 0 
     ? Math.min((progress.todayPages / progress.dailyGoal) * 100, 100) 
     : 0;
   const khatamProgress = ((progress.totalPages % TOTAL_QURAN_PAGES) / TOTAL_QURAN_PAGES) * 100;
   const hifdhProgress = (progress.hifdhJuz.length / TOTAL_JUZ) * 100;
+  const surahProgress = (progress.readSurahs.length / 114) * 100;
 
   return (
     <motion.div
@@ -174,9 +206,10 @@ const Quran = () => {
 
       {/* Tab Selector */}
       <div className="px-4 pb-4">
-        <div className="flex gap-2 p-1 bg-muted rounded-xl">
+        <div className="flex gap-1 p-1 bg-muted rounded-xl">
           {[
-            { id: 'reading', label: 'Reading', icon: BookOpen },
+            { id: 'reading', label: 'Read', icon: BookOpen },
+            { id: 'surahs', label: 'Surahs', icon: Search },
             { id: 'hifdh', label: 'Hifdh', icon: Brain },
             { id: 'khatam', label: 'Khatam', icon: Award },
           ].map((tab) => (
@@ -184,13 +217,13 @@ const Quran = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all",
+                "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all",
                 activeTab === tab.id
                   ? "bg-card shadow-sm text-foreground"
                   : "text-muted-foreground"
               )}
             >
-              <tab.icon className="w-4 h-4" />
+              <tab.icon className="w-3.5 h-3.5" />
               {tab.label}
             </button>
           ))}
@@ -263,6 +296,18 @@ const Quran = () => {
             )}
           </motion.div>
 
+          {/* Featured Ayah */}
+          <Card className="p-4">
+            <h3 className="text-xs font-semibold text-muted-foreground mb-2">FEATURED AYAH</h3>
+            <p className="text-lg font-arabic text-right leading-loose mb-2">
+              {FEATURED_AYAHS[0].arabic}
+            </p>
+            <p className="text-sm text-muted-foreground italic">
+              "{FEATURED_AYAHS[0].translation}"
+            </p>
+            <p className="text-xs text-primary mt-2">— {FEATURED_AYAHS[0].reference}</p>
+          </Card>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-2 gap-3">
             <Card className="p-4">
@@ -280,26 +325,145 @@ const Quran = () => {
               <p className="text-2xl font-bold">{progress.khatams}</p>
             </Card>
           </div>
+        </div>
+      )}
 
-          {/* Current Juz Progress */}
+      {/* Surahs Browser Tab */}
+      {activeTab === 'surahs' && !selectedSurah && (
+        <div className="px-4 space-y-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search surahs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+
+          {/* Progress Summary */}
           <Card className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-sm font-semibold">Current Juz</p>
-                <p className="text-xs text-muted-foreground">Juz {Math.min(progress.currentJuz, 30)} of 30</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                <span className="text-lg font-bold text-secondary">{Math.min(progress.currentJuz, 30)}</span>
-              </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Surahs Read</span>
+              <span className="text-lg font-bold text-primary">{progress.readSurahs.length}/114</span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: `${((progress.totalPages % PAGES_PER_JUZ) / PAGES_PER_JUZ) * 100}%` }}
-                className="h-full bg-secondary rounded-full"
+                animate={{ width: `${surahProgress}%` }}
+                className="h-full bg-primary rounded-full"
               />
             </div>
           </Card>
+
+          {/* Surah List */}
+          <div className="space-y-2">
+            {filteredSurahs.map((surah) => {
+              const isRead = progress.readSurahs.includes(surah.number);
+              return (
+                <motion.div key={surah.number} whileTap={{ scale: 0.98 }}>
+                  <Card 
+                    className={cn(
+                      "p-3 cursor-pointer transition-all",
+                      isRead && "bg-primary/5 border-primary/20"
+                    )}
+                    onClick={() => setSelectedSurah(surah)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm",
+                        isRead ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      )}>
+                        {surah.number}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-sm">{surah.englishName}</h4>
+                          {isRead && <Check className="w-3.5 h-3.5 text-primary" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {surah.versesCount} verses • {surah.revelationType}
+                        </p>
+                      </div>
+                      <p className="font-arabic text-lg">{surah.name}</p>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Surah Detail View */}
+      {activeTab === 'surahs' && selectedSurah && (
+        <div className="px-4 space-y-4">
+          <button
+            onClick={() => setSelectedSurah(null)}
+            className="flex items-center gap-1 text-sm text-muted-foreground"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back to Surahs
+          </button>
+
+          <Card className="p-6 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-primary">{selectedSurah.number}</span>
+            </div>
+            <h2 className="font-arabic text-3xl mb-2">{selectedSurah.name}</h2>
+            <h3 className="text-xl font-bold mb-1">{selectedSurah.englishName}</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {selectedSurah.meaning}
+            </p>
+            
+            <div className="flex justify-center gap-6 text-sm">
+              <div>
+                <p className="text-muted-foreground">Verses</p>
+                <p className="font-bold">{selectedSurah.versesCount}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Revealed in</p>
+                <p className="font-bold">{selectedSurah.revelationType}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Juz</p>
+                <p className="font-bold">{selectedSurah.juz.join(', ')}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <h4 className="font-semibold mb-2">About this Surah</h4>
+            <p className="text-sm text-muted-foreground">{selectedSurah.description}</p>
+          </Card>
+
+          <Button
+            onClick={() => toggleSurahRead(selectedSurah.number)}
+            className="w-full"
+            variant={progress.readSurahs.includes(selectedSurah.number) ? "secondary" : "default"}
+          >
+            {progress.readSurahs.includes(selectedSurah.number) ? (
+              <>
+                <Check className="w-4 h-4 mr-2" />
+                Marked as Read
+              </>
+            ) : (
+              <>
+                <BookOpen className="w-4 h-4 mr-2" />
+                Mark as Read
+              </>
+            )}
+          </Button>
         </div>
       )}
 
