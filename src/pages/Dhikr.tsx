@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, RotateCcw, Check, Sparkles } from 'lucide-react';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
-import { BeadsAnimation } from '@/components/dhikr/BeadsAnimation';
+import { TasbihArc } from '@/components/dhikr/TasbihArc';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -245,8 +245,8 @@ const Dhikr = () => {
             />
           </div>
 
-          {/* Beads Animation */}
-          <BeadsAnimation 
+          {/* Realistic Tasbih Arc */}
+          <TasbihArc 
             count={count} 
             onIncrement={handleIncrement} 
             target={customTarget} 
