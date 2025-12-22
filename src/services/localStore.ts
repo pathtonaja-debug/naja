@@ -1,10 +1,11 @@
 // Local storage service for guest mode
 // All data persists locally keyed by device UUID
 
-import { getDeviceId } from '@/lib/guestAuth';
+import { generateUUID } from '@/lib/uuid';
 
 // ============== Storage Keys ==============
 const KEYS = {
+  DEVICE_ID: 'naja_device_id',
   REFLECTIONS: 'naja_reflections',
   DUAS: 'naja_duas',
   DUA_FOLDERS: 'naja_dua_folders',
@@ -12,6 +13,16 @@ const KEYS = {
   ACHIEVEMENTS: 'naja_achievements',
   GAMIFICATION: 'naja_gamification',
 } as const;
+
+// ============== Device ID ==============
+export function getDeviceId(): string {
+  const stored = localStorage.getItem(KEYS.DEVICE_ID);
+  if (stored) return stored;
+  
+  const newId = generateUUID();
+  localStorage.setItem(KEYS.DEVICE_ID, newId);
+  return newId;
+}
 
 // ============== Types ==============
 export interface LocalReflection {
@@ -49,6 +60,7 @@ export interface LocalQuizAttempt {
   score: number;
   total_questions: number;
   answers: number[];
+  points_earned: number;
   completed_at: string;
 }
 
@@ -72,14 +84,19 @@ export interface LocalGamification {
 function getStorage<T>(key: string, defaultValue: T): T {
   try {
     const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultValue;
+    if (!stored) return defaultValue;
+    return JSON.parse(stored) as T;
   } catch {
     return defaultValue;
   }
 }
 
 function setStorage<T>(key: string, value: T): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error('Failed to save to localStorage:', e);
+  }
 }
 
 // ============== Reflections ==============
@@ -91,7 +108,7 @@ export function addReflection(entry: Omit<LocalReflection, 'id' | 'created_at'>)
   const reflections = getReflections();
   const newReflection: LocalReflection = {
     ...entry,
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     created_at: new Date().toISOString(),
   };
   reflections.unshift(newReflection);
@@ -113,7 +130,7 @@ export function addDua(dua: Omit<LocalDua, 'id' | 'created_at'>): LocalDua {
   const duas = getDuas();
   const newDua: LocalDua = {
     ...dua,
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     created_at: new Date().toISOString(),
   };
   duas.unshift(newDua);
@@ -141,7 +158,7 @@ export function getDuaFolders(): LocalDuaFolder[] {
 export function addDuaFolder(name: string): LocalDuaFolder {
   const folders = getDuaFolders();
   const newFolder: LocalDuaFolder = {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     name,
     created_at: new Date().toISOString(),
   };
@@ -176,7 +193,7 @@ export function addQuizAttempt(attempt: Omit<LocalQuizAttempt, 'id' | 'completed
   const attempts = getQuizAttempts();
   const newAttempt: LocalQuizAttempt = {
     ...attempt,
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     completed_at: new Date().toISOString(),
   };
   attempts.unshift(newAttempt);
@@ -196,7 +213,7 @@ export function addLocalAchievement(achievementId: string): LocalAchievement | n
   }
   
   const newAchievement: LocalAchievement = {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     achievement_id: achievementId,
     earned_at: new Date().toISOString(),
   };
@@ -227,7 +244,7 @@ export function updateGamification(updates: Partial<LocalGamification>): LocalGa
   return updated;
 }
 
-// Point rewards
+// Point rewards (renamed from XP_REWARDS)
 export const BARAKAH_REWARDS = {
   PRAYER_COMPLETED: 15,
   HABIT_COMPLETED: 10,

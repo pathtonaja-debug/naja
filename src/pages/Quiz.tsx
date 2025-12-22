@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Brain, CheckCircle2, XCircle, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
-import { useDailyQuiz } from '@/hooks/useDailyQuiz';
+import { useDailyQuiz, QuizAttempt } from '@/hooks/useDailyQuiz';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -14,7 +14,7 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
-  const [quizResult, setQuizResult] = useState<{ score: number; xpEarned: number } | null>(null);
+  const [quizResult, setQuizResult] = useState<{ score: number; pointsEarned: number } | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
   const questions = quiz?.questions as any[] || [];
@@ -91,7 +91,7 @@ const Quiz = () => {
           >
             <CheckCircle2 className="w-12 h-12 text-green-500" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Quiz Complete!</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Quiz Complete</h2>
           <p className="text-muted-foreground mb-6">You've already completed today's quiz</p>
           
           <div className="p-6 rounded-2xl bg-card/80 border border-border/50 max-w-sm mx-auto">
@@ -102,13 +102,13 @@ const Quiz = () => {
               </div>
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
-                <p className="text-3xl font-bold text-yellow-500">+{attempt.xp_earned}</p>
-                <p className="text-xs text-muted-foreground">XP Earned</p>
+                <p className="text-3xl font-bold text-yellow-500">+{attempt.points_earned}</p>
+                <p className="text-xs text-muted-foreground">Barakah Points</p>
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground mt-8">Come back tomorrow for a new quiz!</p>
+          <p className="text-sm text-muted-foreground mt-8">Come back tomorrow for a new quiz</p>
           
           <Button 
             variant="outline" 
@@ -187,7 +187,7 @@ const Quiz = () => {
         className="min-h-screen bg-background pb-24"
       >
         <div className="px-4 pt-4 pb-2">
-          <h1 className="text-xl font-bold text-foreground text-center">Quiz Complete!</h1>
+          <h1 className="text-xl font-bold text-foreground text-center">Quiz Complete</h1>
         </div>
 
         <div className="px-4 py-8 text-center">
@@ -217,7 +217,7 @@ const Quiz = () => {
             {isPerfect && (
               <div className="flex items-center justify-center gap-2 text-yellow-500 mb-4">
                 <Sparkles className="w-5 h-5" />
-                <span className="font-bold">Perfect Score!</span>
+                <span className="font-bold">Perfect Score</span>
                 <Sparkles className="w-5 h-5" />
               </div>
             )}
@@ -233,7 +233,7 @@ const Quiz = () => {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 text-primary font-bold text-lg mt-4"
             >
               <Star className="w-5 h-5" />
-              +{quizResult.xpEarned} XP
+              +{quizResult.pointsEarned} Barakah Points
             </motion.div>
           </motion.div>
 

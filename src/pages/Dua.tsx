@@ -104,7 +104,7 @@ const Dua = () => {
       // Award points for creating dua
       addBarakahPoints(BARAKAH_REWARDS.DUA_CREATED);
       
-      toast.success('Dua saved! ✨');
+      toast.success('Dua saved');
     } catch (err) {
       console.error('Error saving dua:', err);
       toast.error('Failed to save dua');

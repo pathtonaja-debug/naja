@@ -6,7 +6,7 @@ import { Plus, Calendar, BookOpen } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BottomNav from "@/components/BottomNav";
-import { getReflections, addReflection as addLocalReflection, LocalReflection, addBarakahPoints, BARAKAH_REWARDS } from "@/services/localStore";
+import { getReflections, addReflection, LocalReflection, addBarakahPoints, BARAKAH_REWARDS } from "@/services/localStore";
 import { reflectionPrompts, moodOptions } from "@/components/journal/ReflectionPrompts";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ const Journal = () => {
     }
 
     try {
-      addLocalReflection({
+      addReflection({
         date: new Date().toISOString().slice(0, 10),
         text,
         prompt: selectedPrompt.prompt,
@@ -46,7 +46,7 @@ const Journal = () => {
       // Award points for reflection
       addBarakahPoints(BARAKAH_REWARDS.REFLECTION_WRITTEN);
 
-      toast.success("Reflection saved ✨");
+      toast.success("Reflection saved");
       setText("");
       setSelectedMood("");
       setShowInput(false);

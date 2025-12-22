@@ -16,12 +16,13 @@ interface DailyQuiz {
   questions: QuizQuestion[];
 }
 
-interface QuizAttempt {
+export interface QuizAttempt {
   id: string;
   quiz_date: string;
   score: number;
   total_questions: number;
   answers: number[];
+  points_earned: number;
   completed_at: string;
 }
 
@@ -53,7 +54,6 @@ export const useDailyQuiz = () => {
         .single();
 
       if (quizError && quizError.code !== 'PGRST116') {
-        // Non-404 error - might be network issue
         console.error('Quiz fetch error:', quizError);
       }
 
@@ -103,7 +103,7 @@ export const useDailyQuiz = () => {
     fetchQuiz();
   }, [fetchQuiz]);
 
-  const submitQuiz = async (answers: number[]): Promise<{ score: number; xpEarned: number } | null> => {
+  const submitQuiz = async (answers: number[]): Promise<{ score: number; pointsEarned: number } | null> => {
     if (!quiz) return null;
 
     try {
@@ -118,7 +118,7 @@ export const useDailyQuiz = () => {
       // Calculate points
       const basePoints = score * BARAKAH_REWARDS.QUIZ_CORRECT_ANSWER;
       const perfectBonus = score === quiz.questions.length ? BARAKAH_REWARDS.QUIZ_PERFECT_SCORE : 0;
-      const xpEarned = basePoints + perfectBonus;
+      const pointsEarned = basePoints + perfectBonus;
 
       // Save attempt locally
       const today = new Date().toISOString().split('T')[0];
@@ -127,14 +127,15 @@ export const useDailyQuiz = () => {
         score,
         total_questions: quiz.questions.length,
         answers,
+        points_earned: pointsEarned,
       });
 
       setAttempt(newAttempt);
 
       // Award points
-      addBarakahPoints(xpEarned);
+      addBarakahPoints(pointsEarned);
 
-      return { score, xpEarned };
+      return { score, pointsEarned };
     } catch (err) {
       console.error('Failed to submit quiz:', err);
       return null;
