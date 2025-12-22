@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
-import { QURAN_SURAHS, FEATURED_AYAHS } from '@/data/quranData';
+import { SURAHS, FEATURED_AYAHS } from '@/data/quranData';
 
 interface QuranProgress {
   todayPages: number;
@@ -51,7 +51,7 @@ const Quran = () => {
   });
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSurah, setSelectedSurah] = useState<typeof QURAN_SURAHS[0] | null>(null);
+  const [selectedSurah, setSelectedSurah] = useState<typeof SURAHS[0] | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('naja_quran_progress_v2');
@@ -176,9 +176,9 @@ const Quran = () => {
     toast.success(`Daily goal set to ${newGoal} pages`);
   };
 
-  const filteredSurahs = QURAN_SURAHS.filter(surah => 
+  const filteredSurahs = SURAHS.filter(surah => 
     surah.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    surah.englishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    surah.arabicName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     surah.number.toString().includes(searchQuery)
   );
 
@@ -303,9 +303,9 @@ const Quran = () => {
               {FEATURED_AYAHS[0].arabic}
             </p>
             <p className="text-sm text-muted-foreground italic">
-              "{FEATURED_AYAHS[0].translation}"
+              "{FEATURED_AYAHS[0].text}"
             </p>
-            <p className="text-xs text-primary mt-2">— {FEATURED_AYAHS[0].reference}</p>
+            <p className="text-xs text-primary mt-2">— Surah {FEATURED_AYAHS[0].surah}:{FEATURED_AYAHS[0].verse}</p>
           </Card>
 
           {/* Stats Cards */}
@@ -387,14 +387,14 @@ const Quran = () => {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-sm">{surah.englishName}</h4>
+                          <h4 className="font-medium text-sm">{surah.name}</h4>
                           {isRead && <Check className="w-3.5 h-3.5 text-primary" />}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {surah.versesCount} verses • {surah.revelationType}
+                          {surah.verses} verses • {surah.revelationType}
                         </p>
                       </div>
-                      <p className="font-arabic text-lg">{surah.name}</p>
+                      <p className="font-arabic text-lg">{surah.arabicName}</p>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </Card>
@@ -420,8 +420,8 @@ const Quran = () => {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl font-bold text-primary">{selectedSurah.number}</span>
             </div>
-            <h2 className="font-arabic text-3xl mb-2">{selectedSurah.name}</h2>
-            <h3 className="text-xl font-bold mb-1">{selectedSurah.englishName}</h3>
+            <h2 className="font-arabic text-3xl mb-2">{selectedSurah.arabicName}</h2>
+            <h3 className="text-xl font-bold mb-1">{selectedSurah.name}</h3>
             <p className="text-sm text-muted-foreground mb-4">
               {selectedSurah.meaning}
             </p>
@@ -429,7 +429,7 @@ const Quran = () => {
             <div className="flex justify-center gap-6 text-sm">
               <div>
                 <p className="text-muted-foreground">Verses</p>
-                <p className="font-bold">{selectedSurah.versesCount}</p>
+                <p className="font-bold">{selectedSurah.verses}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Revealed in</p>
@@ -444,7 +444,10 @@ const Quran = () => {
 
           <Card className="p-4">
             <h4 className="font-semibold mb-2">About this Surah</h4>
-            <p className="text-sm text-muted-foreground">{selectedSurah.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {selectedSurah.name} ({selectedSurah.meaning}) is the {selectedSurah.number}th surah of the Quran, 
+              containing {selectedSurah.verses} verses. It was revealed in {selectedSurah.revelationType === 'Meccan' ? 'Mecca' : 'Medina'}.
+            </p>
           </Card>
 
           <Button
