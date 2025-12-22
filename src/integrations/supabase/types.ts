@@ -251,16 +251,52 @@ export type Database = {
           },
         ]
       }
+      dua_folders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dua_folders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       duas: {
         Row: {
           category: string | null
           content: Json
           created_at: string | null
           device_id: string | null
+          final_text: string | null
+          folder_id: string | null
           id: string
+          include_salawat: boolean | null
           is_favorite: boolean | null
           reminder_time: string | null
+          request_text: string | null
+          selected_names: string[] | null
           title: string
+          topic: string | null
+          ummah_prayers: string[] | null
           updated_at: string | null
           user_id: string
         }
@@ -269,10 +305,17 @@ export type Database = {
           content: Json
           created_at?: string | null
           device_id?: string | null
+          final_text?: string | null
+          folder_id?: string | null
           id?: string
+          include_salawat?: boolean | null
           is_favorite?: boolean | null
           reminder_time?: string | null
+          request_text?: string | null
+          selected_names?: string[] | null
           title: string
+          topic?: string | null
+          ummah_prayers?: string[] | null
           updated_at?: string | null
           user_id: string
         }
@@ -281,14 +324,28 @@ export type Database = {
           content?: Json
           created_at?: string | null
           device_id?: string | null
+          final_text?: string | null
+          folder_id?: string | null
           id?: string
+          include_salawat?: boolean | null
           is_favorite?: boolean | null
           reminder_time?: string | null
+          request_text?: string | null
+          selected_names?: string[] | null
           title?: string
+          topic?: string | null
+          ummah_prayers?: string[] | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "duas_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "dua_folders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "duas_user_id_fkey"
             columns: ["user_id"]
