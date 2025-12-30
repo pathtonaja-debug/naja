@@ -107,6 +107,7 @@ export interface AppVerse {
   translationHtml?: string;
   pageNumber: number;
   juzNumber: number;
+  words?: Word[];
 }
 
 export interface AppChapter {
@@ -294,6 +295,10 @@ export async function getVersesByChapter(
     word_fields: 'text_uthmani,translation,transliteration',
   });
 
+  // Request verse-level Arabic text
+  params.set('fields', 'text_uthmani');
+  params.set('text_type', 'uthmani');
+
   if (includeWords) {
     params.set('words', 'true');
   }
@@ -317,15 +322,24 @@ export async function getVersesByChapter(
     const translationHtmlRaw = v.translations?.[0]?.text || '';
     const translationPlain = removeInlineFootnoteDigits(stripHtml(translationHtmlRaw));
 
+    // Build Arabic text from words as fallback if text_uthmani is missing
+    const arabicFromWords = v.words
+      ?.map((w: Word) => w.text_uthmani)
+      .filter(Boolean)
+      .join(' ') || '';
+
+    const arabicText = (v.text_uthmani || arabicFromWords || '').trim();
+
     return {
       verseKey: v.verse_key,
       verseNumber: v.verse_number,
-      arabicText: v.text_uthmani,
+      arabicText,
       transliteration,
       translationText: translationPlain,
       translationHtml: translationHtmlRaw,
       pageNumber: v.page_number,
       juzNumber: v.juz_number,
+      words: v.words,
     };
   });
 
