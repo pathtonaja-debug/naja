@@ -5,10 +5,8 @@ import {
   HandHeart, Apple, Gift
 } from 'lucide-react';
 import { DailyQuestCard } from './DailyQuestCard';
-import { addXP, XP_REWARDS, updateStreak, checkPrayerAchievements, checkDhikrAchievements } from '@/services/gamification';
-import { getPrayerHabits, logHabitCompletion } from '@/services/habitTracking';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthenticatedUserId } from '@/lib/auth';
+import { useGuestProfile } from '@/hooks/useGuestProfile';
+import { BARAKAH_REWARDS } from '@/services/localStore';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -18,7 +16,7 @@ interface Quest {
   title: string;
   description: string;
   icon: React.ReactNode;
-  xpReward: number;
+  pointsReward: number;
   completed: boolean;
 }
 
@@ -30,58 +28,56 @@ const prayerIcons: Record<string, React.ReactNode> = {
   Isha: <Moon className="w-5 h-5" />,
 };
 
+const PRAYER_NAMES = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
 export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: number) => void }) => {
+  const { addBarakahPoints, updateStreak } = useGuestProfile();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [totalXPEarned, setTotalXPEarned] = useState(0);
+  const [totalPointsEarned, setTotalPointsEarned] = useState(0);
 
-  const loadQuests = async () => {
+  const loadQuests = () => {
     try {
-      // Load prayer habits
-      const prayers = await getPrayerHabits();
-      const prayerQuests: Quest[] = prayers.map(p => ({
-        id: p.id,
-        type: 'prayer',
-        title: `${p.name} Prayer`,
-        description: 'Complete your daily prayer',
-        icon: prayerIcons[p.name] || <Moon className="w-5 h-5" />,
-        xpReward: XP_REWARDS.PRAYER_COMPLETED,
-        completed: p.completed,
-      }));
-
-      // Load Quran reading habit
-      const userId = await getAuthenticatedUserId();
       const today = new Date().toISOString().split('T')[0];
       
-      // Check for Quran habit
-      const { data: quranHabit } = await supabase
-        .from('habits')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('category', 'Spiritual')
-        .ilike('name', '%quran%')
-        .single();
-
-      let quranCompleted = false;
-      if (quranHabit) {
-        const { data: quranLog } = await supabase
-          .from('habit_logs')
-          .select('completed')
-          .eq('habit_id', quranHabit.id)
-          .eq('date', today)
-          .single();
-        quranCompleted = quranLog?.completed || false;
+      // Load prayer completion from localStorage
+      const prayerStored = localStorage.getItem('naja_prayer_states');
+      let prayerStates: Record<string, { done: boolean }> = {};
+      if (prayerStored) {
+        const parsed = JSON.parse(prayerStored);
+        if (parsed.date === today) {
+          prayerStates = parsed.states;
+        }
       }
 
-      // Check for dhikr today
-      const { data: dhikrSessions } = await supabase
-        .from('dhikr_sessions')
-        .select('count')
-        .eq('user_id', userId)
-        .eq('date', today);
-      
-      const dhikrCount = dhikrSessions?.reduce((sum, s) => sum + s.count, 0) || 0;
-      const dhikrCompleted = dhikrCount >= 33;
+      // Build prayer quests
+      const prayerQuests: Quest[] = PRAYER_NAMES.map(name => ({
+        id: name.toLowerCase(),
+        type: 'prayer',
+        title: `${name} Prayer`,
+        description: 'Complete your daily prayer',
+        icon: prayerIcons[name] || <Moon className="w-5 h-5" />,
+        pointsReward: BARAKAH_REWARDS.PRAYER_COMPLETED,
+        completed: prayerStates[name.toLowerCase()]?.done || false,
+      }));
+
+      // Load Quran progress
+      const quranStored = localStorage.getItem('naja_quran_progress_v2');
+      let quranCompleted = false;
+      if (quranStored) {
+        const parsed = JSON.parse(quranStored);
+        quranCompleted = (parsed.history?.[today] || 0) > 0;
+      }
+
+      // Load dhikr progress
+      const dhikrStored = localStorage.getItem('naja_dhikr_today');
+      let dhikrCompleted = false;
+      if (dhikrStored) {
+        const parsed = JSON.parse(dhikrStored);
+        if (parsed.date === today) {
+          dhikrCompleted = parsed.total >= 33;
+        }
+      }
 
       // Additional quests
       const additionalQuests: Quest[] = [
@@ -91,7 +87,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           title: "Qur'an Reading",
           description: 'Read at least one page of Quran',
           icon: <Book className="w-5 h-5" />,
-          xpReward: XP_REWARDS.HABIT_COMPLETED,
+          pointsReward: BARAKAH_REWARDS.QURAN_PAGE,
           completed: quranCompleted,
         },
         {
@@ -100,7 +96,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           title: 'Daily Dhikr',
           description: 'Complete 33 dhikr today',
           icon: <Heart className="w-5 h-5" />,
-          xpReward: XP_REWARDS.DHIKR_TARGET,
+          pointsReward: BARAKAH_REWARDS.DHIKR_33,
           completed: dhikrCompleted,
         },
         {
@@ -109,7 +105,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           title: 'Morning Duas',
           description: 'Recite your morning supplications',
           icon: <Sparkles className="w-5 h-5" />,
-          xpReward: XP_REWARDS.HABIT_COMPLETED,
+          pointsReward: BARAKAH_REWARDS.DUA_CREATED,
           completed: false,
         },
       ];
@@ -126,7 +122,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
     loadQuests();
   }, []);
 
-  const handleCompleteQuest = async (questId: string, questType: string) => {
+  const handleCompleteQuest = (questId: string, questType: string) => {
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) return;
 
@@ -135,31 +131,17 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
       q.id === questId ? { ...q, completed: true } : q
     ));
 
-    try {
-      // Different handling based on quest type
-      if (questType === 'prayer') {
-        await logHabitCompletion(questId, true);
-        await checkPrayerAchievements(quests.filter(q => q.type === 'prayer' && q.completed).length + 1);
-      }
+    // Add points
+    const { leveledUp, newLevel } = addBarakahPoints(quest.pointsReward);
+    updateStreak();
+    
+    setTotalPointsEarned(prev => prev + quest.pointsReward);
+    onXPGained?.(quest.pointsReward);
 
-      // Add XP
-      const { newXP, leveledUp, newLevel } = await addXP(quest.xpReward);
-      await updateStreak();
-      
-      setTotalXPEarned(prev => prev + quest.xpReward);
-      onXPGained?.(quest.xpReward);
-
-      if (leveledUp) {
-        toast.success(`Level Up! You're now Level ${newLevel}! 🎉`);
-      } else {
-        toast.success(`+${quest.xpReward} XP earned! ✨`);
-      }
-    } catch (error) {
-      // Revert on error
-      setQuests(prev => prev.map(q => 
-        q.id === questId ? { ...q, completed: false } : q
-      ));
-      toast.error('Failed to complete quest');
+    if (leveledUp) {
+      toast.success(`Level Up! You're now Level ${newLevel}`);
+    } else {
+      toast.success(`+${quest.pointsReward} Barakah Points earned`);
     }
   };
 
@@ -182,8 +164,8 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
       {/* Header with Progress */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-foreground">Daily Quests</h2>
-          <p className="text-xs text-muted-foreground">Complete tasks to earn XP</p>
+          <h2 className="text-lg font-bold text-foreground">Today's Acts for Allah</h2>
+          <p className="text-xs text-muted-foreground">Complete tasks to earn Barakah Points</p>
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-primary">{completedCount}/{totalCount}</p>
@@ -202,14 +184,14 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           />
         </div>
         <AnimatePresence>
-          {totalXPEarned > 0 && (
+          {totalPointsEarned > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               className="absolute -top-6 right-0 text-xs font-bold text-primary"
             >
-              +{totalXPEarned} XP Today
+              +{totalPointsEarned} BP Today
             </motion.div>
           )}
         </AnimatePresence>
@@ -229,7 +211,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
               title={quest.title}
               description={quest.description}
               icon={quest.icon}
-              xpReward={quest.xpReward}
+              xpReward={quest.pointsReward}
               completed={quest.completed}
               onComplete={() => handleCompleteQuest(quest.id, quest.type)}
             />
@@ -239,7 +221,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
 
       {/* Bonus Quests */}
       <div className="pt-4 border-t border-border/30">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Bonus Quests</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">Bonus Acts</h3>
         <div className="grid grid-cols-2 gap-3">
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -259,6 +241,11 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           </motion.button>
         </div>
       </div>
+
+      {/* Niyyah disclaimer */}
+      <p className="text-xs text-muted-foreground text-center italic">
+        Your niyyah is what matters — points are just a tool to help you stay consistent.
+      </p>
     </div>
   );
 };

@@ -249,30 +249,52 @@ export const BARAKAH_REWARDS = {
   PRAYER_COMPLETED: 15,
   HABIT_COMPLETED: 10,
   DHIKR_TARGET: 20,
+  DHIKR_33: 20,
   QUIZ_CORRECT_ANSWER: 25,
   QUIZ_PERFECT_SCORE: 50,
   DAILY_LOGIN: 5,
   REFLECTION_WRITTEN: 15,
   DUA_CREATED: 10,
+  QURAN_PAGE: 5,
+  QURAN_JUZ: 50,
+  QURAN_KHATAM: 500,
 } as const;
 
 // Level calculations
+export function getPointsForLevel(level: number): number {
+  return Math.floor(100 * Math.pow(1.5, level - 1));
+}
+
 export function getLevelFromPoints(points: number): number {
   let level = 1;
-  let threshold = 0;
-  
-  while (points >= threshold && level <= 10) {
+  let totalPoints = 0;
+  while (totalPoints + getPointsForLevel(level) <= points) {
+    totalPoints += getPointsForLevel(level);
     level++;
-    threshold += level * 50;
   }
-  
-  return Math.min(level - 1, 10);
+  return level;
+}
+
+export function getBarakahProgressInLevel(points: number): { current: number; required: number; percentage: number } {
+  let level = 1;
+  let totalPoints = 0;
+  while (totalPoints + getPointsForLevel(level) <= points) {
+    totalPoints += getPointsForLevel(level);
+    level++;
+  }
+  const currentLevelPoints = points - totalPoints;
+  const requiredPoints = getPointsForLevel(level);
+  return {
+    current: currentLevelPoints,
+    required: requiredPoints,
+    percentage: Math.round((currentLevelPoints / requiredPoints) * 100)
+  };
 }
 
 export function getPointsForNextLevel(currentLevel: number): number {
   let threshold = 0;
   for (let i = 1; i <= currentLevel; i++) {
-    threshold += (i + 1) * 50;
+    threshold += getPointsForLevel(i);
   }
   return threshold;
 }

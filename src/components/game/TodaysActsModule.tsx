@@ -97,7 +97,7 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
     onPointsEarned?.(act.points);
 
     // Celebration
-    toast.success(`+${act.points} Barakah Points! ✨`, {
+    toast.success(`+${act.points} Barakah Points`, {
       description: `MashAllah! ${act.title} completed.`
     });
 

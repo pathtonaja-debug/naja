@@ -81,24 +81,24 @@ const Quran = () => {
 
     if (newTotalPages > 0 && newTotalPages % TOTAL_QURAN_PAGES === 0) {
       newKhatams++;
-      toast.success('SubhanAllah! Khatam completed! 🎉', {
+      toast.success('SubhanAllah! Khatam completed', {
         description: `+${BARAKAH_REWARDS.QURAN_KHATAM} Barakah Points`
       });
       addBarakahPoints(BARAKAH_REWARDS.QURAN_KHATAM);
     } else {
       addBarakahPoints(BARAKAH_REWARDS.QURAN_PAGE);
       if (newTotalPages % PAGES_PER_JUZ === 0) {
-        toast.success(`Juz ${newCurrentJuz - 1} completed! 📖`, {
+        toast.success(`Juz ${newCurrentJuz - 1} completed`, {
           description: `+${BARAKAH_REWARDS.QURAN_JUZ} Barakah Points`
         });
         addBarakahPoints(BARAKAH_REWARDS.QURAN_JUZ);
       } else {
-        toast.success(`+${BARAKAH_REWARDS.QURAN_PAGE} Barakah Points ✨`);
+        toast.success(`+${BARAKAH_REWARDS.QURAN_PAGE} Barakah Points`);
       }
     }
 
     if (newTodayPages === progress.dailyGoal) {
-      toast.success('Daily goal achieved! MashAllah! 🌟');
+      toast.success('Daily goal achieved! MashAllah');
     }
 
     saveProgress({
@@ -137,7 +137,7 @@ const Quran = () => {
       newHifdhJuz = progress.hifdhJuz.filter(j => j !== juz);
     } else {
       newHifdhJuz = [...progress.hifdhJuz, juz];
-      toast.success(`Juz ${juz} marked as memorized! 🌟`, {
+      toast.success(`Juz ${juz} marked as memorized`, {
         description: `+${BARAKAH_REWARDS.QURAN_JUZ} Barakah Points`
       });
       addBarakahPoints(BARAKAH_REWARDS.QURAN_JUZ);
@@ -158,7 +158,7 @@ const Quran = () => {
       newReadSurahs = progress.readSurahs.filter(s => s !== surahNumber);
     } else {
       newReadSurahs = [...progress.readSurahs, surahNumber];
-      toast.success(`Surah marked as read! 📖`, {
+      toast.success(`Surah marked as read`, {
         description: `+${BARAKAH_REWARDS.QURAN_PAGE} Barakah Points`
       });
       addBarakahPoints(BARAKAH_REWARDS.QURAN_PAGE);

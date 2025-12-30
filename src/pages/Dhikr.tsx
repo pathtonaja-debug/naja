@@ -102,7 +102,7 @@ const Dhikr = () => {
       setTotalToday(newTotal);
       localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
       
-      toast.success(`MashAllah! ${customTarget} completed! +${points} Barakah Points ✨`);
+      toast.success(`MashAllah! ${customTarget} completed. +${points} Barakah Points`);
       
       // Auto-reset after animation
       setTimeout(() => {

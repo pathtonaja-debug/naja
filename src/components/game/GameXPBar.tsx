@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Flame, Star, Trophy, Zap } from 'lucide-react';
-import { getXPProgressInLevel } from '@/services/gamification';
+import { getBarakahProgressInLevel } from '@/services/localStore';
 import { cn } from '@/lib/utils';
 
 interface GameXPBarProps {
@@ -11,7 +11,7 @@ interface GameXPBarProps {
 }
 
 export const GameXPBar = ({ xp, level, streak, compact = false }: GameXPBarProps) => {
-  const progress = getXPProgressInLevel(xp);
+  const progress = getBarakahProgressInLevel(xp);
   
   const levelTitles: Record<number, string> = {
     1: "Seeker",
@@ -46,7 +46,7 @@ export const GameXPBar = ({ xp, level, streak, compact = false }: GameXPBarProps
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-foreground">{title}</span>
-            <span className="text-xs text-muted-foreground">{progress.current}/{progress.required} XP</span>
+            <span className="text-xs text-muted-foreground">{progress.current}/{progress.required} BP</span>
           </div>
           <div className="h-2 bg-muted/50 rounded-full overflow-hidden mt-1">
             <motion.div
@@ -103,11 +103,11 @@ export const GameXPBar = ({ xp, level, streak, compact = false }: GameXPBarProps
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" />
-              <span className="font-bold text-primary">{xp.toLocaleString()} XP</span>
+              <span className="font-bold text-primary">{xp.toLocaleString()} BP</span>
             </div>
           </div>
 
-          {/* XP Progress Bar */}
+          {/* Progress Bar */}
           <div className="h-3 bg-muted/50 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -123,7 +123,7 @@ export const GameXPBar = ({ xp, level, streak, compact = false }: GameXPBarProps
             </motion.div>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {progress.current}/{progress.required} XP to Level {level + 1}
+            {progress.current}/{progress.required} BP to Level {level + 1}
           </p>
         </div>
       </div>
@@ -152,7 +152,7 @@ export const GameXPBar = ({ xp, level, streak, compact = false }: GameXPBarProps
           </div>
           <div>
             <p className="font-bold text-foreground">{xp.toLocaleString()}</p>
-            <p className="text-[10px] text-muted-foreground">Total XP</p>
+            <p className="text-[10px] text-muted-foreground">Total BP</p>
           </div>
         </motion.div>
 

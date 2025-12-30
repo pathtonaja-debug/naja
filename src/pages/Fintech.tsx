@@ -3,14 +3,12 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
 import { FintechEducationModule } from '@/components/game/FintechEducationModule';
-import { useGamification } from '@/hooks/useGamification';
 
 const Fintech = () => {
   const navigate = useNavigate();
-  const { refetch } = useGamification();
 
   const handleXPGained = (amount: number) => {
-    refetch();
+    // Points are awarded locally via addBarakahPoints in the module
   };
 
   return (
