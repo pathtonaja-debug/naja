@@ -104,7 +104,7 @@ export interface AppVerse {
   arabicText: string;
   transliteration: string;
   translationText: string;
-  tafsirText?: string;
+  translationHtml?: string;
   pageNumber: number;
   juzNumber: number;
 }
@@ -189,6 +189,34 @@ async function fetchWithRetry(
       error instanceof Error ? error.message : 'Network error occurred'
     );
   }
+}
+
+// Helper to strip HTML tags for plain text fallback
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** 
+ * Removes inline footnote numbers like "Allah,1" "Merciful.2" from plain text.
+ * We render footnotes via <sup> in UI instead.
+ */
+function removeInlineFootnoteDigits(text: string): string {
+  return text
+    // Remove patterns like ",1" ".2" at end of words while keeping punctuation
+    .replace(/([,.\u061B\u061F!?])\s*(\d{1,2})\b/g, '$1')
+    // Remove standalone short digits that look like footnotes
+    .replace(/\s+(\d{1,2})\s+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // API Functions
@@ -285,15 +313,17 @@ export async function getVersesByChapter(
         .join(' ');
     }
 
-    // Get translation text
-    const translationText = v.translations?.[0]?.text || '';
+    // Get translation - preserve HTML for rich rendering
+    const translationHtmlRaw = v.translations?.[0]?.text || '';
+    const translationPlain = removeInlineFootnoteDigits(stripHtml(translationHtmlRaw));
 
     return {
       verseKey: v.verse_key,
       verseNumber: v.verse_number,
       arabicText: v.text_uthmani,
       transliteration,
-      translationText: cleanHtmlTags(translationText),
+      translationText: translationPlain,
+      translationHtml: translationHtmlRaw,
       pageNumber: v.page_number,
       juzNumber: v.juz_number,
     };
@@ -315,11 +345,8 @@ export async function getVerseTafsir(
   );
   const data = await response.json();
   
-  if (data.tafsir?.text) {
-    return cleanHtmlTags(data.tafsir.text);
-  }
-  
-  return '';
+  // Return raw HTML for rich rendering
+  return data.tafsir?.text || '';
 }
 
 // Utility to resolve resource IDs
@@ -353,17 +380,4 @@ export async function resolveTafsirId(slug: string): Promise<number> {
   }
 
   return KNOWN_TAFSIR_IDS.ibn_kathir_en;
-}
-
-// Helper to strip HTML tags from text
-function cleanHtmlTags(text: string): string {
-  return text
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .trim();
 }

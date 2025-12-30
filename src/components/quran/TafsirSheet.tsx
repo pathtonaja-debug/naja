@@ -13,6 +13,27 @@ interface TafsirSheetProps {
 }
 
 const DEFAULT_TAFSIR_ID = 169; // Ibn Kathir (English)
+const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
+
+function sanitizeTafsirHtml(html: string): string {
+  if (!html) return '';
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+
+  const walk = (node: Element) => {
+    [...node.children].forEach((child) => {
+      if (!ALLOWED_TAGS.has(child.tagName)) {
+        const fragment = document.createDocumentFragment();
+        while (child.firstChild) fragment.appendChild(child.firstChild);
+        child.replaceWith(fragment);
+      } else {
+        walk(child);
+      }
+    });
+  };
+
+  walk(doc.body);
+  return doc.body.innerHTML;
+}
 
 export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_TAFSIR_ID }: TafsirSheetProps) {
   const [tafsirText, setTafsirText] = useState<string | null>(null);
@@ -94,16 +115,19 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="prose prose-sm max-w-none text-foreground/90"
-            >
-              {tafsirText.split('\n').map((paragraph, index) => (
-                paragraph.trim() && (
-                  <p key={index} className="mb-3 leading-relaxed">
-                    {paragraph}
-                  </p>
-                )
-              ))}
-            </motion.div>
+              className="prose prose-sm max-w-none text-foreground/90 leading-relaxed
+                [&_p]:mb-4 [&_p]:last:mb-0
+                [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:mb-3 [&_h1]:mt-6 [&_h1]:first:mt-0
+                [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-5
+                [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-4
+                [&_h4]:text-sm [&_h4]:font-medium [&_h4]:mb-2 [&_h4]:mt-3
+                [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-3
+                [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-3
+                [&_li]:mb-1.5 [&_li]:leading-relaxed
+                [&_strong]:font-semibold [&_strong]:text-foreground
+                [&_em]:italic"
+              dangerouslySetInnerHTML={{ __html: sanitizeTafsirHtml(tafsirText) }}
+            />
           )}
 
           {!loading && !error && !tafsirText && (
