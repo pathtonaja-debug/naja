@@ -142,7 +142,7 @@ const Learn = () => {
         if (moduleIndex < updatedModules.length - 1 && !updatedModules[moduleIndex + 1].unlocked) {
           updatedModules[moduleIndex + 1].unlocked = true;
           setShowUnlockAnimation(updatedModules[moduleIndex + 1].id);
-          toast.success(`New module unlocked: ${updatedModules[moduleIndex + 1].title}! 🎉`);
+          toast.success(`New module unlocked: ${updatedModules[moduleIndex + 1].title}`);
           setTimeout(() => setShowUnlockAnimation(null), 2000);
         }
       }
@@ -150,7 +150,7 @@ const Learn = () => {
 
     saveProgress(updatedModules);
     addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
-    toast.success(`+${BARAKAH_REWARDS.LESSON_COMPLETED} Barakah Points ✨`);
+    toast.success(`+${BARAKAH_REWARDS.LESSON_COMPLETED} Barakah Points`);
     setSelectedLesson(null);
   };
 

@@ -128,9 +128,9 @@ const Practices = () => {
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
       if (leveledUp) {
-        toast.success(`Level Up! You're now Level ${newLevel}! 🎉`);
+        toast.success(`Level Up! You're now Level ${newLevel}`);
       } else {
-        toast.success(`+${BARAKAH_REWARDS.PRAYER_COMPLETED} Barakah Points ✨`);
+        toast.success(`+${BARAKAH_REWARDS.PRAYER_COMPLETED} Barakah Points`);
       }
     }
   };
@@ -147,7 +147,7 @@ const Practices = () => {
       if (option === 'inCongregation') points = BARAKAH_REWARDS.PRAYER_IN_JAMAAH;
       if (points > 0) {
         addBarakahPoints(points);
-        toast.success(`+${points} Barakah Points ✨`);
+        toast.success(`+${points} Barakah Points`);
       }
     }
   };
@@ -158,7 +158,7 @@ const Practices = () => {
     
     if (newState) {
       addBarakahPoints(BARAKAH_REWARDS.SUNNAH_PRAYER);
-      toast.success(`+${BARAKAH_REWARDS.SUNNAH_PRAYER} Barakah Points ✨`);
+      toast.success(`+${BARAKAH_REWARDS.SUNNAH_PRAYER} Barakah Points`);
     }
   };
 
@@ -173,7 +173,7 @@ const Practices = () => {
     };
     setSadaqahLogs(prev => [newLog, ...prev]);
     addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
-    toast.success(`Sadaqah logged! +${BARAKAH_REWARDS.CHARITY_GIVEN} Barakah Points ✨`);
+    toast.success(`Sadaqah logged. +${BARAKAH_REWARDS.CHARITY_GIVEN} Barakah Points`);
     setExpandedSadaqah(null);
   };
 

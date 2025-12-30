@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDailyQuiz } from '@/hooks/useDailyQuiz';
-import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 
 interface DailyQuizProps {
@@ -17,7 +16,6 @@ interface DailyQuizProps {
 
 export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
   const { quiz, attempt, loading, generating, error, hasCompletedToday, submitQuiz, refetch } = useDailyQuiz();
-  const { addBarakahPoints } = useGuestProfile();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -119,7 +117,7 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
       setSubmitting(true);
       const result = await submitQuiz(selectedAnswers);
       if (result) {
-        addBarakahPoints(result.pointsEarned);
+        // Points are already awarded in submitQuiz - do not double-award
         toast.success(`Quiz completed. +${result.pointsEarned} Barakah Points`);
         onComplete?.(result.pointsEarned);
       }
