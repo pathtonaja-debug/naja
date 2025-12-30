@@ -8,7 +8,8 @@ import {
   ChevronDown,
   ChevronUp,
   StickyNote,
-  X
+  X,
+  Languages
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ interface VerseCardProps {
   chapterName: string;
   onTafsirRequest: (verseKey: string) => void;
   onLastReadSet?: (verseKey: string, verseNumber: number) => void;
+  showWordByWord?: boolean;
 }
 
 const HIFDH_STATUS_CONFIG: Record<HifdhStatus, { label: string; className: string }> = {
@@ -191,7 +193,8 @@ export function VerseCard({
   chapterId,
   chapterName,
   onTafsirRequest,
-  onLastReadSet
+  onLastReadSet,
+  showWordByWord = false
 }: VerseCardProps) {
   const [showTransliteration, setShowTransliteration] = useState(false);
   const [hifdhStatus, setHifdhStatus] = useState<HifdhStatus>(() => getVerseHifdhStatus(verse.verseKey));
@@ -239,18 +242,32 @@ export function VerseCard({
 
   const translationNodes = useTranslationNodes(verse, onFootnotePress);
 
+  // Parse word-by-word from verse data (words come from API)
+  const wordByWordData = useMemo(() => {
+    if (!showWordByWord || !verse.arabicText) return null;
+    
+    // Split Arabic text into words for display
+    const arabicWords = verse.arabicText.split(/\s+/).filter(Boolean);
+    const translitWords = verse.transliteration?.split(/\s+/).filter(Boolean) || [];
+    
+    return arabicWords.map((word, idx) => ({
+      arabic: word,
+      transliteration: translitWords[idx] || '',
+    }));
+  }, [showWordByWord, verse.arabicText, verse.transliteration]);
+
   return (
     <>
       <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="p-4 sm:p-6 space-y-4">
-          {/* Top Row */}
-          <div className="flex items-start justify-between gap-3">
+        <div className="p-4 space-y-3">
+          {/* Top Row: Verse number + Page/Juz info + icons */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/10 text-primary font-semibold text-sm">
                 {verse.verseNumber}
               </span>
               <div>
-                <p className="font-medium text-foreground">{verse.verseKey}</p>
+                <p className="font-medium text-sm text-foreground">{verse.verseKey}</p>
                 <p className="text-xs text-muted-foreground">
                   Page {verse.pageNumber} · Juz {verse.juzNumber}
                 </p>
@@ -278,20 +295,42 @@ export function VerseCard({
             </div>
           </div>
 
-          {/* Arabic (always visible, RTL, prominent) */}
-          <div className="py-4 border-y border-border/30">
-            <p
-              className="text-2xl sm:text-3xl leading-loose text-foreground font-arabic text-right"
-              dir="rtl"
-              lang="ar"
-            >
-              {verse.arabicText}
-            </p>
-          </div>
+          {/* Separator */}
+          <div className="border-t border-border/30" />
+
+          {/* Arabic Text - Always visible, RTL, prominent */}
+          {showWordByWord && wordByWordData ? (
+            <div className="py-3" dir="rtl">
+              <div className="flex flex-wrap gap-3 justify-end">
+                {wordByWordData.map((word, idx) => (
+                  <div key={idx} className="text-center">
+                    <p className="font-arabic text-2xl sm:text-3xl text-foreground leading-loose mb-1">
+                      {word.arabic}
+                    </p>
+                    {word.transliteration && (
+                      <p className="text-xs text-muted-foreground italic">
+                        {word.transliteration}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="py-3">
+              <p
+                className="font-arabic text-2xl sm:text-3xl leading-[2.2] text-foreground text-right"
+                dir="rtl"
+                lang="ar"
+              >
+                {verse.arabicText}
+              </p>
+            </div>
+          )}
 
           {/* Transliteration (collapsible) */}
-          {verse.transliteration && (
-            <div className="space-y-2">
+          {verse.transliteration && !showWordByWord && (
+            <div>
               <button
                 onClick={() => setShowTransliteration(!showTransliteration)}
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -308,7 +347,7 @@ export function VerseCard({
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-sm text-muted-foreground italic leading-relaxed pl-2 border-l-2 border-primary/30">
+                    <p className="text-sm text-muted-foreground italic leading-relaxed mt-2 pl-2 border-l-2 border-primary/30">
                       {verse.transliteration}
                     </p>
                   </motion.div>
@@ -317,32 +356,42 @@ export function VerseCard({
             </div>
           )}
 
-          {/* Translation (structured, clean) */}
-          <div className="text-sm sm:text-base text-foreground/90 leading-relaxed max-w-prose">
+          {/* Translation */}
+          <div className="text-sm text-foreground/90 leading-relaxed">
             {translationNodes}
           </div>
 
-          {/* Actions */}
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleHifdhCycle}
-              className={cn("text-xs", hifdhConfig.className)}
-            >
-              <Brain className="w-3 h-3 mr-1" />
-              {hifdhConfig.label}
-            </Button>
+          {/* Separator */}
+          <div className="border-t border-border/30" />
 
-            <Button variant="ghost" size="sm" onClick={() => onTafsirRequest(verse.verseKey)} className="text-xs">
-              <BookOpen className="w-3 h-3 mr-1" />
+          {/* Actions - Pill shaped buttons on same line */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleHifdhCycle}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+                hifdhConfig.className
+              )}
+            >
+              <Brain className="w-3.5 h-3.5" />
+              {hifdhConfig.label}
+            </button>
+
+            <button
+              onClick={() => onTafsirRequest(verse.verseKey)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
               Tafsir
-            </Button>
+            </button>
 
             {onLastReadSet && (
-              <Button variant="ghost" size="sm" onClick={handleSetLastRead} className="text-xs text-muted-foreground">
+              <button
+                onClick={handleSetLastRead}
+                className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+              >
                 Set as current
-              </Button>
+              </button>
             )}
           </div>
         </div>

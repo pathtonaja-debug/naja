@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Info, Loader2, X } from 'lucide-react';
+import { ChevronLeft, Info, Loader2, X, Languages } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -107,6 +107,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [wordByWordEnabled, setWordByWordEnabled] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -221,17 +222,25 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => setAboutOpen(true)}>
-            <Info className="w-4 h-4 mr-2" />
-            About
-          </Button>
+          {/* Word-by-word toggle */}
+          <button
+            onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              wordByWordEnabled 
+                ? 'bg-primary/20 text-primary' 
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            <Languages className="w-3.5 h-3.5" />
+            Word-by-word
+          </button>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         {/* Surah Header Card */}
         <Card className="p-6 text-center bg-gradient-to-b from-primary/5 to-transparent border-primary/20">
-          <p className="text-4xl font-arabic text-foreground mb-2" dir="rtl" lang="ar">
+          <p className="font-arabic text-4xl text-foreground mb-2" dir="rtl" lang="ar">
             {chapter.nameArabic}
           </p>
           <h2 className="text-xl font-semibold text-foreground mb-1">
@@ -241,7 +250,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
             {chapter.translatedName}
           </p>
 
-          <div className="flex justify-center gap-8 text-sm">
+          <div className="flex justify-center gap-8 text-sm mb-4">
             <div>
               <p className="text-muted-foreground">Verses</p>
               <p className="font-semibold text-foreground">{chapter.versesCount}</p>
@@ -251,6 +260,15 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
               <p className="font-semibold text-foreground">{revelationLabel}</p>
             </div>
           </div>
+
+          {/* About button - pill shaped at bottom of card */}
+          <button
+            onClick={() => setAboutOpen(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+          >
+            <Info className="w-4 h-4" />
+            About this Surah
+          </button>
         </Card>
 
         {/* Loading */}
@@ -286,6 +304,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
                 chapterName={chapter.nameSimple}
                 onTafsirRequest={handleTafsirRequest}
                 onLastReadSet={handleSetLastRead}
+                showWordByWord={wordByWordEnabled}
               />
             ))}
 
