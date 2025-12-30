@@ -237,7 +237,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-3xl mx-auto px-2 sm:px-4 py-4 space-y-3">
         {/* Surah Header Card */}
         <Card className="p-6 text-center bg-gradient-to-b from-primary/5 to-transparent border-primary/20">
           <p className="font-arabic text-4xl text-foreground mb-2" dir="rtl" lang="ar">

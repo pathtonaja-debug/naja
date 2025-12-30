@@ -242,24 +242,37 @@ export function VerseCard({
 
   const translationNodes = useTranslationNodes(verse, onFootnotePress);
 
-  // Parse word-by-word from verse data (words come from API)
+  // Use actual word data from API for word-by-word
   const wordByWordData = useMemo(() => {
-    if (!showWordByWord || !verse.arabicText) return null;
+    if (!showWordByWord) return null;
     
-    // Split Arabic text into words for display
+    // Use actual words from API if available
+    if (verse.words && verse.words.length > 0) {
+      return verse.words
+        .filter((w) => w.text_uthmani) // Only include words with Arabic text
+        .map((w) => ({
+          arabic: w.text_uthmani,
+          transliteration: w.transliteration?.text || '',
+          translation: w.translation?.text || '',
+        }));
+    }
+    
+    // Fallback: split Arabic text and transliteration
+    if (!verse.arabicText) return null;
     const arabicWords = verse.arabicText.split(/\s+/).filter(Boolean);
     const translitWords = verse.transliteration?.split(/\s+/).filter(Boolean) || [];
     
     return arabicWords.map((word, idx) => ({
       arabic: word,
       transliteration: translitWords[idx] || '',
+      translation: '',
     }));
-  }, [showWordByWord, verse.arabicText, verse.transliteration]);
+  }, [showWordByWord, verse.words, verse.arabicText, verse.transliteration]);
 
   return (
     <>
-      <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="p-4 space-y-3">
+      <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm mx-0">
+        <div className="p-3 sm:p-4 space-y-3">
           {/* Top Row: Verse number + Page/Juz info + icons */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -301,14 +314,19 @@ export function VerseCard({
           {/* Arabic Text - Always visible, RTL, prominent */}
           {showWordByWord && wordByWordData ? (
             <div className="py-3" dir="rtl">
-              <div className="flex flex-wrap gap-3 justify-end">
+              <div className="flex flex-wrap gap-x-4 gap-y-3 justify-end">
                 {wordByWordData.map((word, idx) => (
-                  <div key={idx} className="text-center">
-                    <p className="font-arabic text-2xl sm:text-3xl text-foreground leading-loose mb-1">
+                  <div key={idx} className="text-center min-w-0">
+                    <p className="font-arabic text-xl sm:text-2xl text-foreground leading-relaxed mb-0.5">
                       {word.arabic}
                     </p>
+                    {word.translation && (
+                      <p className="text-[10px] text-primary font-medium">
+                        {word.translation}
+                      </p>
+                    )}
                     {word.transliteration && (
-                      <p className="text-xs text-muted-foreground italic">
+                      <p className="text-[10px] text-muted-foreground italic">
                         {word.transliteration}
                       </p>
                     )}
@@ -316,7 +334,7 @@ export function VerseCard({
                 ))}
               </div>
             </div>
-          ) : (
+          ) : verse.arabicText ? (
             <div className="py-3">
               <p
                 className="font-arabic text-2xl sm:text-3xl leading-[2.2] text-foreground text-right"
@@ -326,7 +344,7 @@ export function VerseCard({
                 {verse.arabicText}
               </p>
             </div>
-          )}
+          ) : null}
 
           {/* Transliteration (collapsible) */}
           {verse.transliteration && !showWordByWord && (
@@ -365,30 +383,30 @@ export function VerseCard({
           <div className="border-t border-border/30" />
 
           {/* Actions - Pill shaped buttons on same line */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleHifdhCycle}
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+                "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
                 hifdhConfig.className
               )}
             >
-              <Brain className="w-3.5 h-3.5" />
+              <Brain className="w-3 h-3" />
               {hifdhConfig.label}
             </button>
 
             <button
               onClick={() => onTafsirRequest(verse.verseKey)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3 h-3" />
               Tafsir
             </button>
 
             {onLastReadSet && (
               <button
                 onClick={handleSetLastRead}
-                className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
               >
                 Set as current
               </button>

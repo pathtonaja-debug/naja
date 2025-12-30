@@ -188,16 +188,21 @@ const Quran = () => {
             {/* Continue Reading */}
             {lastRead && (
               <Card 
-                className="p-4 cursor-pointer hover:shadow-md transition-all"
-                onClick={() => handleSurahSelect({ 
-                  id: lastRead.chapterId, 
-                  nameSimple: lastRead.chapterName || `Surah ${lastRead.chapterId}`,
-                  nameArabic: '',
-                  translatedName: '',
-                  revelationPlace: 'makkah',
-                  versesCount: 0,
-                  pages: []
-                })}
+                className="p-4 cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
+                onClick={() => {
+                  // Navigate to the surah reader with the chapter
+                  handleSurahSelect({ 
+                    id: lastRead.chapterId, 
+                    nameSimple: lastRead.chapterName || `Surah ${lastRead.chapterId}`,
+                    nameArabic: '',
+                    translatedName: '',
+                    revelationPlace: 'makkah',
+                    versesCount: 0,
+                    pages: []
+                  });
+                  // Switch to surahs tab to show the reader
+                  setActiveTab('surahs');
+                }}
               >
                 <p className="text-xs text-muted-foreground mb-1">Continue Reading</p>
                 <p className="font-medium">{lastRead.chapterName || `Surah ${lastRead.chapterId}`}</p>

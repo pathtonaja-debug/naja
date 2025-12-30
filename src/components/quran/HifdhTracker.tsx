@@ -127,30 +127,25 @@ export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
               onClick={() => handleMarkRange('memorizing')}
-              className="text-warn border-warn/30"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-warn border border-warn/30 hover:bg-warn/10 transition-colors"
             >
               Mark All Memorizing
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+            </button>
+            <button
               onClick={() => handleMarkRange('solid')}
-              className="text-success border-success/30"
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-success border border-success/30 hover:bg-success/10 transition-colors"
             >
               Mark All Solid
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+            </button>
+            <button
               onClick={() => handleMarkRange('none')}
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground border border-border hover:bg-muted transition-colors"
             >
               Clear All
-            </Button>
+            </button>
           </div>
         </Card>
 
