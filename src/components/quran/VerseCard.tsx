@@ -271,9 +271,11 @@ export function VerseCard({
 
   return (
     <>
-      <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm mx-0">
+      <Card 
+        id={`verse-${verse.verseKey}`}
+        className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm mx-0"
+      >
         <div className="p-3 sm:p-4 space-y-3">
-          {/* Top Row: Verse number + Page/Juz info + icons */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/10 text-primary font-semibold text-sm">
