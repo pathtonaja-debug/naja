@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Heart, Search, ChevronLeft, X, 
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { 
   getDuas, addDua as addLocalDua, updateDua as updateLocalDua, deleteDua as deleteLocalDua,
   getDuaFolders, addDuaFolder as addLocalDuaFolder, deleteDuaFolder as deleteLocalDuaFolder,

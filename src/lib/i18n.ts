@@ -3,6 +3,16 @@ import { initReactI18next } from 'react-i18next';
 
 const STORAGE_KEY = 'naja_language';
 
+export function getCurrentLanguage(): 'en' | 'fr' {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'fr') return 'fr';
+  } catch {
+    // ignore
+  }
+  return 'en';
+}
+
 const resources = {
   en: {
     translation: {
@@ -508,10 +518,6 @@ i18n
 export const changeLanguage = (lang: string) => {
   localStorage.setItem(STORAGE_KEY, lang);
   i18n.changeLanguage(lang);
-};
-
-export const getCurrentLanguage = (): string => {
-  return i18n.language || 'en';
 };
 
 export default i18n;
