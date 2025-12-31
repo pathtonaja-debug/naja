@@ -1,36 +1,22 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Home, BookHeart, GraduationCap, User, Plus,
-  Heart, BookOpen, PenLine, CalendarDays
-} from "lucide-react";
+import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { NAV_ITEMS, QUICK_ACTIONS, isPathActive } from "@/lib/navigation";
 
 const BottomNav = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [quickActionOpen, setQuickActionOpen] = useState(false);
 
-  const mainTabs = [
-    { icon: Home, path: "/dashboard", label: "Home" },
-    { icon: BookHeart, path: "/practices", label: "Practices" },
-  ];
+  const mainTabs = NAV_ITEMS.slice(0, 2);
+  const secondaryTabs = NAV_ITEMS.slice(2, 4);
 
-  const secondaryTabs = [
-    { icon: GraduationCap, path: "/learn", label: "Learn" },
-    { icon: User, path: "/profile", label: "Profile" },
-  ];
-
-  const quickActions = [
-    { icon: Heart, path: "/practices", label: "Dhikr", hash: "#dhikr" },
-    { icon: BookOpen, path: "/practices", label: "Dua Builder", hash: "#dua" },
-    { icon: PenLine, path: "/journal", label: "Journal" },
-    { icon: CalendarDays, path: "/dates", label: "Dates" },
-  ];
-
-  const handleQuickAction = (action: typeof quickActions[0]) => {
+  const handleQuickAction = (action: typeof QUICK_ACTIONS[0]) => {
     setQuickActionOpen(false);
     if (action.hash) {
       navigate(action.path + action.hash);
@@ -39,11 +25,13 @@ const BottomNav = () => {
     }
   };
 
-  const NavButton = ({ icon: Icon, path, label }: { icon: typeof Home; path: string; label: string }) => {
-    const isActive = location.pathname === path;
+  const NavButton = ({ item }: { item: typeof NAV_ITEMS[0] }) => {
+    const Icon = item.icon;
+    const isActive = isPathActive(location.pathname, item.path);
+    
     return (
       <button
-        onClick={() => navigate(path)}
+        onClick={() => navigate(item.path)}
         className="relative flex flex-col items-center gap-0.5 py-2 px-4 rounded-xl transition-all"
       >
         {isActive && (
@@ -65,7 +53,7 @@ const BottomNav = () => {
             isActive ? "text-primary" : "text-muted-foreground"
           )}
         >
-          {label}
+          {t(item.labelKey)}
         </span>
       </button>
     );
@@ -78,7 +66,7 @@ const BottomNav = () => {
           <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl px-2 py-2 flex items-center justify-around max-w-md mx-auto shadow-lg">
             {/* Left tabs */}
             {mainTabs.map((tab) => (
-              <NavButton key={tab.path} {...tab} />
+              <NavButton key={tab.id} item={tab} />
             ))}
 
             {/* Center quick action button */}
@@ -98,7 +86,7 @@ const BottomNav = () => {
 
             {/* Right tabs */}
             {secondaryTabs.map((tab) => (
-              <NavButton key={tab.path} {...tab} />
+              <NavButton key={tab.id} item={tab} />
             ))}
           </div>
         </div>
@@ -108,13 +96,13 @@ const BottomNav = () => {
       <Sheet open={quickActionOpen} onOpenChange={setQuickActionOpen}>
         <SheetContent side="bottom" className="rounded-t-3xl pb-safe">
           <SheetHeader className="mb-4">
-            <SheetTitle className="text-lg">Quick Actions</SheetTitle>
+            <SheetTitle className="text-lg">{t('quickActions.title')}</SheetTitle>
           </SheetHeader>
           
           <div className="grid grid-cols-2 gap-3 pb-4">
-            {quickActions.map((action, index) => (
+            {QUICK_ACTIONS.map((action, index) => (
               <motion.button
-                key={action.label}
+                key={action.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -125,7 +113,7 @@ const BottomNav = () => {
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                   <action.icon className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-medium text-foreground">{action.label}</span>
+                <span className="text-sm font-medium text-foreground">{t(action.labelKey)}</span>
               </motion.button>
             ))}
           </div>

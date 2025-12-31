@@ -190,8 +190,8 @@ const Quran = () => {
               <Card 
                 className="p-4 cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
                 onClick={() => {
-                  // Navigate to the surah reader with the chapter
-                  handleSurahSelect({ 
+                  // Navigate to the surah reader with the chapter and scroll target
+                  const chapterData: AppChapter = { 
                     id: lastRead.chapterId, 
                     nameSimple: lastRead.chapterName || `Surah ${lastRead.chapterId}`,
                     nameArabic: '',
@@ -199,8 +199,10 @@ const Quran = () => {
                     revelationPlace: 'makkah',
                     versesCount: 0,
                     pages: []
-                  });
-                  // Switch to surahs tab to show the reader
+                  };
+                  setSelectedChapter(chapterData);
+                  // Store scroll target in sessionStorage for SurahReader to pick up
+                  sessionStorage.setItem('naja_scroll_to_verse', lastRead.verseKey);
                   setActiveTab('surahs');
                 }}
               >
