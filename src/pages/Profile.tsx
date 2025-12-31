@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Moon, Sun, Trash2, Trophy, TrendingUp, 
-  Star, Flame, Users
+  Star, Flame, Users, Globe
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState } from "react";
@@ -17,27 +17,36 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useGuestProfile, SPIRITUAL_LEVELS } from "@/hooks/useGuestProfile";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { profile, updateDisplayName, resetData } = useGuestProfile();
   
   const [name, setName] = useState(profile.displayName);
   const [saving, setSaving] = useState(false);
+  const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
 
   const handleSave = () => {
     setSaving(true);
     updateDisplayName(name.trim() || 'Traveler');
-    toast.success("Name updated!");
+    toast.success(t('toast.saved'));
     setSaving(false);
   };
 
   const handleReset = () => {
-    if (confirm("Are you sure you want to reset all your data? This cannot be undone.")) {
+    if (confirm(t('profile.resetConfirm'))) {
       resetData();
-      toast.success("Data reset successfully");
+      toast.success(t('toast.deleted'));
     }
+  };
+
+  const handleLanguageChange = (lang: 'en' | 'fr') => {
+    changeLanguage(lang);
+    setCurrentLang(lang);
   };
 
   const levelTitle = SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker';
@@ -49,7 +58,7 @@ const Profile = () => {
       transition={{ duration: 0.3 }}
       className="min-h-screen bg-pastel-cream pb-24"
     >
-      <TopBar title="Profile" />
+      <TopBar title={t('profile.title')} />
 
       {/* User Card */}
       <motion.div 
@@ -70,10 +79,10 @@ const Profile = () => {
               <p className="text-sm text-foreground/60">{levelTitle}</p>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-xs text-foreground/50 flex items-center gap-1">
-                  <Star className="w-3 h-3 text-pastel-yellow" /> Level {profile.level}
+                  <Star className="w-3 h-3 text-pastel-yellow" /> {t('dashboard.level')} {profile.level}
                 </span>
                 <span className="text-xs text-foreground/50 flex items-center gap-1">
-                  <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} day streak
+                  <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} {t('profile.days')}
                 </span>
               </div>
             </div>
@@ -88,17 +97,17 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
       >
-        <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Your Journey</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.progress')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <Card className="p-4 bg-white border-border/30">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-lg bg-pastel-lavender/50 flex items-center justify-center">
                 <Star className="w-4 h-4 text-pastel-lavender" />
               </div>
-              <span className="text-xs text-foreground/60">Total Points</span>
+              <span className="text-xs text-foreground/60">{t('profile.totalPoints')}</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{profile.barakahPoints}</p>
-            <p className="text-[10px] text-foreground/40">Barakah Points</p>
+            <p className="text-[10px] text-foreground/40">{t('dashboard.barakahPoints')}</p>
           </Card>
           
           <Card className="p-4 bg-white border-border/30">
@@ -106,15 +115,15 @@ const Profile = () => {
               <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
                 <Flame className="w-4 h-4 text-orange-500" />
               </div>
-              <span className="text-xs text-foreground/60">Best Streak</span>
+              <span className="text-xs text-foreground/60">{t('profile.bestStreak')}</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{profile.hasanatStreak}</p>
-            <p className="text-[10px] text-foreground/40">Days in a row</p>
+            <p className="text-[10px] text-foreground/40">{t('profile.days')}</p>
           </Card>
         </div>
         
         <p className="text-[10px] text-foreground/40 mt-2 text-center italic px-4">
-          Your niyyah is what matters — points are just a tool to help you stay consistent.
+          {t('dashboard.niyyahDisclaimer')}
         </p>
       </motion.div>
 
@@ -127,20 +136,20 @@ const Profile = () => {
       >
         <Card className="bg-white border-border/30">
           <ListCell
-            title="Achievements"
-            subtitle="View your badges and milestones"
+            title={t('profile.achievements')}
+            subtitle={t('learn.badgesEarned')}
             leftElement={<Trophy className="w-4 h-4 text-pastel-yellow" />}
             onPress={() => navigate('/achievements')}
           />
           <ListCell
-            title="Progress & History"
-            subtitle="See your weekly stats"
+            title={t('profile.progress')}
+            subtitle={t('learn.viewAll')}
             leftElement={<TrendingUp className="w-4 h-4 text-pastel-green" />}
             onPress={() => navigate('/progress')}
           />
           <ListCell
-            title="Leaderboard"
-            subtitle="See how you rank this week"
+            title={t('profile.leaderboard')}
+            subtitle={t('profile.achievements')}
             leftElement={<Users className="w-4 h-4 text-pastel-blue" />}
             onPress={() => navigate('/leaderboard')}
           />
@@ -154,25 +163,56 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Display Name</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.displayName')}</h2>
           <Card className="p-3 space-y-3 bg-white border-border/30">
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-xs text-foreground/60">Name</Label>
+              <Label htmlFor="name" className="text-xs text-foreground/60">{t('profile.displayName')}</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
+                placeholder={t('profile.displayName')}
                 className="h-10 text-sm bg-pastel-cream/50 border-border/30"
               />
             </div>
             <Button onClick={handleSave} className="w-full h-10 text-sm" disabled={saving}>
-              Save Name
+              {t('common.save')}
             </Button>
           </Card>
           <p className="text-[10px] text-foreground/40 mt-1.5 px-1">
-            This name is stored locally on your device and shown on the leaderboard.
+            {t('profile.anonymous')}
           </p>
+        </motion.div>
+
+        {/* Language Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+        >
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.language')}</h2>
+          <Card className="bg-white border-border/30">
+            <div className="p-3 flex gap-2">
+              <Button
+                variant={currentLang === 'en' ? 'default' : 'outline'}
+                size="sm"
+                className="flex-1"
+                onClick={() => handleLanguageChange('en')}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                {t('profile.english')}
+              </Button>
+              <Button
+                variant={currentLang === 'fr' ? 'default' : 'outline'}
+                size="sm"
+                className="flex-1"
+                onClick={() => handleLanguageChange('fr')}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                {t('profile.french')}
+              </Button>
+            </div>
+          </Card>
         </motion.div>
 
         {/* Preferences */}
@@ -181,11 +221,11 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Preferences</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.preferences')}</h2>
           <Card className="bg-white border-border/30">
             <ListCell
-              title="Dark Mode"
-              subtitle="Switch between light and dark theme"
+              title={t('profile.darkMode')}
+              subtitle={t('profile.preferences')}
               leftElement={theme === "dark" ? <Moon className="w-4 h-4 text-foreground" /> : <Sun className="w-4 h-4 text-foreground" />}
               rightElement={<Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />}
               showChevron={false}
@@ -199,11 +239,11 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">Data</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.dataManagement')}</h2>
           <Card className="bg-white border-border/30">
             <ListCell
-              title="Reset All Data"
-              subtitle="Clear all progress and start fresh"
+              title={t('profile.resetData')}
+              subtitle={t('profile.resetConfirm').slice(0, 40) + '...'}
               leftElement={<Trash2 className="w-4 h-4 text-destructive" />}
               onPress={handleReset}
               className="text-destructive"
@@ -219,8 +259,9 @@ const Profile = () => {
           className="p-4 rounded-2xl bg-pastel-blue/20 border border-pastel-blue/30"
         >
           <p className="text-xs text-foreground/60 text-center">
-            🔒 Your data is stored locally on this device. No account required. 
-            Your ID: <span className="font-mono text-[10px]">{profile.id.slice(0, 8)}...</span>
+            🔒 {t('profile.anonymous')} 
+            <br />
+            {t('profile.deviceId')}: <span className="font-mono text-[10px]">{profile.id.slice(0, 8)}...</span>
           </p>
         </motion.div>
       </main>

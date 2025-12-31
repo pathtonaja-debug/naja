@@ -1,167 +1,75 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   Brain, Trophy, BookOpen, ChevronRight, Lock, Star, 
-  Check, Sparkles, X, Award
+  Check, Sparkles, X, Award, AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
 import { LESSON_CONTENT } from '@/data/lessonContent';
-
-interface Lesson {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-}
-
-interface Module {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  lessons: Lesson[];
-  unlocked: boolean;
-  color: string;
-}
-
-const INITIAL_MODULES: Module[] = [
-  { 
-    id: 'basics', 
-    title: 'Islamic Basics', 
-    description: 'Foundation of faith',
-    icon: '🕌',
-    color: 'bg-primary/10 border-primary/20',
-    unlocked: true,
-    lessons: [
-      { id: 'b1', title: 'The Five Pillars', description: 'Core principles of Islam', completed: false },
-      { id: 'b2', title: 'Shahada: Declaration of Faith', description: 'The first pillar', completed: false },
-      { id: 'b3', title: 'Importance of Niyyah', description: 'Intention in worship', completed: false },
-      { id: 'b4', title: 'The Six Articles of Faith', description: 'Iman fundamentals', completed: false },
-      { id: 'b5', title: 'Halal & Haram Basics', description: 'Permissible and forbidden', completed: false },
-    ]
-  },
-  { 
-    id: 'pillars', 
-    title: 'Pillars of Islam', 
-    description: 'The five pillars in depth',
-    icon: '🏛️',
-    color: 'bg-accent/10 border-accent/20',
-    unlocked: true,
-    lessons: [
-      { id: 'p1', title: 'Salah: The Daily Prayers', description: 'How and why we pray', completed: false },
-      { id: 'p2', title: 'Zakah: Purifying Wealth', description: 'Charity obligations', completed: false },
-      { id: 'p3', title: 'Sawm: Fasting in Ramadan', description: 'The blessed month', completed: false },
-      { id: 'p4', title: 'Hajj: The Sacred Pilgrimage', description: 'Journey to Makkah', completed: false },
-      { id: 'p5', title: 'Living the Pillars Daily', description: 'Practical application', completed: false },
-    ]
-  },
-  { 
-    id: 'seerah', 
-    title: 'Life of the Prophet ﷺ', 
-    description: 'The prophetic biography',
-    icon: '📖',
-    color: 'bg-success/10 border-success/20',
-    unlocked: false,
-    lessons: [
-      { id: 's1', title: 'Before the Revelation', description: 'Early life in Makkah', completed: false },
-      { id: 's2', title: 'The First Revelation', description: 'Cave of Hira', completed: false },
-      { id: 's3', title: 'The Early Muslims', description: 'First companions', completed: false },
-      { id: 's4', title: 'The Hijrah', description: 'Migration to Madinah', completed: false },
-      { id: 's5', title: 'Building the Ummah', description: 'Community in Madinah', completed: false },
-      { id: 's6', title: 'The Conquest of Makkah', description: 'Triumphant return', completed: false },
-      { id: 's7', title: 'The Farewell Sermon', description: 'Final guidance', completed: false },
-      { id: 's8', title: 'Legacy & Character', description: 'His beautiful example', completed: false },
-    ]
-  },
-  { 
-    id: 'finance', 
-    title: 'Halal Finance', 
-    description: 'Islamic economics',
-    icon: '💰',
-    color: 'bg-warn/10 border-warn/20',
-    unlocked: false,
-    lessons: [
-      { id: 'f1', title: 'Riba: Understanding Interest', description: 'Why interest is prohibited', completed: false },
-      { id: 'f2', title: 'Halal Investments', description: 'Ethical investing', completed: false },
-      { id: 'f3', title: 'Islamic Banking', description: 'How it works', completed: false },
-      { id: 'f4', title: 'Zakah Calculations', description: 'Calculating your dues', completed: false },
-      { id: 'f5', title: 'Business Ethics', description: 'Trading guidelines', completed: false },
-      { id: 'f6', title: 'Wealth & Contentment', description: 'Balancing dunya', completed: false },
-    ]
-  },
-];
+import { useLessonProgress, type Module, type Lesson } from '@/hooks/useLessonProgress';
+import { LessonQuizModal } from '@/components/learn/LessonQuizModal';
 
 const Learn = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
-  const [modules, setModules] = useState<Module[]>([]);
+  const { 
+    modules, 
+    completeLesson: completeLessonProgress, 
+    passModuleQuiz,
+    getModuleProgress,
+    isModuleComplete,
+    canTakeQuiz,
+    getModuleQuiz
+  } = useLessonProgress();
+  
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [showUnlockAnimation, setShowUnlockAnimation] = useState<string | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('naja_learn_progress');
-    if (stored) {
-      setModules(JSON.parse(stored));
-    } else {
-      setModules(INITIAL_MODULES);
-      localStorage.setItem('naja_learn_progress', JSON.stringify(INITIAL_MODULES));
-    }
-  }, []);
-
-  const saveProgress = (newModules: Module[]) => {
-    setModules(newModules);
-    localStorage.setItem('naja_learn_progress', JSON.stringify(newModules));
-  };
+  const [showQuizModal, setShowQuizModal] = useState(false);
+  const [quizModuleId, setQuizModuleId] = useState<string | null>(null);
 
   const completeLesson = (moduleId: string, lessonId: string) => {
-    const updatedModules = modules.map(mod => {
-      if (mod.id === moduleId) {
-        const updatedLessons = mod.lessons.map(lesson => 
-          lesson.id === lessonId ? { ...lesson, completed: true } : lesson
-        );
-        return { ...mod, lessons: updatedLessons };
-      }
-      return mod;
-    });
+    completeLessonProgress(moduleId, lessonId);
+    addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
+    toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.LESSON_COMPLETED }));
+    setSelectedLesson(null);
+  };
 
-    // Check if module is complete to unlock next
-    const completedModule = updatedModules.find(m => m.id === moduleId);
-    if (completedModule) {
-      const allCompleted = completedModule.lessons.every(l => l.completed);
-      if (allCompleted) {
-        const moduleIndex = updatedModules.findIndex(m => m.id === moduleId);
-        if (moduleIndex < updatedModules.length - 1 && !updatedModules[moduleIndex + 1].unlocked) {
-          updatedModules[moduleIndex + 1].unlocked = true;
-          setShowUnlockAnimation(updatedModules[moduleIndex + 1].id);
-          toast.success(`New module unlocked: ${updatedModules[moduleIndex + 1].title}`);
+  const handleStartQuiz = (moduleId: string) => {
+    setQuizModuleId(moduleId);
+    setShowQuizModal(true);
+    setSelectedModule(null);
+  };
+
+  const handleQuizComplete = (passed: boolean) => {
+    if (passed && quizModuleId) {
+      const unlockedNext = passModuleQuiz(quizModuleId);
+      addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED * 3); // Bonus for passing quiz
+      
+      if (unlockedNext) {
+        const nextModuleIndex = modules.findIndex(m => m.id === quizModuleId) + 1;
+        if (nextModuleIndex < modules.length) {
+          setShowUnlockAnimation(modules[nextModuleIndex].id);
+          toast.success(t('learn.newModuleUnlocked') + ': ' + modules[nextModuleIndex].title);
           setTimeout(() => setShowUnlockAnimation(null), 2000);
         }
       }
     }
-
-    saveProgress(updatedModules);
-    addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
-    toast.success(`+${BARAKAH_REWARDS.LESSON_COMPLETED} Barakah Points`);
-    setSelectedLesson(null);
+    setShowQuizModal(false);
+    setQuizModuleId(null);
   };
 
-  const getModuleProgress = (module: Module) => {
-    const completed = module.lessons.filter(l => l.completed).length;
-    return Math.round((completed / module.lessons.length) * 100);
-  };
-
-  const totalBadges = modules.filter(m => 
-    m.lessons.every(l => l.completed)
-  ).length;
+  const totalBadges = modules.filter(m => m.quizPassed).length;
 
   return (
     <motion.div 
@@ -169,7 +77,7 @@ const Learn = () => {
       animate={{ opacity: 1 }} 
       className="min-h-screen bg-background pb-28"
     >
-      <TopBar title="Learn" />
+      <TopBar title={t('learn.title')} />
       
       <div className="px-4 space-y-4">
         {/* Daily Quiz Card */}
@@ -183,15 +91,15 @@ const Learn = () => {
                 <Brain className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold">Daily Quiz</h3>
-                <p className="text-xs text-muted-foreground">Test your knowledge today</p>
+                <h3 className="font-semibold">{t('learn.dailyQuiz')}</h3>
+                <p className="text-xs text-muted-foreground">{t('learn.testKnowledge')}</p>
               </div>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/quiz')}
                 className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium"
               >
-                Start
+                {t('common.start')}
               </motion.button>
             </div>
           </Card>
@@ -199,10 +107,10 @@ const Learn = () => {
 
         {/* Learning Path Header */}
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Learning Path</h3>
+          <h3 className="text-sm font-semibold">{t('learn.learningPath')}</h3>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Trophy className="w-4 h-4 text-warn" />
-            <span>{totalBadges} badges</span>
+            <span>{totalBadges} {t('learn.badges')}</span>
           </div>
         </div>
 
@@ -210,7 +118,8 @@ const Learn = () => {
         <div className="space-y-3">
           {modules.map((module, index) => {
             const progress = getModuleProgress(module);
-            const isComplete = progress === 100;
+            const isComplete = isModuleComplete(module);
+            const needsQuiz = canTakeQuiz(module);
             const isUnlocking = showUnlockAnimation === module.id;
 
             return (
@@ -231,7 +140,8 @@ const Learn = () => {
                   className={cn(
                     "p-4 cursor-pointer transition-all",
                     !module.unlocked && "opacity-50",
-                    isComplete && "ring-2 ring-success/50",
+                    module.quizPassed && "ring-2 ring-success/50",
+                    needsQuiz && "ring-2 ring-warn/50",
                     module.color
                   )}
                   onClick={() => module.unlocked && setSelectedModule(module)}
@@ -242,7 +152,7 @@ const Learn = () => {
                       module.unlocked ? "bg-card" : "bg-muted"
                     )}>
                       {module.unlocked ? (
-                        isComplete ? <Award className="w-7 h-7 text-warn" /> : module.icon
+                        module.quizPassed ? <Award className="w-7 h-7 text-warn" /> : module.icon
                       ) : (
                         <Lock className="w-5 h-5 text-muted-foreground" />
                       )}
@@ -250,13 +160,23 @@ const Learn = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold">{module.title}</h4>
-                        {isComplete && (
+                        {module.quizPassed && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring" }}
                           >
                             <Star className="w-4 h-4 text-warn fill-warn" />
+                          </motion.div>
+                        )}
+                        {needsQuiz && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-warn/20 text-warn text-xs"
+                          >
+                            <AlertCircle className="w-3 h-3" />
+                            {t('learn.moduleQuiz')}
                           </motion.div>
                         )}
                       </div>
@@ -289,21 +209,21 @@ const Learn = () => {
           <div className="flex items-center gap-3">
             <Trophy className="w-5 h-5 text-warn" />
             <div className="flex-1">
-              <h4 className="font-medium text-sm">Achievements</h4>
-              <p className="text-xs text-muted-foreground">{totalBadges} badges earned</p>
+              <h4 className="font-medium text-sm">{t('learn.achievements')}</h4>
+              <p className="text-xs text-muted-foreground">{totalBadges} {t('learn.badgesEarned')}</p>
             </div>
             <button 
               onClick={() => navigate('/achievements')} 
               className="text-xs text-primary font-medium"
             >
-              View All
+              {t('learn.viewAll')}
             </button>
           </div>
         </Card>
 
         {/* Niyyah Disclaimer */}
         <p className="text-xs text-muted-foreground text-center italic px-4">
-          Your niyyah is what matters — points are just a tool to help you stay consistent.
+          {t('dashboard.niyyahDisclaimer')}
         </p>
       </div>
 
@@ -337,6 +257,29 @@ const Learn = () => {
                   <X className="w-5 h-5 text-muted-foreground" />
                 </button>
               </div>
+
+              {/* Show quiz button if all lessons complete but quiz not passed */}
+              {canTakeQuiz(selectedModule) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-4 rounded-xl bg-warn/10 border border-warn/30"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <AlertCircle className="w-5 h-5 text-warn" />
+                    <span className="font-medium">{t('learn.moduleQuiz')}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {t('learn.passToUnlock')}
+                  </p>
+                  <Button 
+                    onClick={() => handleStartQuiz(selectedModule.id)}
+                    className="w-full"
+                  >
+                    {t('common.start')} {t('learn.moduleQuiz')}
+                  </Button>
+                </motion.div>
+              )}
 
               <div className="space-y-2">
                 {selectedModule.lessons.map((lesson, i) => (
@@ -434,7 +377,7 @@ const Learn = () => {
                   className="flex-1"
                   onClick={() => setSelectedLesson(null)}
                 >
-                  Close
+                  {t('common.close')}
                 </Button>
                 <Button 
                   className="flex-1"
@@ -444,12 +387,12 @@ const Learn = () => {
                   {selectedLesson.completed ? (
                     <>
                       <Check className="w-4 h-4 mr-2" />
-                      Completed
+                      {t('common.done')}
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Complete
+                      {t('common.done')}
                     </>
                   )}
                 </Button>
@@ -458,6 +401,19 @@ const Learn = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Module Quiz Modal */}
+      {showQuizModal && quizModuleId && (
+        <LessonQuizModal
+          moduleId={quizModuleId}
+          questions={getModuleQuiz(quizModuleId) || []}
+          onComplete={handleQuizComplete}
+          onClose={() => {
+            setShowQuizModal(false);
+            setQuizModuleId(null);
+          }}
+        />
+      )}
 
       <BottomNav />
     </motion.div>

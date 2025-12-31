@@ -4,17 +4,16 @@ import { X, Check, XCircle, Trophy, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
-import type { LessonQuizQuestion, Module } from '@/hooks/useLessonProgress';
+import type { LessonQuizQuestion } from '@/hooks/useLessonProgress';
 
 interface LessonQuizModalProps {
-  open: boolean;
-  onClose: () => void;
-  module: Module;
+  moduleId: string;
   questions: LessonQuizQuestion[];
-  onPass: () => void;
+  onComplete: (passed: boolean) => void;
+  onClose: () => void;
 }
 
-export function LessonQuizModal({ open, onClose, module, questions, onPass }: LessonQuizModalProps) {
+export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: LessonQuizModalProps) {
   const { t } = useTranslation();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -50,9 +49,8 @@ export function LessonQuizModal({ open, onClose, module, questions, onPass }: Le
       setQuizComplete(true);
       // Check if passed
       const finalCorrect = isCorrect ? correctAnswers + 1 : correctAnswers;
-      if (finalCorrect / questions.length >= passThreshold) {
-        onPass();
-      }
+      const didPass = finalCorrect / questions.length >= passThreshold;
+      onComplete(didPass);
     }
   };
 
@@ -91,7 +89,7 @@ export function LessonQuizModal({ open, onClose, module, questions, onPass }: Le
         <div className="flex items-center justify-between p-4 border-b">
           <div>
             <h3 className="font-semibold text-foreground">{t('learn.moduleQuiz')}</h3>
-            <p className="text-sm text-muted-foreground">{module.title}</p>
+            <p className="text-sm text-muted-foreground capitalize">{moduleId.replace(/-/g, ' ')}</p>
           </div>
           <button onClick={handleClose} className="p-2 rounded-full hover:bg-muted transition-colors">
             <X className="w-5 h-5" />

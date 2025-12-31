@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { 
   BookOpen, Heart, PenLine, GraduationCap, Calendar, 
   ChevronRight, Flame, Star, Trophy, Coins, Brain,
@@ -41,6 +42,7 @@ const AYAHS_OF_THE_DAY = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { profile, todayPoints, actsCompleted } = useGuestProfile();
   const [ayahOfDay, setAyahOfDay] = useState(AYAHS_OF_THE_DAY[0]);
   const [todaysActsStatus, setTodaysActsStatus] = useState({
@@ -82,20 +84,20 @@ const Dashboard = () => {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Assalamu Alaikum';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('dashboard.greeting.morning');
+    if (hour < 17) return t('dashboard.greeting.afternoon');
+    return t('dashboard.greeting.evening');
   };
 
   const quickTiles = [
-    { id: 'practices', title: 'Practices', icon: <Star className="w-5 h-5" />, path: '/practices', color: 'bg-secondary/20' },
-    { id: 'quran', title: "Qur'an", icon: <BookOpen className="w-5 h-5" />, path: '/quran', color: 'bg-success/20' },
-    { id: 'dhikr', title: 'Dhikr', icon: <Heart className="w-5 h-5" />, path: '/dhikr', color: 'bg-primary/20' },
-    { id: 'dua', title: 'Dua', icon: <Star className="w-5 h-5" />, path: '/dua', color: 'bg-warn/20' },
-    { id: 'journal', title: 'Journal', icon: <PenLine className="w-5 h-5" />, path: '/journal', color: 'bg-accent/20' },
-    { id: 'learn', title: 'Learn', icon: <GraduationCap className="w-5 h-5" />, path: '/learn', color: 'bg-secondary/20' },
-    { id: 'dates', title: 'Dates', icon: <Calendar className="w-5 h-5" />, path: '/dates', color: 'bg-primary/20' },
-    { id: 'fintech', title: 'Finance', icon: <Coins className="w-5 h-5" />, path: '/fintech', color: 'bg-success/20' },
+    { id: 'practices', title: t('nav.practices'), icon: <Star className="w-5 h-5" />, path: '/practices', color: 'bg-secondary/20' },
+    { id: 'quran', title: t('nav.quran'), icon: <BookOpen className="w-5 h-5" />, path: '/quran', color: 'bg-success/20' },
+    { id: 'dhikr', title: t('nav.dhikr'), icon: <Heart className="w-5 h-5" />, path: '/dhikr', color: 'bg-primary/20' },
+    { id: 'dua', title: t('nav.dua'), icon: <Star className="w-5 h-5" />, path: '/dua', color: 'bg-warn/20' },
+    { id: 'journal', title: t('nav.journal'), icon: <PenLine className="w-5 h-5" />, path: '/journal', color: 'bg-accent/20' },
+    { id: 'learn', title: t('nav.learn'), icon: <GraduationCap className="w-5 h-5" />, path: '/learn', color: 'bg-secondary/20' },
+    { id: 'dates', title: t('nav.dates'), icon: <Calendar className="w-5 h-5" />, path: '/dates', color: 'bg-primary/20' },
+    { id: 'fintech', title: t('fintech.title'), icon: <Coins className="w-5 h-5" />, path: '/fintech', color: 'bg-success/20' },
   ];
 
   const levelProgress = profile.level < 10 
@@ -103,10 +105,10 @@ const Dashboard = () => {
     : 100;
 
   const todaysActs = [
-    { id: 'salah', name: 'Salah', icon: Sunrise, done: todaysActsStatus.salah },
-    { id: 'quran', name: "Qur'an", icon: BookOpen, done: todaysActsStatus.quran },
-    { id: 'goodDeed', name: 'Good Deed', icon: HandHeart, done: todaysActsStatus.goodDeed },
-    { id: 'sadaqah', name: 'Sadaqah', icon: CircleDollarSign, done: todaysActsStatus.sadaqah },
+    { id: 'salah', name: t('acts.salah'), icon: Sunrise, done: todaysActsStatus.salah },
+    { id: 'quran', name: t('acts.quran'), icon: BookOpen, done: todaysActsStatus.quran },
+    { id: 'goodDeed', name: t('acts.goodDeed'), icon: HandHeart, done: todaysActsStatus.goodDeed },
+    { id: 'sadaqah', name: t('acts.sadaqah'), icon: CircleDollarSign, done: todaysActsStatus.sadaqah },
   ];
 
   return (
@@ -131,10 +133,10 @@ const Dashboard = () => {
           >
             <div className="flex items-center gap-1.5 mb-1">
               <Star className="w-4 h-4 text-warn" />
-              <span className="text-xs text-muted-foreground">Today</span>
+              <span className="text-xs text-muted-foreground">{t('dashboard.today')}</span>
             </div>
             <p className="text-xl font-bold">{todayPoints}</p>
-            <p className="text-[10px] text-muted-foreground">Barakah Points</p>
+            <p className="text-[10px] text-muted-foreground">{t('dashboard.barakahPoints')}</p>
           </motion.div>
 
           <motion.div
@@ -145,10 +147,10 @@ const Dashboard = () => {
           >
             <div className="flex items-center gap-1.5 mb-1">
               <Flame className="w-4 h-4 text-destructive" />
-              <span className="text-xs text-muted-foreground">Streak</span>
+              <span className="text-xs text-muted-foreground">{t('dashboard.streak')}</span>
             </div>
             <p className="text-xl font-bold">{profile.hasanatStreak}</p>
-            <p className="text-[10px] text-muted-foreground">Hasanat Streak</p>
+            <p className="text-[10px] text-muted-foreground">{t('dashboard.hasanatStreak')}</p>
           </motion.div>
 
           <motion.div
@@ -159,10 +161,10 @@ const Dashboard = () => {
           >
             <div className="flex items-center gap-1.5 mb-1">
               <Trophy className="w-4 h-4 text-success" />
-              <span className="text-xs text-muted-foreground">Done</span>
+              <span className="text-xs text-muted-foreground">{t('common.done')}</span>
             </div>
             <p className="text-xl font-bold">{actsCompleted}</p>
-            <p className="text-[10px] text-muted-foreground">Acts today</p>
+            <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
           </motion.div>
         </div>
       </div>
@@ -178,11 +180,11 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-2">
             <div>
               <p className="text-sm font-semibold">{SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker'}</p>
-              <p className="text-xs text-muted-foreground">Level {profile.level}</p>
+              <p className="text-xs text-muted-foreground">{t('dashboard.level')} {profile.level}</p>
             </div>
             <div className="text-right">
               <p className="text-sm font-bold">{profile.barakahPoints}</p>
-              <p className="text-xs text-muted-foreground">Total Points</p>
+              <p className="text-xs text-muted-foreground">{t('dashboard.totalPoints')}</p>
             </div>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -194,14 +196,14 @@ const Dashboard = () => {
             />
           </div>
           <p className="text-[10px] text-muted-foreground mt-2 text-center italic">
-            Your niyyah is what matters — points are just a tool to help you stay consistent.
+            {t('dashboard.niyyahDisclaimer')}
           </p>
         </motion.div>
       </div>
 
       {/* Ayah of the Day */}
       <div className="px-4 pb-4">
-        <h2 className="text-lg font-bold mb-3">Ayah of the Day</h2>
+        <h2 className="text-lg font-bold mb-3">{t('dashboard.ayahOfDay')}</h2>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -220,12 +222,12 @@ const Dashboard = () => {
       {/* Today's Acts for Allah - Compact Recap */}
       <div className="px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold">Today's Acts for Allah</h2>
+          <h2 className="text-lg font-bold">{t('dashboard.todaysActs')}</h2>
           <button 
             onClick={() => navigate('/practices')}
             className="text-xs text-muted-foreground flex items-center gap-1"
           >
-            Open <ChevronRight className="w-3 h-3" />
+            {t('dashboard.open')} <ChevronRight className="w-3 h-3" />
           </button>
         </div>
         
@@ -257,7 +259,7 @@ const Dashboard = () => {
 
       {/* Quiz of the Day */}
       <div className="px-4 pb-4">
-        <h2 className="text-lg font-bold mb-3">Quiz of the Day</h2>
+        <h2 className="text-lg font-bold mb-3">{t('dashboard.quizOfDay')}</h2>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -269,15 +271,15 @@ const Dashboard = () => {
                 <Brain className="w-6 h-6 text-accent" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold">Test Your Knowledge</h3>
-                <p className="text-xs text-muted-foreground">Quick daily quiz • Optional • +5 Points</p>
+                <h3 className="font-semibold">{t('dashboard.testKnowledge')}</h3>
+                <p className="text-xs text-muted-foreground">{t('dashboard.quizDescription')}</p>
               </div>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/quiz')}
                 className="px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium"
               >
-                Start
+                {t('common.start')}
               </motion.button>
             </div>
           </Card>
@@ -286,7 +288,7 @@ const Dashboard = () => {
 
       {/* Quick Access Tiles */}
       <div className="px-4 pb-4">
-        <h2 className="text-lg font-bold mb-3">Quick Access</h2>
+        <h2 className="text-lg font-bold mb-3">{t('dashboard.quickAccess')}</h2>
         <div className="grid grid-cols-4 gap-3">
           {quickTiles.map((tile, index) => (
             <motion.button
