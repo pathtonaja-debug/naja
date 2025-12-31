@@ -42,10 +42,10 @@ const Dua = () => {
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [pendingDua, setPendingDua] = useState<{ topic: string; finalText: string; state?: GuidedDuaState } | null>(null);
 
-  // Load data from local storage
+  // Load data from local storage (reload when viewMode changes to ensure fresh data)
   useEffect(() => {
     loadData();
-  }, []);
+  }, [viewMode]);
 
   const loadData = () => {
     setIsLoading(true);
@@ -197,6 +197,18 @@ const Dua = () => {
             onCancel={() => setViewMode('builder-choice')}
           />
         </div>
+
+        <SaveDuaSheet
+          key={pendingDua?.finalText || 'save-guided'}
+          isOpen={showSaveSheet}
+          onClose={() => {
+            setShowSaveSheet(false);
+            setPendingDua(null);
+          }}
+          onSave={handleSaveDua}
+          folders={folders}
+          onFolderCreated={handleCreateFolder}
+        />
       </motion.div>
     );
   }
@@ -222,6 +234,18 @@ const Dua = () => {
             onCancel={() => setViewMode('builder-choice')}
           />
         </div>
+
+        <SaveDuaSheet
+          key={pendingDua?.finalText || 'save-write-own'}
+          isOpen={showSaveSheet}
+          onClose={() => {
+            setShowSaveSheet(false);
+            setPendingDua(null);
+          }}
+          onSave={handleSaveDua}
+          folders={folders}
+          onFolderCreated={handleCreateFolder}
+        />
       </motion.div>
     );
   }
@@ -353,11 +377,24 @@ const Dua = () => {
         ) : libraryTab === 'folders' ? (
           // Folders view
           <div className="space-y-3">
+            {/* Create folder button */}
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                const name = prompt("Folder name?");
+                if (!name?.trim()) return;
+                handleCreateFolder(name.trim());
+                toast.success("Folder created");
+              }}
+            >
+              <FolderPlus className="w-4 h-4 mr-2" />
+              Create folder
+            </Button>
+
             {folders.length === 0 ? (
-              <div className="text-center py-12">
-                <FolderPlus className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+              <div className="text-center py-8">
                 <p className="text-muted-foreground">No folders yet</p>
-                <p className="text-sm text-muted-foreground">Folders are created when you save a dua</p>
               </div>
             ) : (
               folders.map(folder => (
@@ -516,6 +553,7 @@ const Dua = () => {
 
       {/* Save Sheet */}
       <SaveDuaSheet
+        key={pendingDua?.finalText || 'save-library'}
         isOpen={showSaveSheet}
         onClose={() => {
           setShowSaveSheet(false);
