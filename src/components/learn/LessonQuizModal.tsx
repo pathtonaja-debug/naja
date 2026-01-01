@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, XCircle, Trophy, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
