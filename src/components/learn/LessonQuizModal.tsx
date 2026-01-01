@@ -24,7 +24,10 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
   const question = questions[currentQuestion];
   const isCorrect = selectedAnswer === question?.correctIndex;
   const passThreshold = 0.7;
-  const passed = correctAnswers / questions.length >= passThreshold;
+  // Use finalCorrectCount for display after quiz completion
+  const [finalCorrectCount, setFinalCorrectCount] = useState<number | null>(null);
+  const displayCorrect = finalCorrectCount !== null ? finalCorrectCount : correctAnswers;
+  const passed = displayCorrect / questions.length >= passThreshold;
 
   const handleSelectAnswer = (index: number) => {
     if (showResult) return;
@@ -46,9 +49,10 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
-      setQuizComplete(true);
-      // Check if passed
+      // Check if passed - calculate correct count including current question
       const finalCorrect = isCorrect ? correctAnswers + 1 : correctAnswers;
+      setFinalCorrectCount(finalCorrect);
+      setQuizComplete(true);
       const didPass = finalCorrect / questions.length >= passThreshold;
       onComplete(didPass);
     }
@@ -60,6 +64,7 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
     setShowResult(false);
     setCorrectAnswers(0);
     setQuizComplete(false);
+    setFinalCorrectCount(null);
   };
 
   const handleClose = () => {
@@ -67,8 +72,7 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
     onClose();
   };
 
-  if (!open) return null;
-
+  // Always render when mounted (parent controls visibility)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <motion.div
@@ -211,10 +215,10 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
             <div>
               <h3 className="text-xl font-bold mb-2">{t('learn.quizComplete')}</h3>
               <p className="text-3xl font-bold mb-2">
-                {correctAnswers}/{questions.length}
+                {displayCorrect}/{questions.length}
               </p>
               <p className="text-muted-foreground">
-                {t('learn.yourScore')}: {Math.round((correctAnswers / questions.length) * 100)}%
+                {t('learn.yourScore')}: {Math.round((displayCorrect / questions.length) * 100)}%
               </p>
             </div>
 

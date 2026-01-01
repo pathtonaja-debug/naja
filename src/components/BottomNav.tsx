@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -13,47 +13,49 @@ const BottomNav = () => {
   const location = useLocation();
   const [quickActionOpen, setQuickActionOpen] = useState(false);
 
-  const mainTabs = NAV_ITEMS.slice(0, 2);
-  const secondaryTabs = NAV_ITEMS.slice(2, 4);
+  // left/right wings around the center +
+  const leftTabs = NAV_ITEMS.slice(0, 2);
+  const rightTabs = NAV_ITEMS.slice(2, 4);
 
   const handleQuickAction = (action: typeof QUICK_ACTIONS[0]) => {
     setQuickActionOpen(false);
-    if (action.hash) {
-      navigate(action.path + action.hash);
-    } else {
-      navigate(action.path);
-    }
+    navigate(action.hash ? action.path + action.hash : action.path);
   };
 
   const NavButton = ({ item }: { item: typeof NAV_ITEMS[0] }) => {
     const Icon = item.icon;
     const isActive = isPathActive(location.pathname, item.path);
-    
+
     return (
       <button
         onClick={() => navigate(item.path)}
-        className="relative flex flex-col items-center gap-0.5 py-2 px-4 rounded-xl transition-all"
+        className={cn(
+          "relative flex items-center justify-center rounded-xl transition-all",
+          "h-10 px-3",
+          isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+        )}
       >
+        {/* Active pill highlight */}
         {isActive && (
           <motion.div
-            layoutId="activeNavTab"
+            layoutId="activePill"
             className="absolute inset-0 bg-primary/10 rounded-xl"
-            transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
+            transition={{ type: "spring", duration: 0.4, bounce: 0.15 }}
           />
         )}
-        <Icon 
-          className={cn(
-            "w-5 h-5 relative z-10 transition-colors",
-            isActive ? "text-primary" : "text-muted-foreground"
-          )} 
-        />
-        <span 
-          className={cn(
-            "text-[10px] font-medium relative z-10 transition-colors",
-            isActive ? "text-primary" : "text-muted-foreground"
+
+        <span className="relative z-10 flex items-center gap-1.5">
+          <Icon className="w-5 h-5" />
+          {/* Minimal: label ONLY on active */}
+          {isActive && (
+            <motion.span
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "auto", opacity: 1 }}
+              className="text-xs font-medium overflow-hidden whitespace-nowrap"
+            >
+              {t(item.labelKey)}
+            </motion.span>
           )}
-        >
-          {t(item.labelKey)}
         </span>
       </button>
     );
@@ -61,33 +63,47 @@ const BottomNav = () => {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
-        <div className="px-4 pb-4 pt-2">
-          <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl px-2 py-2 flex items-center justify-around max-w-md mx-auto shadow-lg">
-            {/* Left tabs */}
-            {mainTabs.map((tab) => (
-              <NavButton key={tab.id} item={tab} />
-            ))}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe pointer-events-none">
+        <div className="relative flex items-end justify-center px-4 pb-4">
 
-            {/* Center quick action button */}
+          {/* subtle dock glow */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 h-12 rounded-full bg-primary/20 blur-2xl pointer-events-none" />
+
+          <div className="relative flex items-center gap-2 pointer-events-auto">
+
+            {/* LEFT wing */}
+            <div className="flex items-center gap-1 bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl px-2 py-2 shadow-lg shadow-black/10">
+              {leftTabs.map((tab) => (
+                <NavButton key={tab.id} item={tab} />
+              ))}
+            </div>
+
+            {/* CENTER + button (floating higher) */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setQuickActionOpen(true)}
               className={cn(
+                "relative -mt-4",
                 "w-12 h-12 rounded-full flex items-center justify-center",
                 "bg-gradient-to-br from-primary to-primary/80",
-                "text-primary-foreground shadow-lg shadow-primary/25",
-                "transition-transform hover:scale-105"
+                "text-primary-foreground",
+                "shadow-[0_16px_40px_-14px_rgba(0,0,0,0.6)]",
+                "ring-1 ring-white/15"
               )}
               aria-label="Quick Actions"
             >
-              <Plus className="w-6 h-6" />
+              {/* inner glow */}
+              <span className="absolute inset-1 rounded-full bg-white/10 pointer-events-none" />
+              <Plus className="w-6 h-6 relative z-10" />
             </motion.button>
 
-            {/* Right tabs */}
-            {secondaryTabs.map((tab) => (
-              <NavButton key={tab.id} item={tab} />
-            ))}
+            {/* RIGHT wing */}
+            <div className="flex items-center gap-1 bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl px-2 py-2 shadow-lg shadow-black/10">
+              {rightTabs.map((tab) => (
+                <NavButton key={tab.id} item={tab} />
+              ))}
+            </div>
+
           </div>
         </div>
       </nav>
@@ -96,9 +112,9 @@ const BottomNav = () => {
       <Sheet open={quickActionOpen} onOpenChange={setQuickActionOpen}>
         <SheetContent side="bottom" className="rounded-t-3xl pb-safe">
           <SheetHeader className="mb-4">
-            <SheetTitle className="text-lg">{t('quickActions.title')}</SheetTitle>
+            <SheetTitle className="text-lg">{t("quickActions.title")}</SheetTitle>
           </SheetHeader>
-          
+
           <div className="grid grid-cols-2 gap-3 pb-4">
             {QUICK_ACTIONS.map((action, index) => (
               <motion.button
