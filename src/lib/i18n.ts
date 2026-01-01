@@ -54,6 +54,9 @@ const resources = {
       "quickActions.journal": "Journal",
       "quickActions.dates": "Dates",
 
+      // Plus Menu
+      "plusMenu.title": "Quick Actions",
+
       // Dashboard
       "dashboard.greeting.morning": "Assalamu Alaikum",
       "dashboard.greeting.afternoon": "Good afternoon",
@@ -292,6 +295,9 @@ const resources = {
       "quickActions.duaBuilder": "Créateur de Doua",
       "quickActions.journal": "Journal",
       "quickActions.dates": "Dates",
+
+      // Plus Menu
+      "plusMenu.title": "Actions Rapides",
 
       // Dashboard
       "dashboard.greeting.morning": "Assalamou Alaykoum",
