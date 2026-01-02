@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
 import { Card } from '@/components/ui/card';
 import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
+import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { cn } from '@/lib/utils';
 
 // Sample Ayah data
@@ -109,6 +110,11 @@ const Dashboard = () => {
       <div className="px-4 pt-6 pb-4">
         <p className="text-sm text-muted-foreground">{getGreeting()}</p>
         <h1 className="text-2xl font-bold">{profile.displayName}</h1>
+      </div>
+
+      {/* Ramadan Countdown Widget */}
+      <div className="px-4 pb-4">
+        <RamadanCountdown />
       </div>
 
       {/* Stats Cards Row */}
