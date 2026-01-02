@@ -1,7 +1,7 @@
 import {
   Home,
   BookHeart,
-  GraduationCap,
+  Moon,
   User,
   Heart,
   BookOpen,
@@ -9,6 +9,7 @@ import {
   CalendarDays,
   Coins,
   Star,
+  GraduationCap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -27,17 +28,17 @@ export interface PlusMenuItem {
 }
 
 // Main navigation tabs for BottomNav
+// Home | Practices | + | Ramadan | Profile
 export const NAV_ITEMS: NavItem[] = [
   { id: "home", path: "/dashboard", labelKey: "nav.home", icon: Home },
   { id: "practices", path: "/practices", labelKey: "nav.practices", icon: BookHeart },
-  { id: "learn", path: "/learn", labelKey: "nav.learn", icon: GraduationCap },
+  { id: "ramadan", path: "/ramadan", labelKey: "nav.ramadan", icon: Moon },
   { id: "profile", path: "/profile", labelKey: "nav.profile", icon: User },
 ];
 
-// + menu items (all 8 dashboard quick access entries, continuous list)
-// Dedicated routes for dhikr + dua
+// + menu items (all quick access entries, continuous list)
+// Learn moved here from bottom nav
 export const PLUS_MENU_ITEMS: PlusMenuItem[] = [
-  { id: "practices", path: "/practices", labelKey: "nav.practices", icon: Star },
   { id: "quran", path: "/quran", labelKey: "nav.quran", icon: BookOpen },
   { id: "dhikr", path: "/dhikr", labelKey: "nav.dhikr", icon: Heart },
   { id: "dua", path: "/dua", labelKey: "nav.dua", icon: BookOpen },
