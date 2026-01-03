@@ -18,6 +18,9 @@ export const KHATAM_PLANS: KhatamPlan[] = [
   { id: 'three-khatams', khatams: 3, daysToComplete: 10, pagesPerDay: 60, pagesPerPrayer: 12 },
 ];
 
+export const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
+export type Prayer = typeof PRAYERS[number];
+
 // Ramadan Duas
 export interface RamadanDua {
   id: string;
@@ -40,6 +43,15 @@ export const RAMADAN_DUAS: RamadanDua[] = [
     source: 'Intention for Fasting',
     category: 'suhoor',
   },
+  {
+    id: 'suhoor-barakah',
+    titleKey: 'ramadan.duas.suhoorBarakah',
+    arabic: 'اللَّهُمَّ بَارِكْ لَنَا فِي سُحُورِنَا',
+    transliteration: 'Allahumma barik lana fi suhoorina',
+    translationKey: 'ramadan.duas.suhoorBarakahTranslation',
+    source: 'General Dua',
+    category: 'suhoor',
+  },
   // Iftar
   {
     id: 'iftar-dua',
@@ -59,6 +71,15 @@ export const RAMADAN_DUAS: RamadanDua[] = [
     source: 'Abu Dawud',
     category: 'iftar',
   },
+  {
+    id: 'iftar-dua-3',
+    titleKey: 'ramadan.duas.iftarDua3',
+    arabic: 'اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ فَتَقَبَّلْ مِنِّي إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ',
+    transliteration: "Allahumma laka sumtu wa 'ala rizqika aftartu, fataqabbal minni, innaka antas-sami'ul-'alim",
+    translationKey: 'ramadan.duas.iftarDua3Translation',
+    source: 'Hadith',
+    category: 'iftar',
+  },
   // Laylatul Qadr
   {
     id: 'laylatul-qadr-dua',
@@ -67,6 +88,15 @@ export const RAMADAN_DUAS: RamadanDua[] = [
     transliteration: "Allahumma innaka 'afuwwun tuhibbul 'afwa fa'fu 'anni",
     translationKey: 'ramadan.duas.laylatulQadrDuaTranslation',
     source: 'Tirmidhi',
+    category: 'laylatul-qadr',
+  },
+  {
+    id: 'laylatul-qadr-dua-2',
+    titleKey: 'ramadan.duas.laylatulQadrDua2',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ',
+    transliteration: "Allahumma inni as'alukal-'afwa wal-'afiyata fid-dunya wal-akhira",
+    translationKey: 'ramadan.duas.laylatulQadrDua2Translation',
+    source: 'Ibn Majah',
     category: 'laylatul-qadr',
   },
   // From Quran
@@ -88,6 +118,15 @@ export const RAMADAN_DUAS: RamadanDua[] = [
     source: 'Quran 14:40',
     category: 'quran',
   },
+  {
+    id: 'quran-dua-3',
+    titleKey: 'ramadan.duas.quranDua3',
+    arabic: 'رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَإِسْرَافَنَا فِي أَمْرِنَا وَثَبِّتْ أَقْدَامَنَا وَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ',
+    transliteration: "Rabbana-ghfir lana dhunubana wa israfana fi amrina wa thabbit aqdamana wansurna 'alal-qawmil-kafirin",
+    translationKey: 'ramadan.duas.quranDua3Translation',
+    source: 'Quran 3:147',
+    category: 'quran',
+  },
   // From Hadith
   {
     id: 'hadith-dua-1',
@@ -96,6 +135,15 @@ export const RAMADAN_DUAS: RamadanDua[] = [
     transliteration: 'Allahumma inni as-alukal-huda wat-tuqa wal-afafa wal-ghina',
     translationKey: 'ramadan.duas.hadithDua1Translation',
     source: 'Muslim',
+    category: 'hadith',
+  },
+  {
+    id: 'hadith-dua-2',
+    titleKey: 'ramadan.duas.hadithDua2',
+    arabic: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+    transliteration: "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatik",
+    translationKey: 'ramadan.duas.hadithDua2Translation',
+    source: 'Abu Dawud',
     category: 'hadith',
   },
 ];
@@ -109,6 +157,7 @@ export interface RamadanStory {
 }
 
 export const RAMADAN_STORIES: RamadanStory[] = [
+  // History
   {
     id: 'revelation-quran',
     titleKey: 'ramadan.stories.revelationQuran',
@@ -122,15 +171,35 @@ export const RAMADAN_STORIES: RamadanStory[] = [
     category: 'history',
   },
   {
+    id: 'fath-makkah',
+    titleKey: 'ramadan.stories.fathMakkah',
+    contentKey: 'ramadan.stories.fathMakkahContent',
+    category: 'history',
+  },
+  // Prophets
+  {
     id: 'prophet-generosity',
     titleKey: 'ramadan.stories.prophetGenerosity',
     contentKey: 'ramadan.stories.prophetGenerosityContent',
     category: 'prophets',
   },
   {
+    id: 'prophet-itikaf',
+    titleKey: 'ramadan.stories.prophetItikaf',
+    contentKey: 'ramadan.stories.prophetItikafContent',
+    category: 'prophets',
+  },
+  // Companions
+  {
     id: 'companions-fasting',
     titleKey: 'ramadan.stories.companionsFasting',
     contentKey: 'ramadan.stories.companionsFastingContent',
+    category: 'companions',
+  },
+  {
+    id: 'companions-quran',
+    titleKey: 'ramadan.stories.companionsQuran',
+    contentKey: 'ramadan.stories.companionsQuranContent',
     category: 'companions',
   },
 ];
@@ -144,6 +213,7 @@ export interface HealthTip {
 }
 
 export const HEALTH_TIPS: HealthTip[] = [
+  // Etiquette
   {
     id: 'eating-etiquette',
     titleKey: 'ramadan.health.eatingEtiquette',
@@ -151,11 +221,25 @@ export const HEALTH_TIPS: HealthTip[] = [
     category: 'etiquette',
   },
   {
+    id: 'eating-slowly',
+    titleKey: 'ramadan.health.eatingSlowly',
+    contentKey: 'ramadan.health.eatingSlowlyContent',
+    category: 'etiquette',
+  },
+  // Sunnah Foods
+  {
     id: 'sunnah-foods',
     titleKey: 'ramadan.health.sunnahFoods',
     contentKey: 'ramadan.health.sunnahFoodsContent',
     category: 'sunnah',
   },
+  {
+    id: 'dates-iftar',
+    titleKey: 'ramadan.health.datesIftar',
+    contentKey: 'ramadan.health.datesIftarContent',
+    category: 'sunnah',
+  },
+  // Hydration
   {
     id: 'hydration',
     titleKey: 'ramadan.health.hydration',
@@ -163,15 +247,35 @@ export const HEALTH_TIPS: HealthTip[] = [
     category: 'hydration',
   },
   {
+    id: 'avoid-caffeine',
+    titleKey: 'ramadan.health.avoidCaffeine',
+    contentKey: 'ramadan.health.avoidCaffeineContent',
+    category: 'hydration',
+  },
+  // Health
+  {
     id: 'fasting-health',
     titleKey: 'ramadan.health.fastingHealth',
     contentKey: 'ramadan.health.fastingHealthContent',
     category: 'health',
   },
   {
+    id: 'sleep-health',
+    titleKey: 'ramadan.health.sleepHealth',
+    contentKey: 'ramadan.health.sleepHealthContent',
+    category: 'health',
+  },
+  // Mental
+  {
     id: 'mental-benefits',
     titleKey: 'ramadan.health.mentalBenefits',
     contentKey: 'ramadan.health.mentalBenefitsContent',
+    category: 'mental',
+  },
+  {
+    id: 'discipline-benefits',
+    titleKey: 'ramadan.health.disciplineBenefits',
+    contentKey: 'ramadan.health.disciplineBenefitsContent',
     category: 'mental',
   },
 ];
@@ -229,6 +333,11 @@ export const EID_GUIDANCE: EidGuidance[] = [
     titleKey: 'ramadan.eid.zakatFitr',
     contentKey: 'ramadan.eid.zakatFitrContent',
   },
+  {
+    id: 'eid-prayer',
+    titleKey: 'ramadan.eid.prayer',
+    contentKey: 'ramadan.eid.prayerContent',
+  },
 ];
 
 // Shawwal tips for Phase 4
@@ -253,5 +362,10 @@ export const SHAWWAL_TIPS: ShawwalTip[] = [
     id: 'spiritual-consistency',
     titleKey: 'ramadan.shawwal.spiritualConsistency',
     contentKey: 'ramadan.shawwal.spiritualConsistencyContent',
+  },
+  {
+    id: 'quran-continuation',
+    titleKey: 'ramadan.shawwal.quranContinuation',
+    contentKey: 'ramadan.shawwal.quranContinuationContent',
   },
 ];
