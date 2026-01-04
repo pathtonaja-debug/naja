@@ -14,22 +14,27 @@ import {
 import { LESSON_CONTENT, LessonContent } from '@/data/lessonContent';
 import { MODULE_QUIZZES, LessonQuizQuestion } from '@/hooks/useLessonProgress';
 
-const STORAGE_KEYS = {
-  LESSON_CACHE: 'naja_learn_generated',
-  QUIZ_CACHE: 'naja_learn_quiz_generated',
+const STORAGE_PREFIX = {
+  LESSON: 'naja_learn_generated',
+  QUIZ: 'naja_learn_quiz_generated',
 };
 
 // ========== Cache Helpers ==========
 
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
 function getLessonCacheKey(lessonId: string, lang: string): string {
-  return `${STORAGE_KEYS.LESSON_CACHE}_${lang}_${CONTENT_VERSION}_${lessonId}`;
+  return `${STORAGE_PREFIX.LESSON}_${lang}_v${CONTENT_VERSION}_${lessonId}`;
 }
 
 function getQuizCacheKey(moduleId: string, lang: string): string {
-  return `${STORAGE_KEYS.QUIZ_CACHE}_${lang}_${CONTENT_VERSION}_${moduleId}`;
+  return `${STORAGE_PREFIX.QUIZ}_${lang}_v${CONTENT_VERSION}_${moduleId}`;
 }
 
-function getCached<T>(key: string): T | null {
+function getCache<T>(key: string): CacheEntry<T> | null {
   try {
     const stored = localStorage.getItem(key);
     if (!stored) return null;
@@ -41,12 +46,14 @@ function getCached<T>(key: string): T | null {
 
 function setCache<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    const entry: CacheEntry<T> = { data, timestamp: Date.now() };
+    localStorage.setItem(key, JSON.stringify(entry));
   } catch {
-    // Storage quota exceeded, clear old entries
+    // Storage quota exceeded, try to clear old entries
     try {
       clearOldGeneratedContent();
-      localStorage.setItem(key, JSON.stringify(data));
+      const entry: CacheEntry<T> = { data, timestamp: Date.now() };
+      localStorage.setItem(key, JSON.stringify(entry));
     } catch {
       // ignore
     }
@@ -58,7 +65,7 @@ function clearOldGeneratedContent(): void {
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && (key.startsWith(STORAGE_KEYS.LESSON_CACHE) || key.startsWith(STORAGE_KEYS.QUIZ_CACHE))) {
+      if (key && (key.startsWith(STORAGE_PREFIX.LESSON) || key.startsWith(STORAGE_PREFIX.QUIZ))) {
         keysToRemove.push(key);
       }
     }
@@ -95,38 +102,33 @@ function seedQuizToGenerated(questions: LessonQuizQuestion[]): GeneratedQuizQues
 
 // ========== Content Safety ==========
 
-const FORBIDDEN_TERMS = [
-  'takfir', 'kafir', 'infidel', 'apostate',
-  'sect', 'sectarian', 'shia', 'sunni', 'wahabi', 'salafi',
-  'political', 'vote', 'election', 'government',
-  'violence', 'jihad war', 'attack', 'kill',
+// Note: We rely mainly on the AI system prompt for content safety.
+// This is a minimal client-side check for extreme cases only.
+const EXTREME_FORBIDDEN_TERMS = [
+  'kill all', 'death to', 'destroy all',
 ];
 
 function isContentSafe(text: string): boolean {
+  if (!text) return true;
   const lowerText = text.toLowerCase();
-  return !FORBIDDEN_TERMS.some(term => lowerText.includes(term));
+  return !EXTREME_FORBIDDEN_TERMS.some(term => lowerText.includes(term));
 }
 
 function sanitizeContent(content: string, maxLength: number): string {
+  if (!content) return '';
+  
   // Truncate if too long
   let text = content.slice(0, maxLength);
   
-  // Remove any potentially problematic content
+  // Check for extreme content
   if (!isContentSafe(text)) {
     return ''; // Return empty to trigger fallback
   }
   
-  return text;
+  return text.trim();
 }
 
 // ========== AI Generation ==========
-
-interface GenerationPrompt {
-  lessonId: string;
-  lessonTitle: string;
-  moduleTitle: string;
-  lang: 'en' | 'fr';
-}
 
 async function callAIGeneration(prompt: string): Promise<string | null> {
   try {
@@ -158,43 +160,37 @@ export async function generateLessonContent(
   const cacheKey = getLessonCacheKey(lessonId, lang);
   
   // Check cache first
-  const cached = getCached<GeneratedLessonContent>(cacheKey);
-  if (cached && cached.source === 'ai') {
-    return cached;
+  const cached = getCache<GeneratedLessonContent>(cacheKey);
+  if (cached && cached.data.source === 'ai') {
+    return cached.data;
   }
   
   // Check if we have seed content as fallback
   const seedContent = LESSON_CONTENT[lessonId];
   
-  // Build the prompt
-  const systemPrompt = lang === 'fr' 
-    ? `Tu es un éducateur islamique bienveillant. Génère du contenu éducatif sur l'Islam.`
-    : `You are a kind Islamic educator. Generate educational content about Islam.`;
-  
+  // Build the prompt based on language
   const userPrompt = lang === 'fr'
     ? `Crée une leçon sur "${lessonTitle}" (module: ${moduleTitle}).
-Format JSON:
+Format JSON strict:
 {
   "sections": [
-    {"heading": "Titre", "content": "Contenu (max 700 car.)", "keyPoints": ["Point 1", "Point 2", "Point 3"]}
+    {"heading": "Titre", "content": "Contenu (max 700 caractères)", "keyPoints": ["Point 1", "Point 2", "Point 3"]}
   ],
-  "quiz": {"question": "?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Explication (max 220 car.)"}
+  "quiz": {"question": "Question?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Explication (max 220 caractères)"}
 }
-Règles: Contenu mainstream, pas de politique, pas de sectarisme, éducatif et respectueux.`
+Règles: Contenu islamique mainstream, pas de politique, pas de sectarisme, éducatif et respectueux. 3-5 points clés. Répondez en JSON pur uniquement.`
     : `Create a lesson about "${lessonTitle}" (module: ${moduleTitle}).
-JSON format:
+Strict JSON format:
 {
   "sections": [
     {"heading": "Title", "content": "Content (max 700 chars)", "keyPoints": ["Point 1", "Point 2", "Point 3"]}
   ],
-  "quiz": {"question": "?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Explanation (max 220 chars)"}
+  "quiz": {"question": "Question?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Explanation (max 220 chars)"}
 }
-Rules: Mainstream content, no politics, no sectarianism, educational and respectful.`;
+Rules: Mainstream Islamic content, no politics, no sectarianism, educational and respectful. 3-5 key points. Respond with pure JSON only.`;
 
-  const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
-  
   try {
-    const response = await callAIGeneration(fullPrompt);
+    const response = await callAIGeneration(userPrompt);
     
     if (response) {
       // Try to parse JSON from response
@@ -204,14 +200,14 @@ Rules: Mainstream content, no politics, no sectarianism, educational and respect
         
         // Validate and sanitize
         if (parsed.sections && Array.isArray(parsed.sections) && parsed.quiz) {
-          const sanitizedSections = parsed.sections.map((s: any) => ({
+          const sanitizedSections = parsed.sections.map((s: { heading?: string; content?: string; keyPoints?: string[] }) => ({
             heading: sanitizeContent(s.heading || '', 100) || 'Section',
             content: sanitizeContent(s.content || '', CONTENT_LIMITS.SECTION_CONTENT_MAX_CHARS) || '',
             keyPoints: (s.keyPoints || [])
               .slice(0, CONTENT_LIMITS.KEY_POINTS_MAX)
               .map((p: string) => sanitizeContent(p, 150))
               .filter(Boolean),
-          })).filter((s: any) => s.content);
+          })).filter((s: { content: string }) => s.content);
           
           if (sanitizedSections.length > 0) {
             const result: GeneratedLessonContent = {
@@ -262,30 +258,26 @@ export async function generateModuleQuiz(
   const cacheKey = getQuizCacheKey(moduleId, lang);
   
   // Check cache first
-  const cached = getCached<{ questions: GeneratedQuizQuestion[]; source: string }>(cacheKey);
-  if (cached && cached.source === 'ai') {
-    return cached.questions;
+  const cached = getCache<{ questions: GeneratedQuizQuestion[]; source: string }>(cacheKey);
+  if (cached && cached.data.source === 'ai') {
+    return cached.data.questions;
   }
   
   // Check seed content
   const seedQuiz = MODULE_QUIZZES[moduleId];
   
-  const systemPrompt = lang === 'fr'
-    ? `Tu es un éducateur islamique. Génère un quiz de 5 questions.`
-    : `You are an Islamic educator. Generate a 5-question quiz.`;
-    
   const userPrompt = lang === 'fr'
-    ? `Crée un quiz sur "${moduleTitle}".
+    ? `Crée un quiz de 5 questions sur "${moduleTitle}".
 Leçons couvertes: ${lessonSummaries.join(', ')}
-Format JSON: {"questions": [{"question": "?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Max 220 car."}]}
-5 questions, contenu éducatif mainstream.`
-    : `Create a quiz about "${moduleTitle}".
+Format JSON strict: {"questions": [{"question": "Question?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Max 220 caractères."}]}
+5 questions, contenu éducatif islamique mainstream. Répondez en JSON pur uniquement.`
+    : `Create a 5-question quiz about "${moduleTitle}".
 Lessons covered: ${lessonSummaries.join(', ')}
-JSON format: {"questions": [{"question": "?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Max 220 chars"}]}
-5 questions, mainstream educational content.`;
+Strict JSON format: {"questions": [{"question": "Question?", "options": ["A","B","C","D"], "correctIndex": 0, "explanation": "Max 220 chars"}]}
+5 questions, mainstream Islamic educational content. Respond with pure JSON only.`;
 
   try {
-    const response = await callAIGeneration(`${systemPrompt}\n\n${userPrompt}`);
+    const response = await callAIGeneration(userPrompt);
     
     if (response) {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -295,13 +287,13 @@ JSON format: {"questions": [{"question": "?", "options": ["A","B","C","D"], "cor
         if (parsed.questions && Array.isArray(parsed.questions)) {
           const sanitizedQuestions = parsed.questions
             .slice(0, CONTENT_LIMITS.MODULE_QUIZ_QUESTIONS)
-            .map((q: any) => ({
+            .map((q: { question?: string; options?: string[]; correctIndex?: number; explanation?: string }) => ({
               question: sanitizeContent(q.question || '', 200) || 'Question',
               options: (q.options || ['A', 'B', 'C', 'D']).slice(0, 4),
               correctIndex: Math.min(3, Math.max(0, q.correctIndex || 0)),
               explanation: sanitizeContent(q.explanation || '', CONTENT_LIMITS.QUIZ_EXPLANATION_MAX_CHARS) || '',
             }))
-            .filter((q: any) => isContentSafe(q.question));
+            .filter((q: { question: string }) => isContentSafe(q.question));
           
           if (sanitizedQuestions.length >= 3) {
             setCache(cacheKey, { questions: sanitizedQuestions, source: 'ai' });
@@ -331,8 +323,8 @@ export function getLessonContent(lessonId: string, lang: 'en' | 'fr'): Generated
   const cacheKey = getLessonCacheKey(lessonId, lang);
   
   // Try cache
-  const cached = getCached<GeneratedLessonContent>(cacheKey);
-  if (cached) return cached;
+  const cached = getCache<GeneratedLessonContent>(cacheKey);
+  if (cached) return cached.data;
   
   // Try seed
   const seedContent = LESSON_CONTENT[lessonId];
@@ -350,8 +342,8 @@ export function getModuleQuiz(moduleId: string, lang: 'en' | 'fr'): GeneratedQui
   const cacheKey = getQuizCacheKey(moduleId, lang);
   
   // Try cache
-  const cached = getCached<{ questions: GeneratedQuizQuestion[] }>(cacheKey);
-  if (cached) return cached.questions;
+  const cached = getCache<{ questions: GeneratedQuizQuestion[] }>(cacheKey);
+  if (cached) return cached.data.questions;
   
   // Try seed
   const seedQuiz = MODULE_QUIZZES[moduleId];

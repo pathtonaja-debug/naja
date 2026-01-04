@@ -31,6 +31,8 @@ serve(async (req) => {
       );
     }
 
+    console.log('Calling Lovable AI gateway for learn content generation');
+
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -48,7 +50,8 @@ serve(async (req) => {
 - Respectful and educational in tone
 - Based on Quran and authentic Hadith
 - Clear and concise
-Always respond with valid JSON only, no additional text.`
+- No calls to violence or takfir language
+Always respond with valid JSON only, no additional text or markdown.`
           },
           {
             role: 'user',
@@ -85,6 +88,8 @@ Always respond with valid JSON only, no additional text.`
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
+
+    console.log('Successfully generated content');
 
     return new Response(
       JSON.stringify({ content }),

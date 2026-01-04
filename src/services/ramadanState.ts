@@ -1,15 +1,17 @@
 /**
  * Ramadan State Service
  * Handles phase detection, Quran plans, preparation checklist, and Ramadan progress
- * Uses Islamic Calendar API for accurate Hijri dates
+ * Uses Islamic Calendar API for accurate Hijri dates with timezone safety
  */
 
 import {
   fetchTodayHijriDate,
-  getRamadanStartGregorian,
+  fetchGregorianForHijri,
   getCurrentHijriYearSync,
   getHijriDateFallback,
   hijriToGregorianFallback,
+  getLocalISODate,
+  getUserTimeZone,
   HijriDate,
   HIJRI_MONTHS,
 } from './islamicCalendarApi';
@@ -70,6 +72,12 @@ export interface PrepChecklistState {
   items: Record<string, ChecklistItemStatus>;
 }
 
+// ========== Helper: Get today's local date string ==========
+
+function getTodayLocalISO(): string {
+  return getLocalISODate(new Date(), getUserTimeZone());
+}
+
 // ========== Phase Detection ==========
 
 /**
@@ -78,12 +86,12 @@ export interface PrepChecklistState {
 export async function getRamadanPhaseAsync(): Promise<PhaseInfo> {
   try {
     const hijri = await fetchTodayHijriDate();
-    return computePhaseFromHijri(hijri);
+    return await computePhaseFromHijriAsync(hijri);
   } catch (error) {
     console.warn('Failed to get Ramadan phase from API:', error);
     // Fallback to local calculation
     const hijri = getHijriDateFallback();
-    return computePhaseFromHijri(hijri);
+    return computePhaseFromHijriSync(hijri);
   }
 }
 
@@ -96,14 +104,11 @@ export function getRamadanPhase(): PhaseInfo {
     const cached = localStorage.getItem(STORAGE_KEYS.PHASE_CACHE);
     if (cached) {
       const parsed = JSON.parse(cached);
-      // Check if cache is from today
-      const cachedDate = new Date(parsed.timestamp);
-      const now = new Date();
-      if (
-        cachedDate.getFullYear() === now.getFullYear() &&
-        cachedDate.getMonth() === now.getMonth() &&
-        cachedDate.getDate() === now.getDate()
-      ) {
+      const cachedDate = parsed.localDate;
+      const today = getTodayLocalISO();
+      
+      // Check if cache is from today (timezone-safe)
+      if (cachedDate === today) {
         return parsed.phase;
       }
     }
@@ -113,13 +118,14 @@ export function getRamadanPhase(): PhaseInfo {
 
   // Fallback to local calculation
   const hijri = getHijriDateFallback();
-  const phase = computePhaseFromHijri(hijri);
+  const phase = computePhaseFromHijriSync(hijri);
   
   // Cache the result
   try {
     localStorage.setItem(STORAGE_KEYS.PHASE_CACHE, JSON.stringify({
       phase,
-      timestamp: new Date().toISOString(),
+      localDate: getTodayLocalISO(),
+      timestamp: Date.now(),
     }));
   } catch {
     // ignore
@@ -128,9 +134,9 @@ export function getRamadanPhase(): PhaseInfo {
   return phase;
 }
 
-function computePhaseFromHijri(hijri: HijriDate): PhaseInfo {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
+function computePhaseFromHijriSync(hijri: HijriDate): PhaseInfo {
+  const todayISO = getTodayLocalISO();
+  const todayMidnight = new Date(todayISO + 'T00:00:00');
   
   let daysUntilRamadan = 0;
   let currentDayOfRamadan: number | null = null;
@@ -141,7 +147,7 @@ function computePhaseFromHijri(hijri: HijriDate): PhaseInfo {
     // Before Ramadan - preparing phase
     const ramadanStartISO = hijriToGregorianFallback(hijri.year, 9, 1);
     const ramadanStart = new Date(ramadanStartISO + 'T00:00:00');
-    daysUntilRamadan = Math.ceil((ramadanStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    daysUntilRamadan = Math.ceil((ramadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
     phase = 'preparing';
   } else if (hijri.month === 9) {
     // During Ramadan - active phase
@@ -157,7 +163,7 @@ function computePhaseFromHijri(hijri: HijriDate): PhaseInfo {
     // After Shawwal - preparing for next year
     const nextRamadanStartISO = hijriToGregorianFallback(hijri.year + 1, 9, 1);
     const nextRamadanStart = new Date(nextRamadanStartISO + 'T00:00:00');
-    daysUntilRamadan = Math.ceil((nextRamadanStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    daysUntilRamadan = Math.ceil((nextRamadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
     phase = 'preparing';
   }
   
@@ -175,6 +181,74 @@ function computePhaseFromHijri(hijri: HijriDate): PhaseInfo {
   };
 }
 
+async function computePhaseFromHijriAsync(hijri: HijriDate): Promise<PhaseInfo> {
+  const todayISO = getTodayLocalISO();
+  const todayMidnight = new Date(todayISO + 'T00:00:00');
+  
+  let daysUntilRamadan = 0;
+  let currentDayOfRamadan: number | null = null;
+  let phase: RamadanPhase = 'preparing';
+  
+  if (hijri.month < 9) {
+    // Before Ramadan - get accurate start date
+    try {
+      const ramadanStartISO = await fetchGregorianForHijri({ day: 1, month: 9, year: hijri.year });
+      const ramadanStart = new Date(ramadanStartISO + 'T00:00:00');
+      daysUntilRamadan = Math.ceil((ramadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    } catch {
+      const ramadanStartISO = hijriToGregorianFallback(hijri.year, 9, 1);
+      const ramadanStart = new Date(ramadanStartISO + 'T00:00:00');
+      daysUntilRamadan = Math.ceil((ramadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    phase = 'preparing';
+  } else if (hijri.month === 9) {
+    currentDayOfRamadan = hijri.day;
+    phase = 'active';
+  } else if (hijri.month === 10 && hijri.day <= 3) {
+    phase = 'eid';
+  } else if (hijri.month === 10) {
+    phase = 'shawwal';
+  } else {
+    // After Shawwal - get next year's Ramadan
+    try {
+      const nextRamadanStartISO = await fetchGregorianForHijri({ day: 1, month: 9, year: hijri.year + 1 });
+      const nextRamadanStart = new Date(nextRamadanStartISO + 'T00:00:00');
+      daysUntilRamadan = Math.ceil((nextRamadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    } catch {
+      const nextRamadanStartISO = hijriToGregorianFallback(hijri.year + 1, 9, 1);
+      const nextRamadanStart = new Date(nextRamadanStartISO + 'T00:00:00');
+      daysUntilRamadan = Math.ceil((nextRamadanStart.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    phase = 'preparing';
+  }
+  
+  const result: PhaseInfo = {
+    phase,
+    daysUntilRamadan: Math.max(0, daysUntilRamadan),
+    currentDayOfRamadan,
+    isLastTenNights: hijri.month === 9 && hijri.day >= 21,
+    hijriDate: {
+      day: hijri.day,
+      month: hijri.month,
+      monthName: hijri.monthName || HIJRI_MONTHS[hijri.month - 1],
+      year: hijri.year,
+    },
+  };
+  
+  // Cache the result
+  try {
+    localStorage.setItem(STORAGE_KEYS.PHASE_CACHE, JSON.stringify({
+      phase: result,
+      localDate: todayISO,
+      timestamp: Date.now(),
+    }));
+  } catch {
+    // ignore
+  }
+  
+  return result;
+}
+
 /**
  * Get next Ramadan start date (async, API-driven)
  */
@@ -183,12 +257,12 @@ export async function getNextRamadanDateAsync(): Promise<Date> {
     const hijri = await fetchTodayHijriDate();
     
     let targetYear = hijri.year;
+    // If we're in or past Ramadan, get next year's Ramadan
     if (hijri.month >= 9) {
-      // After Ramadan starts, get next year
       targetYear = hijri.year + 1;
     }
     
-    const isoDate = await getRamadanStartGregorian(targetYear);
+    const isoDate = await fetchGregorianForHijri({ day: 1, month: 9, year: targetYear });
     return new Date(isoDate + 'T00:00:00');
   } catch (error) {
     console.warn('Failed to get Ramadan start from API:', error);
@@ -206,7 +280,7 @@ export function getNextRamadanDate(): Date {
     const isoDate = hijriToGregorianFallback(hijri.year, 9, 1);
     return new Date(isoDate + 'T00:00:00');
   } else if (hijri.month === 9) {
-    // Currently in Ramadan
+    // Currently in Ramadan - return current Ramadan start
     const isoDate = hijriToGregorianFallback(hijri.year, 9, 1);
     return new Date(isoDate + 'T00:00:00');
   } else {
@@ -238,7 +312,7 @@ export function getQuranPlan(): QuranPlanState | null {
 export function setQuranPlan(planId: string): QuranPlanState {
   const plan: QuranPlanState = {
     planId,
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: getTodayLocalISO(),
     dailyProgress: {},
   };
   localStorage.setItem(STORAGE_KEYS.QURAN_PLAN, JSON.stringify(plan));
@@ -252,7 +326,7 @@ export function updateQuranPlanProgress(
   const plan = getQuranPlan();
   if (!plan) return null;
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayLocalISO();
   const todayProgress = plan.dailyProgress[today] || { pagesRead: 0, prayerBreakdown: {} };
   
   todayProgress.pagesRead += pagesRead;
@@ -270,7 +344,7 @@ export function setTodayQuranProgress(pagesRead: number, prayer?: string): Quran
   const plan = getQuranPlan();
   if (!plan) return null;
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayLocalISO();
   const todayProgress = plan.dailyProgress[today] || { pagesRead: 0, prayerBreakdown: {} };
   
   if (prayer) {
@@ -290,7 +364,7 @@ export function getTodayQuranProgress(): { pagesRead: number; target: number; pr
   const plan = getQuranPlan();
   if (!plan) return null;
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayLocalISO();
   const todayProgress = plan.dailyProgress[today] || { pagesRead: 0, prayerBreakdown: {} };
   
   const targetMap: Record<string, number> = {
@@ -451,7 +525,7 @@ function createNewRamadanProgress(year: number): RamadanProgressState {
 
 export function recordFastingDay(date?: string): RamadanProgressState {
   const progress = getRamadanProgress();
-  const day = date || new Date().toISOString().split('T')[0];
+  const day = date || getTodayLocalISO();
   
   if (!progress.fastingDays.includes(day)) {
     progress.fastingDays.push(day);
@@ -467,7 +541,7 @@ export function recordFastingDay(date?: string): RamadanProgressState {
 
 export function recordTarawih(date?: string): RamadanProgressState {
   const progress = getRamadanProgress();
-  const day = date || new Date().toISOString().split('T')[0];
+  const day = date || getTodayLocalISO();
   
   if (!progress.tarawihDays.includes(day)) {
     progress.tarawihDays.push(day);
@@ -496,16 +570,5 @@ export function addQuranPages(pages: number): RamadanProgressState {
  */
 export async function initializeRamadanPhase(): Promise<PhaseInfo> {
   const phase = await getRamadanPhaseAsync();
-  
-  // Cache for sync access
-  try {
-    localStorage.setItem(STORAGE_KEYS.PHASE_CACHE, JSON.stringify({
-      phase,
-      timestamp: new Date().toISOString(),
-    }));
-  } catch {
-    // ignore
-  }
-  
   return phase;
 }

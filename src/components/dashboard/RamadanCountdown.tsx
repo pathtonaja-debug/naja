@@ -13,6 +13,7 @@ import {
   getNextRamadanDate,
   type PhaseInfo 
 } from '@/services/ramadanState';
+import { getUserTimeZone } from '@/services/islamicCalendarApi';
 
 export function RamadanCountdown() {
   const { t } = useTranslation();
@@ -21,7 +22,8 @@ export function RamadanCountdown() {
   const [isLoading, setIsLoading] = useState(true);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [ramadanStart, setRamadanStart] = useState<Date | null>(null);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const phaseIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize phase (sync first, then async)
   useEffect(() => {
@@ -37,14 +39,19 @@ export function RamadanCountdown() {
       })
       .catch(console.warn);
     
-    // Refresh phase daily
-    const phaseInterval = setInterval(() => {
+    // Refresh phase hourly
+    phaseIntervalRef.current = setInterval(() => {
       getRamadanPhaseAsync()
         .then(setPhaseInfo)
         .catch(() => setPhaseInfo(getRamadanPhase()));
     }, 60 * 60 * 1000); // Every hour
     
-    return () => clearInterval(phaseInterval);
+    return () => {
+      if (phaseIntervalRef.current) {
+        clearInterval(phaseIntervalRef.current);
+        phaseIntervalRef.current = null;
+      }
+    };
   }, []);
 
   // Fetch Ramadan start date when in preparing phase
@@ -54,7 +61,7 @@ export function RamadanCountdown() {
       return;
     }
 
-    // Get sync first
+    // Get sync first for immediate display
     const syncDate = getNextRamadanDate();
     setRamadanStart(syncDate);
     
@@ -71,12 +78,12 @@ export function RamadanCountdown() {
       return;
     }
 
-    const now = new Date();
-    const diff = ramadanStart.getTime() - now.getTime();
+    const now = Date.now();
+    const diff = ramadanStart.getTime() - now;
 
     if (diff <= 0) {
       setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      // Trigger phase refresh
+      // Trigger phase refresh when countdown reaches zero
       getRamadanPhaseAsync().then(setPhaseInfo).catch(console.warn);
       return;
     }
@@ -90,19 +97,20 @@ export function RamadanCountdown() {
   }, [ramadanStart]);
 
   useEffect(() => {
+    // Clear any existing interval first
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+
     if (!phaseInfo || phaseInfo.phase !== 'preparing' || !ramadanStart) {
-      // Clear interval if not in preparing phase
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-        countdownIntervalRef.current = null;
-      }
       return;
     }
 
     // Initial update
     updateCountdown();
     
-    // Set up interval
+    // Set up interval for countdown (every second)
     countdownIntervalRef.current = setInterval(updateCountdown, 1000);
 
     return () => {
@@ -170,6 +178,13 @@ export function RamadanCountdown() {
                 </div>
               ))}
             </div>
+
+            {/* Debug info in dev mode */}
+            {import.meta.env.DEV && (
+              <div className="text-[10px] text-muted-foreground/60 pt-1">
+                TZ: {getUserTimeZone()} | Hijri: {phaseInfo.hijriDate.day}/{phaseInfo.hijriDate.month}/{phaseInfo.hijriDate.year}
+              </div>
+            )}
           </div>
         );
       

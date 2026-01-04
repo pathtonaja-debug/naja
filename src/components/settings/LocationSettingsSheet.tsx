@@ -1,10 +1,18 @@
-import { useState } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Loader2, Navigation } from "lucide-react";
+import { MapPin, Loader2, Navigation, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { 
+  getUserCalendarConfig, 
+  setUserCalendarConfig, 
+  clearIslamicCalendarCache,
+  getUserTimeZone 
+} from "@/services/islamicCalendarApi";
+import { initializeRamadanPhase } from "@/services/ramadanState";
 
 interface LocationSettingsSheetProps {
   open: boolean;
@@ -30,12 +38,22 @@ export function LocationSettingsSheet({
   currentLongitude,
   onSave,
 }: LocationSettingsSheetProps) {
+  const { t } = useTranslation();
   const [city, setCity] = useState(currentCity || "");
   const [country, setCountry] = useState(currentCountry || "");
   const [latitude, setLatitude] = useState(currentLatitude?.toString() || "");
   const [longitude, setLongitude] = useState(currentLongitude?.toString() || "");
+  const [adjustment, setAdjustment] = useState(0);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
+
+  // Load existing Islamic calendar config
+  useEffect(() => {
+    const config = getUserCalendarConfig();
+    if (config.city && !city) setCity(config.city);
+    if (config.country && !country) setCountry(config.country);
+    if (config.adjustment !== undefined) setAdjustment(config.adjustment);
+  }, [open]);
 
   const handleUseCurrentLocation = async () => {
     if (!navigator.geolocation) {
@@ -106,6 +124,21 @@ export function LocationSettingsSheet({
     }
 
     setSaving(true);
+
+    // Save to Islamic calendar config
+    setUserCalendarConfig({
+      city: city.trim() || undefined,
+      country: country.trim() || undefined,
+      adjustment: adjustment,
+    });
+
+    // Clear Islamic calendar cache so new settings take effect
+    clearIslamicCalendarCache();
+
+    // Re-initialize Ramadan phase with new settings
+    initializeRamadanPhase().catch(console.warn);
+
+    // Save to prayer times/profile (existing logic)
     const result = await onSave({
       city: city.trim() || null,
       country: country.trim() || null,
@@ -123,6 +156,8 @@ export function LocationSettingsSheet({
     }
   };
 
+  const timezone = getUserTimeZone();
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-3xl">
@@ -131,9 +166,18 @@ export function LocationSettingsSheet({
             <MapPin className="w-5 h-5" />
             Set Location
           </SheetTitle>
+          <SheetDescription>
+            Used for prayer times and Islamic calendar accuracy.
+          </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-6 pb-6">
+          {/* Timezone Display */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+            <Clock className="w-4 h-4" />
+            <span>Timezone: {timezone}</span>
+          </div>
+
           {/* Use Current Location Button */}
           <Button
             variant="outline"
@@ -212,9 +256,36 @@ export function LocationSettingsSheet({
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground">
-            Coordinates are used to calculate accurate prayer times for your location.
-          </p>
+          {/* Hijri Adjustment */}
+          <div className="space-y-2">
+            <Label htmlFor="adjustment">Hijri Date Adjustment</Label>
+            <div className="flex gap-2 items-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setAdjustment(Math.max(-2, adjustment - 1))}
+                disabled={adjustment <= -2}
+              >
+                -
+              </Button>
+              <div className="flex-1 text-center font-medium">
+                {adjustment > 0 ? `+${adjustment}` : adjustment} {adjustment === 0 ? "(default)" : adjustment === 1 || adjustment === -1 ? "day" : "days"}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setAdjustment(Math.min(2, adjustment + 1))}
+                disabled={adjustment >= 2}
+              >
+                +
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Adjust if the Hijri date shown doesn't match your local moonsighting.
+            </p>
+          </div>
 
           {/* Save Button */}
           <Button onClick={handleSave} className="w-full" disabled={saving}>

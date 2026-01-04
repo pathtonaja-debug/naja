@@ -867,15 +867,40 @@ const getStoredLanguage = (): string => {
   }
 };
 
+// Helper to flatten nested keys (supports both flat and nested structures)
+function flattenKeys(obj: Record<string, unknown>, prefix = ''): string[] {
+  const keys: string[] = [];
+  
+  for (const key of Object.keys(obj)) {
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    const value = obj[key];
+    
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      // Recurse into nested objects
+      keys.push(...flattenKeys(value as Record<string, unknown>, fullKey));
+    } else {
+      keys.push(fullKey);
+    }
+  }
+  
+  return keys;
+}
+
 // Translation parity check (dev only)
 function checkTranslationParity() {
   if (import.meta.env.PROD) return;
   
-  const enKeys = new Set(Object.keys(resources.en.translation));
-  const frKeys = new Set(Object.keys(resources.fr.translation));
+  // Get all keys (handles both flat dot-notation and nested structures)
+  const enTranslation = resources.en.translation as Record<string, unknown>;
+  const frTranslation = resources.fr.translation as Record<string, unknown>;
+  
+  // For flat structures (dot-notation keys), Object.keys is sufficient
+  // For nested, we'd use flattenKeys
+  const enKeys = new Set(Object.keys(enTranslation));
+  const frKeys = new Set(Object.keys(frTranslation));
   
   const missingInFr: string[] = [];
-  const missingInEn: string[] = [];
+  const extraInFr: string[] = [];
   
   enKeys.forEach(key => {
     if (!frKeys.has(key)) {
@@ -885,20 +910,20 @@ function checkTranslationParity() {
   
   frKeys.forEach(key => {
     if (!enKeys.has(key)) {
-      missingInEn.push(key);
+      extraInFr.push(key);
     }
   });
   
   if (missingInFr.length > 0) {
-    console.warn('[i18n] Missing FR translations:', missingInFr);
+    console.warn(`[i18n] Missing ${missingInFr.length} FR translations:`, missingInFr.slice(0, 10), missingInFr.length > 10 ? `... and ${missingInFr.length - 10} more` : '');
   }
   
-  if (missingInEn.length > 0) {
-    console.warn('[i18n] Extra keys in FR not in EN:', missingInEn);
+  if (extraInFr.length > 0) {
+    console.warn(`[i18n] ${extraInFr.length} extra keys in FR not in EN:`, extraInFr.slice(0, 10));
   }
   
-  if (missingInFr.length === 0 && missingInEn.length === 0) {
-    console.info('[i18n] Translation parity: OK ✓');
+  if (missingInFr.length === 0 && extraInFr.length === 0) {
+    console.info(`[i18n] Translation parity: OK ✓ (${enKeys.size} keys)`);
   }
 }
 

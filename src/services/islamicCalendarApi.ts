@@ -1,10 +1,11 @@
 /**
  * Islamic Calendar API Service
- * Uses Aladhan API as source of truth for accurate Hijri dates
- * Implements stale-while-revalidate caching pattern
+ * Uses AlAdhan API as source of truth for accurate Hijri dates
+ * Implements stale-while-revalidate caching pattern with timezone safety
  */
 
-// Types
+// ========== Types ==========
+
 export interface HijriDate {
   day: number;
   month: number;
@@ -12,33 +13,16 @@ export interface HijriDate {
   monthName: string;
 }
 
-export interface CalendarDay {
-  gregorianISO: string;
-  hijri: HijriDate;
-}
-
-export interface CalendarMonth {
-  year: number;
-  month: number;
-  days: CalendarDay[];
+export interface IslamicCalendarConfig {
+  city?: string;
+  country?: string;
+  adjustment?: number; // -2 to +2
 }
 
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
 }
-
-// Cache TTLs in ms
-const CACHE_TTL = {
-  TODAY: 6 * 60 * 60 * 1000, // 6 hours
-  MONTH: 7 * 24 * 60 * 60 * 1000, // 7 days
-};
-
-const STORAGE_KEYS = {
-  TODAY_HIJRI: 'naja_hijri_today_v1',
-  MONTH_CACHE: 'naja_hijri_month_v1',
-  USER_LOCATION: 'naja_user_location_v1',
-};
 
 // Hijri month names
 export const HIJRI_MONTHS = [
@@ -47,36 +31,116 @@ export const HIJRI_MONTHS = [
   'Ramadan', 'Shawwal', "Dhu al-Qi'dah", 'Dhu al-Hijjah'
 ];
 
-// ========== User Location Context ==========
+// Cache TTLs in ms
+const CACHE_TTL = {
+  TODAY: 6 * 60 * 60 * 1000, // 6 hours
+  CONVERSION: 30 * 24 * 60 * 60 * 1000, // 30 days
+};
 
-export interface UserCalendarContext {
-  city: string;
-  country: string;
-  tz: string;
+const STORAGE_KEYS = {
+  USER_CONFIG: 'naja_islamic_user_config_v1',
+};
+
+const API_BASE = 'https://api.aladhan.com/v1';
+
+// ========== Timezone-Safe Date Helpers ==========
+
+/**
+ * Get user's IANA timezone
+ */
+export function getUserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    return 'UTC';
+  }
 }
 
-export function getUserCalendarContext(): UserCalendarContext {
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
+/**
+ * Get local date as YYYY-MM-DD string (timezone-safe)
+ */
+export function getLocalISODate(date: Date = new Date(), timeZone?: string): string {
+  const tz = timeZone || getUserTimeZone();
   try {
-    const stored = localStorage.getItem(STORAGE_KEYS.USER_LOCATION);
+    // Use en-CA locale which formats as YYYY-MM-DD
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date);
+  } catch {
+    // Fallback
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+}
+
+/**
+ * Get local date components (timezone-safe)
+ */
+export function getLocalDMY(date: Date = new Date(), timeZone?: string): { dd: string; mm: string; yyyy: string } {
+  const tz = timeZone || getUserTimeZone();
+  try {
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const parts = formatter.formatToParts(date);
+    const dd = parts.find(p => p.type === 'day')?.value || '01';
+    const mm = parts.find(p => p.type === 'month')?.value || '01';
+    const yyyy = parts.find(p => p.type === 'year')?.value || '2024';
+    return { dd, mm, yyyy };
+  } catch {
+    return {
+      dd: String(date.getDate()).padStart(2, '0'),
+      mm: String(date.getMonth() + 1).padStart(2, '0'),
+      yyyy: String(date.getFullYear()),
+    };
+  }
+}
+
+// ========== User Config ==========
+
+export function getUserCalendarConfig(): IslamicCalendarConfig {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.USER_CONFIG);
     if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.city && parsed.country) {
-        return { city: parsed.city, country: parsed.country, tz };
-      }
+      return JSON.parse(stored);
     }
   } catch {
     // ignore
   }
-  
-  // Default fallback
-  return { city: 'London', country: 'United Kingdom', tz };
+  return {};
 }
 
-export function setUserLocation(city: string, country: string): void {
+export function setUserCalendarConfig(config: IslamicCalendarConfig): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.USER_LOCATION, JSON.stringify({ city, country }));
+    localStorage.setItem(STORAGE_KEYS.USER_CONFIG, JSON.stringify(config));
+  } catch {
+    // ignore
+  }
+}
+
+export function clearIslamicCalendarCache(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('naja_islamic_today_hijri_v1') ||
+        key.startsWith('naja_islamic_g2h_v1') ||
+        key.startsWith('naja_islamic_h2g_v1') ||
+        key.startsWith('naja_ramadan_start_')
+      )) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
   } catch {
     // ignore
   }
@@ -84,35 +148,13 @@ export function setUserLocation(city: string, country: string): void {
 
 // ========== Cache Helpers ==========
 
-function getCached<T>(key: string, ttl: number): T | null {
+function getCache<T>(key: string): CacheEntry<T> | null {
   try {
     const stored = localStorage.getItem(key);
     if (!stored) return null;
-    
-    const entry: CacheEntry<T> = JSON.parse(stored);
-    const age = Date.now() - entry.timestamp;
-    
-    if (age < ttl) {
-      return entry.data;
-    }
-    
-    // Data is stale but still usable for stale-while-revalidate
-    return entry.data;
+    return JSON.parse(stored);
   } catch {
     return null;
-  }
-}
-
-function isCacheFresh(key: string, ttl: number): boolean {
-  try {
-    const stored = localStorage.getItem(key);
-    if (!stored) return false;
-    
-    const entry = JSON.parse(stored);
-    const age = Date.now() - entry.timestamp;
-    return age < ttl;
-  } catch {
-    return false;
   }
 }
 
@@ -123,6 +165,10 @@ function setCache<T>(key: string, data: T): void {
   } catch {
     // ignore storage errors
   }
+}
+
+function isFresh(timestamp: number, ttl: number): boolean {
+  return Date.now() - timestamp < ttl;
 }
 
 // ========== Fallback Hijri Calculation (last resort) ==========
@@ -199,31 +245,34 @@ function fallbackHijriToGregorian(hijriYear: number, hijriMonth: number, hijriDa
 
 // ========== API Functions ==========
 
-const API_BASE = 'https://api.aladhan.com/v1';
-
 /**
  * Fetch today's Hijri date from API
- * Uses stale-while-revalidate pattern
  */
-export async function fetchTodayHijriDate(): Promise<HijriDate> {
-  const cacheKey = STORAGE_KEYS.TODAY_HIJRI;
+export async function fetchTodayHijriDate(options?: { forceRefresh?: boolean }): Promise<HijriDate> {
+  const tz = getUserTimeZone();
+  const localDate = getLocalISODate();
+  const config = getUserCalendarConfig();
   
-  // Return cached if fresh
-  const cached = getCached<HijriDate>(cacheKey, CACHE_TTL.TODAY);
-  const isFresh = isCacheFresh(cacheKey, CACHE_TTL.TODAY);
+  // Cache key includes timezone and local date for accuracy
+  const cacheKey = `naja_islamic_today_hijri_v1_${tz}_${localDate}`;
   
-  if (cached && isFresh) {
-    return cached;
+  // Check cache
+  const cached = getCache<HijriDate>(cacheKey);
+  if (cached && isFresh(cached.timestamp, CACHE_TTL.TODAY) && !options?.forceRefresh) {
+    return cached.data;
   }
   
-  // Try to fetch from API
+  // Try API
   try {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
+    const { dd, mm, yyyy } = getLocalDMY();
     
-    const response = await fetch(`${API_BASE}/gpiToHijri/${dd}-${mm}-${yyyy}`);
+    // Build URL with correct AlAdhan endpoint: /gToH/{DD-MM-YYYY}
+    let url = `${API_BASE}/gToH/${dd}-${mm}-${yyyy}`;
+    if (config.adjustment !== undefined && config.adjustment !== 0) {
+      url += `?adjustment=${config.adjustment}`;
+    }
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -250,7 +299,7 @@ export async function fetchTodayHijriDate(): Promise<HijriDate> {
     
     // Return cached stale data if available
     if (cached) {
-      return cached;
+      return cached.data;
     }
     
     // Last resort: use local calculation
@@ -259,25 +308,32 @@ export async function fetchTodayHijriDate(): Promise<HijriDate> {
 }
 
 /**
- * Fetch a full Hijri month calendar
+ * Fetch Hijri date for a specific Gregorian date
  */
-export async function fetchHijriCalendarMonth(params: {
-  hijriYear: number;
-  hijriMonth: number;
-}): Promise<CalendarMonth> {
-  const { hijriYear, hijriMonth } = params;
-  const cacheKey = `${STORAGE_KEYS.MONTH_CACHE}_${hijriYear}_${hijriMonth}`;
+export async function fetchHijriForGregorianISO(
+  gregorianISO: string, 
+  options?: { forceRefresh?: boolean }
+): Promise<HijriDate> {
+  const tz = getUserTimeZone();
+  const config = getUserCalendarConfig();
+  const cacheKey = `naja_islamic_g2h_v1_${tz}_${gregorianISO}`;
   
-  // Return cached if fresh
-  const cached = getCached<CalendarMonth>(cacheKey, CACHE_TTL.MONTH);
-  const isFresh = isCacheFresh(cacheKey, CACHE_TTL.MONTH);
-  
-  if (cached && isFresh) {
-    return cached;
+  // Check cache
+  const cached = getCache<HijriDate>(cacheKey);
+  if (cached && isFresh(cached.timestamp, CACHE_TTL.CONVERSION) && !options?.forceRefresh) {
+    return cached.data;
   }
   
   try {
-    const response = await fetch(`${API_BASE}/hpiCalendar/${hijriMonth}/${hijriYear}`);
+    // Parse YYYY-MM-DD to DD-MM-YYYY for API
+    const [yyyy, mm, dd] = gregorianISO.split('-');
+    
+    let url = `${API_BASE}/gToH/${dd}-${mm}-${yyyy}`;
+    if (config.adjustment !== undefined && config.adjustment !== 0) {
+      url += `?adjustment=${config.adjustment}`;
+    }
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -285,21 +341,13 @@ export async function fetchHijriCalendarMonth(params: {
     
     const data = await response.json();
     
-    if (data.code === 200 && Array.isArray(data.data)) {
-      const days: CalendarDay[] = data.data.map((item: any) => ({
-        gregorianISO: `${item.gregorian.year}-${String(item.gregorian.month.number).padStart(2, '0')}-${String(item.gregorian.day).padStart(2, '0')}`,
-        hijri: {
-          day: parseInt(item.hijri.day, 10),
-          month: parseInt(item.hijri.month.number, 10),
-          year: parseInt(item.hijri.year, 10),
-          monthName: item.hijri.month.en || HIJRI_MONTHS[parseInt(item.hijri.month.number, 10) - 1],
-        },
-      }));
-      
-      const result: CalendarMonth = {
-        year: hijriYear,
-        month: hijriMonth,
-        days,
+    if (data.code === 200 && data.data?.hijri) {
+      const hijri = data.data.hijri;
+      const result: HijriDate = {
+        day: parseInt(hijri.day, 10),
+        month: parseInt(hijri.month.number, 10),
+        year: parseInt(hijri.year, 10),
+        monthName: hijri.month.en || HIJRI_MONTHS[parseInt(hijri.month.number, 10) - 1],
       };
       
       setCache(cacheKey, result);
@@ -308,73 +356,85 @@ export async function fetchHijriCalendarMonth(params: {
     
     throw new Error('Invalid API response');
   } catch (error) {
-    console.warn('Failed to fetch Hijri month from API:', error);
+    console.warn('Failed to fetch Hijri for Gregorian:', error);
     
-    // Return cached stale data if available
     if (cached) {
-      return cached;
+      return cached.data;
     }
     
-    // Fallback: generate approximate month data
-    const days: CalendarDay[] = [];
-    for (let d = 1; d <= 30; d++) {
-      const isoDate = fallbackHijriToGregorian(hijriYear, hijriMonth, d);
-      days.push({
-        gregorianISO: isoDate,
-        hijri: {
-          day: d,
-          month: hijriMonth,
-          year: hijriYear,
-          monthName: HIJRI_MONTHS[hijriMonth - 1],
-        },
-      });
-    }
-    
-    return { year: hijriYear, month: hijriMonth, days };
+    // Fallback
+    const [yyyy, mm, dd] = gregorianISO.split('-').map(Number);
+    return fallbackGetHijriDate(new Date(yyyy, mm - 1, dd));
   }
 }
 
 /**
- * Get the Gregorian date for the start of Ramadan (1st of month 9)
+ * Fetch Gregorian date for a specific Hijri date
  */
-export async function getRamadanStartGregorian(hijriYear: number): Promise<string> {
-  const cacheKey = `naja_ramadan_start_${hijriYear}`;
+export async function fetchGregorianForHijri(
+  hijri: { day: number; month: number; year: number },
+  options?: { forceRefresh?: boolean }
+): Promise<string> {
+  const config = getUserCalendarConfig();
+  const cacheKey = `naja_islamic_h2g_v1_${hijri.year}-${hijri.month}-${hijri.day}`;
   
-  const cached = getCached<string>(cacheKey, CACHE_TTL.MONTH);
-  if (cached) {
-    return cached;
+  // Check cache
+  const cached = getCache<string>(cacheKey);
+  if (cached && isFresh(cached.timestamp, CACHE_TTL.CONVERSION) && !options?.forceRefresh) {
+    return cached.data;
   }
   
   try {
-    const ramadanMonth = await fetchHijriCalendarMonth({ hijriYear, hijriMonth: 9 });
+    // Format hijri date as DD-MM-YYYY for API
+    const dd = String(hijri.day).padStart(2, '0');
+    const mm = String(hijri.month).padStart(2, '0');
+    const yyyy = String(hijri.year);
     
-    // Find the first day (1 Ramadan)
-    const firstDay = ramadanMonth.days.find(d => d.hijri.day === 1);
-    if (firstDay) {
-      setCache(cacheKey, firstDay.gregorianISO);
-      return firstDay.gregorianISO;
+    let url = `${API_BASE}/hToG/${dd}-${mm}-${yyyy}`;
+    if (config.adjustment !== undefined && config.adjustment !== 0) {
+      url += `?adjustment=${config.adjustment}`;
     }
     
-    // If not found in response, take the first entry
-    if (ramadanMonth.days.length > 0) {
-      setCache(cacheKey, ramadanMonth.days[0].gregorianISO);
-      return ramadanMonth.days[0].gregorianISO;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
     }
     
-    throw new Error('No days in Ramadan month');
+    const data = await response.json();
+    
+    if (data.code === 200 && data.data?.gregorian) {
+      const greg = data.data.gregorian;
+      const result = `${greg.year}-${String(greg.month.number).padStart(2, '0')}-${String(greg.day).padStart(2, '0')}`;
+      
+      setCache(cacheKey, result);
+      return result;
+    }
+    
+    throw new Error('Invalid API response');
   } catch (error) {
-    console.warn('Failed to get Ramadan start, using fallback:', error);
-    return fallbackHijriToGregorian(hijriYear, 9, 1);
+    console.warn('Failed to fetch Gregorian for Hijri:', error);
+    
+    if (cached) {
+      return cached.data;
+    }
+    
+    // Fallback
+    return fallbackHijriToGregorian(hijri.year, hijri.month, hijri.day);
   }
 }
 
+// ========== Sync Helpers (for immediate use) ==========
+
 /**
- * Synchronous getter for current Hijri date (from cache only)
- * Use fetchTodayHijriDate() to refresh
+ * Get current Hijri date from cache only (sync)
  */
 export function getCurrentHijriDateCached(): HijriDate | null {
-  const cacheKey = STORAGE_KEYS.TODAY_HIJRI;
-  return getCached<HijriDate>(cacheKey, Infinity); // Don't check TTL, just return if exists
+  const tz = getUserTimeZone();
+  const localDate = getLocalISODate();
+  const cacheKey = `naja_islamic_today_hijri_v1_${tz}_${localDate}`;
+  const cached = getCache<HijriDate>(cacheKey);
+  return cached?.data || null;
 }
 
 /**
