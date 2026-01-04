@@ -1,56 +1,134 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Moon, ChevronRight, Sparkles, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getRamadanPhase, getNextRamadanDate, type PhaseInfo } from '@/services/ramadanState';
+import { 
+  getRamadanPhase, 
+  getRamadanPhaseAsync, 
+  getNextRamadanDateAsync, 
+  getNextRamadanDate,
+  type PhaseInfo 
+} from '@/services/ramadanState';
 
 export function RamadanCountdown() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [phaseInfo, setPhaseInfo] = useState<PhaseInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [ramadanStart, setRamadanStart] = useState<Date | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Initialize phase (sync first, then async)
   useEffect(() => {
-    const updatePhase = () => {
-      setPhaseInfo(getRamadanPhase());
-    };
+    // Load sync immediately for fast initial render
+    const syncPhase = getRamadanPhase();
+    setPhaseInfo(syncPhase);
+    setIsLoading(false);
     
-    updatePhase();
-    // Update phase daily
-    const phaseInterval = setInterval(updatePhase, 60 * 60 * 1000);
+    // Then fetch async for accuracy
+    getRamadanPhaseAsync()
+      .then(asyncPhase => {
+        setPhaseInfo(asyncPhase);
+      })
+      .catch(console.warn);
+    
+    // Refresh phase daily
+    const phaseInterval = setInterval(() => {
+      getRamadanPhaseAsync()
+        .then(setPhaseInfo)
+        .catch(() => setPhaseInfo(getRamadanPhase()));
+    }, 60 * 60 * 1000); // Every hour
     
     return () => clearInterval(phaseInterval);
   }, []);
 
+  // Fetch Ramadan start date when in preparing phase
   useEffect(() => {
-    if (!phaseInfo || phaseInfo.phase !== 'preparing') return;
+    if (!phaseInfo || phaseInfo.phase !== 'preparing') {
+      setRamadanStart(null);
+      return;
+    }
 
-    const updateCountdown = () => {
-      const now = new Date();
-      const ramadanStart = getNextRamadanDate();
-      const diff = ramadanStart.getTime() - now.getTime();
+    // Get sync first
+    const syncDate = getNextRamadanDate();
+    setRamadanStart(syncDate);
+    
+    // Then async for accuracy
+    getNextRamadanDateAsync()
+      .then(setRamadanStart)
+      .catch(() => setRamadanStart(getNextRamadanDate()));
+  }, [phaseInfo?.phase]);
 
-      if (diff <= 0) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
+  // Countdown timer
+  const updateCountdown = useCallback(() => {
+    if (!ramadanStart) {
+      setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      return;
+    }
+
+    const now = new Date();
+    const diff = ramadanStart.getTime() - now.getTime();
+
+    if (diff <= 0) {
+      setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      // Trigger phase refresh
+      getRamadanPhaseAsync().then(setPhaseInfo).catch(console.warn);
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    setCountdown({ days, hours, minutes, seconds });
+  }, [ramadanStart]);
+
+  useEffect(() => {
+    if (!phaseInfo || phaseInfo.phase !== 'preparing' || !ramadanStart) {
+      // Clear interval if not in preparing phase
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
       }
+      return;
+    }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setCountdown({ days, hours, minutes, seconds });
-    };
-
+    // Initial update
     updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+    
+    // Set up interval
+    countdownIntervalRef.current = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(interval);
-  }, [phaseInfo]);
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+    };
+  }, [phaseInfo?.phase, ramadanStart, updateCountdown]);
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <Card className="p-4">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-12 h-12 rounded-xl" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   if (!phaseInfo) return null;
 
