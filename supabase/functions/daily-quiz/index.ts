@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { openaiChatJSON } from "../_shared/openai.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,154 +9,151 @@ const corsHeaders = {
 
 const QUIZ_TOPICS = [
   "Aqeedah (Islamic Beliefs)",
-  "Fiqh Basics (Islamic Jurisprudence)",
+  "Fiqh Basics (Everyday Worship)",
   "Seerah (Life of Prophet Muhammad ﷺ)",
   "Qur'an Knowledge",
-  "Hadith",
+  "Hadith Basics",
   "Islamic History",
-  "Adab (Islamic Manners and Etiquette)",
+  "Adab (Manners and Etiquette)",
 ];
 
+type QuizQuestion = {
+  question: string;
+  options: string[];
+  correct_index: number;
+  explanation: string;
+};
+
+type QuizPayload = { questions: QuizQuestion[] };
+
+function todayUTC(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(JSON.stringify({ error: "Supabase service role not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
-    
-    const today = new Date().toISOString().split("T")[0];
-    
-    // Check if quiz already exists for today
-    const { data: existingQuiz } = await supabase
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    const today = todayUTC();
+    console.log("[daily-quiz] Checking for existing quiz on:", today);
+
+    const { data: existingQuiz, error: existingErr } = await supabase
       .from("daily_quizzes")
       .select("*")
       .eq("quiz_date", today)
-      .single();
+      .maybeSingle();
+
+    if (existingErr) {
+      console.error("[daily-quiz] Existing lookup error:", existingErr);
+    }
 
     if (existingQuiz) {
+      console.log("[daily-quiz] Returning existing quiz");
       return new Response(JSON.stringify(existingQuiz), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Select a random topic
     const topic = QUIZ_TOPICS[Math.floor(Math.random() * QUIZ_TOPICS.length)];
+    console.log("[daily-quiz] Generating new quiz for topic:", topic);
 
-    const systemPrompt = `You are a knowledgeable Islamic educator creating quiz questions. 
-Your content must be:
-- Respectful and appropriate for all ages
-- Non-controversial and avoid scholarly disagreements
-- Educational and encouraging
-- Based on widely accepted Islamic knowledge
-- Free from fear-based or guilt-based language
+    const system = `You are a mainstream Islamic educator creating a simple daily quiz.
 
-Generate exactly 4 multiple-choice questions about ${topic}.
+Rules:
+- All ages, respectful
+- Avoid controversial disputes and sectarian framing
+- Educational, encouraging
+- No politics
+- No fear/guilt manipulation
+- Return ONLY valid JSON in EXACT shape:
 
-Return ONLY valid JSON in this exact format (no markdown, no code blocks):
 {
   "questions": [
     {
-      "question": "Question text here?",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "question": "Question text?",
+      "options": ["A","B","C","D"],
       "correct_index": 0,
-      "explanation": "Brief, encouraging explanation of the correct answer."
+      "explanation": "Brief encouraging explanation."
     }
   ]
-}`;
+}
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Generate 4 multiple-choice questions about ${topic} for today's Islamic knowledge quiz.` }
-        ],
-      }),
+Generate EXACTLY 4 questions.`;
+
+    const user = `Generate today's quiz: 4 multiple-choice questions about: ${topic}`;
+
+    const quizData = await openaiChatJSON<QuizPayload>({
+      system,
+      user,
+      maxTokens: 900,
+      temperature: 0.6,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      throw new Error(`AI gateway error: ${response.status}`);
+    if (!quizData?.questions || !Array.isArray(quizData.questions) || quizData.questions.length !== 4) {
+      console.error("[daily-quiz] Invalid quiz format from AI");
+      return new Response(JSON.stringify({ error: "AI returned invalid quiz format" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
+    // Normalize/validate
+    const normalized: QuizQuestion[] = quizData.questions.map((q) => ({
+      question: String(q.question || "").trim(),
+      options: Array.isArray(q.options) ? q.options.map((o) => String(o)).slice(0, 4) : ["A","B","C","D"],
+      correct_index: Math.min(3, Math.max(0, Number(q.correct_index ?? 0))),
+      explanation: String(q.explanation || "").trim(),
+    })).filter(q => q.question && q.options.length === 4);
 
-    if (!content) {
-      throw new Error("No content received from AI");
+    if (normalized.length !== 4) {
+      console.error("[daily-quiz] Quiz validation failed");
+      return new Response(JSON.stringify({ error: "Quiz validation failed" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Parse the JSON response
-    let quizData;
-    try {
-      // Remove any markdown code blocks if present
-      const cleanContent = content.replace(/```json\n?|\n?```/g, "").trim();
-      quizData = JSON.parse(cleanContent);
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", content);
-      throw new Error("Failed to parse quiz data");
-    }
-
-    // Validate the structure
-    if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length === 0) {
-      throw new Error("Invalid quiz structure");
-    }
-
-    // Save to database
     const { data: newQuiz, error: insertError } = await supabase
       .from("daily_quizzes")
       .insert({
         quiz_date: today,
-        topic: topic,
-        questions: quizData.questions,
+        topic,
+        questions: normalized,
       })
       .select()
       .single();
 
     if (insertError) {
-      console.error("Insert error:", insertError);
-      throw new Error("Failed to save quiz");
+      console.error("[daily-quiz] Insert error:", insertError);
+      return new Response(JSON.stringify({ error: "Failed to save quiz" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
+    console.log("[daily-quiz] Successfully created and saved new quiz");
     return new Response(JSON.stringify(newQuiz), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error) {
-    console.error("daily-quiz error:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+  } catch (err: unknown) {
+    const error = err as { status?: number; message?: string };
+    const status = error?.status && Number.isFinite(error.status) ? error.status : 500;
+    const message = error?.message || "Unknown error";
+    console.error("[daily-quiz] Error:", message);
+    return new Response(JSON.stringify({ error: message }), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -1,112 +1,133 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { openaiChatText } from "../_shared/openai.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function isoDateUTC(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader! } },
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing Authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    if (!supabaseUrl || !supabaseAnon) {
+      return new Response(JSON.stringify({ error: "Supabase anon key not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnon, {
+      global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Not authenticated" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const user = userData.user;
 
-    // Get last 7 days data
+    console.log("[weekly-summary] Fetching data for user:", user.id);
+
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const dateStr = sevenDaysAgo.toISOString().split('T')[0];
+    sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 7);
+    const dateStr = isoDateUTC(sevenDaysAgo);
 
-    // Fetch reflections
     const { data: reflections } = await supabase
-      .from('reflections')
-      .select('*')
-      .eq('user_id', user.id)
-      .gte('date', dateStr)
-      .order('date', { ascending: false });
+      .from("reflections")
+      .select("*")
+      .eq("user_id", user.id)
+      .gte("date", dateStr)
+      .order("date", { ascending: false });
 
-    // Fetch habit logs
     const { data: habitLogs } = await supabase
-      .from('habit_logs')
-      .select('*, habits(*)')
-      .eq('user_id', user.id)
-      .gte('date', dateStr);
+      .from("habit_logs")
+      .select("*, habits(*)")
+      .eq("user_id", user.id)
+      .gte("date", dateStr);
 
-    // Fetch dhikr sessions
     const { data: dhikrSessions } = await supabase
-      .from('dhikr_sessions')
-      .select('*')
-      .eq('user_id', user.id)
-      .gte('date', dateStr);
+      .from("dhikr_sessions")
+      .select("*")
+      .eq("user_id", user.id)
+      .gte("date", dateStr);
 
-    // Calculate stats
+    interface HabitLog {
+      completed?: boolean;
+    }
+
+    interface DhikrSession {
+      count?: number;
+    }
+
     const stats = {
       reflections: reflections?.length || 0,
       habits: {
-        completed: habitLogs?.filter(l => l.completed).length || 0,
+        completed: habitLogs?.filter((l: HabitLog) => l.completed).length || 0,
         total: habitLogs?.length || 0,
       },
       dhikr: {
         sessions: dhikrSessions?.length || 0,
-        totalCount: dhikrSessions?.reduce((sum, s) => sum + s.count, 0) || 0,
+        totalCount: dhikrSessions?.reduce((sum: number, s: DhikrSession) => sum + (Number(s.count) || 0), 0) || 0,
       },
     };
 
-    // Use AI to generate personalized summary
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (LOVABLE_API_KEY) {
-      const prompt = `Generate a brief, encouraging weekly spiritual summary for a Muslim user based on these stats:
+    console.log("[weekly-summary] Stats:", stats);
+
+    const system = `You are NAJA, a warm faith-aligned companion.
+Rules:
+- Under 100 words
+- Encouraging, gentle, hopeful
+- No fiqh rulings, no judgment
+- No politics
+- Avoid certainty claims like "Allah will definitely..."
+- Mention 1 practical next step`;
+
+    const prompt = `Write a brief weekly spiritual summary for a Muslim user based on:
 - ${stats.reflections} reflection entries
 - ${stats.habits.completed}/${stats.habits.total} habits completed
 - ${stats.dhikr.sessions} dhikr sessions (${stats.dhikr.totalCount} total count)
+Return plain text only.`;
 
-Keep it under 100 words, warm, and faith-aligned.`;
-
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            { role: "system", content: "You are NAJA, a faith-based AI companion." },
-            { role: "user", content: prompt },
-          ],
-        }),
-      });
-
-      const aiData = await aiResponse.json();
-      const summary = aiData.choices?.[0]?.message?.content || '';
-
-      return new Response(JSON.stringify({ stats, summary }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    return new Response(JSON.stringify({ stats }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const summary = await openaiChatText({
+      system,
+      user: prompt,
+      maxTokens: 200,
+      temperature: 0.8,
     });
-  } catch (error) {
-    console.error('[weekly-summary] Error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Summary generation failed. Please try again.' }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+
+    console.log("[weekly-summary] Successfully generated summary");
+
+    return new Response(JSON.stringify({ stats, summary: summary.trim() }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err: unknown) {
+    const error = err as { status?: number; message?: string };
+    const status = error?.status && Number.isFinite(error.status) ? error.status : 500;
+    const message = error?.message || "Summary generation failed. Please try again.";
+    console.error("[weekly-summary] Error:", message);
+    return new Response(JSON.stringify({ error: message }), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
