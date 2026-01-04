@@ -346,6 +346,7 @@ const resources = {
       "learn.continueLesson": "Continue to Lesson",
       "learn.lessonComplete": "Lesson Complete",
       "learn.newModuleUnlocked": "New module unlocked",
+      "learn.refreshContent": "Refresh content",
 
       // Dua
       "dua.library": "Dua Library",
@@ -468,9 +469,10 @@ const resources = {
       "nav.quiz": "Quiz",
       "nav.ramadan": "Ramadan",
 
-      // Ramadan (French)
+      // Ramadan (French - Complete)
       "ramadan.title": "Ramadan",
       "ramadan.daysUntil": "jours avant Ramadan",
+      "ramadan.daysRemaining": "jours restants",
       "ramadan.prepareHeart": "Préparez votre cœur et votre âme",
       "ramadan.dayOf": "Jour {{day}} de Ramadan",
       "ramadan.eidMubarak": "Eid Moubarak !",
@@ -498,6 +500,7 @@ const resources = {
       "ramadan.widget.shawwal": "Shawwal",
       "ramadan.widget.sixFasts": "N'oubliez pas les 6 jeûnes",
       "ramadan.quranPlans.title": "Plan de lecture du Coran",
+      "ramadan.quranPlans.preview": "Plans du Coran (Aperçu)",
       "ramadan.quranPlans.choosePlan": "Choisissez votre plan de khatam",
       "ramadan.quranPlans.changePlan": "Changer de plan",
       "ramadan.quranPlans.one-khatam": "1 Khatam (30 jours)",
@@ -511,36 +514,139 @@ const resources = {
       "ramadan.trackByPrayer": "Suivre par prière",
       "ramadan.tapToMark": "Appuyez sur une prière pour marquer les pages lues",
       "ramadan.quickDuas": "Duas rapides",
+      "ramadan.laylatulQadr.title": "Laylatul Qadr",
+      "ramadan.laylatulQadr.description": "Cherchez-la dans les nuits impaires des dix derniers jours",
+      "ramadan.itikaf.title": "I'tikaf",
+      "ramadan.itikaf.description": "Retraite spirituelle à la mosquée pendant les 10 derniers jours",
       "ramadan.checklist.title": "Préparer Ramadan",
       "ramadan.checklist.status": "Statut",
       "ramadan.checklist.notStarted": "À faire",
       "ramadan.checklist.inProgress": "En cours",
       "ramadan.checklist.done": "Terminé",
       "ramadan.checklist.fastingPractice": "Jeûner les lundis et jeudis",
-      "ramadan.checklist.fastingPracticeDesc": "Entraînez-vous au jeûne avant Ramadan.",
+      "ramadan.checklist.fastingPracticeDesc": "Entraînez-vous au jeûne avant Ramadan. Le Prophète ﷺ jeûnait régulièrement ces jours.",
       "ramadan.checklist.quranIncrease": "Augmenter la lecture du Coran",
-      "ramadan.checklist.quranIncreaseDesc": "Lisez plus de Coran maintenant pour vous préparer.",
+      "ramadan.checklist.quranIncreaseDesc": "Lisez plus de Coran maintenant pour vous préparer à la lecture intensive de Ramadan.",
       "ramadan.checklist.learnDuas": "Apprendre les duas de Ramadan",
-      "ramadan.checklist.learnDuasDesc": "Apprenez les duas du suhoor et de l'iftar.",
+      "ramadan.checklist.learnDuasDesc": "Apprenez les duas du suhoor et de l'iftar, et la dua spéciale pour Laylatul Qadr.",
+      "ramadan.checklist.sleepSchedule": "Ajuster l'horaire de sommeil",
+      "ramadan.checklist.sleepScheduleDesc": "Commencez à vous réveiller plus tôt pour le suhoor et les prières de tarawih.",
+      "ramadan.checklist.reduceDistractions": "Réduire les distractions",
+      "ramadan.checklist.reduceDistractionsDesc": "Limitez les réseaux sociaux et les divertissements pour faire place à l'adoration.",
+      "ramadan.checklist.setNiyyah": "Définir votre intention (niyyah)",
+      "ramadan.checklist.setNiyyahDesc": "Clarifiez vos objectifs pour Ramadan. Que voulez-vous accomplir spirituellement ?",
+      "ramadan.checklist.planCharity": "Planifier la charité/sadaqah",
+      "ramadan.checklist.planCharityDesc": "Budgétisez pour la zakat et la sadaqah. Planifiez comment vous donnerez tout au long du mois.",
+      "ramadan.checklist.laylatulQadrSigns": "En savoir plus sur Laylatul Qadr",
+      "ramadan.checklist.laylatulQadrSignsDesc": "Comprenez les signes et les vertus de la Nuit du Destin.",
       "ramadan.checklist.goToPractices": "Aller aux Pratiques",
       "ramadan.checklist.goToQuran": "Aller au Coran",
       "ramadan.checklist.goToDua": "Aller aux Duas",
+      "ramadan.checklist.goToFinance": "Aller aux Finances",
       "ramadan.preparation.title": "Conseils de préparation",
+      "ramadan.preparation.buildHabits": "Construire de bonnes habitudes",
+      "ramadan.preparation.buildHabitsContent": "Commencez à jeûner les lundis et jeudis, augmentez la lecture du Coran",
+      "ramadan.preparation.duasReachRamadan": "Duas pour atteindre Ramadan",
+      "ramadan.preparation.duasReachRamadanContent": "Allahumma ballighna Ramadan - Ô Allah, fais-nous atteindre Ramadan",
+      "ramadan.preparation.rajabShaban": "Rajab & Sha'ban",
+      "ramadan.preparation.rajabShabanContent": "Ces mois sont un temps de préparation - augmentez l'adoration progressivement",
+      "ramadan.preparation.foodSleep": "Alimentation & Sommeil",
+      "ramadan.preparation.foodSleepContent": "Ajustez vos habitudes alimentaires et de sommeil avant Ramadan",
       "ramadan.eid.title": "Guide de l'Eid",
+      "ramadan.eid.sunnah": "Sunnah de l'Eid",
+      "ramadan.eid.sunnahContent": "Ghusl, porter ses plus beaux vêtements, manger des dattes avant la prière, marcher vers la prière",
+      "ramadan.eid.etiquette": "Étiquette de l'Eid",
+      "ramadan.eid.etiquetteContent": "Échanger les salutations, visiter la famille, offrir des cadeaux, répandre la joie",
+      "ramadan.eid.zakatFitr": "Zakat al-Fitr",
+      "ramadan.eid.zakatFitrContent": "Doit être payée avant la prière de l'Eid - purifie votre jeûne",
+      "ramadan.eid.prayer": "Prière de l'Eid",
+      "ramadan.eid.prayerContent": "Assistez à la prière de l'Eid, écoutez la khutbah, et faites le takbeer",
+      "ramadan.reflection.title": "Réflexion",
+      "ramadan.reflection.prompt": "Qu'est-ce que Ramadan a changé en vous cette année ?",
+      "ramadan.carryForward.title": "Continuer",
+      "ramadan.carryForward.message": "Les habitudes que vous avez construites pendant Ramadan sont faites pour durer. Gardez l'élan.",
       "ramadan.shawwal.title": "Après Ramadan",
+      "ramadan.shawwal.sixFasts": "Six jeûnes de Shawwal",
+      "ramadan.shawwal.sixFastsContent": "Jeûner 6 jours à Shawwal équivaut à jeûner toute l'année",
+      "ramadan.shawwal.maintainHabits": "Maintenir vos habitudes",
+      "ramadan.shawwal.maintainHabitsContent": "Gardez la lecture du Coran et les prières supplémentaires que vous avez construites",
+      "ramadan.shawwal.spiritualConsistency": "Constance spirituelle",
+      "ramadan.shawwal.spiritualConsistencyContent": "Les meilleures actions sont celles faites régulièrement, même si elles sont petites",
+      "ramadan.shawwal.quranContinuation": "Continuez votre plan Coran",
+      "ramadan.shawwal.quranContinuationContent": "N'arrêtez pas de lire le Coran après Ramadan - maintenez votre connexion",
       "ramadan.duaCategories.suhoor": "Suhoor",
       "ramadan.duaCategories.iftar": "Iftar",
       "ramadan.duaCategories.laylatulQadr": "Laylatul Qadr",
       "ramadan.duaCategories.quran": "Du Coran",
       "ramadan.duaCategories.hadith": "Du Hadith",
+      "ramadan.duas.suhoorIntention": "Intention de jeûner",
+      "ramadan.duas.suhoorIntentionTranslation": "J'ai l'intention de jeûner demain pour le mois de Ramadan",
+      "ramadan.duas.suhoorBarakah": "Dua pour la bénédiction du Suhoor",
+      "ramadan.duas.suhoorBarakahTranslation": "Ô Allah, bénis-nous dans notre suhoor",
+      "ramadan.duas.iftarDua": "Rompre le jeûne",
+      "ramadan.duas.iftarDuaTranslation": "La soif est partie, les veines sont hydratées, et la récompense est confirmée si Allah le veut",
+      "ramadan.duas.iftarDua2": "Dua de l'Iftar",
+      "ramadan.duas.iftarDua2Translation": "Ô Allah, pour Toi j'ai jeûné, en Toi je crois, et avec Ta provision je romps mon jeûne",
+      "ramadan.duas.iftarDua3": "Dua complète de l'Iftar",
+      "ramadan.duas.iftarDua3Translation": "Ô Allah, pour Toi j'ai jeûné et avec Ta provision je romps mon jeûne, accepte de moi, Tu es l'Audient, l'Omniscient",
+      "ramadan.duas.laylatulQadrDua": "Dua de Laylatul Qadr",
+      "ramadan.duas.laylatulQadrDuaTranslation": "Ô Allah, Tu es Pardonneur et Tu aimes le pardon, alors pardonne-moi",
+      "ramadan.duas.laylatulQadrDua2": "Dua pour le pardon",
+      "ramadan.duas.laylatulQadrDua2Translation": "Ô Allah, je Te demande le pardon et le bien-être dans ce monde et dans l'Au-delà",
+      "ramadan.duas.quranDua1": "Dua pour le bien",
+      "ramadan.duas.quranDua1Translation": "Notre Seigneur, accorde-nous le bien dans ce monde et le bien dans l'Au-delà, et protège-nous du Feu",
+      "ramadan.duas.quranDua2": "Dua pour la prière",
+      "ramadan.duas.quranDua2Translation": "Mon Seigneur, fais de moi un pratiquant de la prière, ainsi que de ma descendance. Notre Seigneur, accepte ma supplication",
+      "ramadan.duas.quranDua3": "Dua pour le pardon",
+      "ramadan.duas.quranDua3Translation": "Notre Seigneur, pardonne-nous nos péchés et nos excès, affermis nos pas et accorde-nous la victoire",
+      "ramadan.duas.hadithDua1": "Dua pour la guidance",
+      "ramadan.duas.hadithDua1Translation": "Ô Allah, je Te demande la guidance, la piété, la chasteté et l'autosuffisance",
+      "ramadan.duas.hadithDua2": "Dua pour le rappel",
+      "ramadan.duas.hadithDua2Translation": "Ô Allah, aide-moi à Te rappeler, Te remercier et bien T'adorer",
       "ramadan.healthCategories.etiquette": "Étiquette alimentaire",
       "ramadan.healthCategories.sunnah": "Aliments Sunnah",
       "ramadan.healthCategories.hydration": "Hydratation",
       "ramadan.healthCategories.health": "Santé du jeûne",
       "ramadan.healthCategories.mental": "Bienfaits mentaux",
+      "ramadan.health.eatingEtiquette": "Bonnes manières islamiques",
+      "ramadan.health.eatingEtiquetteContent": "Dites Bismillah, mangez avec la main droite, mangez de ce qui est près de vous",
+      "ramadan.health.eatingSlowly": "Mangez lentement",
+      "ramadan.health.eatingSlowlyContent": "Le Prophète ﷺ conseillait la modération. Remplissez un tiers de nourriture, un tiers de boisson, et laissez un tiers pour l'air",
+      "ramadan.health.sunnahFoods": "Aliments Sunnah",
+      "ramadan.health.sunnahFoodsContent": "Dattes, miel, huile d'olive, graine noire, lait - aliments aimés du Prophète ﷺ",
+      "ramadan.health.datesIftar": "Rompre avec des dattes",
+      "ramadan.health.datesIftarContent": "Le Prophète ﷺ rompait son jeûne avec des dattes fraîches, ou sèches, ou de l'eau si aucune n'était disponible",
+      "ramadan.health.hydration": "Restez hydraté",
+      "ramadan.health.hydrationContent": "Buvez beaucoup d'eau entre l'iftar et le suhoor, évitez la caféine",
+      "ramadan.health.avoidCaffeine": "Limitez la caféine",
+      "ramadan.health.avoidCaffeineContent": "La caféine est diurétique et peut causer la déshydratation pendant les heures de jeûne",
+      "ramadan.health.fastingHealth": "Bienfaits du jeûne",
+      "ramadan.health.fastingHealthContent": "Le jeûne favorise la réparation cellulaire, améliore le métabolisme et la clarté mentale",
+      "ramadan.health.sleepHealth": "Dormez bien",
+      "ramadan.health.sleepHealthContent": "Priorisez un sommeil de qualité entre tarawih et suhoor pour l'énergie de la journée",
+      "ramadan.health.mentalBenefits": "Bienfaits mentaux et spirituels",
+      "ramadan.health.mentalBenefitsContent": "Discipline accrue, gratitude, empathie pour les moins fortunés",
+      "ramadan.health.disciplineBenefits": "Autodiscipline",
+      "ramadan.health.disciplineBenefitsContent": "Le jeûne entraîne la volonté et la maîtrise de soi, renforçant votre capacité à résister aux tentations",
       "ramadan.storyCategories.history": "Histoire de Ramadan",
       "ramadan.storyCategories.prophets": "Histoires des Prophètes",
       "ramadan.storyCategories.companions": "Compagnons",
+      "ramadan.stories.revelationQuran": "Révélation du Coran",
+      "ramadan.stories.revelationQuranContent": "Le Coran a été révélé pour la première fois pendant Ramadan, lors de Laylatul Qadr, au Prophète Muhammad ﷺ dans la grotte de Hira",
+      "ramadan.stories.badr": "Bataille de Badr",
+      "ramadan.stories.badrContent": "La première grande bataille de l'Islam a eu lieu le 17 Ramadan, 2 AH - une victoire décisive pour les musulmans",
+      "ramadan.stories.fathMakkah": "Conquête de La Mecque",
+      "ramadan.stories.fathMakkahContent": "En 8 AH pendant Ramadan, les musulmans ont conquis La Mecque pacifiquement, et le Prophète ﷺ a pardonné à tous ceux qui l'avaient persécuté",
+      "ramadan.stories.prophetGenerosity": "La générosité du Prophète",
+      "ramadan.stories.prophetGenerosityContent": "Le Prophète ﷺ était le plus généreux des hommes, encore plus pendant Ramadan quand Jibreel révisait le Coran avec lui",
+      "ramadan.stories.prophetItikaf": "L'I'tikaf du Prophète",
+      "ramadan.stories.prophetItikafContent": "Le Prophète ﷺ faisait l'I'tikaf pendant les 10 dernières nuits de Ramadan, cherchant Laylatul Qadr",
+      "ramadan.stories.companionsFasting": "Comment les Compagnons jeûnaient",
+      "ramadan.stories.companionsFastingContent": "Les Compagnons passaient leurs journées en adoration, récitant le Coran, et leurs nuits en prière et supplication",
+      "ramadan.stories.companionsQuran": "Les Compagnons et le Coran",
+      "ramadan.stories.companionsQuranContent": "Beaucoup de Compagnons terminaient le Coran entier plusieurs fois pendant Ramadan, certains même quotidiennement",
+
+      // Quick Actions
       "quickActions.title": "Actions Rapides",
       "quickActions.dhikr": "Dhikr",
       "quickActions.duaBuilder": "Créateur de Doua",
@@ -661,6 +767,7 @@ const resources = {
       "learn.continueLesson": "Continuer la Leçon",
       "learn.lessonComplete": "Leçon Terminée",
       "learn.newModuleUnlocked": "Nouveau module débloqué",
+      "learn.refreshContent": "Actualiser le contenu",
 
       // Dua
       "dua.library": "Bibliothèque de Douas",
@@ -760,6 +867,41 @@ const getStoredLanguage = (): string => {
   }
 };
 
+// Translation parity check (dev only)
+function checkTranslationParity() {
+  if (import.meta.env.PROD) return;
+  
+  const enKeys = new Set(Object.keys(resources.en.translation));
+  const frKeys = new Set(Object.keys(resources.fr.translation));
+  
+  const missingInFr: string[] = [];
+  const missingInEn: string[] = [];
+  
+  enKeys.forEach(key => {
+    if (!frKeys.has(key)) {
+      missingInFr.push(key);
+    }
+  });
+  
+  frKeys.forEach(key => {
+    if (!enKeys.has(key)) {
+      missingInEn.push(key);
+    }
+  });
+  
+  if (missingInFr.length > 0) {
+    console.warn('[i18n] Missing FR translations:', missingInFr);
+  }
+  
+  if (missingInEn.length > 0) {
+    console.warn('[i18n] Extra keys in FR not in EN:', missingInEn);
+  }
+  
+  if (missingInFr.length === 0 && missingInEn.length === 0) {
+    console.info('[i18n] Translation parity: OK ✓');
+  }
+}
+
 i18n
   .use(initReactI18next)
   .init({
@@ -770,6 +912,9 @@ i18n
       escapeValue: false
     }
   });
+
+// Run parity check after init
+checkTranslationParity();
 
 // Function to change language and persist
 export const changeLanguage = (lang: string) => {
