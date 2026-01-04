@@ -1,105 +1,57 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { openaiChatText } from "../_shared/openai.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { prompt } = await req.json();
-    
-    if (!prompt) {
-      return new Response(
-        JSON.stringify({ error: 'Prompt is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const body = await req.json().catch(() => ({}));
+    const prompt = body?.prompt;
+
+    if (!prompt || typeof prompt !== "string") {
+      return new Response(JSON.stringify({ error: "Prompt is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    
-    if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY not configured');
-      return new Response(
-        JSON.stringify({ error: 'AI service not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log("[generate-learn-content] Processing prompt:", prompt.substring(0, 100) + "...");
 
-    console.log('Calling Lovable AI gateway for learn content generation');
-
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an Islamic education content generator. Create educational content that is:
+    const system = `You are an Islamic education content generator.
+Rules:
 - Mainstream and acceptable to all Muslims
-- Free from sectarian or political content
-- Respectful and educational in tone
-- Based on Quran and authentic Hadith
-- Clear and concise
-- No calls to violence or takfir language
-Always respond with valid JSON only, no additional text or markdown.`
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: 2000,
-      }),
+- No sectarian polemics, no politics
+- Respectful, educational tone
+- Based on Qur'an and authentic Hadith (general references; avoid controversial claims)
+- No takfir language, no violence advocacy
+- Output MUST be valid JSON ONLY (no markdown, no extra text).
+If you cannot comply, output: {"error":"cannot_comply"}`;
+
+    const content = await openaiChatText({
+      system,
+      user: prompt,
+      maxTokens: 1400,
+      temperature: 0.5,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded, please try again later' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI credits exhausted' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      return new Response(
-        JSON.stringify({ error: 'AI service error' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log("[generate-learn-content] Successfully generated content");
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-
-    console.log('Successfully generated content');
-
-    return new Response(
-      JSON.stringify({ content }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error('generate-learn-content error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ content }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err: unknown) {
+    const error = err as { status?: number; message?: string };
+    const status = error?.status && Number.isFinite(error.status) ? error.status : 500;
+    const message = error?.message || "Unknown error";
+    console.error("[generate-learn-content] Error:", message);
+    return new Response(JSON.stringify({ error: message }), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
