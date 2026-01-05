@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
 import { Card } from '@/components/ui/card';
@@ -13,8 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
-import { NIYYAH_DISCLAIMER, BARAKAH_REWARDS } from '@/data/practiceItems';
-import { SADAQAH_TYPES, SadaqahLog } from '@/data/sadaqahItems';
+import { BARAKAH_REWARDS } from '@/data/practiceItems';
 
 interface PrayerState {
   done: boolean;
@@ -23,32 +23,13 @@ interface PrayerState {
   madeUp: boolean;
 }
 
-interface SunnahPrayer {
+interface SadaqahLog {
   id: string;
-  name: string;
-  description: string;
-  rakats: number;
-  timing: string;
+  typeId: string;
+  date: string;
+  note?: string;
+  amount?: number;
 }
-
-const MANDATORY_PRAYERS = [
-  { id: 'fajr', name: 'Fajr', description: 'Dawn prayer', icon: Sunrise },
-  { id: 'dhuhr', name: 'Dhuhr', description: 'Noon prayer', icon: Sun },
-  { id: 'asr', name: 'Asr', description: 'Afternoon prayer', icon: CloudSun },
-  { id: 'maghrib', name: 'Maghrib', description: 'Sunset prayer', icon: Sunset },
-  { id: 'isha', name: 'Isha', description: 'Night prayer', icon: Moon },
-];
-
-const SUNNAH_PRAYERS: SunnahPrayer[] = [
-  { id: 'fajr_sunnah', name: 'Fajr Sunnah', description: '2 rakats before Fajr', rakats: 2, timing: 'Before Fajr' },
-  { id: 'dhuhr_before', name: 'Dhuhr Sunnah (Before)', description: '4 rakats before Dhuhr', rakats: 4, timing: 'Before Dhuhr' },
-  { id: 'dhuhr_after', name: 'Dhuhr Sunnah (After)', description: '2 rakats after Dhuhr', rakats: 2, timing: 'After Dhuhr' },
-  { id: 'maghrib_after', name: 'Maghrib Sunnah', description: '2 rakats after Maghrib', rakats: 2, timing: 'After Maghrib' },
-  { id: 'isha_after', name: 'Isha Sunnah', description: '2 rakats after Isha', rakats: 2, timing: 'After Isha' },
-  { id: 'witr', name: 'Witr', description: 'Odd-numbered prayer', rakats: 3, timing: 'After Isha' },
-  { id: 'tahajjud', name: 'Tahajjud', description: 'Night vigil prayer', rakats: 8, timing: 'Late night' },
-  { id: 'duha', name: 'Duha', description: 'Forenoon prayer', rakats: 4, timing: 'Mid-morning' },
-];
 
 const SADAQAH_ICONS: Record<string, React.ReactNode> = {
   'money': <Coins className="w-5 h-5" />,
@@ -65,10 +46,39 @@ const SADAQAH_ICONS: Record<string, React.ReactNode> = {
 
 const Practices = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { addBarakahPoints, updateStreak } = useGuestProfile();
   const [activeTab, setActiveTab] = useState<'prayers' | 'sadaqah'>('prayers');
   const [expandedSection, setExpandedSection] = useState<string | null>('fard');
-  
+
+  const MANDATORY_PRAYERS = [
+    { id: 'fajr', name: 'Fajr', description: t('practices.prayer.fajr'), icon: Sunrise },
+    { id: 'dhuhr', name: 'Dhuhr', description: t('practices.prayer.dhuhr'), icon: Sun },
+    { id: 'asr', name: 'Asr', description: t('practices.prayer.asr'), icon: CloudSun },
+    { id: 'maghrib', name: 'Maghrib', description: t('practices.prayer.maghrib'), icon: Sunset },
+    { id: 'isha', name: 'Isha', description: t('practices.prayer.isha'), icon: Moon },
+  ];
+
+  const SUNNAH_PRAYERS = [
+    { id: 'fajr_sunnah', name: t('practices.sunnah.fajrSunnah'), description: t('practices.sunnah.fajrSunnahDesc'), rakats: 2, timing: t('practices.sunnah.beforeFajr') },
+    { id: 'dhuhr_before', name: t('practices.sunnah.dhuhrBefore'), description: t('practices.sunnah.dhuhrBeforeDesc'), rakats: 4, timing: t('practices.sunnah.beforeDhuhr') },
+    { id: 'dhuhr_after', name: t('practices.sunnah.dhuhrAfter'), description: t('practices.sunnah.dhuhrAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterDhuhr') },
+    { id: 'maghrib_after', name: t('practices.sunnah.maghribAfter'), description: t('practices.sunnah.maghribAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterMaghrib') },
+    { id: 'isha_after', name: t('practices.sunnah.ishaAfter'), description: t('practices.sunnah.ishaAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterIsha') },
+    { id: 'witr', name: t('practices.sunnah.witr'), description: t('practices.sunnah.witrDesc'), rakats: 3, timing: t('practices.sunnah.afterIsha') },
+    { id: 'tahajjud', name: t('practices.sunnah.tahajjud'), description: t('practices.sunnah.tahajjudDesc'), rakats: 8, timing: t('practices.sunnah.lateNight') },
+    { id: 'duha', name: t('practices.sunnah.duha'), description: t('practices.sunnah.duhaDesc'), rakats: 4, timing: t('practices.sunnah.midMorning') },
+  ];
+
+  const SADAQAH_TYPES = [
+    { id: 'money', name: t('sadaqah.monetary'), arabicName: 'صدقة المال', description: t('sadaqah.monetaryDesc'), examples: [t('sadaqah.monetaryExample1'), t('sadaqah.monetaryExample2'), t('sadaqah.monetaryExample3')], reward: t('sadaqah.monetaryReward'), color: 'bg-success/10 border-success/20 text-success' },
+    { id: 'food', name: t('sadaqah.feeding'), arabicName: 'إطعام الطعام', description: t('sadaqah.feedingDesc'), examples: [t('sadaqah.feedingExample1'), t('sadaqah.feedingExample2'), t('sadaqah.feedingExample3')], reward: t('sadaqah.feedingReward'), color: 'bg-warn/10 border-warn/20 text-warn' },
+    { id: 'smile', name: t('sadaqah.smile'), arabicName: 'التبسم والكلمة الطيبة', description: t('sadaqah.smileDesc'), examples: [t('sadaqah.smileExample1'), t('sadaqah.smileExample2'), t('sadaqah.smileExample3')], reward: t('sadaqah.smileReward'), color: 'bg-primary/10 border-primary/20 text-primary' },
+    { id: 'help', name: t('sadaqah.helping'), arabicName: 'مساعدة الآخرين', description: t('sadaqah.helpingDesc'), examples: [t('sadaqah.helpingExample1'), t('sadaqah.helpingExample2'), t('sadaqah.helpingExample3')], reward: t('sadaqah.helpingReward'), color: 'bg-accent/10 border-accent/20 text-accent' },
+    { id: 'remove_harm', name: t('sadaqah.removeHarm'), arabicName: 'إماطة الأذى', description: t('sadaqah.removeHarmDesc'), examples: [t('sadaqah.removeHarmExample1'), t('sadaqah.removeHarmExample2'), t('sadaqah.removeHarmExample3')], reward: t('sadaqah.removeHarmReward'), color: 'bg-secondary/10 border-secondary/20 text-secondary' },
+    { id: 'knowledge', name: t('sadaqah.knowledge'), arabicName: 'نشر العلم', description: t('sadaqah.knowledgeDesc'), examples: [t('sadaqah.knowledgeExample1'), t('sadaqah.knowledgeExample2'), t('sadaqah.knowledgeExample3')], reward: t('sadaqah.knowledgeReward'), color: 'bg-info/10 border-info/20 text-info' },
+  ];
+
   // Prayer states
   const [prayerStates, setPrayerStates] = useState<Record<string, PrayerState>>(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -128,9 +138,9 @@ const Practices = () => {
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
       if (leveledUp) {
-        toast.success(`Level Up! You're now Level ${newLevel}`);
+        toast.success(t('practices.levelUp', { level: newLevel }));
       } else {
-        toast.success(`+${BARAKAH_REWARDS.PRAYER_COMPLETED} Barakah Points`);
+        toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.PRAYER_COMPLETED }));
       }
     }
   };
@@ -147,7 +157,7 @@ const Practices = () => {
       if (option === 'inCongregation') points = BARAKAH_REWARDS.PRAYER_IN_JAMAAH;
       if (points > 0) {
         addBarakahPoints(points);
-        toast.success(`+${points} Barakah Points`);
+        toast.success(t('toast.pointsEarned', { points }));
       }
     }
   };
@@ -158,7 +168,7 @@ const Practices = () => {
     
     if (newState) {
       addBarakahPoints(BARAKAH_REWARDS.SUNNAH_PRAYER);
-      toast.success(`+${BARAKAH_REWARDS.SUNNAH_PRAYER} Barakah Points`);
+      toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.SUNNAH_PRAYER }));
     }
   };
 
@@ -173,7 +183,7 @@ const Practices = () => {
     };
     setSadaqahLogs(prev => [newLog, ...prev]);
     addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
-    toast.success(`Sadaqah logged. +${BARAKAH_REWARDS.CHARITY_GIVEN} Barakah Points`);
+    toast.success(t('practices.sadaqahLogged', { points: BARAKAH_REWARDS.CHARITY_GIVEN }));
     setExpandedSadaqah(null);
   };
 
@@ -195,7 +205,7 @@ const Practices = () => {
       animate={{ opacity: 1 }} 
       className="min-h-screen bg-background pb-28"
     >
-      <TopBar title="Today's Acts for Allah" />
+      <TopBar title={t('practices.title')} />
       
       <div className="px-4 space-y-4">
         {/* Tab Selector */}
@@ -208,7 +218,7 @@ const Practices = () => {
             )}
           >
             <Moon className="w-4 h-4" />
-            Prayers
+            {t('practices.prayers')}
           </button>
           <button
             onClick={() => setActiveTab('sadaqah')}
@@ -218,20 +228,20 @@ const Practices = () => {
             )}
           >
             <Coins className="w-4 h-4" />
-            Sadaqah
+            {t('practices.sadaqah')}
           </button>
         </div>
 
         {/* Disclaimer */}
-        <p className="text-xs text-muted-foreground text-center italic px-4">{NIYYAH_DISCLAIMER}</p>
+        <p className="text-xs text-muted-foreground text-center italic px-4">{t('dashboard.niyyahDisclaimer')}</p>
 
         {activeTab === 'prayers' && (
           <>
             {/* Overall Progress */}
             <Card className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">Today's Progress</span>
-                <span className="text-lg font-bold text-primary">{fardCompleted}/5 Fard</span>
+                <span className="text-sm font-medium">{t('practices.todaysProgress')}</span>
+                <span className="text-lg font-bold text-primary">{fardCompleted}/5 {t('practices.fard')}</span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <motion.div
@@ -241,7 +251,7 @@ const Practices = () => {
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                {sunnahCompleted} Sunnah prayers completed
+                {t('practices.sunnahPrayersCompleted', { count: sunnahCompleted })}
               </p>
             </Card>
 
@@ -251,7 +261,7 @@ const Practices = () => {
                 onClick={() => toggleSection('fard')}
                 className="w-full flex items-center justify-between py-3"
               >
-                <h3 className="text-sm font-semibold">Fard (Obligatory) Prayers</h3>
+                <h3 className="text-sm font-semibold">{t('practices.fardPrayers')}</h3>
                 {expandedSection === 'fard' ? (
                   <ChevronUp className="w-4 h-4 text-muted-foreground" />
                 ) : (
@@ -275,7 +285,7 @@ const Practices = () => {
                         <motion.div key={prayer.id} whileTap={{ scale: 0.98 }}>
                           <Card className={cn(
                             "p-4 transition-all",
-                            state.done && "bg-primary/5 border-primary/20"
+                            state?.done && "bg-primary/5 border-primary/20"
                           )}>
                             <div 
                               className="flex items-center gap-3 cursor-pointer"
@@ -283,9 +293,9 @@ const Practices = () => {
                             >
                               <div className={cn(
                                 "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                                state.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                                state?.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                               )}>
-                                {state.done ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                {state?.done ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                               </div>
                               <div className="flex-1">
                                 <h4 className="font-medium">{prayer.name}</h4>
@@ -295,7 +305,7 @@ const Practices = () => {
                             </div>
 
                             {/* Prayer Options */}
-                            {state.done && (
+                            {state?.done && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
@@ -311,7 +321,7 @@ const Practices = () => {
                                   )}
                                 >
                                   <Clock className="w-3.5 h-3.5" />
-                                  On time
+                                  {t('practices.onTime')}
                                 </button>
                                 <button
                                   onClick={() => togglePrayerOption(prayer.id, 'inCongregation')}
@@ -323,7 +333,7 @@ const Practices = () => {
                                   )}
                                 >
                                   <Users className="w-3.5 h-3.5" />
-                                  In congregation
+                                  {t('practices.inCongregation')}
                                 </button>
                                 <button
                                   onClick={() => togglePrayerOption(prayer.id, 'madeUp')}
@@ -335,7 +345,7 @@ const Practices = () => {
                                   )}
                                 >
                                   <RotateCcw className="w-3.5 h-3.5" />
-                                  Qada
+                                  {t('practices.qada')}
                                 </button>
                               </motion.div>
                             )}
@@ -354,7 +364,7 @@ const Practices = () => {
                 onClick={() => toggleSection('sunnah')}
                 className="w-full flex items-center justify-between py-3"
               >
-                <h3 className="text-sm font-semibold">Sunnah & Nafl (Optional)</h3>
+                <h3 className="text-sm font-semibold">{t('practices.sunnahNafl')}</h3>
                 {expandedSection === 'sunnah' ? (
                   <ChevronUp className="w-4 h-4 text-muted-foreground" />
                 ) : (
@@ -411,13 +421,13 @@ const Practices = () => {
 
             {/* Quick Actions */}
             <div>
-              <h3 className="text-sm font-semibold mb-3">More Practices</h3>
+              <h3 className="text-sm font-semibold mb-3">{t('practices.morePractices')}</h3>
               <div className="grid grid-cols-4 gap-3">
                 {[
-                  { icon: BookOpen, label: "Qur'an", path: '/quran', color: "bg-success/10 text-success" },
-                  { icon: Heart, label: "Dhikr", path: '/dhikr', color: "bg-primary/10 text-primary" },
-                  { icon: Star, label: "Dua", path: '/dua', color: "bg-warn/10 text-warn" },
-                  { icon: Coins, label: "Sadaqah", onClick: () => setActiveTab('sadaqah'), color: "bg-accent/10 text-accent" },
+                  { icon: BookOpen, label: t('acts.quran'), path: '/quran', color: "bg-success/10 text-success" },
+                  { icon: Heart, label: t('nav.dhikr'), path: '/dhikr', color: "bg-primary/10 text-primary" },
+                  { icon: Star, label: t('nav.dua'), path: '/dua', color: "bg-warn/10 text-warn" },
+                  { icon: Coins, label: t('acts.sadaqah'), onClick: () => setActiveTab('sadaqah'), color: "bg-accent/10 text-accent" },
                 ].map((item) => (
                   <Card 
                     key={item.label} 
@@ -441,17 +451,17 @@ const Practices = () => {
             {/* Today's Summary */}
             <Card className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Today's Sadaqah</span>
+                <span className="text-sm font-medium">{t('practices.todaysSadaqah')}</span>
                 <span className="text-lg font-bold text-primary">{getTodaySadaqahCount()}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Every act of kindness is charity. The Prophet ﷺ said: "Your smile to your brother is charity."
+                {t('practices.sadaqahQuote')}
               </p>
             </Card>
 
             {/* Sadaqah Types Grid */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold">Log an Act of Sadaqah</h3>
+              <h3 className="text-sm font-semibold">{t('practices.logSadaqah')}</h3>
               {SADAQAH_TYPES.map((type) => (
                 <motion.div key={type.id} whileTap={{ scale: 0.98 }}>
                   <Card 
@@ -492,7 +502,7 @@ const Practices = () => {
                             <p className="text-sm text-muted-foreground">{type.description}</p>
                             
                             <div>
-                              <p className="text-xs font-medium mb-2">Examples:</p>
+                              <p className="text-xs font-medium mb-2">{t('common.examples')}</p>
                               <ul className="space-y-1">
                                 {type.examples.slice(0, 3).map((ex, i) => (
                                   <li key={i} className="text-xs text-muted-foreground flex items-center gap-2">
@@ -512,7 +522,7 @@ const Practices = () => {
                               className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm flex items-center justify-center gap-2"
                             >
                               <Plus className="w-4 h-4" />
-                              Log this Sadaqah
+                              {t('practices.logThis')}
                             </button>
                           </div>
                         </motion.div>
@@ -526,7 +536,7 @@ const Practices = () => {
             {/* Recent Logs */}
             {sadaqahLogs.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold">Recent Acts</h3>
+                <h3 className="text-sm font-semibold">{t('practices.recentActs')}</h3>
                 <div className="space-y-2">
                   {sadaqahLogs.slice(0, 5).map((log) => {
                     const type = SADAQAH_TYPES.find(t => t.id === log.typeId);
