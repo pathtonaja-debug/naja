@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 const displayNameSchema = z.string().min(1, "Display name is required").max(100, "Display name too long");
 
 export default function Auth() {
+  const { t } = useTranslation();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,7 +76,7 @@ export default function Auth() {
         });
 
         if (error) throw error;
-        toast.success("Account created! Redirecting...");
+        toast.success(t('auth.accountCreated'));
         navigate("/onboarding", { replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -83,17 +85,17 @@ export default function Auth() {
         });
 
         if (error) throw error;
-        toast.success("Welcome back!");
+        toast.success(t('auth.welcomeBackMsg'));
         navigate("/dashboard", { replace: true });
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.issues[0].message);
       } else if (error.message?.includes("User already registered")) {
-        toast.error("This email is already registered. Please sign in.");
+        toast.error(t('auth.emailAlreadyRegistered'));
         setIsSignUp(false);
       } else if (error.message?.includes("Invalid login credentials")) {
-        toast.error("Invalid email or password. Please try again.");
+        toast.error(t('auth.invalidCredentials'));
       } else {
         toast.error(error.message || "Authentication failed");
       }
@@ -120,22 +122,22 @@ export default function Auth() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
-            {isSignUp ? "Create Account" : "Welcome Back"}
+            {isSignUp ? t('auth.createAccount') : t('auth.welcomeBack')}
           </CardTitle>
           <CardDescription className="text-center">
             {isSignUp
-              ? "Sign up to sync your spiritual journey"
-              : "Sign in to continue your journey"}
+              ? t('auth.signUpDesc')
+              : t('auth.signInDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
+                <Label htmlFor="displayName">{t('auth.displayName')}</Label>
                 <Input
                   id="displayName"
-                  placeholder="Your name"
+                  placeholder={t('auth.yourName')}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   required={isSignUp}
@@ -144,7 +146,7 @@ export default function Auth() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -156,7 +158,7 @@ export default function Auth() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -173,10 +175,10 @@ export default function Auth() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isSignUp ? "Creating Account..." : "Signing In..."}
+                  {isSignUp ? t('auth.creatingAccount') : t('auth.signingIn')}
                 </>
               ) : (
-                isSignUp ? "Sign Up" : "Sign In"
+                isSignUp ? t('auth.signUp') : t('auth.signIn')
               )}
             </Button>
           </form>
@@ -188,8 +190,8 @@ export default function Auth() {
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {isSignUp
-                ? "Already have an account? Sign in"
-                : "Don't have an account? Sign up"}
+                ? t('auth.alreadyHaveAccount')
+                : t('auth.dontHaveAccount')}
             </button>
           </div>
         </CardContent>

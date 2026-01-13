@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import { TasbihArc } from '@/components/dhikr/TasbihArc';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
@@ -14,7 +15,7 @@ interface DhikrPreset {
   id: string;
   arabic: string;
   transliteration: string;
-  translation: string;
+  translationKey: string;
   target: number;
 }
 
@@ -23,35 +24,35 @@ const DHIKR_PRESETS: DhikrPreset[] = [
     id: 'subhanallah',
     arabic: 'سُبْحَانَ اللَّهِ',
     transliteration: 'SubhanAllah',
-    translation: 'Glory be to Allah',
+    translationKey: 'dhikr.translations.subhanallah',
     target: 33,
   },
   {
     id: 'alhamdulillah',
     arabic: 'الْحَمْدُ لِلَّهِ',
     transliteration: 'Alhamdulillah',
-    translation: 'All praise is due to Allah',
+    translationKey: 'dhikr.translations.alhamdulillah',
     target: 33,
   },
   {
     id: 'allahuakbar',
     arabic: 'اللَّهُ أَكْبَرُ',
     transliteration: 'Allahu Akbar',
-    translation: 'Allah is the Greatest',
+    translationKey: 'dhikr.translations.allahuakbar',
     target: 33,
   },
   {
     id: 'istighfar',
     arabic: 'أَسْتَغْفِرُ اللَّهَ',
     transliteration: 'Astaghfirullah',
-    translation: 'I seek forgiveness from Allah',
+    translationKey: 'dhikr.translations.istighfar',
     target: 33,
   },
   {
     id: 'salawat',
     arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ',
     transliteration: 'Allahumma salli ala Muhammad',
-    translation: 'O Allah, send blessings upon Muhammad',
+    translationKey: 'dhikr.translations.salawat',
     target: 33,
   },
 ];
@@ -60,6 +61,7 @@ const TARGET_OPTIONS = [33, 99, 100];
 
 const Dhikr = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
   const [selectedPreset, setSelectedPreset] = useState<DhikrPreset>(DHIKR_PRESETS[0]);
   const [count, setCount] = useState(0);
@@ -102,7 +104,7 @@ const Dhikr = () => {
       setTotalToday(newTotal);
       localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
       
-      toast.success(`MashAllah! ${customTarget} completed. +${points} Barakah Points`);
+      toast.success(`${t('dhikr.mashallah')} ${customTarget} ${t('dhikr.completed')}. +${points} ${t('dashboard.barakahPoints')}`);
       
       // Auto-reset after animation
       setTimeout(() => {
@@ -133,7 +135,7 @@ const Dhikr = () => {
       className="min-h-screen bg-background pb-24"
     >
       <TopBar 
-        title="Dhikr" 
+        title={t('nav.dhikr')} 
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
@@ -194,8 +196,8 @@ const Dhikr = () => {
                 >
                   <Check className="w-10 h-10 text-primary" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-foreground mb-1">MashAllah!</h3>
-                <p className="text-sm text-muted-foreground">May Allah accept your dhikr</p>
+                <h3 className="text-xl font-bold text-foreground mb-1">{t('dhikr.mashallah')}</h3>
+                <p className="text-sm text-muted-foreground">{t('dhikr.mayAllahAccept')}</p>
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -203,7 +205,7 @@ const Dhikr = () => {
                   className="flex items-center gap-2 mt-3 px-4 py-2 rounded-full bg-primary/10"
                 >
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_33} Points</span>
+                  <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_33} {t('common.points')}</span>
                 </motion.div>
               </motion.div>
             )}
@@ -218,7 +220,7 @@ const Dhikr = () => {
               {selectedPreset.transliteration}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              {selectedPreset.translation}
+              {t(selectedPreset.translationKey)}
             </p>
           </div>
 
@@ -256,7 +258,7 @@ const Dhikr = () => {
 
       {/* Target Selector */}
       <div className="px-4 pt-4">
-        <p className="text-xs text-muted-foreground text-center mb-2">Target Count</p>
+        <p className="text-xs text-muted-foreground text-center mb-2">{t('dhikr.targetCount')}</p>
         <div className="flex justify-center gap-2">
           {TARGET_OPTIONS.map((target) => (
             <button
@@ -286,15 +288,15 @@ const Dhikr = () => {
           transition={{ delay: 0.2 }}
           className="p-4 rounded-2xl bg-card border border-border shadow-sm text-center"
         >
-          <p className="text-xs text-muted-foreground mb-1">Today's Total</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('dhikr.todaysTotal')}</p>
           <p className="text-2xl font-bold text-foreground">{totalToday}</p>
-          <p className="text-xs text-muted-foreground">dhikr counted</p>
+          <p className="text-xs text-muted-foreground">{t('dhikr.dhikrCounted')}</p>
         </motion.div>
       </div>
 
       {/* Niyyah Disclaimer */}
       <p className="text-xs text-muted-foreground text-center italic px-8 pt-4">
-        Your niyyah is what matters — points are just a tool to help you stay consistent.
+        {t('dashboard.niyyahDisclaimer')}
       </p>
 
       <BottomNav />

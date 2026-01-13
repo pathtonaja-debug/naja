@@ -7,11 +7,13 @@ import {
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 const Progress = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { profile, getProgress } = useGuestProfile();
   const [activeTab, setActiveTab] = useState<'weekly' | 'monthly'>('weekly');
 
@@ -40,7 +42,7 @@ const Progress = () => {
       className="min-h-screen bg-pastel-cream pb-24"
     >
       <TopBar 
-        title="Progress" 
+        title={t('profile.progress')} 
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
@@ -58,7 +60,7 @@ const Progress = () => {
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-lg font-bold text-foreground">{levelTitle}</p>
-              <p className="text-sm text-foreground/60">Level {profile.level}</p>
+              <p className="text-sm text-foreground/60">{t('dashboard.level')} {profile.level}</p>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-white/80 flex items-center justify-center shadow-sm">
               <span className="text-2xl font-bold text-foreground">{profile.level}</span>
@@ -67,7 +69,7 @@ const Progress = () => {
           
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-foreground/60">Progress to Level {profile.level + 1}</span>
+              <span className="text-foreground/60">{t('progress.progressToLevel')} {profile.level + 1}</span>
               <span className="font-medium text-foreground">{Math.round(progress.percentage)}%</span>
             </div>
             <div className="h-3 bg-white/50 rounded-full overflow-hidden">
@@ -79,7 +81,7 @@ const Progress = () => {
               />
             </div>
             <p className="text-xs text-foreground/50 text-center">
-              {progress.current} / {progress.required} Barakah Points
+              {progress.current} / {progress.required} {t('dashboard.barakahPoints')}
             </p>
           </div>
         </motion.div>
@@ -96,7 +98,7 @@ const Progress = () => {
           >
             <Star className="w-5 h-5 text-pastel-yellow mx-auto mb-1" />
             <p className="text-lg font-bold text-foreground">{profile.barakahPoints}</p>
-            <p className="text-[10px] text-foreground/50">Total Points</p>
+            <p className="text-[10px] text-foreground/50">{t('progress.totalPoints')}</p>
           </motion.div>
           
           <motion.div
@@ -107,7 +109,7 @@ const Progress = () => {
           >
             <Flame className="w-5 h-5 text-orange-500 mx-auto mb-1" />
             <p className="text-lg font-bold text-foreground">{profile.hasanatStreak}</p>
-            <p className="text-[10px] text-foreground/50">Day Streak</p>
+            <p className="text-[10px] text-foreground/50">{t('progress.dayStreak')}</p>
           </motion.div>
           
           <motion.div
@@ -118,7 +120,7 @@ const Progress = () => {
           >
             <Trophy className="w-5 h-5 text-pastel-green mx-auto mb-1" />
             <p className="text-lg font-bold text-foreground">{avgCompletion}%</p>
-            <p className="text-[10px] text-foreground/50">Avg Completion</p>
+            <p className="text-[10px] text-foreground/50">{t('progress.avgCompletion')}</p>
           </motion.div>
         </div>
       </div>
@@ -131,13 +133,13 @@ const Progress = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all capitalize",
+                "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all",
                 activeTab === tab
                   ? "bg-pastel-lavender text-foreground shadow-sm"
                   : "text-foreground/50"
               )}
             >
-              {tab}
+              {t(`progress.${tab}`)}
             </button>
           ))}
         </div>
@@ -152,7 +154,7 @@ const Progress = () => {
             animate={{ opacity: 1, y: 0 }}
             className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <h3 className="text-sm font-semibold text-foreground mb-3">This Week</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('progress.thisWeek')}</h3>
             <div className="flex justify-between items-end h-32">
               {weeklyData.map((day, i) => {
                 const height = (day.completed / day.total) * 100;
@@ -176,7 +178,7 @@ const Progress = () => {
                       "text-xs font-medium",
                       isToday ? "text-foreground" : "text-foreground/40"
                     )}>
-                      {day.day}
+                      {t(`progress.days.${day.day.toLowerCase()}`)}
                     </span>
                   </div>
                 );
@@ -191,7 +193,7 @@ const Progress = () => {
             transition={{ delay: 0.2 }}
             className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <h3 className="text-sm font-semibold text-foreground mb-3">Daily Breakdown</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('progress.dailyBreakdown')}</h3>
             <div className="space-y-2">
               {weeklyData.map((day, i) => {
                 const isToday = i === today;
@@ -220,15 +222,15 @@ const Progress = () => {
                         "text-sm font-medium",
                         isToday ? "text-foreground" : "text-foreground/70"
                       )}>
-                        {day.day}{isToday && " (Today)"}
+                        {t(`progress.days.${day.day.toLowerCase()}`)}{isToday && ` (${t('common.today')})`}
                       </p>
                       <p className="text-xs text-foreground/50">
-                        {day.completed}/{day.total} acts completed
+                        {day.completed}/{day.total} {t('progress.actsCompleted')}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-bold text-foreground">+{day.points}</p>
-                      <p className="text-[10px] text-foreground/40">points</p>
+                      <p className="text-[10px] text-foreground/40">{t('common.points')}</p>
                     </div>
                   </div>
                 );
@@ -246,7 +248,7 @@ const Progress = () => {
             animate={{ opacity: 1, y: 0 }}
             className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <h3 className="text-sm font-semibold text-foreground mb-3">December 2025</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('progress.monthYear')}</h3>
             
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1">
@@ -287,23 +289,23 @@ const Progress = () => {
             transition={{ delay: 0.1 }}
             className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
           >
-            <h3 className="text-sm font-semibold text-foreground mb-3">Monthly Summary</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('progress.monthlySummary')}</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-2xl font-bold text-foreground">{totalWeeklyPoints * 4}</p>
-                <p className="text-xs text-foreground/50">Barakah Points earned</p>
+                <p className="text-xs text-foreground/50">{t('progress.pointsEarned')}</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">85%</p>
-                <p className="text-xs text-foreground/50">Average completion</p>
+                <p className="text-xs text-foreground/50">{t('progress.averageCompletion')}</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">18</p>
-                <p className="text-xs text-foreground/50">Perfect days</p>
+                <p className="text-xs text-foreground/50">{t('progress.perfectDays')}</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">140</p>
-                <p className="text-xs text-foreground/50">Acts completed</p>
+                <p className="text-xs text-foreground/50">{t('progress.actsCompletedTotal')}</p>
               </div>
             </div>
           </motion.div>
@@ -313,7 +315,7 @@ const Progress = () => {
       {/* Niyyah disclaimer */}
       <div className="px-4 py-4">
         <p className="text-[10px] text-foreground/40 text-center italic">
-          Your niyyah is what matters — points are just a tool to help you stay consistent.
+          {t('dashboard.niyyahDisclaimer')}
         </p>
       </div>
 
