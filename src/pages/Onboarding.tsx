@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Onboarding = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -33,7 +35,7 @@ const Onboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast.error("Please sign in first");
+        toast.error(t('auth.pleaseSignInFirst'));
         navigate("/auth");
         return;
       }
@@ -55,11 +57,11 @@ const Onboarding = () => {
 
       if (error) throw error;
 
-      toast.success("Profile setup complete!");
+      toast.success(t('onboarding.profileComplete'));
       navigate("/dashboard");
     } catch (error) {
       console.error("Error saving profile:", error);
-      toast.error("Failed to save profile. Please try again.");
+      toast.error(t('onboarding.failedToSave'));
     } finally {
       setLoading(false);
     }
@@ -89,10 +91,10 @@ const Onboarding = () => {
             <Card className="p-8">
               <div className="text-center space-y-2 mb-8">
                 <h1 className="text-2xl font-bold text-foreground">
-                  Welcome to NAJA
+                  {t('onboarding.welcomeToNaja')}
                 </h1>
                 <p className="text-muted-foreground">
-                  Your spiritual journey starts here
+                  {t('onboarding.journeyStarts')}
                 </p>
               </div>
 
@@ -103,14 +105,14 @@ const Onboarding = () => {
               </div>
 
               <p className="text-center text-muted-foreground leading-relaxed mb-8">
-                Track your prayers, build lasting Islamic habits, and strengthen your faith—one step at a time.
+                {t('onboarding.appDescription')}
               </p>
 
               <Button 
                 onClick={handleNext}
                 className="w-full h-12"
               >
-                Get Started
+                {t('onboarding.getStarted')}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Card>
@@ -127,10 +129,10 @@ const Onboarding = () => {
             <Card className="p-8">
               <div className="text-center space-y-2 mb-8">
                 <h1 className="text-2xl font-bold text-foreground">
-                  Set Up Your Profile
+                  {t('onboarding.setUpProfile')}
                 </h1>
                 <p className="text-muted-foreground">
-                  Help us personalize your experience
+                  {t('onboarding.personalizeExperience')}
                 </p>
               </div>
 
@@ -138,11 +140,11 @@ const Onboarding = () => {
                 <div className="space-y-2">
                   <Label htmlFor="name" className="flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    Your Name
+                    {t('onboarding.yourName')}
                   </Label>
                   <Input
                     id="name"
-                    placeholder="Enter your name"
+                    placeholder={t('onboarding.enterName')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="h-12"
@@ -152,11 +154,11 @@ const Onboarding = () => {
                 <div className="space-y-2">
                   <Label htmlFor="location" className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    Location (for prayer times)
+                    {t('onboarding.locationForPrayer')}
                   </Label>
                   <Input
                     id="location"
-                    placeholder="e.g., London, UK"
+                    placeholder={t('onboarding.locationPlaceholder')}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     className="h-12"
@@ -173,11 +175,11 @@ const Onboarding = () => {
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
+                      {t('common.saving')}
                     </>
                   ) : (
                     <>
-                      Complete Setup
+                      {t('onboarding.completeSetup')}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </>
                   )}
@@ -188,7 +190,7 @@ const Onboarding = () => {
                   disabled={loading}
                   className="w-full"
                 >
-                  Back
+                  {t('common.back')}
                 </Button>
               </div>
             </Card>

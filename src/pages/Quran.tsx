@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -30,6 +31,7 @@ const PAGES_PER_JUZ = 20;
 
 const Quran = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
   const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'hifdh' | 'khatam'>('reading');
   const [progress, setProgress] = useState<QuranProgress>({
@@ -80,18 +82,18 @@ const Quran = () => {
 
     if (newTotalPages > 0 && newTotalPages % TOTAL_QURAN_PAGES === 0) {
       newKhatams++;
-      toast('Khatam completed. MashAllah!');
+      toast(t('toast.khatamCompleted'));
       addBarakahPoints(BARAKAH_REWARDS.QURAN_KHATAM);
     } else {
       addBarakahPoints(BARAKAH_REWARDS.QURAN_PAGE);
       if (newTotalPages % PAGES_PER_JUZ === 0) {
-        toast(`Juz ${newCurrentJuz - 1} completed`);
+        toast(t('toast.juzCompleted', { juz: newCurrentJuz - 1 }));
         addBarakahPoints(BARAKAH_REWARDS.QURAN_JUZ);
       }
     }
 
     if (newTodayPages === progress.dailyGoal) {
-      toast('Daily goal achieved. MashAllah!');
+      toast(t('toast.dailyGoalAchieved'));
     }
 
     saveProgress({
@@ -122,7 +124,7 @@ const Quran = () => {
   const updateGoal = (newGoal: number) => {
     saveProgress({ ...progress, dailyGoal: newGoal });
     setShowGoalModal(false);
-    toast(`Daily goal set to ${newGoal} pages`);
+    toast(t('toast.goalSet', { goal: newGoal }));
   };
 
   const handleSurahSelect = (chapter: AppChapter) => {
@@ -147,7 +149,7 @@ const Quran = () => {
       className="min-h-screen bg-background pb-24"
     >
       <TopBar 
-        title="Quran" 
+        title={t('nav.quran')} 
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
@@ -159,10 +161,10 @@ const Quran = () => {
       <div className="px-4 pb-4">
         <div className="flex gap-1 p-1 bg-muted rounded-xl">
           {[
-            { id: 'reading', label: 'Read', icon: BookOpen },
-            { id: 'surahs', label: 'Surahs', icon: BookMarked },
-            { id: 'hifdh', label: 'Hifdh', icon: Brain },
-            { id: 'khatam', label: 'Khatam', icon: Award },
+            { id: 'reading', labelKey: 'quran.read', icon: BookOpen },
+            { id: 'surahs', labelKey: 'quran.surahs', icon: BookMarked },
+            { id: 'hifdh', labelKey: 'quran.hifdh', icon: Brain },
+            { id: 'khatam', labelKey: 'quran.khatam', icon: Award },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -175,7 +177,7 @@ const Quran = () => {
               )}
             >
               <tab.icon className="w-3.5 h-3.5" />
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>
@@ -206,9 +208,9 @@ const Quran = () => {
                   setActiveTab('surahs');
                 }}
               >
-                <p className="text-xs text-muted-foreground mb-1">Continue Reading</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('quran.continueReading')}</p>
                 <p className="font-medium">{lastRead.chapterName || `Surah ${lastRead.chapterId}`}</p>
-                <p className="text-sm text-primary">Verse {lastRead.verseNumber}</p>
+                <p className="text-sm text-primary">{t('quran.verse')} {lastRead.verseNumber}</p>
               </Card>
             )}
 
@@ -216,12 +218,12 @@ const Quran = () => {
             <Card className="p-6 bg-gradient-to-br from-success/20 to-accent/10 border-success/20">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Today's Reading</p>
+                  <p className="text-sm text-muted-foreground">{t('quran.todayReading')}</p>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">{progress.todayPages}</span>
                     <span className="text-lg text-muted-foreground">/ {progress.dailyGoal}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">pages</p>
+                  <p className="text-xs text-muted-foreground">{t('quran.pages')}</p>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -246,9 +248,9 @@ const Quran = () => {
                   <div style={{ width: `${todayProgress}%` }} className="h-full bg-success rounded-full transition-all" />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{Math.round(todayProgress)}% of daily goal</span>
+                  <span>{Math.round(todayProgress)}% {t('quran.dailyGoal')}</span>
                   <button onClick={() => setShowGoalModal(true)} className="text-success font-medium">
-                    Change goal
+                    {t('quran.changeGoal')}
                   </button>
                 </div>
               </div>
@@ -257,7 +259,7 @@ const Quran = () => {
             {/* Bookmarks */}
             {bookmarks.length > 0 && (
               <Card className="p-4">
-                <h3 className="text-sm font-medium mb-3">Bookmarks</h3>
+                <h3 className="text-sm font-medium mb-3">{t('quran.bookmarks')}</h3>
                 <div className="space-y-2">
                   {bookmarks.slice(0, 5).map((bm) => (
                     <div key={bm.verseKey} className="flex items-center justify-between text-sm">
@@ -274,21 +276,21 @@ const Quran = () => {
               <Card className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <BookOpen className="w-4 h-4 text-secondary" />
-                  <span className="text-xs text-muted-foreground">Total Pages</span>
+                  <span className="text-xs text-muted-foreground">{t('quran.totalPages')}</span>
                 </div>
                 <p className="text-2xl font-bold">{progress.totalPages}</p>
               </Card>
               <Card className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Trophy className="w-4 h-4 text-warn" />
-                  <span className="text-xs text-muted-foreground">Khatams</span>
+                  <span className="text-xs text-muted-foreground">{t('quran.khatamsCompleted')}</span>
                 </div>
                 <p className="text-2xl font-bold">{progress.khatams}</p>
               </Card>
             </div>
 
             <p className="text-xs text-muted-foreground text-center">
-              Your niyyah is what matters - points are just a tool to help you stay consistent.
+              {t('dashboard.niyyahDisclaimer')}
             </p>
           </div>
         )}
@@ -318,16 +320,16 @@ const Quran = () => {
                 <Award className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-1">{progress.khatams}</h3>
-              <p className="text-muted-foreground">Khatams Completed</p>
+              <p className="text-muted-foreground">{t('quran.khatamsCompleted')}</p>
             </Card>
 
             <Card className="p-4">
-              <h4 className="text-sm font-medium mb-3">Current Progress</h4>
+              <h4 className="text-sm font-medium mb-3">{t('quran.currentProgress')}</h4>
               <div className="h-3 bg-muted rounded-full overflow-hidden mb-2">
                 <div style={{ width: `${khatamProgress}%` }} className="h-full bg-primary rounded-full" />
               </div>
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{progress.totalPages % TOTAL_QURAN_PAGES} / {TOTAL_QURAN_PAGES} pages</span>
+                <span>{progress.totalPages % TOTAL_QURAN_PAGES} / {TOTAL_QURAN_PAGES} {t('quran.pages')}</span>
                 <span>{Math.round(khatamProgress)}%</span>
               </div>
             </Card>
@@ -339,7 +341,7 @@ const Quran = () => {
       {showGoalModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="p-6 w-full max-w-sm">
-            <h3 className="font-semibold mb-4">Set Daily Goal</h3>
+            <h3 className="font-semibold mb-4">{t('quran.setDailyGoal')}</h3>
             <div className="grid grid-cols-4 gap-2 mb-4">
               {[1, 3, 5, 10].map((g) => (
                 <Button key={g} variant={progress.dailyGoal === g ? "default" : "outline"} onClick={() => updateGoal(g)}>
@@ -347,7 +349,7 @@ const Quran = () => {
                 </Button>
               ))}
             </div>
-            <Button variant="ghost" className="w-full" onClick={() => setShowGoalModal(false)}>Cancel</Button>
+            <Button variant="ghost" className="w-full" onClick={() => setShowGoalModal(false)}>{t('common.cancel')}</Button>
           </Card>
         </div>
       )}

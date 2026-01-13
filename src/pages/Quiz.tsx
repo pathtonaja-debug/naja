@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Brain, CheckCircle2, XCircle, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { useDailyQuiz, QuizAttempt } from '@/hooks/useDailyQuiz';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { cn } from '@/lib/utils';
 
 const Quiz = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { quiz, loading, generating, hasCompletedToday, attempt, submitQuiz, refetch } = useDailyQuiz();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
@@ -78,8 +80,8 @@ const Quiz = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Daily Quiz</h1>
-            <p className="text-xs text-muted-foreground">{quiz?.topic || 'Islamic Knowledge'}</p>
+            <h1 className="text-xl font-bold text-foreground">{t('quiz.dailyQuiz')}</h1>
+            <p className="text-xs text-muted-foreground">{quiz?.topic || t('quiz.islamicKnowledge')}</p>
           </div>
         </div>
 
@@ -91,31 +93,31 @@ const Quiz = () => {
           >
             <CheckCircle2 className="w-12 h-12 text-green-500" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Quiz Complete</h2>
-          <p className="text-muted-foreground mb-6">You've already completed today's quiz</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">{t('quiz.quizComplete')}</h2>
+          <p className="text-muted-foreground mb-6">{t('quiz.alreadyCompleted')}</p>
           
           <div className="p-6 rounded-2xl bg-card/80 border border-border/50 max-w-sm mx-auto">
             <div className="flex items-center justify-center gap-6">
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary">{attempt.score}/{attempt.total_questions}</p>
-                <p className="text-xs text-muted-foreground">Score</p>
+                <p className="text-xs text-muted-foreground">{t('quiz.score')}</p>
               </div>
               <div className="h-12 w-px bg-border" />
               <div className="text-center">
                 <p className="text-3xl font-bold text-yellow-500">+{attempt.points_earned}</p>
-                <p className="text-xs text-muted-foreground">Barakah Points</p>
+                <p className="text-xs text-muted-foreground">{t('dashboard.barakahPoints')}</p>
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground mt-8">Come back tomorrow for a new quiz</p>
+          <p className="text-sm text-muted-foreground mt-8">{t('quiz.comeBackTomorrow')}</p>
           
           <Button 
             variant="outline" 
             onClick={() => navigate('/dashboard')}
             className="mt-4"
           >
-            Back to Dashboard
+            {t('quiz.backToDashboard')}
           </Button>
         </div>
 
@@ -140,7 +142,7 @@ const Quiz = () => {
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
-          <h1 className="text-xl font-bold text-foreground">Daily Quiz</h1>
+          <h1 className="text-xl font-bold text-foreground">{t('quiz.dailyQuiz')}</h1>
         </div>
 
         <div className="px-4 py-8 text-center">
@@ -153,18 +155,18 @@ const Quiz = () => {
               >
                 <Brain className="w-8 h-8 text-primary" />
               </motion.div>
-              <h2 className="text-xl font-bold text-foreground">Generating Quiz...</h2>
-              <p className="text-sm text-muted-foreground mt-2">AI is creating today's questions</p>
+              <h2 className="text-xl font-bold text-foreground">{t('quiz.generatingQuiz')}</h2>
+              <p className="text-sm text-muted-foreground mt-2">{t('quiz.aiCreatingQuestions')}</p>
             </>
           ) : (
             <>
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h2 className="text-xl font-bold text-foreground">No Quiz Available</h2>
-              <p className="text-sm text-muted-foreground mt-2">Check back later for today's quiz</p>
+              <h2 className="text-xl font-bold text-foreground">{t('quiz.noQuizAvailable')}</h2>
+              <p className="text-sm text-muted-foreground mt-2">{t('quiz.checkBackLater')}</p>
               <Button onClick={refetch} className="mt-4">
-                Try Again
+                {t('common.retry')}
               </Button>
             </>
           )}
@@ -187,7 +189,7 @@ const Quiz = () => {
         className="min-h-screen bg-background pb-24"
       >
         <div className="px-4 pt-4 pb-2">
-          <h1 className="text-xl font-bold text-foreground text-center">Quiz Complete</h1>
+          <h1 className="text-xl font-bold text-foreground text-center">{t('quiz.quizComplete')}</h1>
         </div>
 
         <div className="px-4 py-8 text-center">
@@ -217,13 +219,13 @@ const Quiz = () => {
             {isPerfect && (
               <div className="flex items-center justify-center gap-2 text-yellow-500 mb-4">
                 <Sparkles className="w-5 h-5" />
-                <span className="font-bold">Perfect Score</span>
+                <span className="font-bold">{t('quiz.perfectScore')}</span>
                 <Sparkles className="w-5 h-5" />
               </div>
             )}
             
             <h2 className="text-2xl font-bold text-foreground">
-              {quizResult.score}/{questions.length} Correct
+              {quizResult.score}/{questions.length} {t('quiz.correct')}
             </h2>
             
             <motion.div
@@ -233,20 +235,20 @@ const Quiz = () => {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 text-primary font-bold text-lg mt-4"
             >
               <Star className="w-5 h-5" />
-              +{quizResult.pointsEarned} Barakah Points
+              +{quizResult.pointsEarned} {t('dashboard.barakahPoints')}
             </motion.div>
           </motion.div>
 
           <div className="mt-8 space-y-3">
             <Button onClick={() => navigate('/dashboard')} className="w-full max-w-xs">
-              Continue
+              {t('common.continue')}
             </Button>
             <Button 
               variant="outline" 
               onClick={() => navigate('/achievements')}
               className="w-full max-w-xs"
             >
-              View Achievements
+              {t('quiz.viewAchievements')}
             </Button>
           </div>
         </div>
@@ -274,7 +276,7 @@ const Quiz = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </motion.button>
           <div>
-            <h1 className="text-lg font-bold text-foreground">Daily Quiz</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('quiz.dailyQuiz')}</h1>
             <p className="text-xs text-muted-foreground">{quiz.topic}</p>
           </div>
         </div>
@@ -308,7 +310,7 @@ const Quiz = () => {
             <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20">
               <div className="flex items-center gap-2 mb-4">
                 <Brain className="w-5 h-5 text-purple-500" />
-                <span className="text-xs font-medium text-purple-500">Question {currentQuestion + 1}</span>
+                <span className="text-xs font-medium text-purple-500">{t('quiz.question')} {currentQuestion + 1}</span>
               </div>
               <h2 className="text-lg font-bold text-foreground">{currentQ?.question}</h2>
             </div>

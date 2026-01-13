@@ -11,9 +11,11 @@ import { reflectionPrompts, moodOptions } from "@/components/journal/ReflectionP
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import quranWatercolor from "@/assets/illustrations/quran-watercolor.png";
 
 const Journal = () => {
+  const { t } = useTranslation();
   const [text, setText] = useState("");
   const [selectedPrompt, setSelectedPrompt] = useState(reflectionPrompts[0]);
   const [selectedMood, setSelectedMood] = useState("");
@@ -31,7 +33,7 @@ const Journal = () => {
 
   function save() {
     if (!text.trim()) {
-      toast.error("Please write something");
+      toast.error(t('journal.pleaseWriteSomething'));
       return;
     }
 
@@ -46,7 +48,7 @@ const Journal = () => {
       // Award points for reflection
       addBarakahPoints(BARAKAH_REWARDS.REFLECTION_WRITTEN);
 
-      toast.success("Reflection saved");
+      toast.success(t('journal.reflectionSaved'));
       setText("");
       setSelectedMood("");
       setShowInput(false);
@@ -54,7 +56,7 @@ const Journal = () => {
       load();
     } catch (error) {
       console.error("Error saving reflection:", error);
-      toast.error("Failed to save reflection");
+      toast.error(t('journal.failedToSave'));
     }
   }
 
@@ -76,7 +78,7 @@ const Journal = () => {
       />
 
       <TopBar
-        title="Journal"
+        title={t('nav.journal')}
         rightElement={
           <Button 
             size="icon" 
@@ -95,10 +97,10 @@ const Journal = () => {
         transition={{ delay: 0.1 }}
       >
         <h1 className="text-xl font-semibold text-foreground mb-0.5">
-          Daily Reflections
+          {t('journal.dailyReflections')}
         </h1>
         <p className="text-muted-foreground text-[13px]">
-          One entry per day to reflect on your journey
+          {t('journal.oneEntryPerDay')}
         </p>
       </motion.div>
 
@@ -114,7 +116,7 @@ const Journal = () => {
               <Card className="p-5">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Today's Prompt</label>
+                    <label className="text-sm font-medium text-foreground">{t('journal.todaysPrompt')}</label>
                     <div className="grid grid-cols-4 gap-2">
                       {reflectionPrompts.map((prompt) => (
                         <button
@@ -127,26 +129,26 @@ const Journal = () => {
                           }`}
                         >
                           <span className="text-2xl">{prompt.icon}</span>
-                          <span className="text-xs text-center text-foreground">{prompt.title}</span>
+                          <span className="text-xs text-center text-foreground">{t(`journal.prompts.${prompt.id}`)}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="p-4 rounded-xl bg-muted/50 border border-border">
-                    <p className="text-sm text-muted-foreground italic">{selectedPrompt.prompt}</p>
+                    <p className="text-sm text-muted-foreground italic">{t(`journal.promptTexts.${selectedPrompt.id}`)}</p>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">How are you feeling?</label>
+                    <label className="text-sm font-medium text-foreground">{t('journal.howAreYouFeeling')}</label>
                     <Select value={selectedMood} onValueChange={setSelectedMood}>
                       <SelectTrigger className="rounded-xl">
-                        <SelectValue placeholder="Select mood" />
+                        <SelectValue placeholder={t('journal.selectMood')} />
                       </SelectTrigger>
                       <SelectContent>
                         {moodOptions.map((mood) => (
                           <SelectItem key={mood.value} value={mood.value}>
-                            {mood.emoji} {mood.label}
+                            {mood.emoji} {t(`journal.moods.${mood.value}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -154,7 +156,7 @@ const Journal = () => {
                   </div>
 
                   <Textarea
-                    placeholder="Write your reflection..."
+                    placeholder={t('journal.writeReflection')}
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     className="min-h-[150px] resize-none rounded-xl"
@@ -165,10 +167,10 @@ const Journal = () => {
                       onClick={() => setShowInput(false)} 
                       variant="ghost"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                     <Button onClick={save}>
-                      Save Reflection
+                      {t('journal.saveReflection')}
                     </Button>
                   </div>
                 </div>
@@ -187,13 +189,13 @@ const Journal = () => {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">No reflections yet</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t('journal.noReflectionsYet')}</h3>
               <p className="text-muted-foreground mb-4 text-sm">
-                Start your spiritual journey by writing your first reflection
+                {t('journal.startJourney')}
               </p>
               <Button onClick={() => setShowInput(true)}>
                 <Plus className="w-4 h-4 mr-2" />
-                New Reflection
+                {t('journal.newReflection')}
               </Button>
             </Card>
           </motion.div>
@@ -215,11 +217,11 @@ const Journal = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-sm font-semibold text-foreground">
-                        {item.prompt || "Daily Reflection"}
+                        {item.prompt || t('journal.dailyReflection')}
                       </h3>
                       {item.mood && (
                         <Badge variant="secondary" className="rounded-full text-xs">
-                          {moodOptions.find(m => m.value === item.mood)?.label}
+                          {t(`journal.moods.${item.mood}`)}
                         </Badge>
                       )}
                     </div>
@@ -228,7 +230,7 @@ const Journal = () => {
                     </p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="w-3.5 h-3.5" />
-                      <span>{new Date(item.date).toLocaleDateString('en-US', {
+                      <span>{new Date(item.date).toLocaleDateString(undefined, {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
