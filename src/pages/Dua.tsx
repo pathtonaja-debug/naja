@@ -28,6 +28,7 @@ type LibraryTab = 'all' | 'folders' | 'favorites';
 
 const Dua = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>('library');
   const [libraryTab, setLibraryTab] = useState<LibraryTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,10 +106,10 @@ const Dua = () => {
       // Award points for creating dua
       addBarakahPoints(BARAKAH_REWARDS.DUA_CREATED);
       
-      toast.success('Dua saved');
+      toast.success(t('dua.duaSaved'));
     } catch (err) {
       console.error('Error saving dua:', err);
-      toast.error('Failed to save dua');
+      toast.error(t('toast.error'));
     }
   };
 
@@ -144,10 +145,10 @@ const Dua = () => {
       deleteLocalDua(duaId);
       setDuas(prev => prev.filter(d => d.id !== duaId));
       setSelectedDua(null);
-      toast.success('Dua deleted');
+      toast.success(t('dua.duaDeleted'));
     } catch (err) {
       console.error('Error deleting dua:', err);
-      toast.error('Failed to delete dua');
+      toast.error(t('toast.error'));
     }
   };
 
@@ -156,10 +157,10 @@ const Dua = () => {
       deleteLocalDuaFolder(folderId);
       setFolders(prev => prev.filter(f => f.id !== folderId));
       setDuas(prev => prev.map(d => d.folder_id === folderId ? { ...d, folder_id: null } : d));
-      toast.success('Folder deleted');
+      toast.success(t('dua.folderDeleted'));
     } catch (err) {
       console.error('Error deleting folder:', err);
-      toast.error('Failed to delete folder');
+      toast.error(t('toast.error'));
     }
   };
 
@@ -185,7 +186,7 @@ const Dua = () => {
         className="min-h-screen bg-background flex flex-col"
       >
         <TopBar 
-          title="Guided Dua" 
+          title={t('dua.guided')} 
           leftElement={
             <button onClick={() => setViewMode('builder-choice')} className="p-2 -ml-2">
               <ChevronLeft className="w-5 h-5" />
@@ -222,7 +223,7 @@ const Dua = () => {
         className="min-h-screen bg-background flex flex-col"
       >
         <TopBar 
-          title="Write Your Dua" 
+          title={t('dua.writeOwn')} 
           leftElement={
             <button onClick={() => setViewMode('builder-choice')} className="p-2 -ml-2">
               <ChevronLeft className="w-5 h-5" />
@@ -259,7 +260,7 @@ const Dua = () => {
         className="min-h-screen bg-background pb-24"
       >
         <TopBar 
-          title="Dua Builder" 
+          title={t('dua.builder')} 
           leftElement={
             <button onClick={() => setViewMode('library')} className="p-2 -ml-2">
               <ChevronLeft className="w-5 h-5" />
@@ -269,7 +270,7 @@ const Dua = () => {
 
         <div className="px-4 py-6 space-y-4">
           <p className="text-muted-foreground text-center mb-6">
-            Choose how you'd like to create your dua
+            {t('dua.chooseMethod')}
           </p>
 
           <button
@@ -281,8 +282,8 @@ const Dua = () => {
                 <Pencil className="w-6 h-6 text-secondary" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Write Your Own</h3>
-                <p className="text-sm text-muted-foreground">Free text dua with optional topic</p>
+                <h3 className="font-semibold text-lg">{t('dua.writeOwn')}</h3>
+                <p className="text-sm text-muted-foreground">{t('dua.writeOwnDesc')}</p>
               </div>
             </div>
           </button>
@@ -296,8 +297,8 @@ const Dua = () => {
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Guided Dua</h3>
-                <p className="text-sm text-muted-foreground">Step-by-step with AI assistance</p>
+                <h3 className="font-semibold text-lg">{t('dua.guided')}</h3>
+                <p className="text-sm text-muted-foreground">{t('dua.guidedDesc')}</p>
               </div>
             </div>
           </button>
@@ -309,6 +310,14 @@ const Dua = () => {
   }
 
   // Library view
+  const getTabLabel = (tab: LibraryTab) => {
+    switch (tab) {
+      case 'all': return t('dua.all');
+      case 'folders': return t('dua.folders');
+      case 'favorites': return t('dua.favorites');
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -316,7 +325,7 @@ const Dua = () => {
       className="min-h-screen bg-background pb-24"
     >
       <TopBar 
-        title="Dua Library" 
+        title={t('dua.library')} 
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
@@ -337,7 +346,7 @@ const Dua = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search duas..."
+            placeholder={t('dua.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -362,7 +371,7 @@ const Dua = () => {
               {tab === 'favorites' && <Heart className="w-3.5 h-3.5" />}
               {tab === 'folders' && <Folder className="w-3.5 h-3.5" />}
               {tab === 'all' && <BookOpen className="w-3.5 h-3.5" />}
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {getTabLabel(tab)}
             </button>
           ))}
         </div>
@@ -383,19 +392,19 @@ const Dua = () => {
               variant="outline"
               className="w-full"
               onClick={() => {
-                const name = prompt("Folder name?");
+                const name = prompt(t('dua.folderName'));
                 if (!name?.trim()) return;
                 handleCreateFolder(name.trim());
-                toast.success("Folder created");
+                toast.success(t('dua.folderCreated'));
               }}
             >
               <FolderPlus className="w-4 h-4 mr-2" />
-              Create folder
+              {t('dua.createFolder')}
             </Button>
 
             {folders.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">No folders yet</p>
+                <p className="text-muted-foreground">{t('dua.noFolders')}</p>
               </div>
             ) : (
               folders.map(folder => (
@@ -436,14 +445,14 @@ const Dua = () => {
                           ))}
                           {getDuasInFolder(folder.id).length === 0 && (
                             <p className="text-sm text-muted-foreground text-center py-4">
-                              No duas in this folder
+                              {t('dua.noDuasInFolder')}
                             </p>
                           )}
                           <button
                             onClick={() => deleteFolder(folder.id)}
                             className="w-full py-2 text-sm text-destructive hover:underline"
                           >
-                            Delete folder
+                            {t('dua.deleteFolder')}
                           </button>
                         </div>
                       </motion.div>
@@ -460,14 +469,14 @@ const Dua = () => {
               <div className="text-center py-12">
                 <Sparkles className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                 <p className="text-muted-foreground">
-                  {libraryTab === 'favorites' ? 'No favorite duas yet' : 'No duas yet'}
+                  {libraryTab === 'favorites' ? t('dua.noFavorites') : t('dua.noDuas')}
                 </p>
                 <Button 
                   onClick={() => setViewMode('builder-choice')}
                   variant="outline" 
                   className="mt-3"
                 >
-                  Create your first dua
+                  {t('dua.createFirst')}
                 </Button>
               </div>
             ) : (
@@ -536,7 +545,7 @@ const Dua = () => {
                 
                 {selectedDua.selected_names && selectedDua.selected_names.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-border">
-                    <p className="text-xs text-muted-foreground mb-2">Names of Allah used:</p>
+                    <p className="text-xs text-muted-foreground mb-2">{t('dua.namesUsed')}:</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedDua.selected_names.map((name, i) => (
                         <span key={i} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
