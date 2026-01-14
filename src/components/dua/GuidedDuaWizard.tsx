@@ -9,6 +9,7 @@ import { namesOfAllah, AllahName } from '@/data/namesOfAllah';
 import { DUA_TOPICS, TOPIC_NAME_SUGGESTIONS, UMMAH_PRAYERS, SALAWAT_OPTIONS, DuaTopic } from '@/data/duaTopics';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export interface GuidedDuaState {
   topic: DuaTopic | null;
@@ -28,21 +29,14 @@ interface GuidedDuaWizardProps {
   onCancel: () => void;
 }
 
-const STEPS = [
-  { id: 1, title: 'Choose a topic' },
-  { id: 2, title: 'Call upon Allah by His Names' },
-  { id: 3, title: 'What are you asking Allah for?' },
-  { id: 4, title: 'Add prayers for others (optional)' },
-  { id: 5, title: 'Send blessings upon the Prophet ﷺ' },
-  { id: 6, title: 'Your dua' },
-];
-
 export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [state, setState] = useState<GuidedDuaState>({
     topic: null,
     customTopic: '',
     selectedNames: [],
+
     shortDescription: '',
     details: '',
     requestText: '',
@@ -54,14 +48,20 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const STEPS = [
+    { id: 1, title: t('guidedDua.step1Title') },
+    { id: 2, title: t('guidedDua.step2Title') },
+    { id: 3, title: t('guidedDua.step3Title') },
+    { id: 4, title: t('guidedDua.step4Title') },
+    { id: 5, title: t('guidedDua.step5Title') },
+    { id: 6, title: t('guidedDua.step6Title') },
+  ];
+
   const canProceed = useCallback(() => {
     switch (step) {
       case 1:
         return state.topic !== null && (state.topic !== 'other' || state.customTopic.trim());
       case 2:
-        return true; // Optional step
-      case 3:
-        return state.shortDescription.trim() && state.requestText.trim();
       case 4:
         return true; // Optional step
       case 5:
@@ -96,7 +96,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
 
   const generateDuaDraft = async () => {
     if (!state.shortDescription.trim()) {
-      toast.error('Please describe what you need first');
+      toast.error(t('guidedDua.pleaseDescribeFirst'));
       return;
     }
 
@@ -116,10 +116,10 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
       if (data?.error) throw new Error(data.error);
 
       setState(prev => ({ ...prev, requestText: data.duaText }));
-      toast.success('Draft generated! ✨');
+      toast.success(t('guidedDua.draftGenerated'));
     } catch (err) {
       console.error('Error generating dua:', err);
-      toast.error('Failed to generate draft. Please try again.');
+      toast.error(t('guidedDua.failedToGenerate'));
     } finally {
       setIsGenerating(false);
     }
@@ -132,7 +132,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
         return { ...prev, selectedNames: prev.selectedNames.filter(n => n.number !== name.number) };
       }
       if (prev.selectedNames.length >= 3) {
-        toast.info('Up to 3 names can be selected');
+        toast.info(t('guidedDua.upTo3Names'));
         return prev;
       }
       return { ...prev, selectedNames: [...prev.selectedNames, name] };
@@ -169,7 +169,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
             />
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">Step {step} of {STEPS.length}</p>
+        <p className="text-xs text-muted-foreground">{t('guidedDua.step')} {step} {t('guidedDua.of')} {STEPS.length}</p>
       </div>
 
       {/* Step content */}
@@ -232,13 +232,13 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                 )}
 
                 {state.selectedNames.length >= 3 && (
-                  <p className="text-sm text-muted-foreground italic">Up to 3 names can be selected</p>
+                  <p className="text-sm text-muted-foreground italic">{t('guidedDua.upTo3Names')}</p>
                 )}
 
                 {/* Suggested for this topic */}
                 {suggestedNames.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Suggested for this topic</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('guidedDua.suggestedForTopic')}</h3>
                     <div className="space-y-2">
                       {suggestedNames.map(name => (
                         <NameCard
@@ -255,7 +255,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
 
                 {/* All names */}
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">All 99 Names</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('guidedDua.all99Names')}</h3>
                   <div className="space-y-2 max-h-[40vh] overflow-y-auto">
                     {otherNames.map(name => (
                       <NameCard
@@ -274,9 +274,9 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
             {step === 3 && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">In one sentence, what do you need? *</label>
+                  <label className="text-sm font-medium">{t('guidedDua.oneSentence')} *</label>
                   <Input
-                    placeholder="e.g., I need strength to overcome my challenges"
+                    placeholder={t('guidedDua.sentencePlaceholder')}
                     value={state.shortDescription}
                     onChange={(e) => setState(prev => ({ ...prev, shortDescription: e.target.value }))}
                     className="mt-1"
@@ -284,9 +284,9 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Add a little context (optional)</label>
+                  <label className="text-sm font-medium">{t('guidedDua.addContext')}</label>
                   <Textarea
-                    placeholder="e.g., I've been struggling with work pressure and need Allah's help..."
+                    placeholder={t('guidedDua.contextPlaceholder')}
                     value={state.details}
                     onChange={(e) => setState(prev => ({ ...prev, details: e.target.value }))}
                     className="mt-1"
@@ -306,7 +306,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                     ) : (
                       <Sparkles className="w-4 h-4 mr-2" />
                     )}
-                    Generate a draft
+                    {t('guidedDua.generateDraft')}
                   </Button>
                   <Button
                     onClick={() => setState(prev => ({ ...prev, requestText: state.shortDescription }))}
@@ -314,24 +314,24 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                     variant="secondary"
                     className="flex-1"
                   >
-                    Write my own
+                    {t('guidedDua.writeMyOwn')}
                   </Button>
                 </div>
 
                 {state.requestText && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium">Your dua request</label>
+                      <label className="text-sm font-medium">{t('guidedDua.yourDuaRequest')}</label>
                       <Button variant="ghost" size="sm" onClick={generateDuaDraft} disabled={isGenerating}>
                         <RefreshCw className={cn("w-4 h-4 mr-1", isGenerating && "animate-spin")} />
-                        Regenerate
+                        {t('guidedDua.regenerate')}
                       </Button>
                     </div>
                     <Textarea
                       value={state.requestText}
                       onChange={(e) => setState(prev => ({ ...prev, requestText: e.target.value }))}
                       className="min-h-[120px]"
-                      placeholder="Your dua text..."
+                      placeholder={t('guidedDua.duaTextPlaceholder')}
                     />
                   </div>
                 )}
@@ -375,10 +375,10 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                   )}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium">Include Salawat</span>
+                    <span className="font-medium">{t('guidedDua.includeSalawat')}</span>
                     {state.includeSalawat && <Check className="w-4 h-4 text-primary" />}
                   </div>
-                  <p className="text-sm text-muted-foreground">Send blessings upon the Prophet ﷺ</p>
+                  <p className="text-sm text-muted-foreground">{t('guidedDua.sendBlessings')}</p>
                 </button>
 
                 {state.includeSalawat && (
@@ -427,7 +427,7 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
                   onClick={() => setIsEditing(!isEditing)}
                   className="w-full"
                 >
-                  {isEditing ? 'Done Editing' : '✏️ Edit final text'}
+                  {isEditing ? t('guidedDua.doneEditing') : `✏️ ${t('guidedDua.editFinalText')}`}
                 </Button>
               </div>
             )}
@@ -439,14 +439,14 @@ export function GuidedDuaWizard({ onComplete, onCancel }: GuidedDuaWizardProps) 
       <div className="px-4 py-4 border-t border-border flex gap-3">
         <Button variant="outline" onClick={handleBack} className="flex-1">
           <ChevronLeft className="w-4 h-4 mr-1" />
-          {step === 1 ? 'Cancel' : 'Back'}
+          {step === 1 ? t('common.cancel') : t('common.back')}
         </Button>
         <Button
           onClick={handleNext}
           disabled={!canProceed()}
           className="flex-1"
         >
-          {step === 6 ? 'Save Dua' : 'Next'}
+          {step === 6 ? t('guidedDua.saveDua') : t('common.next')}
           {step < 6 && <ChevronRight className="w-4 h-4 ml-1" />}
         </Button>
       </div>
