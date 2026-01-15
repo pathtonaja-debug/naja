@@ -327,6 +327,19 @@ const resources = {
       "quran.transliteration": "Transliteration",
       "quran.noTafsirAvailable": "No tafsir available for this verse.",
       "quran.unableToLoadTafsir": "Unable to load tafsir. Please try again later.",
+      "quran.surahsRead": "Surahs Read",
+
+      // Hifdh
+      "hifdh.totalMemorized": "Total Memorized",
+      "hifdh.inProgress": "in progress",
+      "hifdh.complete": "complete",
+      "hifdh.remaining": "Remaining",
+      "hifdh.backToHifdh": "Back to Hifdh",
+      "hifdh.verseStatus": "Verse Status",
+      "hifdh.clearAll": "Clear All",
+      "hifdh.markedAsSolid": "Surah marked as memorized. MashAllah!",
+      "hifdh.markedAsProgress": "Surah marked as in progress",
+      "hifdh.progressCleared": "Progress cleared",
 
       // Ayah of the Day
       "ayah.1.arabic": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
@@ -1225,6 +1238,19 @@ const resources = {
       "quran.transliteration": "Translittération",
       "quran.noTafsirAvailable": "Aucun tafsir disponible pour ce verset.",
       "quran.unableToLoadTafsir": "Impossible de charger le tafsir. Veuillez réessayer plus tard.",
+      "quran.surahsRead": "Sourates Lues",
+
+      // Hifdh
+      "hifdh.totalMemorized": "Total Mémorisé",
+      "hifdh.inProgress": "en cours",
+      "hifdh.complete": "terminé",
+      "hifdh.remaining": "Restant",
+      "hifdh.backToHifdh": "Retour au Hifdh",
+      "hifdh.verseStatus": "État des Versets",
+      "hifdh.clearAll": "Tout Effacer",
+      "hifdh.markedAsSolid": "Sourate marquée comme mémorisée. MashAllah !",
+      "hifdh.markedAsProgress": "Sourate marquée en cours",
+      "hifdh.progressCleared": "Progrès effacé",
 
       // Ayah of the Day
       "ayah.1.arabic": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Check, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -23,6 +24,7 @@ interface HifdhTrackerProps {
 }
 
 export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
+  const { t } = useTranslation();
   const [chapters, setChapters] = useState<AppChapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChapter, setSelectedChapter] = useState<AppChapter | null>(null);
@@ -74,11 +76,11 @@ export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
     setTotalStats(getTotalHifdhStats());
     
     if (status === 'solid') {
-      toast('Surah marked as memorized. MashAllah!');
+      toast(t('hifdh.markedAsSolid'));
     } else if (status === 'memorizing') {
-      toast('Surah marked as in progress');
+      toast(t('hifdh.markedAsProgress'));
     } else {
-      toast('Progress cleared');
+      toast(t('hifdh.progressCleared'));
     }
   };
 
@@ -105,25 +107,25 @@ export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
           className="flex items-center gap-1 text-sm text-muted-foreground"
         >
           <ChevronRight className="w-4 h-4 rotate-180" />
-          Back to Hifdh
+          {t('hifdh.backToHifdh')}
         </button>
 
         <Card className="p-6">
           <div className="text-center mb-4">
             <h3 className="font-arabic text-2xl mb-1">{selectedChapter.nameArabic}</h3>
             <p className="font-semibold">{selectedChapter.nameSimple}</p>
-            <p className="text-sm text-muted-foreground">{selectedChapter.versesCount} verses</p>
+            <p className="text-sm text-muted-foreground">{selectedChapter.versesCount} {t('quran.verses')}</p>
           </div>
 
           <div className="space-y-3 mb-6">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-success">Solid: {stats.solid}</span>
-              <span className="text-warn">Memorizing: {stats.memorizing}</span>
-              <span className="text-muted-foreground">Remaining: {stats.total - stats.solid - stats.memorizing}</span>
+              <span className="text-success">{t('quran.solid')}: {stats.solid}</span>
+              <span className="text-warn">{t('quran.memorizing')}: {stats.memorizing}</span>
+              <span className="text-muted-foreground">{t('hifdh.remaining')}: {stats.total - stats.solid - stats.memorizing}</span>
             </div>
             <Progress value={stats.percentComplete} className="h-3" />
             <p className="text-center text-sm text-muted-foreground">
-              {stats.percentComplete}% complete
+              {stats.percentComplete}% {t('hifdh.complete')}
             </p>
           </div>
 
@@ -132,26 +134,26 @@ export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
               onClick={() => handleMarkRange('memorizing')}
               className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-warn border border-warn/30 hover:bg-warn/10 transition-colors"
             >
-              Mark All Memorizing
+              {t('quran.markAllMemorizing')}
             </button>
             <button
               onClick={() => handleMarkRange('solid')}
               className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-success border border-success/30 hover:bg-success/10 transition-colors"
             >
-              Mark All Solid
+              {t('quran.markAllSolid')}
             </button>
             <button
               onClick={() => handleMarkRange('none')}
               className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground border border-border hover:bg-muted transition-colors"
             >
-              Clear All
+              {t('hifdh.clearAll')}
             </button>
           </div>
         </Card>
 
         {/* Verse Grid */}
         <Card className="p-4">
-          <h4 className="text-sm font-medium mb-3">Verse Status</h4>
+          <h4 className="text-sm font-medium mb-3">{t('hifdh.verseStatus')}</h4>
           <div className="grid grid-cols-10 gap-1">
             {Array.from({ length: selectedChapter.versesCount }, (_, i) => {
               const verseNum = i + 1;
@@ -191,19 +193,19 @@ export function HifdhTracker({ onSelectSurah }: HifdhTrackerProps) {
             <Brain className="w-6 h-6 text-success" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Total Memorized</p>
-            <p className="text-2xl font-bold">{totalStats.solid} <span className="text-sm font-normal text-muted-foreground">/ 6236 verses</span></p>
+            <p className="text-sm text-muted-foreground">{t('hifdh.totalMemorized')}</p>
+            <p className="text-2xl font-bold">{totalStats.solid} <span className="text-sm font-normal text-muted-foreground">/ 6236 {t('quran.verses')}</span></p>
           </div>
         </div>
         <Progress value={overallProgress} className="h-2" />
         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-          <span>{totalStats.memorizing} in progress</span>
-          <span>{overallProgress}% complete</span>
+          <span>{totalStats.memorizing} {t('hifdh.inProgress')}</span>
+          <span>{overallProgress}% {t('hifdh.complete')}</span>
         </div>
       </Card>
 
       <p className="text-xs text-muted-foreground text-center px-4">
-        Your niyyah is what matters - points are just a tool to help you stay consistent.
+        {t('dashboard.niyyahDisclaimer')}
       </p>
 
       {/* Surah List with Progress */}

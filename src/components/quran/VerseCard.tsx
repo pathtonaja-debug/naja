@@ -286,7 +286,7 @@ export function VerseCard({
               <div>
                 <p className="font-medium text-sm text-foreground">{verse.verseKey}</p>
                 <p className="text-xs text-muted-foreground">
-                  Page {verse.pageNumber} · Juz {verse.juzNumber}
+                  {t('quran.page')} {verse.pageNumber} · {t('quran.juz')} {verse.juzNumber}
                 </p>
               </div>
             </div>
@@ -358,7 +358,7 @@ export function VerseCard({
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showTransliteration ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                Transliteration
+                {t('quran.transliteration')}
               </button>
 
               <AnimatePresence>
