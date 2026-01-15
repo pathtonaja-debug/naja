@@ -25,7 +25,8 @@ const Learn = () => {
   const { addBarakahPoints } = useGuestProfile();
   const { 
     modules, 
-    completeLesson: completeLessonProgress, 
+    passLessonQuiz,
+    getLessonQuiz,
     passModuleQuiz,
     getModuleProgress,
     isModuleComplete,
@@ -38,12 +39,20 @@ const Learn = () => {
   const [showUnlockAnimation, setShowUnlockAnimation] = useState<string | null>(null);
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [quizModuleId, setQuizModuleId] = useState<string | null>(null);
+  const [lessonQuizMode, setLessonQuizMode] = useState<{ moduleId: string; lessonId: string } | null>(null);
 
-  const completeLesson = (moduleId: string, lessonId: string) => {
-    completeLessonProgress(moduleId, lessonId);
-    addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
-    toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.LESSON_COMPLETED }));
+  const handleLessonQuizComplete = (passed: boolean) => {
+    if (passed && lessonQuizMode && selectedModule) {
+      passLessonQuiz(lessonQuizMode.moduleId, lessonQuizMode.lessonId);
+      addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
+      toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.LESSON_COMPLETED }));
+    }
+    setLessonQuizMode(null);
     setSelectedLesson(null);
+  };
+
+  const handleStartLessonQuiz = (moduleId: string, lessonId: string) => {
+    setLessonQuizMode({ moduleId, lessonId });
   };
 
   const handleStartQuiz = (moduleId: string) => {
@@ -392,7 +401,7 @@ const Learn = () => {
                 </Button>
                 <Button 
                   className="flex-1"
-                  onClick={() => completeLesson(selectedModule.id, selectedLesson.id)}
+                  onClick={() => handleStartLessonQuiz(selectedModule.id, selectedLesson.id)}
                   disabled={selectedLesson.completed}
                 >
                   {selectedLesson.completed ? (
@@ -402,8 +411,8 @@ const Learn = () => {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      {t('common.done')}
+                      <Brain className="w-4 h-4 mr-2" />
+                      {t('learn.takeQuiz')}
                     </>
                   )}
                 </Button>
@@ -411,6 +420,17 @@ const Learn = () => {
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Lesson Quiz Modal */}
+      {lessonQuizMode && (
+        <LessonQuizModal
+          moduleId={lessonQuizMode.moduleId}
+          questions={[getLessonQuiz(lessonQuizMode.lessonId, i18n.language)].filter(Boolean) as any}
+          onComplete={handleLessonQuizComplete}
+          onClose={() => setLessonQuizMode(null)}
+        />
+      )}
       </AnimatePresence>
 
       {/* Module Quiz Modal */}
