@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const STORAGE_KEY = 'naja_learn_progress_v2';
 
@@ -12,14 +13,19 @@ export interface LessonQuizQuestion {
 export interface Lesson {
   id: string;
   title: string;
+  titleFr?: string;
   description: string;
+  descriptionFr?: string;
   completed: boolean;
+  quizPassed?: boolean;
 }
 
 export interface Module {
   id: string;
   title: string;
+  titleFr?: string;
   description: string;
+  descriptionFr?: string;
   icon: string;
   lessons: Lesson[];
   unlocked: boolean;
@@ -32,73 +38,92 @@ export interface LessonProgress {
   lastUpdated: string;
 }
 
+// Helper to get localized text
+export function getLocalizedText(item: { title: string; titleFr?: string; description: string; descriptionFr?: string }, lang: string): { title: string; description: string } {
+  if (lang === 'fr') {
+    return {
+      title: item.titleFr || item.title,
+      description: item.descriptionFr || item.description
+    };
+  }
+  return { title: item.title, description: item.description };
+}
+
 const DEFAULT_MODULES: Module[] = [
   { 
     id: 'basics', 
     title: 'Islamic Basics', 
+    titleFr: 'Bases de l\'Islam',
     description: 'Foundation of faith',
+    descriptionFr: 'Fondement de la foi',
     icon: '🕌',
     color: 'bg-primary/10 border-primary/20',
     unlocked: true,
     quizPassed: false,
     lessons: [
-      { id: 'b1', title: 'The Five Pillars', description: 'Core principles of Islam', completed: false },
-      { id: 'b2', title: 'Shahada: Declaration of Faith', description: 'The first pillar', completed: false },
-      { id: 'b3', title: 'Importance of Niyyah', description: 'Intention in worship', completed: false },
-      { id: 'b4', title: 'The Six Articles of Faith', description: 'Iman fundamentals', completed: false },
-      { id: 'b5', title: 'Halal & Haram Basics', description: 'Permissible and forbidden', completed: false },
+      { id: 'b1', title: 'The Five Pillars', titleFr: 'Les Cinq Piliers', description: 'Core principles of Islam', descriptionFr: 'Principes fondamentaux de l\'Islam', completed: false, quizPassed: false },
+      { id: 'b2', title: 'Shahada: Declaration of Faith', titleFr: 'Shahada : Déclaration de Foi', description: 'The first pillar', descriptionFr: 'Le premier pilier', completed: false, quizPassed: false },
+      { id: 'b3', title: 'Importance of Niyyah', titleFr: 'Importance de la Niyyah', description: 'Intention in worship', descriptionFr: 'L\'intention dans l\'adoration', completed: false, quizPassed: false },
+      { id: 'b4', title: 'The Six Articles of Faith', titleFr: 'Les Six Articles de la Foi', description: 'Iman fundamentals', descriptionFr: 'Les fondamentaux de l\'Iman', completed: false, quizPassed: false },
+      { id: 'b5', title: 'Halal & Haram Basics', titleFr: 'Bases du Halal et Haram', description: 'Permissible and forbidden', descriptionFr: 'Le permis et l\'interdit', completed: false, quizPassed: false },
     ]
   },
   { 
     id: 'pillars', 
     title: 'Pillars of Islam', 
+    titleFr: 'Piliers de l\'Islam',
     description: 'The five pillars in depth',
+    descriptionFr: 'Les cinq piliers en profondeur',
     icon: '🏛️',
     color: 'bg-accent/10 border-accent/20',
     unlocked: false,
     quizPassed: false,
     lessons: [
-      { id: 'p1', title: 'Salah: The Daily Prayers', description: 'How and why we pray', completed: false },
-      { id: 'p2', title: 'Zakah: Purifying Wealth', description: 'Charity obligations', completed: false },
-      { id: 'p3', title: 'Sawm: Fasting in Ramadan', description: 'The blessed month', completed: false },
-      { id: 'p4', title: 'Hajj: The Sacred Pilgrimage', description: 'Journey to Makkah', completed: false },
-      { id: 'p5', title: 'Living the Pillars Daily', description: 'Practical application', completed: false },
+      { id: 'p1', title: 'Salah: The Daily Prayers', titleFr: 'Salah : Les Prières Quotidiennes', description: 'How and why we pray', descriptionFr: 'Comment et pourquoi nous prions', completed: false, quizPassed: false },
+      { id: 'p2', title: 'Zakah: Purifying Wealth', titleFr: 'Zakah : Purifier la Richesse', description: 'Charity obligations', descriptionFr: 'Obligations de charité', completed: false, quizPassed: false },
+      { id: 'p3', title: 'Sawm: Fasting in Ramadan', titleFr: 'Sawm : Le Jeûne du Ramadan', description: 'The blessed month', descriptionFr: 'Le mois béni', completed: false, quizPassed: false },
+      { id: 'p4', title: 'Hajj: The Sacred Pilgrimage', titleFr: 'Hajj : Le Pèlerinage Sacré', description: 'Journey to Makkah', descriptionFr: 'Voyage à La Mecque', completed: false, quizPassed: false },
+      { id: 'p5', title: 'Living the Pillars Daily', titleFr: 'Vivre les Piliers au Quotidien', description: 'Practical application', descriptionFr: 'Application pratique', completed: false, quizPassed: false },
     ]
   },
   { 
     id: 'seerah', 
     title: 'Life of the Prophet ﷺ', 
+    titleFr: 'Vie du Prophète ﷺ',
     description: 'The prophetic biography',
+    descriptionFr: 'La biographie prophétique',
     icon: '📖',
     color: 'bg-success/10 border-success/20',
     unlocked: false,
     quizPassed: false,
     lessons: [
-      { id: 's1', title: 'Before the Revelation', description: 'Early life in Makkah', completed: false },
-      { id: 's2', title: 'The First Revelation', description: 'Cave of Hira', completed: false },
-      { id: 's3', title: 'The Early Muslims', description: 'First companions', completed: false },
-      { id: 's4', title: 'The Hijrah', description: 'Migration to Madinah', completed: false },
-      { id: 's5', title: 'Building the Ummah', description: 'Community in Madinah', completed: false },
-      { id: 's6', title: 'The Conquest of Makkah', description: 'Triumphant return', completed: false },
-      { id: 's7', title: 'The Farewell Sermon', description: 'Final guidance', completed: false },
-      { id: 's8', title: 'Legacy & Character', description: 'His beautiful example', completed: false },
+      { id: 's1', title: 'Before the Revelation', titleFr: 'Avant la Révélation', description: 'Early life in Makkah', descriptionFr: 'Première vie à La Mecque', completed: false, quizPassed: false },
+      { id: 's2', title: 'The First Revelation', titleFr: 'La Première Révélation', description: 'Cave of Hira', descriptionFr: 'La grotte de Hira', completed: false, quizPassed: false },
+      { id: 's3', title: 'The Early Muslims', titleFr: 'Les Premiers Musulmans', description: 'First companions', descriptionFr: 'Les premiers compagnons', completed: false, quizPassed: false },
+      { id: 's4', title: 'The Hijrah', titleFr: 'L\'Hégire', description: 'Migration to Madinah', descriptionFr: 'Migration à Médine', completed: false, quizPassed: false },
+      { id: 's5', title: 'Building the Ummah', titleFr: 'Construire la Oumma', description: 'Community in Madinah', descriptionFr: 'Communauté à Médine', completed: false, quizPassed: false },
+      { id: 's6', title: 'The Conquest of Makkah', titleFr: 'La Conquête de La Mecque', description: 'Triumphant return', descriptionFr: 'Retour triomphal', completed: false, quizPassed: false },
+      { id: 's7', title: 'The Farewell Sermon', titleFr: 'Le Sermon d\'Adieu', description: 'Final guidance', descriptionFr: 'Dernières orientations', completed: false, quizPassed: false },
+      { id: 's8', title: 'Legacy & Character', titleFr: 'Héritage et Caractère', description: 'His beautiful example', descriptionFr: 'Son bel exemple', completed: false, quizPassed: false },
     ]
   },
   { 
     id: 'finance', 
     title: 'Halal Finance', 
+    titleFr: 'Finance Halal',
     description: 'Islamic economics',
+    descriptionFr: 'Économie islamique',
     icon: '💰',
     color: 'bg-warn/10 border-warn/20',
     unlocked: false,
     quizPassed: false,
     lessons: [
-      { id: 'f1', title: 'Riba: Understanding Interest', description: 'Why interest is prohibited', completed: false },
-      { id: 'f2', title: 'Halal Investments', description: 'Ethical investing', completed: false },
-      { id: 'f3', title: 'Islamic Banking', description: 'How it works', completed: false },
-      { id: 'f4', title: 'Zakah Calculations', description: 'Calculating your dues', completed: false },
-      { id: 'f5', title: 'Business Ethics', description: 'Trading guidelines', completed: false },
-      { id: 'f6', title: 'Wealth & Contentment', description: 'Balancing dunya', completed: false },
+      { id: 'f1', title: 'Riba: Understanding Interest', titleFr: 'Riba : Comprendre l\'Intérêt', description: 'Why interest is prohibited', descriptionFr: 'Pourquoi l\'intérêt est interdit', completed: false, quizPassed: false },
+      { id: 'f2', title: 'Halal Investments', titleFr: 'Investissements Halal', description: 'Ethical investing', descriptionFr: 'Investissement éthique', completed: false, quizPassed: false },
+      { id: 'f3', title: 'Islamic Banking', titleFr: 'Banque Islamique', description: 'How it works', descriptionFr: 'Comment ça fonctionne', completed: false, quizPassed: false },
+      { id: 'f4', title: 'Zakah Calculations', titleFr: 'Calculs de Zakah', description: 'Calculating your dues', descriptionFr: 'Calculer vos obligations', completed: false, quizPassed: false },
+      { id: 'f5', title: 'Business Ethics', titleFr: 'Éthique des Affaires', description: 'Trading guidelines', descriptionFr: 'Lignes directrices commerciales', completed: false, quizPassed: false },
+      { id: 'f6', title: 'Wealth & Contentment', titleFr: 'Richesse et Contentement', description: 'Balancing dunya', descriptionFr: 'Équilibrer la dunya', completed: false, quizPassed: false },
     ]
   },
 ];
@@ -236,15 +261,32 @@ export const MODULE_QUIZZES: Record<string, LessonQuizQuestion[]> = {
 };
 
 export function useLessonProgress() {
+  const { i18n } = useTranslation();
   const [progress, setProgress] = useState<LessonProgress>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Migrate old data if needed
-        if (parsed.modules && !parsed.modules[0]?.hasOwnProperty('quizPassed')) {
+        // Migrate old data if needed - add quizPassed to modules and lessons
+        let needsMigration = false;
+        const migratedModules = parsed.modules?.map((m: any) => {
+          const migratedLessons = m.lessons?.map((l: any) => {
+            if (!l.hasOwnProperty('quizPassed')) {
+              needsMigration = true;
+              return { ...l, quizPassed: l.completed || false };
+            }
+            return l;
+          }) || [];
+          if (!m.hasOwnProperty('quizPassed')) {
+            needsMigration = true;
+            return { ...m, quizPassed: false, lessons: migratedLessons };
+          }
+          return { ...m, lessons: migratedLessons };
+        }) || DEFAULT_MODULES;
+        
+        if (needsMigration) {
           return {
-            modules: parsed.modules.map((m: any) => ({ ...m, quizPassed: false })),
+            modules: migratedModules,
             lastUpdated: new Date().toISOString()
           };
         }
@@ -261,11 +303,12 @@ export function useLessonProgress() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newProgress));
   }, []);
 
-  const completeLesson = useCallback((moduleId: string, lessonId: string) => {
+  // Pass a lesson quiz - this marks the lesson as completed
+  const passLessonQuiz = useCallback((moduleId: string, lessonId: string) => {
     const updatedModules = progress.modules.map(mod => {
       if (mod.id === moduleId) {
         const updatedLessons = mod.lessons.map(lesson => 
-          lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+          lesson.id === lessonId ? { ...lesson, completed: true, quizPassed: true } : lesson
         );
         return { ...mod, lessons: updatedLessons };
       }
@@ -274,6 +317,16 @@ export function useLessonProgress() {
 
     saveProgress({ modules: updatedModules, lastUpdated: new Date().toISOString() });
   }, [progress.modules, saveProgress]);
+
+  // Get a lesson quiz from the lesson content
+  const getLessonQuiz = useCallback((lessonId: string, lang: string): LessonQuizQuestion | null => {
+    // Import from lesson content - we'll use the quiz from there
+    const { LESSON_CONTENT } = require('@/data/lessonContent');
+    const { LESSON_CONTENT_FR } = require('@/data/lessonContentFr');
+    
+    const content = lang === 'fr' ? LESSON_CONTENT_FR[lessonId] : LESSON_CONTENT[lessonId];
+    return content?.quiz || null;
+  }, []);
 
   const passModuleQuiz = useCallback((moduleId: string): boolean => {
     const moduleIndex = progress.modules.findIndex(m => m.id === moduleId);
@@ -308,9 +361,28 @@ export function useLessonProgress() {
     return MODULE_QUIZZES[moduleId] || null;
   }, []);
 
+  // Get localized modules with titles/descriptions
+  const localizedModules = useMemo(() => {
+    const lang = i18n.language;
+    return progress.modules.map(mod => {
+      const localizedMod = getLocalizedText(mod as any, lang);
+      const localizedLessons = mod.lessons.map(lesson => ({
+        ...lesson,
+        ...getLocalizedText(lesson as any, lang)
+      }));
+      return {
+        ...mod,
+        title: localizedMod.title,
+        description: localizedMod.description,
+        lessons: localizedLessons
+      };
+    });
+  }, [progress.modules, i18n.language]);
+
   return {
-    modules: progress.modules,
-    completeLesson,
+    modules: localizedModules,
+    passLessonQuiz,
+    getLessonQuiz,
     passModuleQuiz,
     getModuleProgress,
     isModuleComplete,
