@@ -14,13 +14,14 @@ import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
-import { LESSON_CONTENT } from '@/data/lessonContent';
+import { LESSON_CONTENT, type LessonContent } from '@/data/lessonContent';
+import { LESSON_CONTENT_FR } from '@/data/lessonContentFr';
 import { useLessonProgress, type Module, type Lesson } from '@/hooks/useLessonProgress';
 import { LessonQuizModal } from '@/components/learn/LessonQuizModal';
 
 const Learn = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
   const { 
     modules, 
@@ -345,30 +346,40 @@ const Learn = () => {
               </div>
 
               <div className="p-4 rounded-xl bg-muted/50 mb-6 max-h-64 overflow-y-auto">
-                {LESSON_CONTENT[selectedLesson.id] ? (
-                  <div className="space-y-4">
-                    {LESSON_CONTENT[selectedLesson.id].sections.map((section, idx) => (
-                      <div key={idx}>
-                        <h4 className="font-semibold text-sm mb-2">{section.heading}</h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.content}</p>
-                        {section.keyPoints && (
-                          <ul className="mt-2 space-y-1">
-                            {section.keyPoints.map((point, i) => (
-                              <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
-                                <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
-                                {point}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                {(() => {
+                  const lang = i18n.language;
+                  const content: LessonContent | undefined = lang === 'fr' 
+                    ? LESSON_CONTENT_FR[selectedLesson.id] 
+                    : LESSON_CONTENT[selectedLesson.id];
+                  
+                  if (content) {
+                    return (
+                      <div className="space-y-4">
+                        {content.sections.map((section, idx) => (
+                          <div key={idx}>
+                            <h4 className="font-semibold text-sm mb-2">{section.heading}</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.content}</p>
+                            {section.keyPoints && (
+                              <ul className="mt-2 space-y-1">
+                                {section.keyPoints.map((point, i) => (
+                                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                                    <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
+                                    {point}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Educational content about {selectedLesson.title.toLowerCase()}.
-                  </p>
-                )}
+                    );
+                  }
+                  return (
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {t('learn.contentLoading')}
+                    </p>
+                  );
+                })()}
               </div>
 
               <div className="flex gap-3">
