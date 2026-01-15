@@ -144,20 +144,8 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="prose prose-sm max-w-none text-foreground/90 leading-relaxed
-                [&_p]:mb-4 [&_p]:last:mb-0
-                [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:mb-3 [&_h1]:mt-6 [&_h1]:first:mt-0
-                [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-5
-                [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-4
-                [&_h4]:text-sm [&_h4]:font-medium [&_h4]:mb-2 [&_h4]:mt-3
-                [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-3
-                [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-3
-                [&_li]:mb-1.5 [&_li]:leading-relaxed
-                [&_strong]:font-semibold [&_strong]:text-foreground
-                [&_em]:italic
-                [&_.verse-reference]:text-primary [&_.verse-reference]:font-medium
-                [&_.hadith-reference]:text-muted-foreground [&_.hadith-reference]:text-sm [&_.hadith-reference]:border-l-2 [&_.hadith-reference]:border-primary/30 [&_.hadith-reference]:pl-3
-                [&_.list-item]:pl-4"
+              className="max-w-none text-foreground leading-relaxed text-base
+                [&_p]:mb-4 [&_p]:last:mb-0"
               dangerouslySetInnerHTML={{ __html: sanitizeTafsirHtml(tafsirText) }}
             />
           )}

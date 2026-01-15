@@ -172,51 +172,81 @@ function extractVerseTafsir(text: string, surahNumber: number, verseNumber: numb
 
 /**
  * Clean and format the tafsir content
+ * 
+ * Removes OCR artifacts (garbled characters from bad scans) and formats
+ * the text into clean paragraphs with proper HTML structure.
  */
 function cleanTafsirContent(content: string): string {
-  // Remove OCR artifacts and clean up
+  // Step 1: Remove obvious OCR garbage
   let cleaned = content
-    // Remove page numbers (standalone numbers on their own line)
+    // Remove Arabic script entirely (OCR artifacts from the original Arabic text)
+    .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')
+    // Remove common OCR garbage patterns (random symbols, numbers mixed with letters)
+    .replace(/[*^_|\\<>]+/g, '')
+    // Remove patterns like "( 1 )" or "(1)" that are footnote markers in the middle of text
+    .replace(/\(\s*\d+\s*\)/g, '')
+    // Remove isolated special characters and punctuation clusters
+    .replace(/[^\wàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ\s.,;:!?«»''""()-]/g, ' ')
+    // Remove sequences that look like garbled text (consonant clusters without vowels)
+    .replace(/\b[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ]{4,}\b/g, '')
+    // Remove weird character sequences that are clearly OCR errors
+    .replace(/[LlIi][_\-*^|]{1,}[JjLlIi]/g, '')
+    .replace(/\b[A-Z][a-z]?[*^_|]+[A-Za-z]*\b/g, '')
+    // Remove page numbers (standalone numbers)
     .replace(/^\d+\s*$/gm, '')
-    // Remove Arabic text artifacts from OCR
-    .replace(/[؀-ۿ\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')
-    // Remove lone special characters
-    .replace(/^[^\w\s«»().,;:!?'-]+$/gm, '')
-    // Clean up multiple blank lines
-    .replace(/\n{3,}/g, '\n\n')
-    // Remove leading/trailing whitespace per line
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join('\n');
+    // Clean up excessive whitespace
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n\s*\n+/g, '\n\n');
+
+  // Step 2: Process lines
+  const lines = cleaned.split('\n').map(line => line.trim()).filter(line => {
+    // Filter out lines that are too short or mostly garbage
+    if (line.length < 10) return false;
+    // Filter out lines that have more special chars than letters
+    const letters = (line.match(/[a-zA-ZàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ]/g) || []).length;
+    const total = line.length;
+    return letters / total > 0.5;
+  });
+
+  // Step 3: Build paragraphs
+  const paragraphs: string[] = [];
+  let currentParagraph = '';
   
-  // Format for HTML rendering
-  const paragraphs = cleaned.split('\n\n');
+  for (const line of lines) {
+    if (line === '') {
+      if (currentParagraph.length > 30) {
+        paragraphs.push(currentParagraph.trim());
+      }
+      currentParagraph = '';
+    } else {
+      currentParagraph += (currentParagraph ? ' ' : '') + line;
+    }
+  }
+  
+  // Don't forget the last paragraph
+  if (currentParagraph.length > 30) {
+    paragraphs.push(currentParagraph.trim());
+  }
+
+  // Step 4: Format as simple HTML paragraphs (no special classes that could cause styling issues)
   const formatted = paragraphs
-    .filter(p => p.trim().length > 20) // Filter out very short lines (likely artifacts)
-    .map(p => {
-      const text = p.replace(/\n/g, ' ').trim();
-      
-      // Check if it's a Quran reference (contains [Coran ...])
-      if (text.includes('[Coran')) {
-        return `<p class="verse-reference">${text}</p>`;
-      }
-      
-      // Check if it's a hadith (contains "Rapporté par")
-      if (text.includes('Rapporté par') || text.includes('rapporté par')) {
-        return `<p class="hadith-reference"><em>${text}</em></p>`;
-      }
-      
-      // Check if it starts with a dash (list item)
-      if (text.startsWith('-')) {
-        return `<p class="list-item">${text}</p>`;
-      }
-      
-      return `<p>${text}</p>`;
-    })
+    .filter(p => p.length > 30) // Ensure meaningful content
+    .map(p => `<p>${escapeHtml(p)}</p>`)
     .join('\n');
   
   return formatted;
+}
+
+/**
+ * Escape HTML entities to prevent XSS and rendering issues
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 /**
