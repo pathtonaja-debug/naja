@@ -132,7 +132,8 @@ const KNOWN_TAFSIR_IDS = {
 
 // Get translation ID based on language
 export function getTranslationIdForLanguage(lang: string): number {
-  if (lang === 'fr') {
+  const base = (lang || 'en').toLowerCase().split('-')[0]; // "fr-FR" -> "fr"
+  if (base === 'fr') {
     return KNOWN_TRANSLATION_IDS.muhammad_hamidullah;
   }
   return KNOWN_TRANSLATION_IDS.sahih_international;
@@ -299,9 +300,11 @@ export async function getVersesByChapter(
     language = 'en',
   } = opts;
 
+  const baseLang = (language || 'en').toLowerCase().split('-')[0];
+
   const params = new URLSearchParams({
     words: includeWords ? 'true' : 'false',
-    language: language === 'fr' ? 'fr' : 'en',
+    language: baseLang,
     per_page: String(perPage),
     page: String(page),
   });
