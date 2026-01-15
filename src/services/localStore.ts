@@ -56,12 +56,18 @@ export interface LocalDuaFolder {
 
 export interface LocalQuizAttempt {
   id: string;
+  quiz_id: number;
   quiz_date: string;
   score: number;
   total_questions: number;
   answers: number[];
   points_earned: number;
   completed_at: string;
+}
+
+// Get all completed quiz IDs
+export function getCompletedQuizIds(): number[] {
+  return getQuizAttempts().map(a => a.quiz_id);
 }
 
 export interface LocalAchievement {
