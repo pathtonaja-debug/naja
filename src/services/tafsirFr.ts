@@ -177,38 +177,52 @@ function extractVerseTafsir(text: string, surahNumber: number, verseNumber: numb
  * the text into clean paragraphs with proper HTML structure.
  */
 function cleanTafsirContent(content: string): string {
-  // Step 1: Remove obvious OCR garbage
+  // Step 1: Remove obvious OCR garbage patterns
   let cleaned = content
     // Remove Arabic script entirely (OCR artifacts from the original Arabic text)
     .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')
-    // Remove common OCR garbage patterns (random symbols, numbers mixed with letters)
-    .replace(/[*^_|\\<>]+/g, '')
-    // Remove patterns like "( 1 )" or "(1)" that are footnote markers in the middle of text
+    // Remove common OCR garbage patterns - sequences of single letters with spaces/symbols
+    // This pattern catches things like "cS jjï » ijIj j 'J î" etc
+    .replace(/\b[A-Za-zàâäéèêëïîôùûüÿçœæ]{1,2}\s*[»«*^_|:;!?.,]+\s*[A-Za-zàâäéèêëïîôùûüÿçœæ]{1,2}\b/g, '')
+    // Remove sequences of short "words" (1-2 chars) separated by spaces
+    .replace(/(\b[A-Za-z]{1,2}\b\s+){3,}/g, '')
+    // Remove patterns like "jjï" "îlj" etc - consonant+vowel combos that are OCR garbage
+    .replace(/\b[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ][îïüûùôöàâäéèêëç][A-Za-z]{0,2}\b/g, '')
+    // Remove patterns with excessive accented characters mixed oddly
+    .replace(/\b\w*[îïâäùûôöëê]{2,}\w*\b/g, '')
+    // Remove isolated symbols and punctuation clusters
+    .replace(/[»«]+/g, '')
+    .replace(/\s*[*^_|\\<>]+\s*/g, ' ')
+    // Remove footnote-style numbers like (1) (2) etc in the middle of text
     .replace(/\(\s*\d+\s*\)/g, '')
-    // Remove isolated special characters and punctuation clusters
-    .replace(/[^\wàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ\s.,;:!?«»''""()-]/g, ' ')
-    // Remove sequences that look like garbled text (consonant clusters without vowels)
-    .replace(/\b[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ]{4,}\b/g, '')
-    // Remove weird character sequences that are clearly OCR errors
-    .replace(/[LlIi][_\-*^|]{1,}[JjLlIi]/g, '')
-    .replace(/\b[A-Z][a-z]?[*^_|]+[A-Za-z]*\b/g, '')
-    // Remove page numbers (standalone numbers)
+    // Clean up multiple spaces
+    .replace(/\s{2,}/g, ' ')
+    // Remove page numbers (standalone numbers on their own line)
     .replace(/^\d+\s*$/gm, '')
-    // Clean up excessive whitespace
-    .replace(/[ \t]+/g, ' ')
+    // Clean up excessive whitespace and newlines
     .replace(/\n\s*\n\s*\n+/g, '\n\n');
 
-  // Step 2: Process lines
+  // Step 2: Process lines and filter out garbage lines
   const lines = cleaned.split('\n').map(line => line.trim()).filter(line => {
-    // Filter out lines that are too short or mostly garbage
-    if (line.length < 10) return false;
-    // Filter out lines that have more special chars than letters
-    const letters = (line.match(/[a-zA-ZàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ]/g) || []).length;
-    const total = line.length;
-    return letters / total > 0.5;
+    // Filter out empty or very short lines
+    if (line.length < 15) return false;
+    
+    // Count French letters vs total characters
+    const frenchLetters = (line.match(/[a-zA-ZàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ]/g) || []).length;
+    const total = line.replace(/\s/g, '').length;
+    
+    // Line should be mostly letters (>60%)
+    if (total > 0 && frenchLetters / total < 0.6) return false;
+    
+    // Check for too many short "words" (OCR garbage indicator)
+    const words = line.split(/\s+/);
+    const shortWords = words.filter(w => w.length <= 2 && !/^(à|a|au|de|du|en|et|il|je|la|le|là|ma|me|ne|ni|on|ou|où|sa|se|si|ta|te|tu|un|va|vu|y)$/i.test(w)).length;
+    if (words.length > 5 && shortWords / words.length > 0.4) return false;
+    
+    return true;
   });
 
-  // Step 3: Build paragraphs
+  // Step 3: Join lines into paragraphs
   const paragraphs: string[] = [];
   let currentParagraph = '';
   
@@ -228,9 +242,19 @@ function cleanTafsirContent(content: string): string {
     paragraphs.push(currentParagraph.trim());
   }
 
-  // Step 4: Format as simple HTML paragraphs (no special classes that could cause styling issues)
-  const formatted = paragraphs
-    .filter(p => p.length > 30) // Ensure meaningful content
+  // Step 4: Final cleanup on each paragraph
+  const cleanedParagraphs = paragraphs
+    .map(p => {
+      // Remove any remaining short garbage sequences
+      return p
+        .replace(/\s+[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s+/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    })
+    .filter(p => p.length > 40); // Only keep meaningful paragraphs
+
+  // Step 5: Format as simple HTML paragraphs
+  const formatted = cleanedParagraphs
     .map(p => `<p>${escapeHtml(p)}</p>`)
     .join('\n');
   
