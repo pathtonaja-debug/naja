@@ -76,7 +76,7 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
           </div>
           <div>
             <h3 className="font-semibold text-foreground text-sm">Quiz Completed</h3>
-            <p className="text-xs text-muted-foreground">{quiz.topic}</p>
+            <p className="text-xs text-muted-foreground">Quiz #{quiz.id} • {quiz.difficulty}</p>
           </div>
         </div>
         
@@ -142,7 +142,7 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
           </div>
           <div>
             <h3 className="font-semibold text-foreground text-sm">Daily Quiz</h3>
-            <p className="text-[10px] text-muted-foreground">{quiz.topic}</p>
+            <p className="text-[10px] text-muted-foreground">Quiz #{quiz.id}</p>
           </div>
         </div>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
