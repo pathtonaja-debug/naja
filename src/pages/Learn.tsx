@@ -18,6 +18,7 @@ import { LESSON_CONTENT, type LessonContent } from '@/data/lessonContent';
 import { LESSON_CONTENT_FR } from '@/data/lessonContentFr';
 import { useLessonProgress, type Module, type Lesson } from '@/hooks/useLessonProgress';
 import { LessonQuizModal } from '@/components/learn/LessonQuizModal';
+import { formatLessonContent } from '@/lib/formatLessonContent';
 
 const Learn = () => {
   const navigate = useNavigate();
@@ -367,13 +368,15 @@ const Learn = () => {
                         {content.sections.map((section, idx) => (
                           <div key={idx}>
                             <h4 className="font-semibold text-sm mb-2">{section.heading}</h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{section.content}</p>
+                            <div className="text-sm text-muted-foreground leading-relaxed">
+                              {formatLessonContent(section.content)}
+                            </div>
                             {section.keyPoints && (
-                              <ul className="mt-2 space-y-1">
+                              <ul className="mt-3 space-y-1.5">
                                 {section.keyPoints.map((point, i) => (
                                   <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
                                     <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
-                                    {point}
+                                    <span>{point}</span>
                                   </li>
                                 ))}
                               </ul>
