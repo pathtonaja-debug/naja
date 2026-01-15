@@ -19,6 +19,7 @@ import { AppVerse } from '@/services/quranApi';
 import { HifdhStatus, cycleVerseHifdhStatus, getVerseHifdhStatus } from '@/services/quranHifdhState';
 import { isBookmarked, toggleBookmark } from '@/services/quranReadingState';
 import { getNote, setNote, hasNote as checkHasNote } from '@/services/quranNotesState';
+import { getFrenchWordTranslation } from '@/services/quranWbwFr';
 
 interface VerseCardProps {
   verse: AppVerse;
@@ -27,6 +28,7 @@ interface VerseCardProps {
   onTafsirRequest: (verseKey: string) => void;
   onLastReadSet?: (verseKey: string, verseNumber: number) => void;
   showWordByWord?: boolean;
+  useFrenchWbw?: boolean;
 }
 
 const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'SUP']);
@@ -189,7 +191,8 @@ export function VerseCard({
   chapterName,
   onTafsirRequest,
   onLastReadSet,
-  showWordByWord = false
+  showWordByWord = false,
+  useFrenchWbw = false
 }: VerseCardProps) {
   const { t } = useTranslation();
   const [showTransliteration, setShowTransliteration] = useState(false);
@@ -251,12 +254,23 @@ export function VerseCard({
     // Use actual words from API if available
     if (verse.words && verse.words.length > 0) {
       return verse.words
-        .filter((w) => w.text_uthmani) // Only include words with Arabic text
-        .map((w) => ({
-          arabic: w.text_uthmani,
-          transliteration: w.transliteration?.text || '',
-          translation: w.translation?.text || '',
-        }));
+        .filter((w) => w.text_uthmani && w.char_type_name !== 'end') // Exclude end markers
+        .map((w) => {
+          // Try to get French translation if enabled
+          let translation = w.translation?.text || '';
+          if (useFrenchWbw && w.position) {
+            const frenchTrans = getFrenchWordTranslation(verse.verseKey, w.position, chapterId);
+            if (frenchTrans) {
+              translation = frenchTrans;
+            }
+          }
+          
+          return {
+            arabic: w.text_uthmani,
+            transliteration: w.transliteration?.text || '',
+            translation,
+          };
+        });
     }
     
     // Fallback: split Arabic text and transliteration
@@ -269,7 +283,7 @@ export function VerseCard({
       transliteration: translitWords[idx] || '',
       translation: '',
     }));
-  }, [showWordByWord, verse.words, verse.arabicText, verse.transliteration]);
+  }, [showWordByWord, verse.words, verse.arabicText, verse.transliteration, useFrenchWbw, verse.verseKey, chapterId]);
 
   return (
     <>
