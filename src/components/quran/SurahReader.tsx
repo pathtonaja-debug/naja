@@ -100,7 +100,11 @@ function Sheet({
 
 export function SurahReader({ chapter, onBack }: SurahReaderProps) {
   const { i18n, t } = useTranslation();
-  const translationId = useMemo(() => getTranslationIdForLanguage(i18n.language), [i18n.language]);
+  const baseLang = useMemo(
+    () => (i18n.language || 'en').toLowerCase().split('-')[0],
+    [i18n.language]
+  );
+  const translationId = useMemo(() => getTranslationIdForLanguage(baseLang), [baseLang]);
   
   const [verses, setVerses] = useState<AppVerse[]>([]);
   const [chapterInfo, setChapterInfo] = useState<ChapterInfo | null>(null);
@@ -128,7 +132,8 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
     setError(null);
 
-    if (page === 1 && !append) {
+    // Only use cached data for English to avoid serving stale word-by-word translations
+    if (page === 1 && !append && baseLang === 'en') {
       const cached = getCachedVerses(chapter.id, translationId);
       if (cached && cached.length > 0) {
         setVerses(cached);
@@ -142,7 +147,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         translationId,
         page,
         perPage: 50,
-        language: i18n.language,
+        language: baseLang,
       });
 
       if (append) setVerses(prev => [...prev, ...result.verses]);
@@ -170,7 +175,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
       setLoadingMore(false);
       loadingRef.current = false;
     }
-  }, [chapter.id, translationId, i18n.language]);
+  }, [chapter.id, translationId, baseLang]);
 
   const loadChapterInfo = useCallback(async () => {
     const cached = getCachedChapterInfo(chapter.id);
@@ -180,14 +185,14 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     }
 
     try {
-      const info = await getChapterInfo(chapter.id);
+      const info = await getChapterInfo(chapter.id, baseLang);
       setChapterInfo(info);
       setCachedChapterInfo(chapter.id, info);
     } catch {
       const stale = getStaleChapterInfo(chapter.id);
       if (stale) setChapterInfo(stale);
     }
-  }, [chapter.id]);
+  }, [chapter.id, baseLang]);
 
   useEffect(() => {
     loadVerses(1);
