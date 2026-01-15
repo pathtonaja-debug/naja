@@ -391,6 +391,9 @@ const resources = {
       "learn.lessonQuiz": "Lesson Quiz",
       "learn.passLessonQuiz": "Pass the quiz to complete this lesson",
       "learn.takeQuiz": "Take Quiz",
+      "learn.nextLesson": "Next Lesson",
+      "learn.backToModule": "Back to Module",
+      "learn.lessonUnlocked": "Lesson completed! Next lesson unlocked.",
 
       // Dua
       "dua.library": "Dua Library",
@@ -1307,6 +1310,9 @@ const resources = {
       "learn.lessonQuiz": "Quiz de Leçon",
       "learn.passLessonQuiz": "Réussissez le quiz pour terminer cette leçon",
       "learn.takeQuiz": "Passer le Quiz",
+      "learn.nextLesson": "Leçon Suivante",
+      "learn.backToModule": "Retour au Module",
+      "learn.lessonUnlocked": "Leçon terminée ! Leçon suivante débloquée.",
 
       // Dua
       "dua.library": "Bibliothèque d'Invocations",

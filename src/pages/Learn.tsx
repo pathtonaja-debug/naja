@@ -42,12 +42,33 @@ const Learn = () => {
   const [quizModuleId, setQuizModuleId] = useState<string | null>(null);
   const [lessonQuizMode, setLessonQuizMode] = useState<{ moduleId: string; lessonId: string } | null>(null);
 
+  // Find current lesson index and next lesson
+  const getCurrentLessonInfo = () => {
+    if (!selectedModule || !lessonQuizMode) return { currentIndex: -1, hasNext: false, nextLesson: null };
+    const currentIndex = selectedModule.lessons.findIndex(l => l.id === lessonQuizMode.lessonId);
+    const hasNext = currentIndex < selectedModule.lessons.length - 1;
+    const nextLesson = hasNext ? selectedModule.lessons[currentIndex + 1] : null;
+    return { currentIndex, hasNext, nextLesson };
+  };
+
   const handleLessonQuizComplete = (passed: boolean) => {
     if (passed && lessonQuizMode && selectedModule) {
       passLessonQuiz(lessonQuizMode.moduleId, lessonQuizMode.lessonId);
       addBarakahPoints(BARAKAH_REWARDS.LESSON_COMPLETED);
       toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.LESSON_COMPLETED }));
     }
+    // Don't close modals here - let user choose next action
+  };
+
+  const handleNextLesson = () => {
+    const { hasNext, nextLesson } = getCurrentLessonInfo();
+    if (hasNext && nextLesson) {
+      setLessonQuizMode(null);
+      setSelectedLesson(nextLesson);
+    }
+  };
+
+  const handleCloseLessonQuiz = () => {
     setLessonQuizMode(null);
     setSelectedLesson(null);
   };
@@ -253,7 +274,7 @@ const Learn = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="w-full bg-background rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto"
+              className="w-full bg-background rounded-t-3xl p-6 pb-28 max-h-[80vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -463,12 +484,15 @@ const Learn = () => {
       </AnimatePresence>
 
       {/* Lesson Quiz Modal */}
-      {lessonQuizMode && (
+      {lessonQuizMode && selectedLesson && (
         <LessonQuizModal
           moduleId={lessonQuizMode.moduleId}
           questions={getLessonQuiz(lessonQuizMode.lessonId, i18n.language)}
           onComplete={handleLessonQuizComplete}
-          onClose={() => setLessonQuizMode(null)}
+          onClose={handleCloseLessonQuiz}
+          onNextLesson={handleNextLesson}
+          hasNextLesson={getCurrentLessonInfo().hasNext}
+          lessonTitle={selectedLesson.title}
         />
       )}
 

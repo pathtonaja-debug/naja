@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, XCircle, Trophy, RefreshCw } from 'lucide-react';
+import { X, Check, XCircle, Trophy, RefreshCw, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +11,12 @@ interface LessonQuizModalProps {
   questions: LessonQuizQuestion[];
   onComplete: (passed: boolean) => void;
   onClose: () => void;
+  onNextLesson?: () => void;
+  hasNextLesson?: boolean;
+  lessonTitle?: string;
 }
 
-export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: LessonQuizModalProps) {
+export function LessonQuizModal({ moduleId, questions, onComplete, onClose, onNextLesson, hasNextLesson, lessonTitle }: LessonQuizModalProps) {
   const { t } = useTranslation();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -201,45 +204,91 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose }: Le
           </div>
         ) : (
           <div className="p-6 text-center space-y-6">
-            <div className={cn(
-              "w-20 h-20 rounded-full flex items-center justify-center mx-auto",
-              passed ? "bg-success/20" : "bg-destructive/20"
-            )}>
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', damping: 15 }}
+              className={cn(
+                "w-20 h-20 rounded-full flex items-center justify-center mx-auto",
+                passed ? "bg-success/20" : "bg-destructive/20"
+              )}
+            >
               {passed ? (
                 <Trophy className="w-10 h-10 text-success" />
               ) : (
                 <XCircle className="w-10 h-10 text-destructive" />
               )}
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <h3 className="text-xl font-bold mb-2">{t('learn.quizComplete')}</h3>
+              {lessonTitle && (
+                <p className="text-sm text-muted-foreground mb-2">{lessonTitle}</p>
+              )}
               <p className="text-3xl font-bold mb-2">
                 {displayCorrect}/{questions.length}
               </p>
               <p className="text-muted-foreground">
                 {t('learn.yourScore')}: {Math.round((displayCorrect / questions.length) * 100)}%
               </p>
-            </div>
+            </motion.div>
 
-            <p className={cn(
-              "font-medium",
-              passed ? "text-success" : "text-destructive"
-            )}>
-              {passed ? t('learn.passed') : t('learn.failed')}
-            </p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className={cn(
+                "p-3 rounded-xl",
+                passed ? "bg-success/10" : "bg-destructive/10"
+              )}
+            >
+              <p className={cn(
+                "font-medium flex items-center justify-center gap-2",
+                passed ? "text-success" : "text-destructive"
+              )}>
+                {passed ? (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    {t('learn.lessonUnlocked')}
+                  </>
+                ) : (
+                  t('learn.failed')
+                )}
+              </p>
+            </motion.div>
 
-            <div className="flex gap-3">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col gap-3"
+            >
               {!passed && (
-                <Button onClick={handleRetry} variant="outline" className="flex-1">
+                <Button onClick={handleRetry} variant="outline" className="w-full">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   {t('learn.retryQuiz')}
                 </Button>
               )}
-              <Button onClick={handleClose} className="flex-1">
-                {t('common.close')}
+              
+              {passed && hasNextLesson && onNextLesson && (
+                <Button onClick={onNextLesson} className="w-full">
+                  {t('learn.nextLesson')}
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+              
+              <Button 
+                onClick={handleClose} 
+                variant={passed && hasNextLesson ? "outline" : "default"}
+                className="w-full"
+              >
+                {passed ? t('learn.backToModule') : t('common.close')}
               </Button>
-            </div>
+            </motion.div>
           </div>
         )}
       </motion.div>
