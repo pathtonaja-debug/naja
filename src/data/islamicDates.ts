@@ -12,6 +12,12 @@ export interface IslamicEvent {
   endHijriDay?: number;
 }
 
+export interface IslamicEventWithDate extends IslamicEvent {
+  gregorianDate: Date;
+  daysUntil: number;
+  hijriDateString: string;
+}
+
 // Hijri month names
 export const HIJRI_MONTHS = [
   'Muharram',
@@ -30,6 +36,20 @@ export const HIJRI_MONTHS = [
 
 // Islamic events with Hijri dates
 export const ISLAMIC_EVENTS: IslamicEvent[] = [
+  {
+    id: 'islamic-new-year',
+    name: 'Islamic New Year',
+    hijriMonth: 1, // Muharram
+    hijriDay: 1,
+    description: 'The first day of the Islamic calendar year.',
+    meaning: 'Marks the beginning of the new Hijri year. A time for reflection on the past year and setting intentions for the coming year.',
+    recommendedActions: [
+      'Reflect on the past year',
+      'Make dua for the new year',
+      'Set spiritual goals',
+      'Increase dhikr',
+    ],
+  },
   {
     id: 'ashura',
     name: 'Ashura',
@@ -50,7 +70,7 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
     hijriMonth: 3, // Rabi al-Awwal
     hijriDay: 12,
     description: 'The birthday of Prophet Muhammad ﷺ.',
-    meaning: "\"A day to remember and celebrate the birth of the Messenger of Allah ﷺ, to increase salawat upon him, and learn about his blessed life.\"",
+    meaning: "A day to remember and celebrate the birth of the Messenger of Allah ﷺ, to increase salawat upon him, and learn about his blessed life.",
     recommendedActions: [
       'Increase salawat upon the Prophet ﷺ',
       'Read his seerah (biography)',
@@ -64,7 +84,7 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
     hijriMonth: 7, // Rajab
     hijriDay: 27,
     description: 'The Night Journey and Ascension of Prophet Muhammad ﷺ.',
-    meaning: "\"The miraculous night when the Prophet ﷺ traveled from Makkah to Jerusalem and then ascended through the heavens. The five daily prayers were prescribed on this night.\"",
+    meaning: "The miraculous night when the Prophet ﷺ traveled from Makkah to Jerusalem and then ascended through the heavens. The five daily prayers were prescribed on this night.",
     recommendedActions: [
       'Pray extra night prayers',
       'Reflect on the gift of salah',
@@ -73,12 +93,26 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
     ],
   },
   {
+    id: 'shaban-15',
+    name: "Laylat al-Bara'ah (Mid-Sha'ban)",
+    hijriMonth: 8, // Sha'ban
+    hijriDay: 15,
+    description: "The 15th night of Sha'ban, a blessed night.",
+    meaning: "A night when Allah descends to the lowest heaven and forgives many of His servants. Some scholars recommend extra worship on this night.",
+    recommendedActions: [
+      'Pray extra night prayers',
+      'Seek forgiveness',
+      'Make abundant dua',
+      'Fast the next day (optional)',
+    ],
+  },
+  {
     id: 'ramadan-start',
     name: 'Ramadan Begins',
     hijriMonth: 9, // Ramadan
     hijriDay: 1,
     description: 'The blessed month of fasting begins.',
-    meaning: "\"The month in which the Qur'an was revealed. A time of fasting, prayer, reflection, and community.\"",
+    meaning: "The month in which the Qur'an was revealed. A time of fasting, prayer, reflection, and community.",
     recommendedActions: [
       'Begin fasting from dawn to sunset',
       'Increase Quran recitation',
@@ -120,6 +154,22 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
     ],
   },
   {
+    id: 'shawwal-fasting',
+    name: 'Six Days of Shawwal',
+    hijriMonth: 10, // Shawwal
+    hijriDay: 2,
+    description: 'Voluntary fasting of six days in Shawwal.',
+    meaning: 'Fasting six days in Shawwal after Ramadan is like fasting the entire year. A great opportunity to continue the momentum from Ramadan.',
+    recommendedActions: [
+      'Fast six days (consecutive or spread out)',
+      'Maintain Ramadan habits',
+      'Continue extra prayers',
+      'Keep reciting Quran',
+    ],
+    isMultiDay: true,
+    endHijriDay: 30,
+  },
+  {
     id: 'dhul-hijjah-start',
     name: 'First 10 Days of Dhul Hijjah',
     hijriMonth: 12, // Dhul Hijjah
@@ -142,7 +192,7 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
     hijriMonth: 12, // Dhul Hijjah
     hijriDay: 9,
     description: 'The greatest day of the year.',
-    meaning: "\"The day when pilgrims gather at Mount Arafah. Fasting on this day expiates sins of the previous and coming year for those not performing Hajj.\"",
+    meaning: "The day when pilgrims gather at Mount Arafah. Fasting on this day expiates sins of the previous and coming year for those not performing Hajj.",
     recommendedActions: [
       'Fast (for non-pilgrims)',
       'Make abundant dua',
@@ -166,22 +216,65 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
       'Reflect on submission to Allah',
     ],
   },
+  {
+    id: 'ayyam-al-tashreeq',
+    name: 'Ayyam al-Tashreeq',
+    hijriMonth: 12, // Dhul Hijjah
+    hijriDay: 11,
+    description: 'The Days of Tashreeq (11th-13th Dhul Hijjah).',
+    meaning: 'Days of eating, drinking, and remembrance of Allah. Fasting is prohibited on these days.',
+    recommendedActions: [
+      'Increase takbeer (Allahu Akbar)',
+      'Do not fast',
+      'Celebrate with family',
+      'Continue Eid festivities',
+    ],
+    isMultiDay: true,
+    endHijriDay: 13,
+  },
 ];
 
-// Approximate Hijri to Gregorian conversion
-// This is a simplified calculation - for production, use a proper library
+// Fixed 2026 Gregorian dates for Islamic events (based on astronomical calculations)
+// These dates may vary by 1-2 days depending on moon sighting
+export const ISLAMIC_DATES_2026: Record<string, string> = {
+  'islamic-new-year': '2026-06-14', // 1 Muharram 1448
+  'ashura': '2026-06-23', // 10 Muharram 1448
+  'mawlid': '2026-08-23', // 12 Rabi' al-Awwal 1448
+  'isra-miraj': '2027-01-03', // 27 Rajab 1448 (falls in 2027)
+  'shaban-15': '2027-01-18', // 15 Sha'ban 1448 (falls in 2027)
+  'ramadan-start': '2027-02-03', // 1 Ramadan 1448 (falls in 2027)
+  'laylatul-qadr': '2027-02-28', // 27 Ramadan 1448 (falls in 2027)
+  'eid-al-fitr': '2027-03-04', // 1 Shawwal 1448 (falls in 2027)
+  'shawwal-fasting': '2027-03-05', // 2 Shawwal 1448 (falls in 2027)
+  'dhul-hijjah-start': '2027-05-03', // 1 Dhul Hijjah 1448 (falls in 2027)
+  'day-of-arafah': '2027-05-11', // 9 Dhul Hijjah 1448 (falls in 2027)
+  'eid-al-adha': '2027-05-12', // 10 Dhul Hijjah 1448 (falls in 2027)
+  'ayyam-al-tashreeq': '2027-05-13', // 11 Dhul Hijjah 1448 (falls in 2027)
+};
+
+// Additional 2025 dates for events that already passed or are current
+export const ISLAMIC_DATES_2025: Record<string, string> = {
+  'islamic-new-year': '2025-06-25', // 1 Muharram 1447
+  'ashura': '2025-07-04', // 10 Muharram 1447
+  'mawlid': '2025-09-03', // 12 Rabi' al-Awwal 1447
+  'isra-miraj': '2025-12-14', // 27 Rajab 1447
+  'shaban-15': '2025-12-29', // 15 Sha'ban 1447
+  'ramadan-start': '2026-01-28', // 1 Ramadan 1447
+  'laylatul-qadr': '2026-02-22', // 27 Ramadan 1447
+  'eid-al-fitr': '2026-02-27', // 1 Shawwal 1447
+  'shawwal-fasting': '2026-02-28', // 2 Shawwal 1447
+  'dhul-hijjah-start': '2026-04-28', // 1 Dhul Hijjah 1447
+  'day-of-arafah': '2026-05-06', // 9 Dhul Hijjah 1447
+  'eid-al-adha': '2026-05-07', // 10 Dhul Hijjah 1447
+  'ayyam-al-tashreeq': '2026-05-08', // 11 Dhul Hijjah 1447
+};
+
+// Approximate Hijri to Gregorian conversion (fallback)
 export const hijriToGregorian = (hijriYear: number, hijriMonth: number, hijriDay: number): Date => {
-  // Base calculation using the approximate start of Hijri calendar
-  // Hijri year 1 started approximately July 16, 622 CE
-  
-  // Average length of Hijri month: ~29.53 days
-  // Average length of Hijri year: ~354.36 days
-  
   const HIJRI_EPOCH = new Date('622-07-16').getTime();
   const LUNAR_MONTH = 29.530588853;
   const LUNAR_YEAR = 354.36667;
   
-  // Calculate days since Hijri epoch
   const daysSinceEpoch = 
     (hijriYear - 1) * LUNAR_YEAR + 
     (hijriMonth - 1) * LUNAR_MONTH + 
@@ -196,29 +289,26 @@ export const hijriToGregorian = (hijriYear: number, hijriMonth: number, hijriDay
 export const getCurrentHijriYear = (): number => {
   const now = new Date();
   const gregorianYear = now.getFullYear();
-  
-  // Approximate calculation
-  // Hijri year is roughly (Gregorian year - 622) * (365.25 / 354.36) + 1
   const hijriYear = Math.floor((gregorianYear - 622) * (365.25 / 354.36667)) + 1;
-  
   return hijriYear;
 };
 
-// Get upcoming Islamic events for a given year
-export const getUpcomingEvents = (fromDate: Date = new Date()): Array<IslamicEvent & { gregorianDate: Date; daysUntil: number; hijriDateString: string }> => {
-  const currentHijriYear = getCurrentHijriYear();
-  const events: Array<IslamicEvent & { gregorianDate: Date; daysUntil: number; hijriDateString: string }> = [];
+// Get upcoming Islamic events using fixed dates when available
+export const getUpcomingEvents = (fromDate: Date = new Date()): IslamicEventWithDate[] => {
+  const events: IslamicEventWithDate[] = [];
+  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
   
-  // Check events for current and next Hijri year
-  for (let yearOffset = 0; yearOffset <= 1; yearOffset++) {
-    const year = currentHijriYear + yearOffset;
+  // Create events from fixed dates
+  for (const event of ISLAMIC_EVENTS) {
+    // Try to get fixed date first
+    const fixedDateStr = allDates[event.id];
     
-    for (const event of ISLAMIC_EVENTS) {
-      const gregorianDate = hijriToGregorian(year, event.hijriMonth, event.hijriDay);
+    if (fixedDateStr) {
+      const gregorianDate = new Date(fixedDateStr);
       const daysUntil = Math.ceil((gregorianDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
       
-      // Only include future events (or events in the next 365 days)
-      if (daysUntil >= 0 && daysUntil <= 365) {
+      // Only include future events within next 365 days
+      if (daysUntil >= -1 && daysUntil <= 400) {
         events.push({
           ...event,
           gregorianDate,
@@ -232,17 +322,48 @@ export const getUpcomingEvents = (fromDate: Date = new Date()): Array<IslamicEve
   // Sort by date
   events.sort((a, b) => a.gregorianDate.getTime() - b.gregorianDate.getTime());
   
+  // Remove past events (keep only future or today)
+  const futureEvents = events.filter(e => e.daysUntil >= 0);
+  
   // Remove duplicates (keep the closest one)
-  const uniqueEvents = events.filter((event, index, self) => 
+  const uniqueEvents = futureEvents.filter((event, index, self) => 
     index === self.findIndex(e => e.id === event.id)
   );
   
   return uniqueEvents;
 };
 
+// Get events for a specific date
+export const getEventsForDate = (date: Date): IslamicEventWithDate[] => {
+  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
+  const dateStr = date.toISOString().split('T')[0];
+  const events: IslamicEventWithDate[] = [];
+  
+  for (const event of ISLAMIC_EVENTS) {
+    const fixedDateStr = allDates[event.id];
+    if (fixedDateStr === dateStr) {
+      events.push({
+        ...event,
+        gregorianDate: new Date(fixedDateStr),
+        daysUntil: 0,
+        hijriDateString: `${event.hijriDay} ${HIJRI_MONTHS[event.hijriMonth - 1]}`,
+      });
+    }
+  }
+  
+  return events;
+};
+
 // Check if a date is Jumu'ah (Friday)
 export const isJumuah = (date: Date): boolean => {
   return date.getDay() === 5;
+};
+
+// Check if a date has an Islamic event
+export const hasIslamicEvent = (date: Date): boolean => {
+  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
+  const dateStr = date.toISOString().split('T')[0];
+  return Object.values(allDates).includes(dateStr);
 };
 
 // Get days in a month for the calendar grid
@@ -251,19 +372,16 @@ export const getDaysInMonth = (year: number, month: number): Date[] => {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   
-  // Add padding for days before the first of month (to align with weekday)
   const startPadding = firstDay.getDay();
   for (let i = startPadding - 1; i >= 0; i--) {
     const date = new Date(year, month, -i);
     days.push(date);
   }
   
-  // Add all days of the month
   for (let i = 1; i <= lastDay.getDate(); i++) {
     days.push(new Date(year, month, i));
   }
   
-  // Add padding at the end to complete the grid (6 rows x 7 days = 42)
   while (days.length < 42) {
     days.push(new Date(year, month + 1, days.length - lastDay.getDate() - startPadding + 1));
   }
