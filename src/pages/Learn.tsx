@@ -355,44 +355,81 @@ const Learn = () => {
                 <p className="text-sm text-muted-foreground mt-1">{selectedLesson.description}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-muted/50 mb-6 max-h-64 overflow-y-auto">
-                {(() => {
-                  const lang = i18n.language;
-                  const content: LessonContent | undefined = lang === 'fr' 
-                    ? LESSON_CONTENT_FR[selectedLesson.id] 
-                    : LESSON_CONTENT[selectedLesson.id];
-                  
-                  if (content) {
-                    return (
-                      <div className="space-y-4">
-                        {content.sections.map((section, idx) => (
-                          <div key={idx}>
-                            <h4 className="font-semibold text-sm mb-2">{section.heading}</h4>
-                            <div className="text-sm text-muted-foreground leading-relaxed">
-                              {formatLessonContent(section.content)}
-                            </div>
-                            {section.keyPoints && (
-                              <ul className="mt-3 space-y-1.5">
-                                {section.keyPoints.map((point, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
-                                    <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
-                                    <span>{point}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
+              {(() => {
+                const lang = i18n.language;
+                const content: LessonContent | undefined = lang === 'fr' 
+                  ? LESSON_CONTENT_FR[selectedLesson.id] 
+                  : LESSON_CONTENT[selectedLesson.id];
+                
+                if (content) {
+                  const totalSections = content.sections.length;
+                  return (
+                    <>
+                      {/* Progress indicator */}
+                      <div className="flex items-center gap-1.5 mb-4">
+                        {content.sections.map((_, idx) => (
+                          <div 
+                            key={idx}
+                            className="flex-1 h-1 rounded-full bg-primary/30"
+                          />
                         ))}
                       </div>
-                    );
-                  }
-                  return (
+                      
+                      <div className="p-4 rounded-xl bg-muted/50 mb-6 max-h-64 overflow-y-auto scroll-smooth">
+                        <div className="space-y-6">
+                          {content.sections.map((section, idx) => (
+                            <motion.div 
+                              key={idx}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: idx * 0.15, duration: 0.3 }}
+                              className="pb-4 border-b border-border/50 last:border-0 last:pb-0"
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                                  {idx + 1}
+                                </div>
+                                <h4 className="font-semibold text-sm">{section.heading}</h4>
+                              </div>
+                              <div className="text-sm text-muted-foreground leading-relaxed pl-8">
+                                {formatLessonContent(section.content)}
+                              </div>
+                              {section.keyPoints && (
+                                <motion.ul 
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: idx * 0.15 + 0.2 }}
+                                  className="mt-3 space-y-1.5 pl-8"
+                                >
+                                  {section.keyPoints.map((point, i) => (
+                                    <motion.li 
+                                      key={i} 
+                                      initial={{ opacity: 0, x: -5 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: idx * 0.15 + 0.25 + i * 0.05 }}
+                                      className="text-xs text-muted-foreground flex items-start gap-2"
+                                    >
+                                      <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
+                                      <span>{point}</span>
+                                    </motion.li>
+                                  ))}
+                                </motion.ul>
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  );
+                }
+                return (
+                  <div className="p-4 rounded-xl bg-muted/50 mb-6">
                     <p className="text-sm text-foreground leading-relaxed">
                       {t('learn.contentLoading')}
                     </p>
-                  );
-                })()}
-              </div>
+                  </div>
+                );
+              })()}
 
               <div className="flex gap-3">
                 <Button 
