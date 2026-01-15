@@ -2256,40 +2256,48 @@ function flattenKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 function checkTranslationParity() {
   if (import.meta.env.PROD) return;
   
-  // Get all keys (handles both flat dot-notation and nested structures)
-  const enTranslation = resources.en.translation as Record<string, unknown>;
-  const frTranslation = resources.fr.translation as Record<string, unknown>;
-  
-  // For flat structures (dot-notation keys), Object.keys is sufficient
-  // For nested, we'd use flattenKeys
-  const enKeys = new Set(Object.keys(enTranslation));
-  const frKeys = new Set(Object.keys(frTranslation));
-  
-  const missingInFr: string[] = [];
-  const extraInFr: string[] = [];
-  
-  enKeys.forEach(key => {
-    if (!frKeys.has(key)) {
-      missingInFr.push(key);
+  try {
+    // Get all keys (handles both flat dot-notation and nested structures)
+    const enTranslation = resources.en?.translation as Record<string, unknown> | undefined;
+    const frTranslation = resources.fr?.translation as Record<string, unknown> | undefined;
+    
+    if (!enTranslation || !frTranslation) {
+      console.warn('[i18n] Translation parity check skipped: resources not fully loaded');
+      return;
     }
-  });
-  
-  frKeys.forEach(key => {
-    if (!enKeys.has(key)) {
-      extraInFr.push(key);
+    
+    // For flat structures (dot-notation keys), Object.keys is sufficient
+    const enKeys = new Set(Object.keys(enTranslation));
+    const frKeys = new Set(Object.keys(frTranslation));
+    
+    const missingInFr: string[] = [];
+    const extraInFr: string[] = [];
+    
+    enKeys.forEach(key => {
+      if (!frKeys.has(key)) {
+        missingInFr.push(key);
+      }
+    });
+    
+    frKeys.forEach(key => {
+      if (!enKeys.has(key)) {
+        extraInFr.push(key);
+      }
+    });
+    
+    if (missingInFr.length > 0) {
+      console.warn(`[i18n] Missing ${missingInFr.length} FR translations:`, missingInFr.slice(0, 10), missingInFr.length > 10 ? `... and ${missingInFr.length - 10} more` : '');
     }
-  });
-  
-  if (missingInFr.length > 0) {
-    console.warn(`[i18n] Missing ${missingInFr.length} FR translations:`, missingInFr.slice(0, 10), missingInFr.length > 10 ? `... and ${missingInFr.length - 10} more` : '');
-  }
-  
-  if (extraInFr.length > 0) {
-    console.warn(`[i18n] ${extraInFr.length} extra keys in FR not in EN:`, extraInFr.slice(0, 10));
-  }
-  
-  if (missingInFr.length === 0 && extraInFr.length === 0) {
-    console.info(`[i18n] Translation parity: OK ✓ (${enKeys.size} keys)`);
+    
+    if (extraInFr.length > 0) {
+      console.warn(`[i18n] ${extraInFr.length} extra keys in FR not in EN:`, extraInFr.slice(0, 10));
+    }
+    
+    if (missingInFr.length === 0 && extraInFr.length === 0) {
+      console.info(`[i18n] Translation parity: OK ✓ (${enKeys.size} keys)`);
+    }
+  } catch (error) {
+    console.warn('[i18n] Translation parity check failed:', error);
   }
 }
 
@@ -2304,8 +2312,12 @@ i18n
     }
   });
 
-// Run parity check after init
-checkTranslationParity();
+// Run parity check after init (wrapped in try-catch for safety)
+try {
+  checkTranslationParity();
+} catch (error) {
+  console.warn('[i18n] Parity check error:', error);
+}
 
 // Function to change language and persist
 export const changeLanguage = (lang: string) => {
