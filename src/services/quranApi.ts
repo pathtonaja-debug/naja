@@ -300,24 +300,19 @@ export async function getVersesByChapter(
   } = opts;
 
   const params = new URLSearchParams({
-    translations: String(translationId),
+    words: includeWords ? 'true' : 'false',
+    language: language === 'fr' ? 'fr' : 'en',
     per_page: String(perPage),
     page: String(page),
-    word_fields: 'text_uthmani,translation,transliteration',
   });
 
+  // Add translation
+  params.set('translations', String(translationId));
+  
   // Request verse-level Arabic text
   params.set('fields', 'text_uthmani');
   params.set('text_type', 'uthmani');
-
-  // Set word translation language for word-by-word
-  if (language === 'fr') {
-    params.set('word_translation_language', 'fr');
-  }
-
-  if (includeWords) {
-    params.set('words', 'true');
-  }
+  params.set('word_fields', 'text_uthmani,translation,transliteration');
 
   const response = await fetchWithRetry(
     `${API_BASE}/verses/by_chapter/${chapterNumber}?${params.toString()}`
