@@ -151,15 +151,15 @@ const Dates = () => {
                   <span>{formatEventDate(selectedEvent.gregorianDate)}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {t(`dates.events.${selectedEvent.id.replace(/-/g, '')}Meaning`, { defaultValue: selectedEvent.meaning })}
+                  {t(selectedEvent.meaningKey)}
                 </p>
                 <div>
                   <h4 className="font-medium text-sm mb-2">{t('dates.recommendedActions')}</h4>
                   <ul className="space-y-2">
-                    {selectedEvent.recommendedActions.map((action, i) => (
+                    {selectedEvent.recommendedActionsKeys.map((actionKey, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">
                         <span className="text-primary">•</span>
-                        {t(`dates.events.${selectedEvent.id.replace(/-/g, '')}Action${i + 1}`, { defaultValue: action })}
+                        {t(actionKey)}
                       </li>
                     ))}
                   </ul>
