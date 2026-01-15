@@ -288,6 +288,7 @@ export async function getVersesByChapter(
     perPage?: number;
     page?: number;
     includeWords?: boolean;
+    language?: string;
   } = {}
 ): Promise<{ verses: AppVerse[]; totalPages: number; currentPage: number }> {
   const {
@@ -295,6 +296,7 @@ export async function getVersesByChapter(
     perPage = 50,
     page = 1,
     includeWords = true,
+    language = 'en',
   } = opts;
 
   const params = new URLSearchParams({
@@ -307,6 +309,11 @@ export async function getVersesByChapter(
   // Request verse-level Arabic text
   params.set('fields', 'text_uthmani');
   params.set('text_type', 'uthmani');
+
+  // Set word translation language for word-by-word
+  if (language === 'fr') {
+    params.set('word_translation_language', 'fr');
+  }
 
   if (includeWords) {
     params.set('words', 'true');

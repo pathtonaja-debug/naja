@@ -142,6 +142,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         translationId,
         page,
         perPage: 50,
+        language: i18n.language,
       });
 
       if (append) setVerses(prev => [...prev, ...result.verses]);
@@ -169,7 +170,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
       setLoadingMore(false);
       loadingRef.current = false;
     }
-  }, [chapter.id]);
+  }, [chapter.id, translationId, i18n.language]);
 
   const loadChapterInfo = useCallback(async () => {
     const cached = getCachedChapterInfo(chapter.id);
