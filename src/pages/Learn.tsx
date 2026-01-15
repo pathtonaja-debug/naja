@@ -358,22 +358,22 @@ const Learn = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+              className="fixed inset-0 bottom-20 z-40 bg-black/50 flex items-center justify-center p-3"
               onClick={() => setSelectedLesson(null)}
             >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-md bg-background rounded-2xl p-6"
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-sm bg-background rounded-2xl p-4 max-h-[75vh] flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="w-8 h-8 text-primary" />
+              <div className="text-center mb-4 shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <BookOpen className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-xl font-bold">{selectedLesson.title}</h2>
-                <p className="text-sm text-muted-foreground mt-1">{selectedLesson.description}</p>
+                <h2 className="text-lg font-bold">{selectedLesson.title}</h2>
+                <p className="text-xs text-muted-foreground mt-1">{selectedLesson.description}</p>
               </div>
 
               {(() => {
@@ -387,7 +387,7 @@ const Learn = () => {
                   return (
                     <>
                       {/* Progress indicator */}
-                      <div className="flex items-center gap-1.5 mb-4">
+                      <div className="flex items-center gap-1 mb-3 shrink-0">
                         {content.sections.map((_, idx) => (
                           <div 
                             key={idx}
@@ -396,41 +396,41 @@ const Learn = () => {
                         ))}
                       </div>
                       
-                      <div className="p-4 rounded-xl bg-muted/50 mb-6 max-h-64 overflow-y-auto scroll-smooth">
+                      <div className="p-3 rounded-xl bg-muted/50 mb-4 flex-1 min-h-0 overflow-y-auto scroll-smooth">
                         <div className="space-y-6">
                           {content.sections.map((section, idx) => (
                             <motion.div 
                               key={idx}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: idx * 0.15, duration: 0.3 }}
-                              className="pb-4 border-b border-border/50 last:border-0 last:pb-0"
+                              transition={{ delay: idx * 0.1, duration: 0.25 }}
+                              className="pb-3 border-b border-border/50 last:border-0 last:pb-0"
                             >
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
                                   {idx + 1}
                                 </div>
-                                <h4 className="font-semibold text-sm">{section.heading}</h4>
+                                <h4 className="font-semibold text-xs">{section.heading}</h4>
                               </div>
-                              <div className="text-sm text-muted-foreground leading-relaxed pl-8">
+                              <div className="text-xs text-muted-foreground leading-relaxed pl-7">
                                 {formatLessonContent(section.content)}
                               </div>
                               {section.keyPoints && (
                                 <motion.ul 
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
-                                  transition={{ delay: idx * 0.15 + 0.2 }}
-                                  className="mt-3 space-y-1.5 pl-8"
+                                  transition={{ delay: idx * 0.1 + 0.15 }}
+                                  className="mt-2 space-y-1 pl-7"
                                 >
                                   {section.keyPoints.map((point, i) => (
                                     <motion.li 
                                       key={i} 
                                       initial={{ opacity: 0, x: -5 }}
                                       animate={{ opacity: 1, x: 0 }}
-                                      transition={{ delay: idx * 0.15 + 0.25 + i * 0.05 }}
-                                      className="text-xs text-muted-foreground flex items-start gap-2"
+                                      transition={{ delay: idx * 0.1 + 0.2 + i * 0.03 }}
+                                      className="text-[11px] text-muted-foreground flex items-start gap-1.5"
                                     >
-                                      <Check className="w-3 h-3 text-success mt-0.5 shrink-0" />
+                                      <Check className="w-2.5 h-2.5 text-success mt-0.5 shrink-0" />
                                       <span>{point}</span>
                                     </motion.li>
                                   ))}
@@ -444,35 +444,35 @@ const Learn = () => {
                   );
                 }
                 return (
-                  <div className="p-4 rounded-xl bg-muted/50 mb-6">
-                    <p className="text-sm text-foreground leading-relaxed">
+                  <div className="p-3 rounded-xl bg-muted/50 mb-4 flex-1">
+                    <p className="text-xs text-foreground leading-relaxed">
                       {t('learn.contentLoading')}
                     </p>
                   </div>
                 );
               })()}
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 shrink-0 pt-2">
                 <Button 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-9 text-sm"
                   onClick={() => setSelectedLesson(null)}
                 >
                   {t('common.close')}
                 </Button>
                 <Button 
-                  className="flex-1"
+                  className="flex-1 h-9 text-sm"
                   onClick={() => handleStartLessonQuiz(selectedModule.id, selectedLesson.id)}
                   disabled={selectedLesson.completed}
                 >
                   {selectedLesson.completed ? (
                     <>
-                      <Check className="w-4 h-4 mr-2" />
+                      <Check className="w-3.5 h-3.5 mr-1.5" />
                       {t('common.done')}
                     </>
                   ) : (
                     <>
-                      <Brain className="w-4 h-4 mr-2" />
+                      <Brain className="w-3.5 h-3.5 mr-1.5" />
                       {t('learn.takeQuiz')}
                     </>
                   )}
