@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { format, addMonths, subMonths } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
 import { Card } from '@/components/ui/card';
@@ -9,15 +11,28 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { getUpcomingEvents, getDaysInMonth, isJumuah, IslamicEvent } from '@/data/islamicDates';
 
 const Dates = () => {
+  const { t, i18n } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<(IslamicEvent & { gregorianDate: Date; daysUntil: number; hijriDateString: string }) | null>(null);
   
   const upcomingEvents = getUpcomingEvents();
   const days = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+  const dateLocale = i18n.language === 'fr' ? fr : undefined;
+
+  // Get translated day names
+  const dayNames = [
+    t('dates.dayNames.sun'),
+    t('dates.dayNames.mon'),
+    t('dates.dayNames.tue'),
+    t('dates.dayNames.wed'),
+    t('dates.dayNames.thu'),
+    t('dates.dayNames.fri'),
+    t('dates.dayNames.sat'),
+  ];
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background pb-28">
-      <TopBar title="Islamic Dates" />
+      <TopBar title={t('dates.title')} />
       
       <div className="px-4 space-y-4">
         {/* Month Navigation */}
@@ -25,7 +40,7 @@ const Dates = () => {
           <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-lg hover:bg-muted">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-lg font-semibold">{format(currentMonth, 'MMMM yyyy')}</h2>
+          <h2 className="text-lg font-semibold">{format(currentMonth, 'MMMM yyyy', { locale: dateLocale })}</h2>
           <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 rounded-lg hover:bg-muted">
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -34,7 +49,7 @@ const Dates = () => {
         {/* Calendar Grid */}
         <Card className="p-3">
           <div className="grid grid-cols-7 gap-1 text-center mb-2">
-            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            {dayNames.map((d, i) => (
               <div key={i} className={`text-xs font-medium py-1 ${i === 5 ? 'text-primary' : 'text-muted-foreground'}`}>{d}</div>
             ))}
           </div>
@@ -60,7 +75,7 @@ const Dates = () => {
 
         {/* Upcoming Events */}
         <div>
-          <h3 className="text-sm font-semibold mb-3">Upcoming Islamic Events</h3>
+          <h3 className="text-sm font-semibold mb-3">{t('dates.upcomingEvents')}</h3>
           <div className="space-y-3">
             {upcomingEvents.slice(0, 6).map((event) => (
               <motion.div key={event.id} whileTap={{ scale: 0.98 }}>
@@ -69,11 +84,11 @@ const Dates = () => {
                     <div className="flex-1">
                       <h4 className="font-semibold text-foreground">{event.name}</h4>
                       <p className="text-xs text-muted-foreground mt-0.5">{event.hijriDateString}</p>
-                      <p className="text-xs text-muted-foreground">{format(event.gregorianDate, 'MMMM d, yyyy')}</p>
+                      <p className="text-xs text-muted-foreground">{format(event.gregorianDate, 'MMMM d, yyyy', { locale: dateLocale })}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-                        In {event.daysUntil} days
+                        {t('dates.inDays', { days: event.daysUntil })}
                       </span>
                       <Info className="w-4 h-4 text-muted-foreground" />
                     </div>
@@ -96,7 +111,7 @@ const Dates = () => {
               <div className="mt-4 space-y-4">
                 <p className="text-sm text-muted-foreground">{selectedEvent.meaning}</p>
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Recommended Actions</h4>
+                  <h4 className="font-medium text-sm mb-2">{t('dates.recommendedActions')}</h4>
                   <ul className="space-y-2">
                     {selectedEvent.recommendedActions.map((action, i) => (
                       <li key={i} className="text-sm flex items-start gap-2">

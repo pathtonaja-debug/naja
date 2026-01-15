@@ -123,11 +123,20 @@ export interface AppChapter {
 // Known resource IDs (fallback if API lookup fails)
 const KNOWN_TRANSLATION_IDS = {
   'sahih_international': 20, // Sahih International (English)
+  'muhammad_hamidullah': 31, // Muhammad Hamidullah (French)
 };
 
 const KNOWN_TAFSIR_IDS = {
   'ibn_kathir_en': 169, // Ibn Kathir (English)
 };
+
+// Get translation ID based on language
+export function getTranslationIdForLanguage(lang: string): number {
+  if (lang === 'fr') {
+    return KNOWN_TRANSLATION_IDS.muhammad_hamidullah;
+  }
+  return KNOWN_TRANSLATION_IDS.sahih_international;
+}
 
 // Error types
 export class QuranApiError extends Error {
