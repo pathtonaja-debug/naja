@@ -266,7 +266,8 @@ const Learn = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/50 flex items-end"
+            // Leave space for BottomNav so it remains visible
+            className="fixed inset-x-0 top-0 bottom-[92px] z-40 bg-black/50 flex items-end"
             onClick={() => setSelectedModule(null)}
           >
             <motion.div
@@ -274,7 +275,7 @@ const Learn = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="w-full bg-background rounded-t-3xl p-5 pb-[140px] max-h-[82vh] overflow-y-auto"
+              className="w-full bg-background rounded-t-3xl p-5 pb-[calc(env(safe-area-inset-bottom)+24px)] max-h-[calc(100vh-92px)] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -358,14 +359,15 @@ const Learn = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bottom-20 z-40 bg-black/50 flex items-center justify-center p-3"
+              // Leave space for BottomNav so it remains visible
+              className="fixed inset-x-0 top-0 bottom-[92px] z-40 bg-black/50 flex items-center justify-center p-3"
               onClick={() => setSelectedLesson(null)}
             >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-sm bg-background rounded-2xl p-4 max-h-[75vh] flex flex-col"
+              className="w-full max-w-sm bg-background rounded-2xl p-4 max-h-[calc(100vh-92px-24px)] flex flex-col"
               onClick={e => e.stopPropagation()}
             >
               <div className="text-center mb-4 shrink-0">
