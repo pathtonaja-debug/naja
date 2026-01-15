@@ -4,6 +4,7 @@ import {
   Coins, Scale, Heart, BookOpen, CheckCircle2, XCircle, 
   ArrowRight, Star, Trophy, Sparkles
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -339,6 +340,7 @@ const scenarios: Scenario[] = [
 ];
 
 export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: number) => void }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'lessons' | 'scenarios' | 'badges'>('lessons');
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonStep, setLessonStep] = useState<'content' | 'quiz' | 'complete'>('content');
@@ -388,8 +390,8 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-foreground">Ethical Finance</h2>
-          <p className="text-xs text-muted-foreground">Learn Islamic finance basics</p>
+          <h2 className="text-lg font-bold text-foreground">{t('fintech.ethicalFinance')}</h2>
+          <p className="text-xs text-muted-foreground">{t('fintech.learnBasics')}</p>
         </div>
         <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary">
           <Star className="w-4 h-4" />
@@ -410,7 +412,7 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
                 : "text-muted-foreground"
             )}
           >
-            {tab}
+            {t(`fintech.${tab}`)}
           </button>
         ))}
       </div>
@@ -476,7 +478,7 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
               onClick={resetLesson}
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              ← Back to Lessons
+              ← {t('fintech.backToLessons')}
             </button>
 
             {lessonStep === 'content' && (
@@ -504,7 +506,7 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
                   </div>
                 </div>
                 <Button onClick={() => setLessonStep('quiz')} className="w-full">
-                  Take Quiz
+                  {t('fintech.takeQuiz')}
                 </Button>
               </>
             )}
@@ -572,10 +574,10 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
                   <Sparkles className="w-10 h-10 text-primary" />
                 </motion.div>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Lesson Complete!</h2>
+                  <h2 className="text-xl font-bold text-foreground">{t('fintech.lessonComplete')}</h2>
                   <p className="text-sm text-primary font-bold">+{selectedLesson.xpReward} XP</p>
                 </div>
-                <Button onClick={resetLesson}>Continue Learning</Button>
+                <Button onClick={resetLesson}>{t('fintech.continueLearning')}</Button>
               </motion.div>
             )}
           </motion.div>
@@ -608,7 +610,7 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
                   onClick={() => { setActiveScenario(null); setScenarioAnswer(null); }}
                   className="text-sm text-muted-foreground"
                 >
-                  ← Back
+                  ← {t('common.back')}
                 </button>
                 <div className="p-4 rounded-2xl bg-card/80 border border-border/50">
                   <h3 className="font-bold text-foreground mb-2">{activeScenario.title}</h3>
@@ -671,7 +673,7 @@ export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: n
                 </div>
                 <p className="text-xs font-semibold">{badge.name}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {badge.earned ? "Earned!" : "Locked"}
+                  {badge.earned ? t('fintech.earned') : t('fintech.locked')}
                 </p>
               </motion.div>
             ))}

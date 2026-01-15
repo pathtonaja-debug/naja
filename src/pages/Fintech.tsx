@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { FintechEducationModule } from '@/components/game/FintechEducationModule';
 
 const Fintech = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleXPGained = (amount: number) => {
@@ -27,8 +29,8 @@ const Fintech = () => {
           <ArrowLeft className="w-5 h-5 text-foreground" />
         </motion.button>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Ethical Finance</h1>
-          <p className="text-xs text-muted-foreground">Learn Islamic finance basics</p>
+          <h1 className="text-xl font-bold text-foreground">{t('fintech.title')}</h1>
+          <p className="text-xs text-muted-foreground">{t('fintech.learnBasics')}</p>
         </div>
       </div>
 

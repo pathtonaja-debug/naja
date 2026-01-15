@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Info, Loader2, X, Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { AppChapter, AppVerse, ChapterInfo, getVersesByChapter, getChapterInfo } from '@/services/quranApi';
+import { AppChapter, AppVerse, ChapterInfo, getVersesByChapter, getChapterInfo, getTranslationIdForLanguage } from '@/services/quranApi';
 import {
   getCachedVerses,
   setCachedVerses,
@@ -22,8 +23,6 @@ interface SurahReaderProps {
   chapter: AppChapter;
   onBack: () => void;
 }
-
-const TRANSLATION_ID = 20; // Sahih International
 const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4']);
 
 function sanitizeChapterHtml(html: string): string {
@@ -100,6 +99,9 @@ function Sheet({
 }
 
 export function SurahReader({ chapter, onBack }: SurahReaderProps) {
+  const { i18n } = useTranslation();
+  const translationId = useMemo(() => getTranslationIdForLanguage(i18n.language), [i18n.language]);
+  
   const [verses, setVerses] = useState<AppVerse[]>([]);
   const [chapterInfo, setChapterInfo] = useState<ChapterInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,7 +129,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     setError(null);
 
     if (page === 1 && !append) {
-      const cached = getCachedVerses(chapter.id, TRANSLATION_ID);
+      const cached = getCachedVerses(chapter.id, translationId);
       if (cached && cached.length > 0) {
         setVerses(cached);
         setLoading(false);
@@ -137,7 +139,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
     try {
       const result = await getVersesByChapter(chapter.id, {
-        translationId: TRANSLATION_ID,
+        translationId,
         page,
         perPage: 50,
       });
@@ -145,14 +147,14 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
       if (append) setVerses(prev => [...prev, ...result.verses]);
       else {
         setVerses(result.verses);
-        if (page === 1) setCachedVerses(chapter.id, TRANSLATION_ID, result.verses);
+        if (page === 1) setCachedVerses(chapter.id, translationId, result.verses);
       }
 
       setTotalPages(result.totalPages);
       setCurrentPage(result.currentPage);
     } catch {
       if (page === 1) {
-        const stale = getStaleVerses(chapter.id, TRANSLATION_ID);
+        const stale = getStaleVerses(chapter.id, translationId);
         if (stale && stale.length > 0) {
           setVerses(stale);
           toast('Content temporarily unavailable. Showing cached version.');

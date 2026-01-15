@@ -559,6 +559,11 @@ const resources = {
       "fintech.tryAgain": "Try Again",
       "fintech.scenarioTitle": "Scenario",
       "fintech.chooseWisely": "Choose wisely...",
+      "fintech.backToLessons": "Back to Lessons",
+      "fintech.takeQuiz": "Take Quiz",
+      "fintech.continueLearning": "Continue Learning",
+      "fintech.earned": "Earned!",
+      "fintech.locked": "Locked",
 
       // Practices
       "practices.title": "Today's Acts for Allah",
@@ -1346,6 +1351,11 @@ const resources = {
       "fintech.tryAgain": "Réessayer",
       "fintech.scenarioTitle": "Scénario",
       "fintech.chooseWisely": "Choisissez judicieusement...",
+      "fintech.backToLessons": "Retour aux leçons",
+      "fintech.takeQuiz": "Passer le quiz",
+      "fintech.continueLearning": "Continuer à apprendre",
+      "fintech.earned": "Gagné !",
+      "fintech.locked": "Verrouillé",
 
       // Practices
       "practices.title": "Actes du Jour pour Allah",
