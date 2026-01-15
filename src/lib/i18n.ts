@@ -1115,8 +1115,6 @@ const resources = {
       "islamicDates.mawlid.action2": "Read his seerah (biography)",
       "islamicDates.mawlid.action3": "Share stories of his character",
       "islamicDates.mawlid.action4": "Gather for remembrance and learning",
-
-      "dates.recommendedActions": "Recommended Actions",
     }
   },
   fr: {
@@ -2222,8 +2220,6 @@ const resources = {
       "islamicDates.mawlid.action2": "Lisez sa seerah (biographie)",
       "islamicDates.mawlid.action3": "Partagez des histoires de son caractère",
       "islamicDates.mawlid.action4": "Rassemblez-vous pour le rappel et l'apprentissage",
-
-      "dates.recommendedActions": "Actions Recommandées",
     }
   }
 };
