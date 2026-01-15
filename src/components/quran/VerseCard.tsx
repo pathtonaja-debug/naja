@@ -400,33 +400,34 @@ export function VerseCard({
           {/* Separator */}
           <div className="border-t border-border/30" />
 
-          {/* Actions - Pill shaped buttons on same line */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Actions - Compact pill buttons on single line */}
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleHifdhCycle}
               className={cn(
-                "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium transition-colors",
                 hifdhConfig.className
               )}
             >
-              <Brain className="w-3 h-3" />
-              {hifdhConfig.label}
+              <Brain className="w-3 h-3 shrink-0" />
+              <span className="truncate">{hifdhConfig.label}</span>
             </button>
 
             <button
               onClick={() => onTafsirRequest(verse.verseKey)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
             >
-              <BookOpen className="w-3 h-3" />
+              <BookOpen className="w-3 h-3 shrink-0" />
               {t('quran.tafsir')}
             </button>
 
             {onLastReadSet && (
               <button
                 onClick={handleSetLastRead}
-                className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium text-muted-foreground hover:bg-muted transition-colors ml-auto"
               >
-                {t('quran.setAsCurrent')}
+                <Bookmark className="w-3 h-3 shrink-0" />
+                {t('quran.markHere')}
               </button>
             )}
           </div>
