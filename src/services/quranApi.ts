@@ -64,6 +64,7 @@ export interface Word {
   position: number;
   text_uthmani: string;
   text_indopak?: string;
+  char_type_name?: 'word' | 'end' | 'pause'; // 'end' = verse number marker
   translation: {
     text: string;
     language_name: string;

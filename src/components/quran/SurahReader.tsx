@@ -16,6 +16,7 @@ import {
   getStaleChapterInfo
 } from '@/services/quranCache';
 import { setLastReadPosition } from '@/services/quranReadingState';
+import { loadFrenchWbw, buildChapterWordIndex, isFrenchWbwLoaded } from '@/services/quranWbwFr';
 import { VerseCard } from './VerseCard';
 import { TafsirSheet } from './TafsirSheet';
 
@@ -114,6 +115,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
   const [aboutOpen, setAboutOpen] = useState(false);
   const [wordByWordEnabled, setWordByWordEnabled] = useState(false);
+  const [frenchWbwReady, setFrenchWbwReady] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -122,6 +124,15 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
   const [tafsirOpen, setTafsirOpen] = useState(false);
 
   const loadingRef = useRef(false);
+
+  // Load French word-by-word data when language is French
+  useEffect(() => {
+    if (baseLang === 'fr') {
+      loadFrenchWbw()
+        .then(() => setFrenchWbwReady(true))
+        .catch(() => setFrenchWbwReady(false));
+    }
+  }, [baseLang]);
 
   const loadVerses = useCallback(async (page: number, append: boolean = false) => {
     if (loadingRef.current) return;
@@ -149,6 +160,11 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         perPage: 50,
         language: baseLang,
       });
+
+      // Build French WBW index for this chapter
+      if (baseLang === 'fr' && result.verses.length > 0) {
+        buildChapterWordIndex(chapter.id, result.verses);
+      }
 
       if (append) setVerses(prev => [...prev, ...result.verses]);
       else {
@@ -336,6 +352,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
                 onTafsirRequest={handleTafsirRequest}
                 onLastReadSet={handleSetLastRead}
                 showWordByWord={wordByWordEnabled}
+                useFrenchWbw={baseLang === 'fr' && frenchWbwReady && isFrenchWbwLoaded()}
               />
             ))}
 
