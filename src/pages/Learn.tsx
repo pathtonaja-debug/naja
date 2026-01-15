@@ -266,7 +266,7 @@ const Learn = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 flex items-end"
+            className="fixed inset-0 z-[60] bg-black/50 flex items-end"
             onClick={() => setSelectedModule(null)}
           >
             <motion.div
@@ -274,7 +274,7 @@ const Learn = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="w-full bg-background rounded-t-3xl p-6 pb-28 max-h-[80vh] overflow-y-auto"
+              className="w-full bg-background rounded-t-3xl p-5 pb-[140px] max-h-[82vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -354,13 +354,13 @@ const Learn = () => {
       {/* Lesson Modal */}
       <AnimatePresence>
         {selectedLesson && selectedModule && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-            onClick={() => setSelectedLesson(null)}
-          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+              onClick={() => setSelectedLesson(null)}
+            >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
