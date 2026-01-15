@@ -15,6 +15,8 @@ const CACHE_KEYS = {
   TAFSIRS_INDEX: 'naja_quran_resources_tafsirs_v1',
   VERSE_TAFSIR: (verseKey: string, tafsirId: number) =>
     `naja_quran_tafsir_${verseKey.replace(':', '_')}_${tafsirId}_v1`,
+  FRENCH_TAFSIR: (verseKey: string) =>
+    `naja_tafsir_fr_${verseKey.replace(':', '_')}_v1`,
 } as const;
 
 // TTL defaults (in milliseconds)
@@ -157,6 +159,15 @@ export function getCachedVerseTafsir(verseKey: string, tafsirId: number): string
 
 export function setCachedVerseTafsir(verseKey: string, tafsirId: number, text: string): void {
   setCache(CACHE_KEYS.VERSE_TAFSIR(verseKey, tafsirId), text, TTL.TAFSIR);
+}
+
+// French tafsir translation cache
+export function getCachedFrenchTafsir(verseKey: string): string | null {
+  return getCache<string>(CACHE_KEYS.FRENCH_TAFSIR(verseKey));
+}
+
+export function setCachedFrenchTafsir(verseKey: string, text: string): void {
+  setCache(CACHE_KEYS.FRENCH_TAFSIR(verseKey), text, TTL.TAFSIR);
 }
 
 // Clear all Quran cache (for debugging or forced refresh)
