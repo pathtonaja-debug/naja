@@ -227,10 +227,10 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
   const handleSetLastRead = (verseKey: string, verseNumber: number) => {
     setLastReadPosition(chapter.id, verseNumber, verseKey, chapter.nameSimple);
-    toast('Reading position saved');
+    toast(t('quran.readingPositionSaved'));
   };
 
-  const revelationLabel = chapter.revelationPlace === 'makkah' ? 'Meccan' : 'Medinan';
+  const revelationLabel = chapter.revelationPlace === 'makkah' ? t('quran.meccan') : t('quran.medinan');
 
   return (
     <div className="min-h-screen bg-background">
@@ -243,7 +243,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
             </Button>
             <div>
               <h1 className="font-semibold text-foreground">{chapter.nameSimple}</h1>
-              <p className="text-xs text-muted-foreground">{chapter.versesCount} verses · {revelationLabel}</p>
+              <p className="text-xs text-muted-foreground">{chapter.versesCount} {t('quran.verses')} · {revelationLabel}</p>
             </div>
           </div>
 
@@ -257,7 +257,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
             }`}
           >
             <Languages className="w-3.5 h-3.5" />
-            Word-by-word
+            {t('quran.wordByWord')}
           </button>
         </div>
       </div>
@@ -277,11 +277,11 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
           <div className="flex justify-center gap-8 text-sm mb-4">
             <div>
-              <p className="text-muted-foreground">Verses</p>
+              <p className="text-muted-foreground">{t('quran.verses')}</p>
               <p className="font-semibold text-foreground">{chapter.versesCount}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Revealed in</p>
+              <p className="text-muted-foreground">{t('quran.revealed')}</p>
               <p className="font-semibold text-foreground">{revelationLabel}</p>
             </div>
           </div>
@@ -369,10 +369,10 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
               </div>
             )}
 
-            {chapterInfo && (
+              {chapterInfo && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-semibold text-foreground mb-3">Summary</h4>
+                  <h4 className="font-semibold text-foreground mb-3">{t('quran.summary')}</h4>
                   <div 
                     className="prose prose-sm max-w-none text-foreground/90 leading-relaxed
                       [&_p]:mb-4 [&_p]:last:mb-0

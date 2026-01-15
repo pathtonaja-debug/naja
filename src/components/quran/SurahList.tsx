@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, X, Check, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,6 +15,7 @@ interface SurahListProps {
 }
 
 export function SurahList({ onSelectSurah, readSurahs }: SurahListProps) {
+  const { t } = useTranslation();
   const [chapters, setChapters] = useState<AppChapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export function SurahList({ onSelectSurah, readSurahs }: SurahListProps) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Search surahs..."
+          placeholder={t('quran.searchSurahs')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -107,7 +109,7 @@ export function SurahList({ onSelectSurah, readSurahs }: SurahListProps) {
       {/* Progress Summary */}
       <Card className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">Surahs Read</span>
+          <span className="text-sm font-medium">{t('quran.surahsRead')}</span>
           <span className="text-lg font-bold text-primary">{readSurahs.length}/114</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -123,7 +125,7 @@ export function SurahList({ onSelectSurah, readSurahs }: SurahListProps) {
       <div className="space-y-2">
         {filteredChapters.map((chapter) => {
           const isRead = readSurahs.includes(chapter.id);
-          const revelationLabel = chapter.revelationPlace === 'makkah' ? 'Meccan' : 'Medinan';
+          const revelationLabel = chapter.revelationPlace === 'makkah' ? t('quran.meccan') : t('quran.medinan');
           
           return (
             <motion.div key={chapter.id} whileTap={{ scale: 0.98 }}>
@@ -147,7 +149,7 @@ export function SurahList({ onSelectSurah, readSurahs }: SurahListProps) {
                       {isRead && <Check className="w-3.5 h-3.5 text-primary flex-shrink-0" />}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {chapter.versesCount} verses • {revelationLabel}
+                      {chapter.versesCount} {t('quran.verses')} • {revelationLabel}
                     </p>
                   </div>
                   <p className="font-arabic text-lg">{chapter.nameArabic}</p>
