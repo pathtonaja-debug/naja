@@ -171,98 +171,151 @@ function extractVerseTafsir(text: string, surahNumber: number, verseNumber: numb
 }
 
 /**
- * Clean and format the tafsir content
- * 
- * Removes OCR artifacts (garbled characters from bad scans) and formats
- * the text into clean paragraphs with proper HTML structure.
+ * List of common French words to validate text
  */
-function cleanTafsirContent(content: string): string {
-  // Step 1: Remove obvious OCR garbage patterns
-  let cleaned = content
-    // Remove Arabic script entirely (OCR artifacts from the original Arabic text)
-    .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')
-    // Remove common OCR garbage patterns - sequences of single letters with spaces/symbols
-    // This pattern catches things like "cS jjï » ijIj j 'J î" etc
-    .replace(/\b[A-Za-zàâäéèêëïîôùûüÿçœæ]{1,2}\s*[»«*^_|:;!?.,]+\s*[A-Za-zàâäéèêëïîôùûüÿçœæ]{1,2}\b/g, '')
-    // Remove sequences of short "words" (1-2 chars) separated by spaces
-    .replace(/(\b[A-Za-z]{1,2}\b\s+){3,}/g, '')
-    // Remove patterns like "jjï" "îlj" etc - consonant+vowel combos that are OCR garbage
-    .replace(/\b[bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ][îïüûùôöàâäéèêëç][A-Za-z]{0,2}\b/g, '')
-    // Remove patterns with excessive accented characters mixed oddly
-    .replace(/\b\w*[îïâäùûôöëê]{2,}\w*\b/g, '')
-    // Remove isolated symbols and punctuation clusters
-    .replace(/[»«]+/g, '')
-    .replace(/\s*[*^_|\\<>]+\s*/g, ' ')
-    // Remove footnote-style numbers like (1) (2) etc in the middle of text
-    .replace(/\(\s*\d+\s*\)/g, '')
-    // Clean up multiple spaces
-    .replace(/\s{2,}/g, ' ')
-    // Remove page numbers (standalone numbers on their own line)
-    .replace(/^\d+\s*$/gm, '')
-    // Clean up excessive whitespace and newlines
-    .replace(/\n\s*\n\s*\n+/g, '\n\n');
+const FRENCH_WORDS = new Set([
+  // Articles
+  'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'au', 'aux',
+  // Pronouns
+  'il', 'elle', 'ils', 'elles', 'je', 'tu', 'nous', 'vous', 'on', 'ce', 'qui', 'que', 'quoi',
+  // Prepositions
+  'à', 'dans', 'par', 'pour', 'en', 'vers', 'avec', 'sans', 'sous', 'sur', 'entre', 'chez',
+  // Conjunctions
+  'et', 'ou', 'mais', 'donc', 'car', 'ni', 'si', 'comme', 'quand', 'lorsque',
+  // Common verbs
+  'est', 'sont', 'a', 'ont', 'dit', 'fait', 'être', 'avoir', 'faire', 'dire', 'fut', 'était',
+  // Common words
+  'dieu', 'allah', 'coran', 'prophète', 'miséricordieux', 'seigneur', 'croyants', 'homme', 'hommes'
+]);
 
-  // Step 2: Process lines and filter out garbage lines
-  const lines = cleaned.split('\n').map(line => line.trim()).filter(line => {
-    // Filter out empty or very short lines
-    if (line.length < 15) return false;
-    
-    // Count French letters vs total characters
-    const frenchLetters = (line.match(/[a-zA-ZàâäéèêëïîôùûüÿçœæÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ]/g) || []).length;
-    const total = line.replace(/\s/g, '').length;
-    
-    // Line should be mostly letters (>60%)
-    if (total > 0 && frenchLetters / total < 0.6) return false;
-    
-    // Check for too many short "words" (OCR garbage indicator)
-    const words = line.split(/\s+/);
-    const shortWords = words.filter(w => w.length <= 2 && !/^(à|a|au|de|du|en|et|il|je|la|le|là|ma|me|ne|ni|on|ou|où|sa|se|si|ta|te|tu|un|va|vu|y)$/i.test(w)).length;
-    if (words.length > 5 && shortWords / words.length > 0.4) return false;
-    
-    return true;
-  });
-
-  // Step 3: Join lines into paragraphs
-  const paragraphs: string[] = [];
-  let currentParagraph = '';
-  
-  for (const line of lines) {
-    if (line === '') {
-      if (currentParagraph.length > 30) {
-        paragraphs.push(currentParagraph.trim());
-      }
-      currentParagraph = '';
-    } else {
-      currentParagraph += (currentParagraph ? ' ' : '') + line;
-    }
+/**
+ * Check if a word looks like valid French
+ */
+function isValidFrenchWord(word: string): boolean {
+  const cleaned = word.toLowerCase().replace(/[.,;:!?'"()]/g, '');
+  if (cleaned.length === 0) return true;
+  if (cleaned.length <= 2) {
+    return FRENCH_WORDS.has(cleaned) || /^[a-zàâäéèêëïîôùûüÿçœæ]+$/.test(cleaned);
   }
-  
-  // Don't forget the last paragraph
-  if (currentParagraph.length > 30) {
-    paragraphs.push(currentParagraph.trim());
-  }
-
-  // Step 4: Final cleanup on each paragraph
-  const cleanedParagraphs = paragraphs
-    .map(p => {
-      // Remove any remaining short garbage sequences
-      return p
-        .replace(/\s+[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s+/g, ' ')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
-    })
-    .filter(p => p.length > 40); // Only keep meaningful paragraphs
-
-  // Step 5: Format as simple HTML paragraphs
-  const formatted = cleanedParagraphs
-    .map(p => `<p>${escapeHtml(p)}</p>`)
-    .join('\n');
-  
-  return formatted;
+  // Valid French word: mostly letters, no weird accent patterns
+  const hasValidStructure = /^[a-zàâäéèêëïîôùûüÿçœæ'-]+$/i.test(cleaned);
+  // Check for garbage patterns: consonants with random accents
+  const hasGarbagePattern = /[bcdfghjklmnpqrstvwxz][îïûùôâäëê][bcdfghjklmnpqrstvwxz]/i.test(cleaned);
+  return hasValidStructure && !hasGarbagePattern;
 }
 
 /**
- * Escape HTML entities to prevent XSS and rendering issues
+ * Check if a segment of text is garbage
+ */
+function isGarbageSegment(segment: string): boolean {
+  const words = segment.trim().split(/\s+/);
+  if (words.length === 0) return true;
+  
+  // Count valid French words
+  let validCount = 0;
+  let garbageCount = 0;
+  
+  for (const word of words) {
+    if (isValidFrenchWord(word)) {
+      validCount++;
+    } else {
+      garbageCount++;
+    }
+  }
+  
+  // If more than 30% of words are garbage, the segment is garbage
+  const garbageRatio = garbageCount / words.length;
+  return garbageRatio > 0.3;
+}
+
+/**
+ * Clean a sentence by removing garbage segments
+ */
+function cleanSentence(sentence: string): string {
+  // Split by common garbage delimiters
+  let cleaned = sentence
+    // Remove content inside parentheses that looks like garbage
+    .replace(/\([^)]*[ÂÎÛîïûùâäëê][^)]*\)/g, '')
+    .replace(/\([^)]*[A-Z][a-z]?-[A-Z][^)]*\)/g, '')
+    // Remove patterns like "jhh :Jlî £)t" 
+    .replace(/\b\w{1,3}\s*[:;]\s*\w{1,4}[îïûùâäëê]\w*\s*[£$€)(\[\]]+\w*/g, '')
+    // Remove patterns with squares/boxes
+    .replace(/[■□▪▫]+/g, '')
+    // Remove short garbage sequences
+    .replace(/\b[A-Z][a-z]?[îïûùâäëê][A-Za-z]{0,3}\b/g, '')
+    // Remove patterns like "-...Tj OU H"
+    .replace(/-\.{2,}[A-Za-z]{1,3}\s+[A-Z]{1,3}\s+[A-Z]\b/g, '')
+    // Remove "oljj)" type patterns
+    .replace(/\b[a-z]{2,4}[jJ]{2,}[)\]]*\)?/g, '')
+    // Remove isolated fragments like "ùUa-iit —J À Ojl"
+    .replace(/\b[ùûîï][A-Za-z]{1,4}[-—][a-z]{2,4}\s+[—-]?[A-Z]\s+[ÀÂ]\s+[A-Z][a-z]{1,3}\b/g, '')
+    // Remove patterns with ¿ (Spanish, not French)
+    .replace(/[¿¡][^.!?]*[.!?]?/g, '')
+    .replace(/\([^)]*¿[^)]*\)/g, '')
+    // Remove remaining OCR garbage patterns
+    .replace(/\b[A-Z][a-z]?-[A-Z][a-z]?['']?\)?/g, '')
+    // Remove patterns like "c-âÂ-19 tt UJI jjj"
+    .replace(/[a-z]-[âäàáéèêëîïôöùûüÿ][ÂÄÀÁÉÈÊËÎÏÔÖÙÛÜŸ]-\d+\s+[a-z]{2}\s+[A-Z]{2,4}\s+[a-z]{2,4}/gi, '')
+    // Remove "tojai IfjJaî" type words
+    .replace(/\b[a-z]{2,6}[jJ][aeiouâäàáéèêëîïôöùûüÿ][îïûùâäëê]\b/gi, '')
+    // Clean up multiple spaces
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  
+  return cleaned;
+}
+
+/**
+ * Clean and format the tafsir content - deep sentence-level cleanup
+ */
+function cleanTafsirContent(content: string): string {
+  // Step 1: Initial cleanup
+  let cleaned = content
+    // Remove Arabic script
+    .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')
+    // Remove page numbers
+    .replace(/^\d+\s*$/gm, '')
+    // Normalize whitespace
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n');
+
+  // Step 2: Split into sentences and clean each one
+  const sentences = cleaned.split(/(?<=[.!?])\s+/);
+  const cleanedSentences: string[] = [];
+  
+  for (const sentence of sentences) {
+    const cleanedSentence = cleanSentence(sentence);
+    
+    // Check if the cleaned sentence is meaningful
+    if (cleanedSentence.length > 20 && !isGarbageSegment(cleanedSentence)) {
+      // Additional check: ensure the sentence ends properly or continues a thought
+      cleanedSentences.push(cleanedSentence);
+    }
+  }
+  
+  // Step 3: Join sentences and split into paragraphs
+  const text = cleanedSentences.join(' ');
+  const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 50);
+  
+  // Step 4: Final cleanup on each paragraph
+  const finalParagraphs = paragraphs.map(p => {
+    return p
+      // Remove any remaining short garbage at start/end
+      .replace(/^\s*[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s+/, '')
+      .replace(/\s+[A-Za-z]{1,2}\s+[A-Za-z]{1,2}\s*$/, '')
+      // Clean spaces
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }).filter(p => p.length > 50 && !isGarbageSegment(p));
+  
+  // Step 5: Format as HTML
+  return finalParagraphs
+    .map(p => `<p>${escapeHtml(p)}</p>`)
+    .join('\n');
+}
+
+/**
+ * Escape HTML entities
  */
 function escapeHtml(text: string): string {
   return text
