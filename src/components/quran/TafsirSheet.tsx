@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVerseTafsir } from '@/services/quranApi';
 import { getCachedVerseTafsir, setCachedVerseTafsir } from '@/services/quranCache';
+import { getFrenchTafsir } from '@/services/tafsirFr';
 
 interface TafsirSheetProps {
   open: boolean;
@@ -36,9 +38,13 @@ function sanitizeTafsirHtml(html: string): string {
 }
 
 export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_TAFSIR_ID }: TafsirSheetProps) {
+  const { i18n, t } = useTranslation();
+  const baseLang = (i18n.language || 'en').toLowerCase().split('-')[0];
+  
   const [tafsirText, setTafsirText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<'api' | 'local'>('api');
 
   useEffect(() => {
     if (!open || !verseKey) {
@@ -48,21 +54,40 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
     const loadTafsir = async () => {
       setLoading(true);
       setError(null);
+      setTafsirText(null);
 
-      // Check cache first
+      // If French, try local tafsir first
+      if (baseLang === 'fr') {
+        try {
+          const frenchTafsir = await getFrenchTafsir(verseKey);
+          if (frenchTafsir && frenchTafsir.length > 50) {
+            setTafsirText(frenchTafsir);
+            setSource('local');
+            setLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.warn('[TafsirSheet] French tafsir failed, falling back to API:', err);
+        }
+      }
+
+      // Check cache for API tafsir
       const cached = getCachedVerseTafsir(verseKey, tafsirId);
       if (cached) {
         setTafsirText(cached);
+        setSource('api');
         setLoading(false);
         return;
       }
 
+      // Fetch from API
       try {
         const text = await getVerseTafsir(verseKey, tafsirId);
         setTafsirText(text);
+        setSource('api');
         setCachedVerseTafsir(verseKey, tafsirId, text);
       } catch (err) {
-        setError('Unable to load tafsir. Please try again later.');
+        setError(t('quran.unableToLoadTafsir'));
         console.error('Tafsir load error:', err);
       } finally {
         setLoading(false);
@@ -70,7 +95,7 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
     };
 
     loadTafsir();
-  }, [open, verseKey, tafsirId]);
+  }, [open, verseKey, tafsirId, baseLang, t]);
 
   // Reset state when closing
   useEffect(() => {
@@ -80,12 +105,16 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
     }
   }, [open]);
 
+  const tafsirTitle = baseLang === 'fr' && source === 'local' 
+    ? 'Tafsir Ibn Kathir (Fr)' 
+    : 'Tafsir Ibn Kathir';
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl">
         <SheetHeader className="pb-4">
           <SheetTitle className="text-left">
-            Tafsir Ibn Kathir
+            {tafsirTitle}
             {verseKey && <span className="text-muted-foreground ml-2">({verseKey})</span>}
           </SheetTitle>
         </SheetHeader>
@@ -125,14 +154,26 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
                 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-3
                 [&_li]:mb-1.5 [&_li]:leading-relaxed
                 [&_strong]:font-semibold [&_strong]:text-foreground
-                [&_em]:italic"
+                [&_em]:italic
+                [&_.verse-reference]:text-primary [&_.verse-reference]:font-medium
+                [&_.hadith-reference]:text-muted-foreground [&_.hadith-reference]:text-sm [&_.hadith-reference]:border-l-2 [&_.hadith-reference]:border-primary/30 [&_.hadith-reference]:pl-3
+                [&_.list-item]:pl-4"
               dangerouslySetInnerHTML={{ __html: sanitizeTafsirHtml(tafsirText) }}
             />
           )}
 
           {!loading && !error && !tafsirText && (
             <p className="text-muted-foreground text-center py-8">
-              No tafsir available for this verse.
+              {t('quran.noTafsirAvailable')}
+            </p>
+          )}
+          
+          {/* Source attribution */}
+          {!loading && !error && tafsirText && (
+            <p className="text-xs text-muted-foreground mt-6 pt-4 border-t border-border/50">
+              {source === 'local' 
+                ? 'Source: Ibn Kathir, traduit par Ahmad Harakat' 
+                : 'Source: Ibn Kathir (Quran.com API)'}
             </p>
           )}
         </div>
