@@ -52,11 +52,10 @@ export function LessonQuizModal({ moduleId, questions, onComplete, onClose, onNe
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
-      // Check if passed - calculate correct count including current question
-      const finalCorrect = isCorrect ? correctAnswers + 1 : correctAnswers;
-      setFinalCorrectCount(finalCorrect);
+      // Quiz finished - correctAnswers already updated in handleCheckAnswer
+      setFinalCorrectCount(correctAnswers);
       setQuizComplete(true);
-      const didPass = finalCorrect / questions.length >= passThreshold;
+      const didPass = correctAnswers / questions.length >= passThreshold;
       onComplete(didPass);
     }
   };
