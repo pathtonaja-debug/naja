@@ -16,6 +16,7 @@ import { getLastReadPosition, getBookmarks, Bookmark, LastReadPosition } from '@
 import { SurahList } from '@/components/quran/SurahList';
 import { SurahReader } from '@/components/quran/SurahReader';
 import { HifdhTracker } from '@/components/quran/HifdhTracker';
+import { preloadFrenchTafsir } from '@/services/tafsirFrStatic';
 
 interface QuranProgress {
   todayPages: number;
@@ -48,6 +49,9 @@ const Quran = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
   useEffect(() => {
+    // Preload French tafsir data in background
+    preloadFrenchTafsir();
+    
     const stored = localStorage.getItem('naja_quran_progress_v2');
     if (stored) {
       const parsed = JSON.parse(stored);

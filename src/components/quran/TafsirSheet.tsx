@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getVerseTafsir } from '@/services/quranApi';
 import { getCachedVerseTafsir, setCachedVerseTafsir, getCachedFrenchTafsir, setCachedFrenchTafsir } from '@/services/quranCache';
 import { translateTafsirToFrench } from '@/services/tafsirTranslation';
-// import { getFrenchTafsir } from '@/services/tafsirFr'; // Deactivated
+import { getFrenchTafsir as getStaticFrenchTafsir, isFrenchTafsirLoaded, getFrenchTafsirSource } from '@/services/tafsirFrStatic';
 
 interface TafsirSheetProps {
   open: boolean;
@@ -59,41 +59,45 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
       setTafsirText(null);
       setLoadingMessage(null);
 
-      // If French, try to load translated tafsir
+      // If French, try to load from static file first, then fallback to translation
       if (baseLang === 'fr') {
-        // Check French translation cache first
-        const cachedFrench = getCachedFrenchTafsir(verseKey);
-        if (cachedFrench) {
-          setTafsirText(cachedFrench);
-          setSource('translated');
-          setLoading(false);
-          return;
-        }
-
-        // Need to fetch English and translate
-        setLoadingMessage('Traduction en cours...');
-        
         try {
-          // Get English tafsir (check cache first)
-          let englishText = getCachedVerseTafsir(verseKey, tafsirId);
+          // 1. Try static pre-generated French tafsir (instant)
+          const staticFrench = await getStaticFrenchTafsir(verseKey);
+          if (staticFrench) {
+            setTafsirText(staticFrench);
+            setSource('local');
+            setLoading(false);
+            return;
+          }
+
+          // 2. Check localStorage cache (from previous translation)
+          const cachedFrench = getCachedFrenchTafsir(verseKey);
+          if (cachedFrench) {
+            setTafsirText(cachedFrench);
+            setSource('translated');
+            setLoading(false);
+            return;
+          }
+
+          // 3. Need to fetch English and translate on-demand
+          setLoadingMessage('Traduction en cours...');
           
+          let englishText = getCachedVerseTafsir(verseKey, tafsirId);
           if (!englishText) {
             englishText = await getVerseTafsir(verseKey, tafsirId);
             setCachedVerseTafsir(verseKey, tafsirId, englishText);
           }
 
-          // Translate to French
           const frenchText = await translateTafsirToFrench(englishText, verseKey);
-          
-          // Cache the French translation
           setCachedFrenchTafsir(verseKey, frenchText);
           
           setTafsirText(frenchText);
           setSource('translated');
         } catch (err) {
-          console.error('[TafsirSheet] French translation failed:', err);
+          console.error('[TafsirSheet] French tafsir failed:', err);
           
-          // Fallback: try to show English with a note
+          // Fallback: show English with a note
           try {
             const englishFallback = getCachedVerseTafsir(verseKey, tafsirId) 
               || await getVerseTafsir(verseKey, tafsirId);
@@ -160,10 +164,8 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
     }
   }, [open]);
 
-  const tafsirTitle = baseLang === 'fr' && source === 'translated' 
-    ? 'Tafsir Ibn Kathir (traduit)' 
-    : baseLang === 'fr' && source === 'local'
-    ? 'Tafsir Ibn Kathir (Fr)'
+  const tafsirTitle = baseLang === 'fr' && (source === 'translated' || source === 'local')
+    ? 'Tafsir Ibn Kathir (Fr)' 
     : 'Tafsir Ibn Kathir';
 
   return (
@@ -221,10 +223,10 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
           {/* Source attribution */}
           {!loading && !error && tafsirText && (
             <p className="text-xs text-muted-foreground mt-6 pt-4 border-t border-border/50">
-              {source === 'translated'
+              {source === 'local' 
+                ? `Source: ${getFrenchTafsirSource()}`
+                : source === 'translated'
                 ? 'Source: Ibn Kathir (Quran.com API), traduit en français par IA'
-                : source === 'local' 
-                ? 'Source: Ibn Kathir, traduit par Ahmad Harakat' 
                 : 'Source: Ibn Kathir (Quran.com API)'}
             </p>
           )}
