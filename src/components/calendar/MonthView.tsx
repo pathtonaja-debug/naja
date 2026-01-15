@@ -41,8 +41,9 @@ export const MonthView = ({
   const monthEnd = endOfMonth(month);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
+  // Monday-first: convert Sun=0 to Mon=0, ..., Sun=6
   const firstDayOfWeek = getDay(monthStart);
-  const paddingDays = Array(firstDayOfWeek).fill(null);
+  const paddingDays = Array(firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1).fill(null);
   
   const itemsByDate = new Map<string, CalendarItem[]>();
   items.forEach(item => {
@@ -85,7 +86,7 @@ export const MonthView = ({
         {/* Calendar Grid */}
         <Card className="p-6 backdrop-blur-2xl bg-gradient-to-br from-white/20 to-white/10 border-white/15">
           <div className="grid grid-cols-7 gap-2 mb-4">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className="text-[13px] text-foreground/60 text-center font-semibold">
                 {day}
               </div>
