@@ -9,24 +9,51 @@ import React from 'react';
  * - Line breaks (\n\n for paragraphs)
  */
 export function formatLessonContent(content: string): React.ReactNode {
+  // First, normalize inline numbered lists: "1. Item 2. Item" → "1. Item\n2. Item"
+  const normalizedContent = content.replace(/(\d+)\.\s+/g, (match, num, offset) => {
+    // If this is at the start or preceded by newline, keep as is
+    // Otherwise, add a newline before it
+    if (offset === 0) return match;
+    const prevChar = content[offset - 1];
+    if (prevChar === '\n') return match;
+    // Add newline before the numbered item (except for the first one)
+    if (num === '1') return match;
+    return `\n${match}`;
+  });
+
   // Split by double newlines for paragraphs
-  const paragraphs = content.split(/\n\n/);
+  const paragraphs = normalizedContent.split(/\n\n/);
   
   return (
     <div className="space-y-3">
       {paragraphs.map((paragraph, pIdx) => {
-        // Check if it's a numbered list item (starts with number followed by period)
-        const numberedListMatch = paragraph.match(/^(\d+)\.\s+(.+)$/);
-        if (numberedListMatch) {
-          const [, number, text] = numberedListMatch;
+        // Check if paragraph contains numbered list items (could be multi-line)
+        const hasNumberedList = /^\d+\.\s/.test(paragraph) || /\n\d+\.\s/.test(paragraph);
+        if (hasNumberedList) {
+          const lines = paragraph.split('\n');
           return (
-            <div key={pIdx} className="flex gap-2">
-              <span className="font-semibold text-primary shrink-0">{number}.</span>
-              <span>{formatInlineText(text)}</span>
+            <div key={pIdx} className="space-y-2">
+              {lines.map((line, lIdx) => {
+                const numberedMatch = line.match(/^(\d+)\.\s*(.+)$/);
+                if (numberedMatch) {
+                  const [, number, text] = numberedMatch;
+                  return (
+                    <div key={lIdx} className="flex gap-2">
+                      <span className="font-semibold text-primary shrink-0 min-w-[1.25rem]">{number}.</span>
+                      <span>{formatInlineText(text)}</span>
+                    </div>
+                  );
+                }
+                // Non-numbered line in the paragraph
+                if (line.trim()) {
+                  return <p key={lIdx}>{formatInlineText(line)}</p>;
+                }
+                return null;
+              })}
             </div>
           );
         }
-        
+
         // Check if it's a bullet list item (starts with -)
         const bulletMatch = paragraph.match(/^-\s+(.+)$/);
         if (bulletMatch) {
@@ -39,7 +66,7 @@ export function formatLessonContent(content: string): React.ReactNode {
         }
         
         // Check if paragraph contains multiple bullet items
-        if (paragraph.includes('\n- ')) {
+        if (paragraph.includes('\n- ') || paragraph.startsWith('- ')) {
           const lines = paragraph.split('\n');
           return (
             <div key={pIdx} className="space-y-1">
@@ -53,7 +80,10 @@ export function formatLessonContent(content: string): React.ReactNode {
                     </div>
                   );
                 }
-                return <p key={lIdx}>{formatInlineText(line)}</p>;
+                if (line.trim()) {
+                  return <p key={lIdx}>{formatInlineText(line)}</p>;
+                }
+                return null;
               })}
             </div>
           );
