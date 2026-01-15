@@ -50,14 +50,14 @@ export async function openaiChatText(args: {
   // Prefer Lovable AI to avoid rate limits
   if (lovableKey) {
     try {
-      const res = await fetchWithTimeout("https://ai.lovable.dev/api/v1/chat/completions", {
+      const res = await fetchWithTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${lovableKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "openai/gpt-5-mini",
+          model: "google/gemini-3-flash-preview",
           max_completion_tokens: args.maxTokens ?? 800,
           messages: [
             { role: "system", content: args.system },
