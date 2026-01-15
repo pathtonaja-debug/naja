@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVerseTafsir } from '@/services/quranApi';
-import { getCachedVerseTafsir, setCachedVerseTafsir } from '@/services/quranCache';
-import { getFrenchTafsir } from '@/services/tafsirFr';
+import { getCachedVerseTafsir, setCachedVerseTafsir, getCachedFrenchTafsir, setCachedFrenchTafsir } from '@/services/quranCache';
+import { translateTafsirToFrench } from '@/services/tafsirTranslation';
+// import { getFrenchTafsir } from '@/services/tafsirFr'; // Deactivated
 
 interface TafsirSheetProps {
   open: boolean;
@@ -43,8 +44,9 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
   
   const [tafsirText, setTafsirText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<'api' | 'local'>('api');
+  const [source, setSource] = useState<'api' | 'local' | 'translated'>('api');
 
   useEffect(() => {
     if (!open || !verseKey) {
@@ -55,13 +57,56 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
       setLoading(true);
       setError(null);
       setTafsirText(null);
+      setLoadingMessage(null);
 
-      // If French, show "coming soon" message instead of loading local tafsir
-      // (French tafsir temporarily deactivated due to OCR quality issues)
+      // If French, try to load translated tafsir
       if (baseLang === 'fr') {
-        setTafsirText('<p>Le Tafsir en français arrive bientôt, insha\'Allah. Nous travaillons à améliorer la qualité du texte.</p><p>En attendant, le Tafsir est disponible en anglais.</p>');
-        setSource('local');
-        setLoading(false);
+        // Check French translation cache first
+        const cachedFrench = getCachedFrenchTafsir(verseKey);
+        if (cachedFrench) {
+          setTafsirText(cachedFrench);
+          setSource('translated');
+          setLoading(false);
+          return;
+        }
+
+        // Need to fetch English and translate
+        setLoadingMessage('Traduction en cours...');
+        
+        try {
+          // Get English tafsir (check cache first)
+          let englishText = getCachedVerseTafsir(verseKey, tafsirId);
+          
+          if (!englishText) {
+            englishText = await getVerseTafsir(verseKey, tafsirId);
+            setCachedVerseTafsir(verseKey, tafsirId, englishText);
+          }
+
+          // Translate to French
+          const frenchText = await translateTafsirToFrench(englishText, verseKey);
+          
+          // Cache the French translation
+          setCachedFrenchTafsir(verseKey, frenchText);
+          
+          setTafsirText(frenchText);
+          setSource('translated');
+        } catch (err) {
+          console.error('[TafsirSheet] French translation failed:', err);
+          
+          // Fallback: try to show English with a note
+          try {
+            const englishFallback = getCachedVerseTafsir(verseKey, tafsirId) 
+              || await getVerseTafsir(verseKey, tafsirId);
+            setTafsirText(englishFallback);
+            setSource('api');
+            setError('La traduction en français a échoué. Affichage en anglais.');
+          } catch {
+            setError(t('quran.unableToLoadTafsir'));
+          }
+        } finally {
+          setLoading(false);
+          setLoadingMessage(null);
+        }
         return;
       }
 
@@ -115,8 +160,10 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
     }
   }, [open]);
 
-  const tafsirTitle = baseLang === 'fr' && source === 'local' 
-    ? 'Tafsir Ibn Kathir (Fr)' 
+  const tafsirTitle = baseLang === 'fr' && source === 'translated' 
+    ? 'Tafsir Ibn Kathir (traduit)' 
+    : baseLang === 'fr' && source === 'local'
+    ? 'Tafsir Ibn Kathir (Fr)'
     : 'Tafsir Ibn Kathir';
 
   return (
@@ -132,6 +179,11 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
         <div className="overflow-y-auto h-full pb-8">
           {loading && (
             <div className="space-y-3">
+              {loadingMessage && (
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  {loadingMessage}
+                </p>
+              )}
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-5/6" />
               <Skeleton className="h-4 w-4/6" />
@@ -169,7 +221,9 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
           {/* Source attribution */}
           {!loading && !error && tafsirText && (
             <p className="text-xs text-muted-foreground mt-6 pt-4 border-t border-border/50">
-              {source === 'local' 
+              {source === 'translated'
+                ? 'Source: Ibn Kathir (Quran.com API), traduit en français par IA'
+                : source === 'local' 
                 ? 'Source: Ibn Kathir, traduit par Ahmad Harakat' 
                 : 'Source: Ibn Kathir (Quran.com API)'}
             </p>
