@@ -34,6 +34,14 @@ const Dashboard = () => {
     setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
   }, []);
 
+  // Build ayah object from i18n
+  const ayahOfDay = {
+    arabic: t(`ayah.${ayahIndex}.arabic`),
+    transliteration: t(`ayah.${ayahIndex}.transliteration`),
+    translation: t(`ayah.${ayahIndex}.translation`),
+    reference: t(`ayah.${ayahIndex}.reference`),
+  };
+
   // Load today's acts status
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
