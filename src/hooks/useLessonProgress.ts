@@ -318,14 +318,15 @@ export function useLessonProgress() {
     saveProgress({ modules: updatedModules, lastUpdated: new Date().toISOString() });
   }, [progress.modules, saveProgress]);
 
-  // Get a lesson quiz from the lesson content
-  const getLessonQuiz = useCallback((lessonId: string, lang: string): LessonQuizQuestion | null => {
+  // Get a lesson quiz from the lesson content - returns array for compatibility with LessonQuizModal
+  const getLessonQuiz = useCallback((lessonId: string, lang: string): LessonQuizQuestion[] => {
     // Import from lesson content - we'll use the quiz from there
     const { LESSON_CONTENT } = require('@/data/lessonContent');
     const { LESSON_CONTENT_FR } = require('@/data/lessonContentFr');
     
     const content = lang === 'fr' ? LESSON_CONTENT_FR[lessonId] : LESSON_CONTENT[lessonId];
-    return content?.quiz || null;
+    const quiz = content?.quiz;
+    return quiz ? [quiz] : [];
   }, []);
 
   const passModuleQuiz = useCallback((moduleId: string): boolean => {
