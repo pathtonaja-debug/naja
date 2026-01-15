@@ -144,8 +144,8 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-none text-foreground leading-relaxed text-base
-                [&_p]:mb-4 [&_p]:last:mb-0"
+              className="border-l-2 border-muted-foreground/30 pl-4 italic text-muted-foreground text-sm leading-relaxed
+                [&_p]:mb-3 [&_p]:last:mb-0"
               dangerouslySetInnerHTML={{ __html: sanitizeTafsirHtml(tafsirText) }}
             />
           )}
