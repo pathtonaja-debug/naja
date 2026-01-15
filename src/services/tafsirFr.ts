@@ -234,11 +234,17 @@ function isGarbageSegment(segment: string): boolean {
 function cleanSentence(sentence: string): string {
   // Split by common garbage delimiters
   let cleaned = sentence
+    // Remove square-bracket OCR junk but keep Quran references like "[Coran XI, 123]"
+    .replace(/\[(?!\s*Coran\b)[^\]]*\]/gi, '')
     // Remove content inside parentheses that looks like garbage
     .replace(/\([^)]*[ÂÎÛîïûùâäëê][^)]*\)/g, '')
     .replace(/\([^)]*[A-Z][a-z]?-[A-Z][^)]*\)/g, '')
-    // Remove patterns like "jhh :Jlî £)t" 
+    // Remove parenthesized transliteration/OCR junk like "(r-J')" or "(c-âÂ-...)"
+    .replace(/\([^)]*\b[A-Za-z]{1,2}-[A-Za-z]{1,2}['’]?\b[^)]*\)/g, '')
+    // Remove patterns like "jhh :Jlî £)t"
     .replace(/\b\w{1,3}\s*[:;]\s*\w{1,4}[îïûùâäëê]\w*\s*[£$€)(\[\]]+\w*/g, '')
+    // Remove bracket/inline OCR junk containing symbol clusters (e.g. "A*tShk*" "C’itj*")
+    .replace(/\b\w{1,8}[*^_|]{1,}\w{0,8}\b/g, '')
     // Remove patterns with squares/boxes
     .replace(/[■□▪▫]+/g, '')
     // Remove short garbage sequences
@@ -261,7 +267,7 @@ function cleanSentence(sentence: string): string {
     // Clean up multiple spaces
     .replace(/\s{2,}/g, ' ')
     .trim();
-  
+
   return cleaned;
 }
 
