@@ -252,7 +252,7 @@ const Progress = () => {
             
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1">
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
                 <div key={`header-${i}`} className="text-center text-xs text-foreground/40 py-1">{d}</div>
               ))}
               {Array.from({ length: 31 }, (_, i) => {

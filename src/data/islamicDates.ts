@@ -234,39 +234,39 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
   },
 ];
 
-// Fixed 2026 Gregorian dates for Islamic events (based on astronomical calculations)
-// These dates may vary by 1-2 days depending on moon sighting
-export const ISLAMIC_DATES_2026: Record<string, string> = {
-  'islamic-new-year': '2026-06-14', // 1 Muharram 1448
-  'ashura': '2026-06-23', // 10 Muharram 1448
-  'mawlid': '2026-08-23', // 12 Rabi' al-Awwal 1448
-  'isra-miraj': '2027-01-03', // 27 Rajab 1448 (falls in 2027)
-  'shaban-15': '2027-01-18', // 15 Sha'ban 1448 (falls in 2027)
-  'ramadan-start': '2027-02-03', // 1 Ramadan 1448 (falls in 2027)
-  'laylatul-qadr': '2027-02-28', // 27 Ramadan 1448 (falls in 2027)
-  'eid-al-fitr': '2027-03-04', // 1 Shawwal 1448 (falls in 2027)
-  'shawwal-fasting': '2027-03-05', // 2 Shawwal 1448 (falls in 2027)
-  'dhul-hijjah-start': '2027-05-03', // 1 Dhul Hijjah 1448 (falls in 2027)
-  'day-of-arafah': '2027-05-11', // 9 Dhul Hijjah 1448 (falls in 2027)
-  'eid-al-adha': '2027-05-12', // 10 Dhul Hijjah 1448 (falls in 2027)
-  'ayyam-al-tashreeq': '2027-05-13', // 11 Dhul Hijjah 1448 (falls in 2027)
+// Fixed Gregorian dates for Islamic events 1447 H (2025-2026)
+// Based on astronomical calculations - dates may vary by 1-2 days depending on moon sighting
+export const ISLAMIC_DATES_1447: Record<string, string> = {
+  'islamic-new-year': '2025-06-26', // 1 Muharram 1447
+  'ashura': '2025-07-05', // 10 Muharram 1447
+  'mawlid': '2025-09-04', // 12 Rabi' al-Awwal 1447
+  'isra-miraj': '2026-01-27', // 27 Rajab 1447
+  'shaban-15': '2026-02-11', // 15 Sha'ban 1447
+  'ramadan-start': '2026-02-27', // 1 Ramadan 1447
+  'laylatul-qadr': '2026-03-24', // 27 Ramadan 1447
+  'eid-al-fitr': '2026-03-28', // 1 Shawwal 1447
+  'shawwal-fasting': '2026-03-29', // 2 Shawwal 1447
+  'dhul-hijjah-start': '2026-05-27', // 1 Dhul Hijjah 1447
+  'day-of-arafah': '2026-06-04', // 9 Dhul Hijjah 1447
+  'eid-al-adha': '2026-06-05', // 10 Dhul Hijjah 1447
+  'ayyam-al-tashreeq': '2026-06-06', // 11 Dhul Hijjah 1447
 };
 
-// Additional 2025 dates for events that already passed or are current
-export const ISLAMIC_DATES_2025: Record<string, string> = {
-  'islamic-new-year': '2025-06-25', // 1 Muharram 1447
-  'ashura': '2025-07-04', // 10 Muharram 1447
-  'mawlid': '2025-09-03', // 12 Rabi' al-Awwal 1447
-  'isra-miraj': '2025-12-14', // 27 Rajab 1447
-  'shaban-15': '2025-12-29', // 15 Sha'ban 1447
-  'ramadan-start': '2026-01-28', // 1 Ramadan 1447
-  'laylatul-qadr': '2026-02-22', // 27 Ramadan 1447
-  'eid-al-fitr': '2026-02-27', // 1 Shawwal 1447
-  'shawwal-fasting': '2026-02-28', // 2 Shawwal 1447
-  'dhul-hijjah-start': '2026-04-28', // 1 Dhul Hijjah 1447
-  'day-of-arafah': '2026-05-06', // 9 Dhul Hijjah 1447
-  'eid-al-adha': '2026-05-07', // 10 Dhul Hijjah 1447
-  'ayyam-al-tashreeq': '2026-05-08', // 11 Dhul Hijjah 1447
+// Fixed Gregorian dates for Islamic events 1448 H (2026-2027)
+export const ISLAMIC_DATES_1448: Record<string, string> = {
+  'islamic-new-year': '2026-06-16', // 1 Muharram 1448
+  'ashura': '2026-06-25', // 10 Muharram 1448
+  'mawlid': '2026-08-25', // 12 Rabi' al-Awwal 1448
+  'isra-miraj': '2027-01-16', // 27 Rajab 1448
+  'shaban-15': '2027-01-31', // 15 Sha'ban 1448
+  'ramadan-start': '2027-02-16', // 1 Ramadan 1448
+  'laylatul-qadr': '2027-03-13', // 27 Ramadan 1448
+  'eid-al-fitr': '2027-03-17', // 1 Shawwal 1448
+  'shawwal-fasting': '2027-03-18', // 2 Shawwal 1448
+  'dhul-hijjah-start': '2027-05-16', // 1 Dhul Hijjah 1448
+  'day-of-arafah': '2027-05-24', // 9 Dhul Hijjah 1448
+  'eid-al-adha': '2027-05-25', // 10 Dhul Hijjah 1448
+  'ayyam-al-tashreeq': '2027-05-26', // 11 Dhul Hijjah 1448
 };
 
 // Approximate Hijri to Gregorian conversion (fallback)
@@ -296,7 +296,7 @@ export const getCurrentHijriYear = (): number => {
 // Get upcoming Islamic events using fixed dates when available
 export const getUpcomingEvents = (fromDate: Date = new Date()): IslamicEventWithDate[] => {
   const events: IslamicEventWithDate[] = [];
-  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
+  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   
   // Create events from fixed dates
   for (const event of ISLAMIC_EVENTS) {
@@ -335,7 +335,7 @@ export const getUpcomingEvents = (fromDate: Date = new Date()): IslamicEventWith
 
 // Get events for a specific date
 export const getEventsForDate = (date: Date): IslamicEventWithDate[] => {
-  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
+  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   const dateStr = date.toISOString().split('T')[0];
   const events: IslamicEventWithDate[] = [];
   
@@ -361,18 +361,41 @@ export const isJumuah = (date: Date): boolean => {
 
 // Check if a date has an Islamic event
 export const hasIslamicEvent = (date: Date): boolean => {
-  const allDates = { ...ISLAMIC_DATES_2025, ...ISLAMIC_DATES_2026 };
+  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   const dateStr = date.toISOString().split('T')[0];
   return Object.values(allDates).includes(dateStr);
 };
 
-// Get days in a month for the calendar grid
+// Get color for event (for calendar dots)
+export const getEventColor = (eventId: string): string => {
+  const colors: Record<string, string> = {
+    'islamic-new-year': 'hsl(var(--primary))',
+    'ashura': 'hsl(280 70% 50%)', // purple
+    'mawlid': 'hsl(120 60% 45%)', // green
+    'isra-miraj': 'hsl(210 80% 55%)', // blue
+    'shaban-15': 'hsl(280 60% 60%)', // light purple
+    'ramadan-start': 'hsl(45 90% 50%)', // gold
+    'laylatul-qadr': 'hsl(45 100% 45%)', // bright gold
+    'eid-al-fitr': 'hsl(350 80% 55%)', // pink/red
+    'shawwal-fasting': 'hsl(160 60% 45%)', // teal
+    'dhul-hijjah-start': 'hsl(30 80% 55%)', // orange
+    'day-of-arafah': 'hsl(200 80% 50%)', // sky blue
+    'eid-al-adha': 'hsl(350 80% 55%)', // pink/red
+    'ayyam-al-tashreeq': 'hsl(30 70% 60%)', // light orange
+  };
+  return colors[eventId] || 'hsl(var(--primary))';
+};
+
+// Get days in a month for the calendar grid (Monday first)
 export const getDaysInMonth = (year: number, month: number): Date[] => {
   const days: Date[] = [];
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   
-  const startPadding = firstDay.getDay();
+  // Convert Sunday=0 to Monday-first: Mon=0, Tue=1, ..., Sun=6
+  const dayOfWeek = firstDay.getDay();
+  const startPadding = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  
   for (let i = startPadding - 1; i >= 0; i--) {
     const date = new Date(year, month, -i);
     days.push(date);
