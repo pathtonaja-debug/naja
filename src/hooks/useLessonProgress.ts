@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LESSON_CONTENT } from '@/data/lessonContent';
+import { LESSON_CONTENT_FR } from '@/data/lessonContentFr';
 
 const STORAGE_KEY = 'naja_learn_progress_v2';
 
@@ -320,10 +322,6 @@ export function useLessonProgress() {
 
   // Get a lesson quiz from the lesson content - returns array for compatibility with LessonQuizModal
   const getLessonQuiz = useCallback((lessonId: string, lang: string): LessonQuizQuestion[] => {
-    // Import from lesson content - we'll use the quiz from there
-    const { LESSON_CONTENT } = require('@/data/lessonContent');
-    const { LESSON_CONTENT_FR } = require('@/data/lessonContentFr');
-    
     const content = lang === 'fr' ? LESSON_CONTENT_FR[lessonId] : LESSON_CONTENT[lessonId];
     const quiz = content?.quiz;
     return quiz ? [quiz] : [];
