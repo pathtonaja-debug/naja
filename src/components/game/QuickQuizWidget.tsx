@@ -62,7 +62,7 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {quiz?.topic || 'Islamic Knowledge'} • 5 questions
+            Islamic Knowledge • 4 questions
           </p>
         </div>
         <div className="flex items-center gap-1 text-purple-500">

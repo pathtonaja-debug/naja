@@ -81,7 +81,7 @@ const Quiz = () => {
           </motion.button>
           <div>
             <h1 className="text-xl font-bold text-foreground">{t('quiz.dailyQuiz')}</h1>
-            <p className="text-xs text-muted-foreground">{quiz?.topic || t('quiz.islamicKnowledge')}</p>
+            <p className="text-xs text-muted-foreground">{t('quiz.islamicKnowledge')}</p>
           </div>
         </div>
 
@@ -277,7 +277,7 @@ const Quiz = () => {
           </motion.button>
           <div>
             <h1 className="text-lg font-bold text-foreground">{t('quiz.dailyQuiz')}</h1>
-            <p className="text-xs text-muted-foreground">{quiz.topic}</p>
+            <p className="text-xs text-muted-foreground">{t('quiz.islamicKnowledge')}</p>
           </div>
         </div>
         <div className="text-right">
@@ -319,7 +319,7 @@ const Quiz = () => {
             <div className="space-y-3">
               {currentQ?.options?.map((option: string, index: number) => {
                 const isSelected = selectedAnswers[currentQuestion] === index;
-                const isCorrect = index === currentQ.correct_answer;
+                const isCorrect = index === currentQ.correct_index;
                 const showCorrectness = showExplanation;
                 
                 return (
