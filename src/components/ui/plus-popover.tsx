@@ -199,13 +199,13 @@ export function PlusPopover({
 
                 <div className="relative p-2">
                   {/* Liquid highlight blob */}
-                  <div className="pointer-events-none absolute inset-x-2 top-2">
+                  <div className="pointer-events-none absolute inset-x-2 top-0 bottom-0">
                     <AnimatePresence>
                       {hoveredIndex !== null && (
                         <motion.div
                           layoutId="plus-popover-highlight"
-                          className="absolute left-0 right-0 rounded-2xl bg-primary/10"
-                          style={{ height: 56, top: hoveredIndex * 56 }}
+                          className="absolute left-0 right-0 mx-0 rounded-2xl bg-primary/10"
+                          style={{ height: 64, top: 8 + hoveredIndex * 64 }}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
