@@ -426,12 +426,11 @@ const Learn = () => {
       {lessonQuizMode && (
         <LessonQuizModal
           moduleId={lessonQuizMode.moduleId}
-          questions={[getLessonQuiz(lessonQuizMode.lessonId, i18n.language)].filter(Boolean) as any}
+          questions={getLessonQuiz(lessonQuizMode.lessonId, i18n.language)}
           onComplete={handleLessonQuizComplete}
           onClose={() => setLessonQuizMode(null)}
         />
       )}
-      </AnimatePresence>
 
       {/* Module Quiz Modal */}
       {showQuizModal && quizModuleId && (
