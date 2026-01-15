@@ -89,9 +89,11 @@ function findSurahStart(text: string, surahNumber: number): number {
  * Extract tafsir content for a specific verse
  * 
  * The TXT file uses this pattern:
- * - Verse text in transliteration + (number)
- * - French translation + (number)
- * - Commentary follows until next verse
+ * - Arabic transliteration line + (verse number)
+ * - French translation line + (verse number)
+ * - Commentary follows until next verse's transliteration
+ * 
+ * We need to identify where commentary for verse N ends and verse N+1 begins.
  */
 function extractVerseTafsir(text: string, surahNumber: number, verseNumber: number): string | null {
   // Find surah section
@@ -113,52 +115,89 @@ function extractVerseTafsir(text: string, surahNumber: number, verseNumber: numb
   
   const surahText = text.slice(surahStart, surahEnd);
   
-  // Find verse marker pattern: "(verseNumber)" at end of line
-  // This matches patterns like:
-  // - "Louange à Dieu, le Seigneur des mondes (2)"
-  // - "yaqûlu 'âmannâ... (8)"
-  const versePattern = new RegExp(
-    `[^(]\\(${verseNumber}\\)[.\\s]`,
+  // Pattern to find the START of a verse's section
+  // This matches the French translation line with verse number at end
+  // e.g., "Louange à Dieu, le Seigneur des mondes (2)."
+  const verseFrenchPattern = new RegExp(
+    `([A-ZÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ][^(]{10,80})\\(${verseNumber}\\)\\.?`,
+    'g'
+  );
+  
+  // Also try transliteration pattern
+  // e.g., "Alhamdu li-L-Lâhi Rabbi-l-'âlamîn (2)"
+  const verseTranslitPattern = new RegExp(
+    `([A-Z][a-zâäàáéèêëîïôöùûüÿ'-]+(?:\\s+[A-Za-zâäàáéèêëîïôöùûüÿ'-]+){1,10})\\s*\\(${verseNumber}\\)`,
     'g'
   );
   
   let verseStart = -1;
-  let match: RegExpExecArray | null;
   
-  // Find all occurrences and take the first meaningful one after position 0
-  while ((match = versePattern.exec(surahText)) !== null) {
-    if (match.index > 0) {
+  // Try French translation pattern first
+  let match = verseFrenchPattern.exec(surahText);
+  if (match && match.index !== undefined) {
+    verseStart = match.index + match[0].length;
+  }
+  
+  // Fallback to transliteration pattern
+  if (verseStart === -1) {
+    match = verseTranslitPattern.exec(surahText);
+    if (match && match.index !== undefined) {
       verseStart = match.index + match[0].length;
-      break;
     }
   }
   
+  // Final fallback: simple (N) pattern
   if (verseStart === -1) {
-    // Try alternative pattern for verse numbers written differently
-    const altPattern = new RegExp(`\\(${verseNumber}\\)\\.?\\s*\\n`, 'g');
-    const altMatch = altPattern.exec(surahText);
-    if (altMatch && altMatch.index > 0) {
-      verseStart = altMatch.index + altMatch[0].length;
+    const simplePattern = new RegExp(`[^(]\\(${verseNumber}\\)\\.?\\s`, 'g');
+    match = simplePattern.exec(surahText);
+    if (match && match.index !== undefined) {
+      verseStart = match.index + match[0].length;
     }
   }
   
   if (verseStart === -1) return null;
   
-  // Find end of this verse's tafsir (start of next verse)
-  const nextVersePattern = new RegExp(`\\(${verseNumber + 1}\\)[.\\s]`, 'g');
-  nextVersePattern.lastIndex = verseStart;
-  const nextMatch = nextVersePattern.exec(surahText);
+  // Find end of this verse's tafsir
+  // Look for the NEXT verse's transliteration or French translation
+  const nextVerseNum = verseNumber + 1;
+  
+  // Pattern for next verse's transliteration header
+  // These are standalone lines with transliteration + (N+1)
+  const nextVerseTranslit = new RegExp(
+    `\\n\\s*([A-Z][a-zâäàáéèêëîïôöùûüÿ'-]+(?:[\\s-]+[A-Za-zâäàáéèêëîïôöùûüÿ'-]+){1,10})\\s*\\(${nextVerseNum}\\)\\s*\\n`,
+    'g'
+  );
+  
+  // Pattern for next verse's French translation header
+  const nextVerseFrench = new RegExp(
+    `\\n\\s*([A-ZÀÂÄÉÈÊËÏÎÔÙÛÜŸÇŒÆ][^(\\n]{10,80})\\(${nextVerseNum}\\)\\.?\\s*\\n`,
+    'g'
+  );
+  
+  nextVerseTranslit.lastIndex = verseStart;
+  nextVerseFrench.lastIndex = verseStart;
+  
+  const translitMatch = nextVerseTranslit.exec(surahText);
+  const frenchMatch = nextVerseFrench.exec(surahText);
   
   let verseEnd = surahText.length;
-  if (nextMatch && nextMatch.index > verseStart) {
-    // Go back to find the start of the next verse's Arabic/translation
-    const beforeNext = surahText.slice(verseStart, nextMatch.index);
-    // Find last paragraph break before the next verse marker
-    const lastBreak = beforeNext.lastIndexOf('\n\n');
-    if (lastBreak > 0) {
-      verseEnd = verseStart + lastBreak;
-    } else {
-      verseEnd = nextMatch.index;
+  
+  // Use the earliest match as the boundary
+  if (translitMatch && translitMatch.index > verseStart) {
+    verseEnd = Math.min(verseEnd, translitMatch.index);
+  }
+  if (frenchMatch && frenchMatch.index > verseStart) {
+    verseEnd = Math.min(verseEnd, frenchMatch.index);
+  }
+  
+  // Also check for page numbers or section breaks as boundaries
+  const pageBreakPattern = /\n\s*\d{1,3}\s*\n/g;
+  pageBreakPattern.lastIndex = verseStart;
+  let pageMatch;
+  while ((pageMatch = pageBreakPattern.exec(surahText)) !== null) {
+    if (pageMatch.index > verseStart && pageMatch.index < verseEnd) {
+      // Don't use page number as end boundary, just skip it
+      continue;
     }
   }
   
