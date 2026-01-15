@@ -56,7 +56,16 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
       setError(null);
       setTafsirText(null);
 
-      // If French, try local tafsir first
+      // If French, show "coming soon" message instead of loading local tafsir
+      // (French tafsir temporarily deactivated due to OCR quality issues)
+      if (baseLang === 'fr') {
+        setTafsirText('<p>Le Tafsir en français arrive bientôt, insha\'Allah. Nous travaillons à améliorer la qualité du texte.</p><p>En attendant, le Tafsir est disponible en anglais.</p>');
+        setSource('local');
+        setLoading(false);
+        return;
+      }
+
+      /* DEACTIVATED: French local tafsir - keeping code for future use
       if (baseLang === 'fr') {
         try {
           const frenchTafsir = await getFrenchTafsir(verseKey);
@@ -70,6 +79,7 @@ export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_T
           console.warn('[TafsirSheet] French tafsir failed, falling back to API:', err);
         }
       }
+      */
 
       // Check cache for API tafsir
       const cached = getCachedVerseTafsir(verseKey, tafsirId);
