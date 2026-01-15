@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Moon, Sun, Trash2, Trophy, TrendingUp, 
-  Star, Flame, Users, Globe
+  Star, Flame, Users, Globe, LogOut
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState } from "react";
@@ -19,6 +19,7 @@ import { useGuestProfile, SPIRITUAL_LEVELS } from "@/hooks/useGuestProfile";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -41,6 +42,18 @@ const Profile = () => {
     if (confirm(t('profile.resetConfirm'))) {
       resetData();
       toast.success(t('toast.deleted'));
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm(t('auth.logoutConfirm'))) {
+      try {
+        await supabase.auth.signOut();
+        toast.success(t('auth.loggedOut'));
+        navigate('/auth', { replace: true });
+      } catch (error: any) {
+        toast.error(error.message || 'Logout failed');
+      }
     }
   };
 
@@ -251,11 +264,27 @@ const Profile = () => {
           </Card>
         </motion.div>
 
-        {/* Anonymous Disclaimer */}
+        {/* Logout */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
+        >
+          <Card className="bg-white border-border/30">
+            <ListCell
+              title={t('auth.logout')}
+              subtitle={t('auth.logoutConfirm').slice(0, 40) + '...'}
+              leftElement={<LogOut className="w-4 h-4 text-foreground/60" />}
+              onPress={handleLogout}
+            />
+          </Card>
+        </motion.div>
+
+        {/* Account Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
           className="p-4 rounded-2xl bg-pastel-blue/20 border border-pastel-blue/30"
         >
           <p className="text-xs text-foreground/60 text-center">
