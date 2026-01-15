@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { MapPin, User, ArrowRight, Loader2 } from "lucide-react";
+import { User, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -13,7 +12,7 @@ const Onboarding = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
@@ -138,29 +137,15 @@ const Onboarding = () => {
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="flex items-center gap-2">
+                  <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium">
                     <User className="w-4 h-4" />
                     {t('onboarding.yourName')}
-                  </Label>
+                  </label>
                   <Input
                     id="name"
                     placeholder={t('onboarding.enterName')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-12"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="location" className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    {t('onboarding.locationForPrayer')}
-                  </Label>
-                  <Input
-                    id="location"
-                    placeholder={t('onboarding.locationPlaceholder')}
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
                     className="h-12"
                   />
                 </div>
