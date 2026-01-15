@@ -3,11 +3,14 @@
 export interface IslamicEvent {
   id: string;
   name: string;
+  nameKey: string; // i18n key for the name
   hijriMonth: number; // 1-12
   hijriDay: number;
-  description: string;
-  meaning: string;
-  recommendedActions: string[];
+  descriptionKey: string; // i18n key
+  meaningKey: string; // i18n key
+  recommendedActionsKeys: string[]; // i18n keys
+  tipsKey?: string; // i18n key for tips
+  contextKey?: string; // i18n key for historical/spiritual context
   isMultiDay?: boolean;
   endHijriDay?: number;
 }
@@ -34,154 +37,165 @@ export const HIJRI_MONTHS = [
   'Dhul Hijjah',
 ];
 
-// Islamic events with Hijri dates
+// Islamic events with Hijri dates and i18n keys
 export const ISLAMIC_EVENTS: IslamicEvent[] = [
-  {
-    id: 'islamic-new-year',
-    name: 'Islamic New Year',
-    hijriMonth: 1, // Muharram
-    hijriDay: 1,
-    description: 'The first day of the Islamic calendar year.',
-    meaning: 'Marks the beginning of the new Hijri year. A time for reflection on the past year and setting intentions for the coming year.',
-    recommendedActions: [
-      'Reflect on the past year',
-      'Make dua for the new year',
-      'Set spiritual goals',
-      'Increase dhikr',
-    ],
-  },
-  {
-    id: 'ashura',
-    name: 'Ashura',
-    hijriMonth: 1, // Muharram
-    hijriDay: 10,
-    description: 'The 10th of Muharram, a day of great significance.',
-    meaning: 'A day of gratitude and remembrance. It marks the day Allah saved Musa (AS) and the Children of Israel from Pharaoh.',
-    recommendedActions: [
-      'Fast on this day (and the 9th or 11th)',
-      'Increase dhikr and dua',
-      'Reflect on the story of Musa (AS)',
-      'Give charity',
-    ],
-  },
-  {
-    id: 'mawlid',
-    name: 'Mawlid an-Nabi',
-    hijriMonth: 3, // Rabi al-Awwal
-    hijriDay: 12,
-    description: 'The birthday of Prophet Muhammad ﷺ.',
-    meaning: "A day to remember and celebrate the birth of the Messenger of Allah ﷺ, to increase salawat upon him, and learn about his blessed life.",
-    recommendedActions: [
-      'Increase salawat upon the Prophet ﷺ',
-      'Read his seerah (biography)',
-      'Share stories of his character',
-      'Gather for remembrance',
-    ],
-  },
   {
     id: 'isra-miraj',
     name: "Al-Isra' wal Mi'raj",
+    nameKey: 'islamicDates.israMiraj.name',
     hijriMonth: 7, // Rajab
     hijriDay: 27,
-    description: 'The Night Journey and Ascension of Prophet Muhammad ﷺ.',
-    meaning: "The miraculous night when the Prophet ﷺ traveled from Makkah to Jerusalem and then ascended through the heavens. The five daily prayers were prescribed on this night.",
-    recommendedActions: [
-      'Pray extra night prayers',
-      'Reflect on the gift of salah',
-      'Read about the journey',
-      'Increase worship during the night',
+    descriptionKey: 'islamicDates.israMiraj.description',
+    meaningKey: 'islamicDates.israMiraj.meaning',
+    contextKey: 'islamicDates.israMiraj.context',
+    tipsKey: 'islamicDates.israMiraj.tips',
+    recommendedActionsKeys: [
+      'islamicDates.israMiraj.action1',
+      'islamicDates.israMiraj.action2',
+      'islamicDates.israMiraj.action3',
+      'islamicDates.israMiraj.action4',
+    ],
+  },
+  {
+    id: 'shaban-start',
+    name: "Start of Sha'ban",
+    nameKey: 'islamicDates.shabanStart.name',
+    hijriMonth: 8, // Sha'ban
+    hijriDay: 1,
+    descriptionKey: 'islamicDates.shabanStart.description',
+    meaningKey: 'islamicDates.shabanStart.meaning',
+    contextKey: 'islamicDates.shabanStart.context',
+    tipsKey: 'islamicDates.shabanStart.tips',
+    recommendedActionsKeys: [
+      'islamicDates.shabanStart.action1',
+      'islamicDates.shabanStart.action2',
+      'islamicDates.shabanStart.action3',
+      'islamicDates.shabanStart.action4',
     ],
   },
   {
     id: 'shaban-15',
     name: "Laylat al-Bara'ah (Mid-Sha'ban)",
+    nameKey: 'islamicDates.shaban15.name',
     hijriMonth: 8, // Sha'ban
     hijriDay: 15,
-    description: "The 15th night of Sha'ban, a blessed night.",
-    meaning: "A night when Allah descends to the lowest heaven and forgives many of His servants. Some scholars recommend extra worship on this night.",
-    recommendedActions: [
-      'Pray extra night prayers',
-      'Seek forgiveness',
-      'Make abundant dua',
-      'Fast the next day (optional)',
+    descriptionKey: 'islamicDates.shaban15.description',
+    meaningKey: 'islamicDates.shaban15.meaning',
+    contextKey: 'islamicDates.shaban15.context',
+    tipsKey: 'islamicDates.shaban15.tips',
+    recommendedActionsKeys: [
+      'islamicDates.shaban15.action1',
+      'islamicDates.shaban15.action2',
+      'islamicDates.shaban15.action3',
+      'islamicDates.shaban15.action4',
     ],
   },
   {
     id: 'ramadan-start',
     name: 'Ramadan Begins',
+    nameKey: 'islamicDates.ramadanStart.name',
     hijriMonth: 9, // Ramadan
     hijriDay: 1,
-    description: 'The blessed month of fasting begins.',
-    meaning: "The month in which the Qur'an was revealed. A time of fasting, prayer, reflection, and community.",
-    recommendedActions: [
-      'Begin fasting from dawn to sunset',
-      'Increase Quran recitation',
-      'Pray Tarawih',
-      'Give generously in charity',
-      'Seek forgiveness',
+    descriptionKey: 'islamicDates.ramadanStart.description',
+    meaningKey: 'islamicDates.ramadanStart.meaning',
+    contextKey: 'islamicDates.ramadanStart.context',
+    tipsKey: 'islamicDates.ramadanStart.tips',
+    recommendedActionsKeys: [
+      'islamicDates.ramadanStart.action1',
+      'islamicDates.ramadanStart.action2',
+      'islamicDates.ramadanStart.action3',
+      'islamicDates.ramadanStart.action4',
+      'islamicDates.ramadanStart.action5',
     ],
+  },
+  {
+    id: 'nuzul-quran',
+    name: 'Nuzul al-Quran',
+    nameKey: 'islamicDates.nuzulQuran.name',
+    hijriMonth: 9, // Ramadan
+    hijriDay: 17,
+    descriptionKey: 'islamicDates.nuzulQuran.description',
+    meaningKey: 'islamicDates.nuzulQuran.meaning',
+    contextKey: 'islamicDates.nuzulQuran.context',
+    tipsKey: 'islamicDates.nuzulQuran.tips',
+    recommendedActionsKeys: [
+      'islamicDates.nuzulQuran.action1',
+      'islamicDates.nuzulQuran.action2',
+      'islamicDates.nuzulQuran.action3',
+      'islamicDates.nuzulQuran.action4',
+    ],
+  },
+  {
+    id: 'last-ten-nights',
+    name: 'Last 10 Nights of Ramadan',
+    nameKey: 'islamicDates.lastTenNights.name',
+    hijriMonth: 9, // Ramadan
+    hijriDay: 21,
+    descriptionKey: 'islamicDates.lastTenNights.description',
+    meaningKey: 'islamicDates.lastTenNights.meaning',
+    contextKey: 'islamicDates.lastTenNights.context',
+    tipsKey: 'islamicDates.lastTenNights.tips',
+    recommendedActionsKeys: [
+      'islamicDates.lastTenNights.action1',
+      'islamicDates.lastTenNights.action2',
+      'islamicDates.lastTenNights.action3',
+      'islamicDates.lastTenNights.action4',
+    ],
+    isMultiDay: true,
+    endHijriDay: 29,
   },
   {
     id: 'laylatul-qadr',
     name: 'Laylatul Qadr (Night of Power)',
+    nameKey: 'islamicDates.laylatulQadr.name',
     hijriMonth: 9, // Ramadan
-    hijriDay: 27, // Most commonly observed, though could be any odd night in last 10
-    description: 'The Night of Power - better than a thousand months.',
-    meaning: 'The blessed night when the Quran was first revealed. Worship on this night is better than worship for a thousand months.',
-    recommendedActions: [
-      'Stay up in worship',
-      "Recite: 'Allahumma innaka 'afuwwun tuhibbul 'afwa fa'fu 'anni'",
-      'Pray tahajjud',
-      'Read Quran',
-      'Make abundant dua',
+    hijriDay: 27, // Most commonly observed
+    descriptionKey: 'islamicDates.laylatulQadr.description',
+    meaningKey: 'islamicDates.laylatulQadr.meaning',
+    contextKey: 'islamicDates.laylatulQadr.context',
+    tipsKey: 'islamicDates.laylatulQadr.tips',
+    recommendedActionsKeys: [
+      'islamicDates.laylatulQadr.action1',
+      'islamicDates.laylatulQadr.action2',
+      'islamicDates.laylatulQadr.action3',
+      'islamicDates.laylatulQadr.action4',
+      'islamicDates.laylatulQadr.action5',
     ],
-    isMultiDay: true,
-    endHijriDay: 29, // Last 10 nights window
   },
   {
     id: 'eid-al-fitr',
     name: 'Eid al-Fitr',
+    nameKey: 'islamicDates.eidAlFitr.name',
     hijriMonth: 10, // Shawwal
     hijriDay: 1,
-    description: 'The Festival of Breaking the Fast.',
-    meaning: 'A day of celebration and gratitude after completing the month of Ramadan. A time to thank Allah for the strength to complete the fast.',
-    recommendedActions: [
-      'Perform Ghusl and wear best clothes',
-      'Pray Eid Salah',
-      'Pay Zakat al-Fitr before the prayer',
-      'Visit family and friends',
-      'Exchange gifts and celebrate',
+    descriptionKey: 'islamicDates.eidAlFitr.description',
+    meaningKey: 'islamicDates.eidAlFitr.meaning',
+    contextKey: 'islamicDates.eidAlFitr.context',
+    tipsKey: 'islamicDates.eidAlFitr.tips',
+    recommendedActionsKeys: [
+      'islamicDates.eidAlFitr.action1',
+      'islamicDates.eidAlFitr.action2',
+      'islamicDates.eidAlFitr.action3',
+      'islamicDates.eidAlFitr.action4',
+      'islamicDates.eidAlFitr.action5',
     ],
-  },
-  {
-    id: 'shawwal-fasting',
-    name: 'Six Days of Shawwal',
-    hijriMonth: 10, // Shawwal
-    hijriDay: 2,
-    description: 'Voluntary fasting of six days in Shawwal.',
-    meaning: 'Fasting six days in Shawwal after Ramadan is like fasting the entire year. A great opportunity to continue the momentum from Ramadan.',
-    recommendedActions: [
-      'Fast six days (consecutive or spread out)',
-      'Maintain Ramadan habits',
-      'Continue extra prayers',
-      'Keep reciting Quran',
-    ],
-    isMultiDay: true,
-    endHijriDay: 30,
   },
   {
     id: 'dhul-hijjah-start',
     name: 'First 10 Days of Dhul Hijjah',
+    nameKey: 'islamicDates.dhulHijjahStart.name',
     hijriMonth: 12, // Dhul Hijjah
     hijriDay: 1,
-    description: 'The most blessed days of the year begin.',
-    meaning: 'The first ten days of Dhul Hijjah are the best days of the entire year. Good deeds are most beloved to Allah during these days.',
-    recommendedActions: [
-      'Fast the first 9 days (especially Day of Arafah)',
-      'Increase dhikr (SubhanAllah, Alhamdulillah, Allahu Akbar)',
-      'Read Quran',
-      'Give charity',
-      'Prepare for Eid al-Adha',
+    descriptionKey: 'islamicDates.dhulHijjahStart.description',
+    meaningKey: 'islamicDates.dhulHijjahStart.meaning',
+    contextKey: 'islamicDates.dhulHijjahStart.context',
+    tipsKey: 'islamicDates.dhulHijjahStart.tips',
+    recommendedActionsKeys: [
+      'islamicDates.dhulHijjahStart.action1',
+      'islamicDates.dhulHijjahStart.action2',
+      'islamicDates.dhulHijjahStart.action3',
+      'islamicDates.dhulHijjahStart.action4',
+      'islamicDates.dhulHijjahStart.action5',
     ],
     isMultiDay: true,
     endHijriDay: 9,
@@ -189,84 +203,194 @@ export const ISLAMIC_EVENTS: IslamicEvent[] = [
   {
     id: 'day-of-arafah',
     name: 'Day of Arafah',
+    nameKey: 'islamicDates.dayOfArafah.name',
     hijriMonth: 12, // Dhul Hijjah
     hijriDay: 9,
-    description: 'The greatest day of the year.',
-    meaning: "The day when pilgrims gather at Mount Arafah. Fasting on this day expiates sins of the previous and coming year for those not performing Hajj.",
-    recommendedActions: [
-      'Fast (for non-pilgrims)',
-      'Make abundant dua',
-      'Seek forgiveness',
-      'Increase dhikr',
-      'Reflect and repent',
+    descriptionKey: 'islamicDates.dayOfArafah.description',
+    meaningKey: 'islamicDates.dayOfArafah.meaning',
+    contextKey: 'islamicDates.dayOfArafah.context',
+    tipsKey: 'islamicDates.dayOfArafah.tips',
+    recommendedActionsKeys: [
+      'islamicDates.dayOfArafah.action1',
+      'islamicDates.dayOfArafah.action2',
+      'islamicDates.dayOfArafah.action3',
+      'islamicDates.dayOfArafah.action4',
+      'islamicDates.dayOfArafah.action5',
     ],
   },
   {
     id: 'eid-al-adha',
     name: 'Eid al-Adha',
+    nameKey: 'islamicDates.eidAlAdha.name',
     hijriMonth: 12, // Dhul Hijjah
     hijriDay: 10,
-    description: 'The Festival of Sacrifice.',
-    meaning: 'Commemorates the willingness of Ibrahim (AS) to sacrifice his son in obedience to Allah. A time of sacrifice, sharing, and celebration.',
-    recommendedActions: [
-      'Pray Eid Salah',
-      'Perform Qurbani (sacrifice)',
-      'Distribute meat to family, neighbors, and the poor',
-      'Celebrate with family',
-      'Reflect on submission to Allah',
+    descriptionKey: 'islamicDates.eidAlAdha.description',
+    meaningKey: 'islamicDates.eidAlAdha.meaning',
+    contextKey: 'islamicDates.eidAlAdha.context',
+    tipsKey: 'islamicDates.eidAlAdha.tips',
+    recommendedActionsKeys: [
+      'islamicDates.eidAlAdha.action1',
+      'islamicDates.eidAlAdha.action2',
+      'islamicDates.eidAlAdha.action3',
+      'islamicDates.eidAlAdha.action4',
+      'islamicDates.eidAlAdha.action5',
     ],
   },
   {
     id: 'ayyam-al-tashreeq',
     name: 'Ayyam al-Tashreeq',
+    nameKey: 'islamicDates.ayyamAlTashreeq.name',
     hijriMonth: 12, // Dhul Hijjah
     hijriDay: 11,
-    description: 'The Days of Tashreeq (11th-13th Dhul Hijjah).',
-    meaning: 'Days of eating, drinking, and remembrance of Allah. Fasting is prohibited on these days.',
-    recommendedActions: [
-      'Increase takbeer (Allahu Akbar)',
-      'Do not fast',
-      'Celebrate with family',
-      'Continue Eid festivities',
+    descriptionKey: 'islamicDates.ayyamAlTashreeq.description',
+    meaningKey: 'islamicDates.ayyamAlTashreeq.meaning',
+    contextKey: 'islamicDates.ayyamAlTashreeq.context',
+    tipsKey: 'islamicDates.ayyamAlTashreeq.tips',
+    recommendedActionsKeys: [
+      'islamicDates.ayyamAlTashreeq.action1',
+      'islamicDates.ayyamAlTashreeq.action2',
+      'islamicDates.ayyamAlTashreeq.action3',
+      'islamicDates.ayyamAlTashreeq.action4',
     ],
     isMultiDay: true,
     endHijriDay: 13,
   },
+  {
+    id: 'islamic-new-year',
+    name: 'Islamic New Year',
+    nameKey: 'islamicDates.islamicNewYear.name',
+    hijriMonth: 1, // Muharram
+    hijriDay: 1,
+    descriptionKey: 'islamicDates.islamicNewYear.description',
+    meaningKey: 'islamicDates.islamicNewYear.meaning',
+    contextKey: 'islamicDates.islamicNewYear.context',
+    tipsKey: 'islamicDates.islamicNewYear.tips',
+    recommendedActionsKeys: [
+      'islamicDates.islamicNewYear.action1',
+      'islamicDates.islamicNewYear.action2',
+      'islamicDates.islamicNewYear.action3',
+      'islamicDates.islamicNewYear.action4',
+    ],
+  },
+  {
+    id: 'tasua',
+    name: "Tasu'a",
+    nameKey: 'islamicDates.tasua.name',
+    hijriMonth: 1, // Muharram
+    hijriDay: 9,
+    descriptionKey: 'islamicDates.tasua.description',
+    meaningKey: 'islamicDates.tasua.meaning',
+    contextKey: 'islamicDates.tasua.context',
+    tipsKey: 'islamicDates.tasua.tips',
+    recommendedActionsKeys: [
+      'islamicDates.tasua.action1',
+      'islamicDates.tasua.action2',
+      'islamicDates.tasua.action3',
+    ],
+  },
+  {
+    id: 'ashura',
+    name: 'Ashura',
+    nameKey: 'islamicDates.ashura.name',
+    hijriMonth: 1, // Muharram
+    hijriDay: 10,
+    descriptionKey: 'islamicDates.ashura.description',
+    meaningKey: 'islamicDates.ashura.meaning',
+    contextKey: 'islamicDates.ashura.context',
+    tipsKey: 'islamicDates.ashura.tips',
+    recommendedActionsKeys: [
+      'islamicDates.ashura.action1',
+      'islamicDates.ashura.action2',
+      'islamicDates.ashura.action3',
+      'islamicDates.ashura.action4',
+    ],
+  },
+  {
+    id: 'safar-start',
+    name: 'Safar Begins',
+    nameKey: 'islamicDates.safarStart.name',
+    hijriMonth: 2, // Safar
+    hijriDay: 1,
+    descriptionKey: 'islamicDates.safarStart.description',
+    meaningKey: 'islamicDates.safarStart.meaning',
+    contextKey: 'islamicDates.safarStart.context',
+    tipsKey: 'islamicDates.safarStart.tips',
+    recommendedActionsKeys: [
+      'islamicDates.safarStart.action1',
+      'islamicDates.safarStart.action2',
+      'islamicDates.safarStart.action3',
+    ],
+  },
+  {
+    id: 'rabi-al-awwal-start',
+    name: "Rabi' al-Awwal Begins",
+    nameKey: 'islamicDates.rabiAlAwwalStart.name',
+    hijriMonth: 3, // Rabi' al-Awwal
+    hijriDay: 1,
+    descriptionKey: 'islamicDates.rabiAlAwwalStart.description',
+    meaningKey: 'islamicDates.rabiAlAwwalStart.meaning',
+    contextKey: 'islamicDates.rabiAlAwwalStart.context',
+    tipsKey: 'islamicDates.rabiAlAwwalStart.tips',
+    recommendedActionsKeys: [
+      'islamicDates.rabiAlAwwalStart.action1',
+      'islamicDates.rabiAlAwwalStart.action2',
+      'islamicDates.rabiAlAwwalStart.action3',
+    ],
+  },
+  {
+    id: 'mawlid',
+    name: 'Mawlid an-Nabi',
+    nameKey: 'islamicDates.mawlid.name',
+    hijriMonth: 3, // Rabi al-Awwal
+    hijriDay: 12,
+    descriptionKey: 'islamicDates.mawlid.description',
+    meaningKey: 'islamicDates.mawlid.meaning',
+    contextKey: 'islamicDates.mawlid.context',
+    tipsKey: 'islamicDates.mawlid.tips',
+    recommendedActionsKeys: [
+      'islamicDates.mawlid.action1',
+      'islamicDates.mawlid.action2',
+      'islamicDates.mawlid.action3',
+      'islamicDates.mawlid.action4',
+    ],
+  },
 ];
 
-// Fixed Gregorian dates for Islamic events 1447 H (2025-2026)
+// Fixed Gregorian dates for Islamic events in 2026 (1447 H)
 // Based on astronomical calculations - dates may vary by 1-2 days depending on moon sighting
-export const ISLAMIC_DATES_1447: Record<string, string> = {
-  'islamic-new-year': '2025-06-26', // 1 Muharram 1447
-  'ashura': '2025-07-05', // 10 Muharram 1447
-  'mawlid': '2025-09-04', // 12 Rabi' al-Awwal 1447
-  'isra-miraj': '2026-01-27', // 27 Rajab 1447
-  'shaban-15': '2026-02-11', // 15 Sha'ban 1447
-  'ramadan-start': '2026-02-27', // 1 Ramadan 1447
-  'laylatul-qadr': '2026-03-24', // 27 Ramadan 1447
-  'eid-al-fitr': '2026-03-28', // 1 Shawwal 1447
-  'shawwal-fasting': '2026-03-29', // 2 Shawwal 1447
-  'dhul-hijjah-start': '2026-05-27', // 1 Dhul Hijjah 1447
-  'day-of-arafah': '2026-06-04', // 9 Dhul Hijjah 1447
-  'eid-al-adha': '2026-06-05', // 10 Dhul Hijjah 1447
-  'ayyam-al-tashreeq': '2026-06-06', // 11 Dhul Hijjah 1447
-};
-
-// Fixed Gregorian dates for Islamic events 1448 H (2026-2027)
-export const ISLAMIC_DATES_1448: Record<string, string> = {
+// Source: User-provided dates (January 2026)
+export const ISLAMIC_DATES_2026: Record<string, string> = {
+  // January 2026
+  'isra-miraj': '2026-01-16', // 27 Rajab 1447
+  'shaban-start': '2026-01-20', // 1 Sha'ban 1447
+  
+  // February 2026
+  'shaban-15': '2026-02-03', // 15 Sha'ban 1447 (Nisf Sha'ban / Laylat al-Bara'ah)
+  'ramadan-start': '2026-02-19', // 1 Ramadan 1447
+  
+  // March 2026
+  'nuzul-quran': '2026-03-07', // 17 Ramadan 1447
+  'last-ten-nights': '2026-03-11', // 21 Ramadan 1447
+  'laylatul-qadr': '2026-03-17', // 27 Ramadan 1447
+  'eid-al-fitr': '2026-03-20', // 1 Shawwal 1447
+  
+  // May 2026
+  'dhul-hijjah-start': '2026-05-18', // 1 Dhul Hijjah 1447
+  'day-of-arafah': '2026-05-26', // 9 Dhul Hijjah 1447
+  'eid-al-adha': '2026-05-27', // 10 Dhul Hijjah 1447
+  'ayyam-al-tashreeq': '2026-05-28', // 11-13 Dhul Hijjah 1447
+  
+  // June 2026 (1448 H begins)
   'islamic-new-year': '2026-06-16', // 1 Muharram 1448
+  'tasua': '2026-06-24', // 9 Muharram 1448
   'ashura': '2026-06-25', // 10 Muharram 1448
+  
+  // July 2026
+  'safar-start': '2026-07-16', // 1 Safar 1448
+  
+  // August 2026
+  'rabi-al-awwal-start': '2026-08-14', // 1 Rabi' al-Awwal 1448
   'mawlid': '2026-08-25', // 12 Rabi' al-Awwal 1448
-  'isra-miraj': '2027-01-16', // 27 Rajab 1448
-  'shaban-15': '2027-01-31', // 15 Sha'ban 1448
-  'ramadan-start': '2027-02-16', // 1 Ramadan 1448
-  'laylatul-qadr': '2027-03-13', // 27 Ramadan 1448
-  'eid-al-fitr': '2027-03-17', // 1 Shawwal 1448
-  'shawwal-fasting': '2027-03-18', // 2 Shawwal 1448
-  'dhul-hijjah-start': '2027-05-16', // 1 Dhul Hijjah 1448
-  'day-of-arafah': '2027-05-24', // 9 Dhul Hijjah 1448
-  'eid-al-adha': '2027-05-25', // 10 Dhul Hijjah 1448
-  'ayyam-al-tashreeq': '2027-05-26', // 11 Dhul Hijjah 1448
 };
 
 // Approximate Hijri to Gregorian conversion (fallback)
@@ -296,12 +420,10 @@ export const getCurrentHijriYear = (): number => {
 // Get upcoming Islamic events using fixed dates when available
 export const getUpcomingEvents = (fromDate: Date = new Date()): IslamicEventWithDate[] => {
   const events: IslamicEventWithDate[] = [];
-  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   
   // Create events from fixed dates
   for (const event of ISLAMIC_EVENTS) {
-    // Try to get fixed date first
-    const fixedDateStr = allDates[event.id];
+    const fixedDateStr = ISLAMIC_DATES_2026[event.id];
     
     if (fixedDateStr) {
       const gregorianDate = new Date(fixedDateStr);
@@ -335,12 +457,11 @@ export const getUpcomingEvents = (fromDate: Date = new Date()): IslamicEventWith
 
 // Get events for a specific date
 export const getEventsForDate = (date: Date): IslamicEventWithDate[] => {
-  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   const dateStr = date.toISOString().split('T')[0];
   const events: IslamicEventWithDate[] = [];
   
   for (const event of ISLAMIC_EVENTS) {
-    const fixedDateStr = allDates[event.id];
+    const fixedDateStr = ISLAMIC_DATES_2026[event.id];
     if (fixedDateStr === dateStr) {
       events.push({
         ...event,
@@ -361,23 +482,27 @@ export const isJumuah = (date: Date): boolean => {
 
 // Check if a date has an Islamic event
 export const hasIslamicEvent = (date: Date): boolean => {
-  const allDates = { ...ISLAMIC_DATES_1447, ...ISLAMIC_DATES_1448 };
   const dateStr = date.toISOString().split('T')[0];
-  return Object.values(allDates).includes(dateStr);
+  return Object.values(ISLAMIC_DATES_2026).includes(dateStr);
 };
 
 // Get color for event (for calendar dots)
 export const getEventColor = (eventId: string): string => {
   const colors: Record<string, string> = {
     'islamic-new-year': 'hsl(var(--primary))',
+    'tasua': 'hsl(280 60% 55%)', // purple
     'ashura': 'hsl(280 70% 50%)', // purple
+    'safar-start': 'hsl(200 60% 50%)', // blue
+    'rabi-al-awwal-start': 'hsl(120 50% 45%)', // green
     'mawlid': 'hsl(120 60% 45%)', // green
     'isra-miraj': 'hsl(210 80% 55%)', // blue
+    'shaban-start': 'hsl(280 50% 55%)', // purple
     'shaban-15': 'hsl(280 60% 60%)', // light purple
     'ramadan-start': 'hsl(45 90% 50%)', // gold
+    'nuzul-quran': 'hsl(45 85% 48%)', // gold
+    'last-ten-nights': 'hsl(45 95% 45%)', // bright gold
     'laylatul-qadr': 'hsl(45 100% 45%)', // bright gold
     'eid-al-fitr': 'hsl(350 80% 55%)', // pink/red
-    'shawwal-fasting': 'hsl(160 60% 45%)', // teal
     'dhul-hijjah-start': 'hsl(30 80% 55%)', // orange
     'day-of-arafah': 'hsl(200 80% 50%)', // sky blue
     'eid-al-adha': 'hsl(350 80% 55%)', // pink/red
