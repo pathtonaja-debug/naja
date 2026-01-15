@@ -99,7 +99,7 @@ function Sheet({
 }
 
 export function SurahReader({ chapter, onBack }: SurahReaderProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const translationId = useMemo(() => getTranslationIdForLanguage(i18n.language), [i18n.language]);
   
   const [verses, setVerses] = useState<AppVerse[]>([]);
@@ -292,7 +292,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
           >
             <Info className="w-4 h-4" />
-            About this Surah
+            {t('quran.aboutSurah')}
           </button>
         </Card>
 

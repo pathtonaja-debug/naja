@@ -12,39 +12,15 @@ import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { cn } from '@/lib/utils';
 
-// Sample Ayah data
-const AYAHS_OF_THE_DAY = [
-  {
-    arabic: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا',
-    transliteration: 'Inna ma\'al usri yusra',
-    translation: 'Indeed, with hardship comes ease.',
-    reference: 'Surah Ash-Sharh 94:6'
-  },
-  {
-    arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',
-    transliteration: 'Wa man yattaqillaha yaj\'al lahu makhraja',
-    translation: 'And whoever fears Allah, He will make a way out for him.',
-    reference: 'Surah At-Talaq 65:2'
-  },
-  {
-    arabic: 'فَاذْكُرُونِي أَذْكُرْكُمْ',
-    transliteration: 'Fadhkuruni adhkurkum',
-    translation: 'So remember Me; I will remember you.',
-    reference: 'Surah Al-Baqarah 2:152'
-  },
-  {
-    arabic: 'وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ',
-    transliteration: 'Wa lasawfa yu\'teeka rabbuka fatarda',
-    translation: 'And your Lord is going to give you, and you will be satisfied.',
-    reference: 'Surah Ad-Duha 93:5'
-  },
-];
+// Ayah keys for i18n
+const AYAH_KEYS = [1, 2, 3, 4];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile, todayPoints, actsCompleted } = useGuestProfile();
-  const [ayahOfDay, setAyahOfDay] = useState(AYAHS_OF_THE_DAY[0]);
+  
+  const [ayahIndex, setAyahIndex] = useState(0);
   const [todaysActsStatus, setTodaysActsStatus] = useState({
     salah: false,
     quran: false,
@@ -55,8 +31,7 @@ const Dashboard = () => {
   // Get today's ayah based on date
   useEffect(() => {
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-    const ayahIndex = dayOfYear % AYAHS_OF_THE_DAY.length;
-    setAyahOfDay(AYAHS_OF_THE_DAY[ayahIndex]);
+    setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
   }, []);
 
   // Load today's acts status

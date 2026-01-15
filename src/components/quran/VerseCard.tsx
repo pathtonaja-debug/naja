@@ -14,6 +14,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { AppVerse } from '@/services/quranApi';
 import { HifdhStatus, cycleVerseHifdhStatus, getVerseHifdhStatus } from '@/services/quranHifdhState';
 import { isBookmarked, toggleBookmark } from '@/services/quranReadingState';
@@ -27,12 +28,6 @@ interface VerseCardProps {
   onLastReadSet?: (verseKey: string, verseNumber: number) => void;
   showWordByWord?: boolean;
 }
-
-const HIFDH_STATUS_CONFIG: Record<HifdhStatus, { label: string; className: string }> = {
-  none: { label: 'Not started', className: 'bg-muted text-muted-foreground' },
-  memorizing: { label: 'Memorizing', className: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
-  solid: { label: 'Solid', className: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
-};
 
 const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'SUP']);
 
@@ -196,6 +191,7 @@ export function VerseCard({
   onLastReadSet,
   showWordByWord = false
 }: VerseCardProps) {
+  const { t } = useTranslation();
   const [showTransliteration, setShowTransliteration] = useState(false);
   const [hifdhStatus, setHifdhStatus] = useState<HifdhStatus>(() => getVerseHifdhStatus(verse.verseKey));
   const [bookmarked, setBookmarked] = useState(() => isBookmarked(verse.verseKey));
@@ -208,6 +204,12 @@ export function VerseCard({
   const [notesOpen, setNotesOpen] = useState(false);
   const [noteDraft, setNoteDraft] = useState(() => getNote(verse.verseKey)?.text ?? '');
   const [hasNoteState, setHasNoteState] = useState(() => checkHasNote(verse.verseKey));
+
+  const HIFDH_STATUS_CONFIG: Record<HifdhStatus, { label: string; className: string }> = {
+    none: { label: t('quran.notStarted'), className: 'bg-muted text-muted-foreground' },
+    memorizing: { label: t('quran.memorizing'), className: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
+    solid: { label: t('quran.solid'), className: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
+  };
 
   const hifdhConfig = HIFDH_STATUS_CONFIG[hifdhStatus];
 
@@ -402,7 +404,7 @@ export function VerseCard({
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
             >
               <BookOpen className="w-3 h-3" />
-              Tafsir
+              {t('quran.tafsir')}
             </button>
 
             {onLastReadSet && (
@@ -410,7 +412,7 @@ export function VerseCard({
                 onClick={handleSetLastRead}
                 className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
               >
-                Set as current
+                {t('quran.setAsCurrent')}
               </button>
             )}
           </div>
