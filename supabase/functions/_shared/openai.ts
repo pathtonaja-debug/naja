@@ -1,15 +1,11 @@
 // supabase/functions/_shared/openai.ts
+// Uses Lovable AI (backed by OpenAI) to avoid rate limiting issues
+
 export type OpenAIError = {
   status: number;
   message: string;
   details?: unknown;
 };
-
-function requireEnv(name: string): string {
-  const v = Deno.env.get(name);
-  if (!v) throw { status: 500, message: `${name} is not configured` } as OpenAIError;
-  return v;
-}
 
 function stripCodeFences(s: string): string {
   return s.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
@@ -29,7 +25,7 @@ function extractFirstJSONObject(s: string): string | null {
   return null;
 }
 
-async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 25000): Promise<Response> {
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 30000): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -47,13 +43,50 @@ export async function openaiChatText(args: {
   maxTokens?: number;
   temperature?: number;
 }): Promise<string> {
-  const apiKey = requireEnv("OPENAI_API_KEY");
-  const model = args.model || Deno.env.get("OPENAI_MODEL") || "gpt-4o-mini";
+  // Try Lovable AI first (uses LOVABLE_API_KEY), fallback to OpenAI
+  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+  const openaiKey = Deno.env.get("OPENAI_API_KEY");
+  
+  // Prefer Lovable AI to avoid rate limits
+  if (lovableKey) {
+    try {
+      const res = await fetchWithTimeout("https://ai.lovable.dev/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-5-mini",
+          max_completion_tokens: args.maxTokens ?? 800,
+          messages: [
+            { role: "system", content: args.system },
+            { role: "user", content: args.user },
+          ],
+        }),
+      });
 
+      if (res.ok) {
+        const data = await res.json();
+        const content = data?.choices?.[0]?.message?.content;
+        if (content) return String(content).trim();
+      }
+      console.log("[openai] Lovable AI failed, falling back to OpenAI");
+    } catch (e) {
+      console.log("[openai] Lovable AI error, falling back to OpenAI:", e);
+    }
+  }
+
+  // Fallback to OpenAI
+  if (!openaiKey) {
+    throw { status: 500, message: "No API key configured (LOVABLE_API_KEY or OPENAI_API_KEY)" } as OpenAIError;
+  }
+
+  const model = args.model || "gpt-4o-mini";
   const res = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${openaiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -67,7 +100,7 @@ export async function openaiChatText(args: {
     }),
   });
 
-  if (res.status === 401) throw { status: 401, message: "OpenAI authentication failed (check OPENAI_API_KEY)" } as OpenAIError;
+  if (res.status === 401) throw { status: 401, message: "OpenAI authentication failed" } as OpenAIError;
   if (res.status === 429) throw { status: 429, message: "Rate limit exceeded. Please try again later." } as OpenAIError;
 
   if (!res.ok) {
@@ -97,11 +130,11 @@ export async function openaiChatJSON<T>(args: {
   });
 
   const extracted = extractFirstJSONObject(raw);
-  if (!extracted) throw { status: 500, message: "Failed to extract JSON from OpenAI output", details: raw } as OpenAIError;
+  if (!extracted) throw { status: 500, message: "Failed to extract JSON from AI output", details: raw } as OpenAIError;
 
   try {
     return JSON.parse(extracted) as T;
   } catch {
-    throw { status: 500, message: "OpenAI returned invalid JSON", details: { extracted, raw } } as OpenAIError;
+    throw { status: 500, message: "AI returned invalid JSON", details: { extracted, raw } } as OpenAIError;
   }
 }
