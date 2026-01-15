@@ -1,23 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { getTodayQuizAttempt, addQuizAttempt, addBarakahPoints, BARAKAH_REWARDS } from '@/services/localStore';
-
-interface QuizQuestion {
-  question: string;
-  options: string[];
-  correct_index: number;
-  explanation: string;
-}
-
-interface DailyQuiz {
-  id: string;
-  quiz_date: string;
-  topic: string;
-  questions: QuizQuestion[];
-}
+import { useTranslation } from 'react-i18next';
+import { getTodayQuizAttempt, addQuizAttempt, addBarakahPoints, BARAKAH_REWARDS, getCompletedQuizIds } from '@/services/localStore';
+import { QUIZZES, getNextQuizId, Quiz, QuizQuestion } from '@/data/quizData';
 
 export interface QuizAttempt {
   id: string;
+  quiz_id: number;
   quiz_date: string;
   score: number;
   total_questions: number;
@@ -26,78 +14,53 @@ export interface QuizAttempt {
   completed_at: string;
 }
 
+interface LocalizedQuiz {
+  id: number;
+  difficulty: 'easy' | 'intermediate' | 'difficult';
+  questions: QuizQuestion[];
+}
+
 export const useDailyQuiz = () => {
-  const [quiz, setQuiz] = useState<DailyQuiz | null>(null);
+  const { i18n } = useTranslation();
+  const [quiz, setQuiz] = useState<LocalizedQuiz | null>(null);
   const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchQuiz = useCallback(async () => {
+  const fetchQuiz = useCallback(() => {
     try {
       setLoading(true);
       setError(null);
 
-      const today = new Date().toISOString().split('T')[0];
-
-      // Check local storage for today's attempt first
+      // Check local storage for today's attempt
       const localAttempt = getTodayQuizAttempt();
       if (localAttempt) {
-        setAttempt(localAttempt);
+        setAttempt(localAttempt as QuizAttempt);
       }
 
-      // Try to fetch quiz from Supabase (public read)
-      let { data: existingQuiz, error: quizError } = await supabase
-        .from('daily_quizzes')
-        .select('*')
-        .eq('quiz_date', today)
-        .single();
+      // Get next quiz based on completed quizzes
+      const completedIds = getCompletedQuizIds();
+      const nextQuizId = getNextQuizId(completedIds);
+      const quizData = QUIZZES.find(q => q.id === nextQuizId);
 
-      if (quizError && quizError.code !== 'PGRST116') {
-        console.error('Quiz fetch error:', quizError);
-      }
-
-      if (!existingQuiz) {
-        // Try to generate new quiz via edge function
-        setGenerating(true);
-        try {
-          const { data: funcData, error: funcError } = await supabase.functions.invoke('daily-quiz');
-          
-          if (funcError) {
-            throw new Error(funcError.message || 'Failed to generate quiz');
-          }
-          
-          if (funcData?.error) {
-            throw new Error(funcData.error);
-          }
-          
-          existingQuiz = funcData;
-        } catch (genError) {
-          console.error('Quiz generation failed:', genError);
-          setError('Quiz unavailable. Please try again later.');
-          return;
-        }
-        setGenerating(false);
-      }
-
-      if (existingQuiz) {
-        const questions = typeof existingQuiz.questions === 'string' 
-          ? JSON.parse(existingQuiz.questions) 
-          : existingQuiz.questions;
-        
+      if (quizData) {
+        // Get language-specific questions
+        const lang = i18n.language === 'fr' ? 'fr' : 'en';
         setQuiz({
-          ...existingQuiz,
-          questions
+          id: quizData.id,
+          difficulty: quizData.difficulty,
+          questions: quizData.questions[lang]
         });
+      } else {
+        setError('Quiz unavailable');
       }
     } catch (err) {
       console.error('Failed to fetch quiz:', err);
       setError(err instanceof Error ? err.message : 'Failed to load quiz');
     } finally {
       setLoading(false);
-      setGenerating(false);
     }
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     fetchQuiz();
@@ -123,6 +86,7 @@ export const useDailyQuiz = () => {
       // Save attempt locally
       const today = new Date().toISOString().split('T')[0];
       const newAttempt = addQuizAttempt({
+        quiz_id: quiz.id,
         quiz_date: today,
         score,
         total_questions: quiz.questions.length,
@@ -130,7 +94,7 @@ export const useDailyQuiz = () => {
         points_earned: pointsEarned,
       });
 
-      setAttempt(newAttempt);
+      setAttempt(newAttempt as QuizAttempt);
 
       // Award points
       addBarakahPoints(pointsEarned);
@@ -148,7 +112,7 @@ export const useDailyQuiz = () => {
     quiz,
     attempt,
     loading,
-    generating,
+    generating: false, // No longer generating via AI
     error,
     hasCompletedToday,
     submitQuiz,
