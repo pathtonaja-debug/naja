@@ -26,6 +26,19 @@ interface QuizQuestion {
   explanation: string;
 }
 
+interface ScenarioOption {
+  text: string;
+  isCorrect: boolean;
+  explanation: string;
+}
+
+interface Scenario {
+  id: string;
+  title: string;
+  situation: string;
+  options: ScenarioOption[];
+}
+
 // Lesson data structure that uses translation keys
 const getLessons = (t: (key: string) => string): Lesson[] => [
   {
