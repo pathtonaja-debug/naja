@@ -7,6 +7,7 @@ import { getVerseTafsir } from '@/services/quranApi';
 import { getCachedVerseTafsir, setCachedVerseTafsir, getCachedFrenchTafsir, setCachedFrenchTafsir } from '@/services/quranCache';
 import { translateTafsirToFrench } from '@/services/tafsirTranslation';
 import { getFrenchTafsir as getStaticFrenchTafsir, isFrenchTafsirLoaded, getFrenchTafsirSource } from '@/services/tafsirFrStatic';
+import { sanitizeTafsirHtml } from '@/lib/sanitize';
 
 interface TafsirSheetProps {
   open: boolean;
@@ -16,27 +17,6 @@ interface TafsirSheetProps {
 }
 
 const DEFAULT_TAFSIR_ID = 169; // Ibn Kathir (English)
-const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']);
-
-function sanitizeTafsirHtml(html: string): string {
-  if (!html) return '';
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-
-  const walk = (node: Element) => {
-    [...node.children].forEach((child) => {
-      if (!ALLOWED_TAGS.has(child.tagName)) {
-        const fragment = document.createDocumentFragment();
-        while (child.firstChild) fragment.appendChild(child.firstChild);
-        child.replaceWith(fragment);
-      } else {
-        walk(child);
-      }
-    });
-  };
-
-  walk(doc.body);
-  return doc.body.innerHTML;
-}
 
 export function TafsirSheet({ open, onOpenChange, verseKey, tafsirId = DEFAULT_TAFSIR_ID }: TafsirSheetProps) {
   const { i18n, t } = useTranslation();
