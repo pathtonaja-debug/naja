@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { openaiChatText } from "../_shared/openai.ts";
 
 const corsHeaders = {
@@ -27,6 +28,31 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getUser(token);
+    
+    if (claimsError || !claimsData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json().catch(() => ({}));
     const topic = typeof body.topic === "string" ? body.topic : "general";
     const selectedNames = Array.isArray(body.selectedNames) ? body.selectedNames.filter((x: unknown) => typeof x === "string") : [];
@@ -41,7 +67,7 @@ serve(async (req) => {
       });
     }
 
-    console.log("[generate-dua] Generating dua for topic:", topic);
+    console.log("[generate-dua] Generating dua for topic:", topic, "user:", claimsData.user.id);
 
     const relevantDuas = QURANIC_DUAS.filter(d =>
       d.topic === topic.toLowerCase() || d.topic === "guidance"
