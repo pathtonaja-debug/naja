@@ -20,6 +20,7 @@ import { HifdhStatus, cycleVerseHifdhStatus, getVerseHifdhStatus } from '@/servi
 import { isBookmarked, toggleBookmark } from '@/services/quranReadingState';
 import { getNote, setNote, hasNote as checkHasNote } from '@/services/quranNotesState';
 import { getFrenchWordTranslation } from '@/services/quranWbwFr';
+import { sanitizeBasicHtml } from '@/lib/sanitize';
 
 interface VerseCardProps {
   verse: AppVerse;
@@ -29,28 +30,6 @@ interface VerseCardProps {
   onLastReadSet?: (verseKey: string, verseNumber: number) => void;
   showWordByWord?: boolean;
   useFrenchWbw?: boolean;
-}
-
-const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'SUP']);
-
-function sanitizeBasicHtml(html: string): string {
-  if (!html) return '';
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-
-  const walk = (node: Element) => {
-    [...node.children].forEach((child) => {
-      if (!ALLOWED_TAGS.has(child.tagName)) {
-        const fragment = document.createDocumentFragment();
-        while (child.firstChild) fragment.appendChild(child.firstChild);
-        child.replaceWith(fragment);
-      } else {
-        walk(child);
-      }
-    });
-  };
-
-  walk(doc.body);
-  return doc.body.innerHTML;
 }
 
 function Modal({

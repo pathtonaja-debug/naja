@@ -17,33 +17,13 @@ import {
 } from '@/services/quranCache';
 import { setLastReadPosition } from '@/services/quranReadingState';
 import { loadFrenchWbw, buildChapterWordIndex, isFrenchWbwLoaded } from '@/services/quranWbwFr';
+import { sanitizeChapterHtml } from '@/lib/sanitize';
 import { VerseCard } from './VerseCard';
 import { TafsirSheet } from './TafsirSheet';
 
 interface SurahReaderProps {
   chapter: AppChapter;
   onBack: () => void;
-}
-const ALLOWED_TAGS = new Set(['P', 'BR', 'STRONG', 'EM', 'B', 'I', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4']);
-
-function sanitizeChapterHtml(html: string): string {
-  if (!html) return '';
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-
-  const walk = (node: Element) => {
-    [...node.children].forEach((child) => {
-      if (!ALLOWED_TAGS.has(child.tagName)) {
-        const fragment = document.createDocumentFragment();
-        while (child.firstChild) fragment.appendChild(child.firstChild);
-        child.replaceWith(fragment);
-      } else {
-        walk(child);
-      }
-    });
-  };
-
-  walk(doc.body);
-  return doc.body.innerHTML;
 }
 
 function Sheet({
