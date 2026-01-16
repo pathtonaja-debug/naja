@@ -12,7 +12,6 @@ const Onboarding = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
-  
   const [loading, setLoading] = useState(false);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const navigate = useNavigate();
@@ -112,6 +111,7 @@ const Onboarding = () => {
     }
   };
 
+  // Show loader while checking profile - prevents UI flicker
   if (checkingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
