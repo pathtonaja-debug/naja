@@ -43,6 +43,7 @@ export const PLUS_MENU_ITEMS: PlusMenuItem[] = [
   { id: "dhikr", path: "/dhikr", labelKey: "nav.dhikr", icon: Heart },
   { id: "dua", path: "/dua", labelKey: "nav.dua", icon: BookOpen },
   { id: "journal", path: "/journal", labelKey: "nav.journal", icon: PenLine },
+  { id: "goals", path: "/goals", labelKey: "goals.title", icon: Star },
   { id: "learn", path: "/learn", labelKey: "nav.learn", icon: GraduationCap },
   { id: "dates", path: "/dates", labelKey: "nav.dates", icon: CalendarDays },
   { id: "fintech", path: "/fintech", labelKey: "fintech.title", icon: Coins },
