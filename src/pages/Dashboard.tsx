@@ -10,6 +10,7 @@ import BottomNav from '@/components/BottomNav';
 import { Card } from '@/components/ui/card';
 import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
+import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { cn } from '@/lib/utils';
 
 // Ayah keys for i18n
@@ -98,6 +99,11 @@ const Dashboard = () => {
       {/* Ramadan Countdown Widget */}
       <div className="px-4 pb-4">
         <RamadanCountdown />
+      </div>
+
+      {/* Goal Tracker Widget */}
+      <div className="px-4 pb-4">
+        <GoalTrackerWidget />
       </div>
 
       {/* Stats Cards Row */}
