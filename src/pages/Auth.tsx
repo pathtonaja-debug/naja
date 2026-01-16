@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -39,16 +39,41 @@ export default function Auth() {
 
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard", { replace: true });
+        // Check if user has a display name (completed profile)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", session.user.id)
+          .single();
+        
+        if (!profile?.display_name) {
+          // New Google user without display name - redirect to welcome
+          navigate("/welcome", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
       }
       setCheckingSession(false);
-    });
+    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
-        navigate("/dashboard", { replace: true });
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", session.user.id)
+          .single();
+        
+        if (!profile?.display_name) {
+          navigate("/welcome", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
       }
     });
 
@@ -205,54 +230,45 @@ export default function Auth() {
                 className="h-12 border-2 focus:border-primary"
               />
             </div>
-            {!isSignUp ? (
-              <Button 
-                type="submit" 
-                className="w-full h-12 rounded-full bg-primary hover:bg-primary/90" 
-                disabled={loading || googleLoading || !email}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t('common.loading')}
-                  </>
-                ) : (
-                  t('auth.continue')
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">{t('auth.password')}</Label>
+                {!isSignUp && (
+                  <Link 
+                    to="/forgot-password" 
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {t('auth.forgotPassword')}
+                  </Link>
                 )}
-              </Button>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={8}
-                    disabled={loading || googleLoading}
-                    className="h-12"
-                  />
-                  <PasswordStrengthIndicator password={password} />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 rounded-full" 
-                  disabled={loading || googleLoading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('auth.creatingAccount')}
-                    </>
-                  ) : (
-                    t('auth.signUp')
-                  )}
-                </Button>
-              </>
-            )}
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={isSignUp ? 8 : 6}
+                disabled={loading || googleLoading}
+                className="h-12"
+              />
+              {isSignUp && <PasswordStrengthIndicator password={password} />}
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full h-12 rounded-full bg-primary hover:bg-primary/90" 
+              disabled={loading || googleLoading || !email || !password}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {isSignUp ? t('auth.creatingAccount') : t('auth.signingIn')}
+                </>
+              ) : (
+                isSignUp ? t('auth.signUp') : t('auth.signIn')
+              )}
+            </Button>
           </form>
 
           {/* Divider */}
