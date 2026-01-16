@@ -901,6 +901,23 @@ const resources = {
       "auth.skipForNow": "Skip for now",
       "auth.profileCompleted": "Profile completed! Welcome aboard.",
       "auth.profileUpdateFailed": "Failed to update profile. Please try again.",
+      // Remember me
+      "auth.rememberMe": "Remember me",
+      // Email verification
+      "auth.verifyYourEmail": "Verify Your Email",
+      "auth.verificationEmailSentTo": "We've sent a verification link to:",
+      "auth.checkInboxInstructions": "Check your inbox for the verification email",
+      "auth.clickVerificationLink": "Click the verification link to activate your account",
+      "auth.checkSpamFolder": "Check your spam folder if you don't see it",
+      "auth.resendVerificationEmail": "Resend Verification Email",
+      "auth.resendingEmail": "Sending...",
+      "auth.resendIn": "Resend in {{seconds}}s",
+      "auth.verificationEmailResent": "Verification email sent!",
+      "auth.resendFailed": "Failed to resend email. Please try again.",
+      "auth.wrongEmail": "Wrong email?",
+      "auth.signUpAgain": "Sign up with a different email",
+      "auth.emailVerified": "Email verified! Welcome to NAJA.",
+      "auth.verificationEmailSent": "Verification email sent! Please check your inbox.",
 
       // Onboarding
       "onboarding.welcomeToNaja": "Welcome to NAJA",
@@ -2050,6 +2067,23 @@ const resources = {
       "auth.skipForNow": "Passer pour l'instant",
       "auth.profileCompleted": "Profil complété ! Bienvenue à bord.",
       "auth.profileUpdateFailed": "Échec de la mise à jour du profil. Veuillez réessayer.",
+      // Remember me
+      "auth.rememberMe": "Se souvenir de moi",
+      // Email verification
+      "auth.verifyYourEmail": "Vérifiez votre email",
+      "auth.verificationEmailSentTo": "Nous avons envoyé un lien de vérification à :",
+      "auth.checkInboxInstructions": "Vérifiez votre boîte de réception",
+      "auth.clickVerificationLink": "Cliquez sur le lien de vérification pour activer votre compte",
+      "auth.checkSpamFolder": "Vérifiez vos spams si vous ne le voyez pas",
+      "auth.resendVerificationEmail": "Renvoyer l'email de vérification",
+      "auth.resendingEmail": "Envoi...",
+      "auth.resendIn": "Renvoyer dans {{seconds}}s",
+      "auth.verificationEmailResent": "Email de vérification envoyé !",
+      "auth.resendFailed": "Échec du renvoi. Veuillez réessayer.",
+      "auth.wrongEmail": "Mauvais email ?",
+      "auth.signUpAgain": "S'inscrire avec un autre email",
+      "auth.emailVerified": "Email vérifié ! Bienvenue sur NAJA.",
+      "auth.verificationEmailSent": "Email de vérification envoyé ! Vérifiez votre boîte de réception.",
 
       // Onboarding
       "onboarding.welcomeToNaja": "Bienvenue sur NAJA",
