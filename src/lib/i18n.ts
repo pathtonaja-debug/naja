@@ -1845,10 +1845,6 @@ const resources = {
 
       // (Fintech keys are defined later in this file)
 
-      // Goals
-      "goals.title": "Objectifs",
-      "goals.description": "Définir et suivre vos objectifs spirituels",
-
       // Quiz
       "quiz.title": "Quiz Quotidien",
       "quiz.dailyQuiz": "Quiz Quotidien",
