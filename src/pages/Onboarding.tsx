@@ -14,18 +14,54 @@ const Onboarding = () => {
   const [name, setName] = useState("");
   
   const [loading, setLoading] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [checkingProfile, setCheckingProfile] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-        return;
+    const checkProfileCompletion = async () => {
+      try {
+        // First check if user is authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate("/auth", { replace: true });
+          return;
+        }
+
+        // Fetch user profile to check if onboarding was already completed
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error fetching profile:", error);
+          // Continue to onboarding if we can't fetch profile
+          setCheckingProfile(false);
+          return;
+        }
+
+        // If profile has a display_name, onboarding is complete - go to dashboard
+        if (profile?.display_name && profile.display_name.trim() !== "") {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // Prefill name if it exists but is empty (edge case)
+        if (profile?.display_name) {
+          setName(profile.display_name);
+        }
+
+        // Show onboarding
+        setCheckingProfile(false);
+      } catch (error) {
+        console.error("Error checking profile:", error);
+        setCheckingProfile(false);
       }
-      setCheckingAuth(false);
-    });
+    };
+
+    checkProfileCompletion();
   }, [navigate]);
 
   const handleComplete = async () => {
@@ -35,29 +71,31 @@ const Onboarding = () => {
       
       if (!user) {
         toast.error(t('auth.pleaseSignInFirst'));
-        navigate("/auth");
+        navigate("/auth", { replace: true });
         return;
       }
 
-      // Geocode location to get coordinates (simple approach using a free API or default)
-      let latitude = 25.2; // Default (Dubai)
-      let longitude = 55.3;
+      // Default coordinates (Dubai)
+      const latitude = 25.2;
+      const longitude = 55.3;
 
-      // Update profile in Supabase
+      // Use upsert to guarantee profile row exists
       const { error } = await supabase
         .from("profiles")
-        .update({
+        .upsert({
+          id: user.id,
           display_name: name.trim() || null,
           latitude,
           longitude,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
+        }, {
+          onConflict: 'id'
+        });
 
       if (error) throw error;
 
       toast.success(t('onboarding.profileComplete'));
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error("Error saving profile:", error);
       toast.error(t('onboarding.failedToSave'));
@@ -74,7 +112,7 @@ const Onboarding = () => {
     }
   };
 
-  if (checkingAuth) {
+  if (checkingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -160,7 +198,7 @@ const Onboarding = () => {
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('common.saving')}
+                      {t('common.saving') || 'Saving...'}
                     </>
                   ) : (
                     <>
