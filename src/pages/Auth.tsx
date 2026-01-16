@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -32,6 +33,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -116,7 +118,7 @@ export default function Auth() {
       }
 
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -128,15 +130,40 @@ export default function Auth() {
         });
 
         if (error) throw error;
-        toast.success(t('auth.accountCreated'));
-        navigate("/onboarding", { replace: true });
+        
+        // Check if email confirmation is required
+        if (data.user && !data.user.email_confirmed_at) {
+          // Store email for verification page
+          localStorage.setItem("naja_pending_verification_email", email);
+          toast.success(t('auth.verificationEmailSent'));
+          navigate("/verify-email", { replace: true });
+        } else {
+          toast.success(t('auth.accountCreated'));
+          navigate("/onboarding", { replace: true });
+        }
       } else {
+        // Configure session persistence based on rememberMe
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
-        if (error) throw error;
+        if (error) {
+          // Check if email is not verified
+          if (error.message?.includes("Email not confirmed")) {
+            localStorage.setItem("naja_pending_verification_email", email);
+            navigate("/verify-email", { replace: true });
+            return;
+          }
+          throw error;
+        }
+        
+        // If not remember me, set session to expire when browser closes
+        if (!rememberMe) {
+          // Session will be cleared when tab/browser closes
+          sessionStorage.setItem("naja_session_temp", "true");
+        }
+        
         toast.success(t('auth.welcomeBackMsg'));
         navigate("/dashboard", { replace: true });
       }
@@ -255,7 +282,26 @@ export default function Auth() {
               />
               {isSignUp && <PasswordStrengthIndicator password={password} />}
             </div>
-            <Button 
+            
+            {/* Remember Me Checkbox - only show on sign in */}
+            {!isSignUp && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  disabled={loading || googleLoading}
+                />
+                <Label 
+                  htmlFor="rememberMe" 
+                  className="text-sm text-muted-foreground cursor-pointer"
+                >
+                  {t('auth.rememberMe')}
+                </Label>
+              </div>
+            )}
+            
+            <Button
               type="submit" 
               className="w-full h-12 rounded-full bg-primary hover:bg-primary/90" 
               disabled={loading || googleLoading || !email || !password}

@@ -26,321 +26,270 @@ interface QuizQuestion {
   explanation: string;
 }
 
-const lessons: Lesson[] = [
+// Lesson data structure that uses translation keys
+const getLessons = (t: (key: string) => string): Lesson[] => [
   {
     id: 'what-is-riba',
-    title: 'What is Riba?',
-    description: 'Understanding interest in Islam',
+    title: t('fintech.lesson.whatIsRiba.title'),
+    description: t('fintech.lesson.whatIsRiba.description'),
     icon: <Coins className="w-5 h-5" />,
     content: [
-      "Riba (interest) is prohibited in Islam because it creates unfair gain without effort or risk.",
-      "It can harm the borrower and lead to exploitation.",
-      "Islam encourages risk-sharing and ethical transactions.",
-      "Alternatives like profit-sharing (Mudarabah) are preferred."
+      t('fintech.lessonContent.riba1'),
+      t('fintech.lessonContent.riba2'),
+      t('fintech.lessonContent.riba3'),
+      t('fintech.lessonContent.riba4'),
     ],
     quiz: {
-      question: "Why is riba (interest) prohibited in Islam?",
+      question: t('fintech.quiz.ribaQuestion'),
       options: [
-        "Because it creates unfair gain without shared risk",
-        "Because banks are not allowed in Islam",
-        "Because money should never grow",
-        "Because only gold can be used for trade"
+        t('fintech.quiz.ribaOption1'),
+        t('fintech.quiz.ribaOption2'),
+        t('fintech.quiz.ribaOption3'),
+        t('fintech.quiz.ribaOption4'),
       ],
       correctIndex: 0,
-      explanation: "Riba creates unfair gain for the lender without sharing in any risk, which goes against Islamic principles of fairness and equity."
+      explanation: t('fintech.quiz.ribaExplanation'),
     },
     completed: false,
     xpReward: 30,
   },
   {
     id: 'halal-vs-haram',
-    title: 'Halal vs Haram Money',
-    description: 'Distinguishing ethical earnings',
+    title: t('fintech.lesson.halalVsHaram.title'),
+    description: t('fintech.lesson.halalVsHaram.description'),
     icon: <Scale className="w-5 h-5" />,
     content: [
-      "Halal income comes from honest work, fair trade, and ethical business.",
-      "Haram sources include gambling, interest, fraud, and harmful products.",
-      "The intention (niyyah) behind earning matters too.",
-      "Purifying wealth through charity is encouraged."
+      t('fintech.lessonContent.halal1'),
+      t('fintech.lessonContent.halal2'),
+      t('fintech.lessonContent.halal3'),
+      t('fintech.lessonContent.halal4'),
     ],
     quiz: {
-      question: "Which of these is a halal source of income?",
+      question: t('fintech.quiz.halalQuestion'),
       options: [
-        "Interest from savings accounts",
-        "Selling alcohol",
-        "Teaching beneficial knowledge",
-        "Running a gambling website"
+        t('fintech.quiz.halalOption1'),
+        t('fintech.quiz.halalOption2'),
+        t('fintech.quiz.halalOption3'),
+        t('fintech.quiz.halalOption4'),
       ],
       correctIndex: 2,
-      explanation: "Teaching beneficial knowledge is halal as it provides genuine value to others through honest effort."
+      explanation: t('fintech.quiz.halalExplanation'),
     },
     completed: false,
     xpReward: 30,
   },
   {
     id: 'charity-types',
-    title: 'Types of Islamic Charity',
-    description: 'Zakat, Sadaqah, and Waqf',
+    title: t('fintech.lesson.charityTypes.title'),
+    description: t('fintech.lesson.charityTypes.description'),
     icon: <Heart className="w-5 h-5" />,
     content: [
-      "Zakat is obligatory (2.5% of savings) for eligible Muslims.",
-      "Sadaqah is voluntary charity given any time.",
-      "Waqf is endowment for ongoing benefit (like wells, schools).",
-      "All forms of charity purify wealth and help others."
+      t('fintech.lessonContent.charity1'),
+      t('fintech.lessonContent.charity2'),
+      t('fintech.lessonContent.charity3'),
+      t('fintech.lessonContent.charity4'),
     ],
     quiz: {
-      question: "What is Waqf?",
+      question: t('fintech.quiz.waqfQuestion'),
       options: [
-        "A type of loan",
-        "A mandatory tax",
-        "An endowment for ongoing benefit",
-        "A one-time donation"
+        t('fintech.quiz.waqfOption1'),
+        t('fintech.quiz.waqfOption2'),
+        t('fintech.quiz.waqfOption3'),
+        t('fintech.quiz.waqfOption4'),
       ],
       correctIndex: 2,
-      explanation: "Waqf is an endowment where assets are dedicated for ongoing charitable purposes, like building wells or schools."
+      explanation: t('fintech.quiz.waqfExplanation'),
     },
     completed: false,
     xpReward: 30,
   },
   {
     id: 'ethical-spending',
-    title: 'Ethical Spending',
-    description: 'Making mindful money choices',
+    title: t('fintech.lesson.ethicalSpending.title'),
+    description: t('fintech.lesson.ethicalSpending.description'),
     icon: <BookOpen className="w-5 h-5" />,
     content: [
-      "Spend on needs before wants.",
-      "Avoid wastefulness (israf) - it's disliked in Islam.",
-      "Consider the impact of purchases on others and environment.",
-      "Balance between saving and being generous."
+      t('fintech.lessonContent.spending1'),
+      t('fintech.lessonContent.spending2'),
+      t('fintech.lessonContent.spending3'),
+      t('fintech.lessonContent.spending4'),
     ],
     quiz: {
-      question: "What does Islam say about wastefulness (israf)?",
+      question: t('fintech.quiz.israfQuestion'),
       options: [
-        "It's encouraged if you can afford it",
-        "It's disliked and should be avoided",
-        "It only applies to food",
-        "It's only forbidden in Ramadan"
+        t('fintech.quiz.israfOption1'),
+        t('fintech.quiz.israfOption2'),
+        t('fintech.quiz.israfOption3'),
+        t('fintech.quiz.israfOption4'),
       ],
       correctIndex: 1,
-      explanation: "Wastefulness (israf) is disliked in Islam. Allah loves moderation and balance in all things, including spending."
+      explanation: t('fintech.quiz.israfExplanation'),
     },
     completed: false,
     xpReward: 30,
   },
   {
     id: 'islamic-banking',
-    title: 'Islamic Banking Basics',
-    description: 'How Islamic banks operate',
+    title: t('fintech.lesson.islamicBanking.title'),
+    description: t('fintech.lesson.islamicBanking.description'),
     icon: <Scale className="w-5 h-5" />,
     content: [
-      "Islamic banks don't charge or pay interest (riba).",
-      "They use profit-sharing models like Mudarabah and Musharakah.",
-      "Products are based on real economic activity and asset-backing.",
-      "Risk is shared between the bank and customer."
+      t('fintech.lessonContent.banking1'),
+      t('fintech.lessonContent.banking2'),
+      t('fintech.lessonContent.banking3'),
+      t('fintech.lessonContent.banking4'),
     ],
     quiz: {
-      question: "What is the key difference between Islamic and conventional banking?",
+      question: t('fintech.quiz.bankingQuestion'),
       options: [
-        "Islamic banks are only in Muslim countries",
-        "Islamic banks share risk and avoid interest",
-        "Islamic banks don't lend money",
-        "Islamic banks are smaller"
+        t('fintech.quiz.bankingOption1'),
+        t('fintech.quiz.bankingOption2'),
+        t('fintech.quiz.bankingOption3'),
+        t('fintech.quiz.bankingOption4'),
       ],
       correctIndex: 1,
-      explanation: "Islamic banks operate on risk-sharing principles and avoid interest, instead using trade and investment-based contracts."
+      explanation: t('fintech.quiz.bankingExplanation'),
     },
     completed: false,
     xpReward: 35,
   },
   {
     id: 'murabaha-explained',
-    title: 'Murabaha Financing',
-    description: 'Cost-plus sale structure',
+    title: t('fintech.lesson.murabaha.title'),
+    description: t('fintech.lesson.murabaha.description'),
     icon: <Coins className="w-5 h-5" />,
     content: [
-      "Murabaha is a cost-plus sale where the bank buys an asset and sells it to you at a markup.",
-      "The price is agreed upfront and fixed - no hidden fees.",
-      "Unlike a loan, the bank actually owns the asset before selling it to you.",
-      "Commonly used for car financing and equipment purchases."
+      t('fintech.lessonContent.murabaha1'),
+      t('fintech.lessonContent.murabaha2'),
+      t('fintech.lessonContent.murabaha3'),
+      t('fintech.lessonContent.murabaha4'),
     ],
     quiz: {
-      question: "In Murabaha financing, who owns the asset before it's sold to the customer?",
+      question: t('fintech.quiz.murabahaQuestion'),
       options: [
-        "The customer owns it from the start",
-        "The bank owns it first, then sells to customer",
-        "A third party holds ownership",
-        "Nobody owns it until final payment"
+        t('fintech.quiz.murabahaOption1'),
+        t('fintech.quiz.murabahaOption2'),
+        t('fintech.quiz.murabahaOption3'),
+        t('fintech.quiz.murabahaOption4'),
       ],
       correctIndex: 1,
-      explanation: "In Murabaha, the bank purchases the asset and takes ownership, then sells it to the customer at an agreed markup."
+      explanation: t('fintech.quiz.murabahaExplanation'),
     },
     completed: false,
     xpReward: 35,
   },
   {
     id: 'halal-investing',
-    title: 'Halal Stock Investing',
-    description: 'Screening stocks for compliance',
+    title: t('fintech.lesson.halalInvesting.title'),
+    description: t('fintech.lesson.halalInvesting.description'),
     icon: <Scale className="w-5 h-5" />,
     content: [
-      "Companies must pass ethical screening - no alcohol, gambling, pork, weapons, or adult entertainment.",
-      "Financial ratios matter: debt-to-assets typically must be under 33%.",
-      "Interest income should be less than 5% of total revenue.",
-      "Purification is needed for any dividends that include non-halal income."
+      t('fintech.lessonContent.investing1'),
+      t('fintech.lessonContent.investing2'),
+      t('fintech.lessonContent.investing3'),
+      t('fintech.lessonContent.investing4'),
     ],
     quiz: {
-      question: "What is a common debt-to-asset threshold for halal stock screening?",
+      question: t('fintech.quiz.investingQuestion'),
       options: [
-        "Under 10%",
-        "Under 33%",
-        "Under 50%",
-        "No limit exists"
+        t('fintech.quiz.investingOption1'),
+        t('fintech.quiz.investingOption2'),
+        t('fintech.quiz.investingOption3'),
+        t('fintech.quiz.investingOption4'),
       ],
       correctIndex: 1,
-      explanation: "Most Islamic scholars and screening standards use 33% as the maximum debt-to-assets ratio for halal investments."
+      explanation: t('fintech.quiz.investingExplanation'),
     },
     completed: false,
     xpReward: 40,
   },
   {
     id: 'takaful-insurance',
-    title: 'Takaful Insurance',
-    description: 'Islamic cooperative insurance',
+    title: t('fintech.lesson.takaful.title'),
+    description: t('fintech.lesson.takaful.description'),
     icon: <Heart className="w-5 h-5" />,
     content: [
-      "Takaful is based on mutual cooperation (ta'awun) among participants.",
-      "Contributions go into a shared pool to help those who experience loss.",
-      "Surplus is shared among participants or donated to charity.",
-      "Avoids gharar (uncertainty) and riba found in conventional insurance."
+      t('fintech.lessonContent.takaful1'),
+      t('fintech.lessonContent.takaful2'),
+      t('fintech.lessonContent.takaful3'),
+      t('fintech.lessonContent.takaful4'),
     ],
     quiz: {
-      question: "What happens to surplus funds in Takaful?",
+      question: t('fintech.quiz.takafulQuestion'),
       options: [
-        "The company keeps all profits",
-        "Surplus is shared with participants or given to charity",
-        "It's transferred to government",
-        "It disappears"
+        t('fintech.quiz.takafulOption1'),
+        t('fintech.quiz.takafulOption2'),
+        t('fintech.quiz.takafulOption3'),
+        t('fintech.quiz.takafulOption4'),
       ],
       correctIndex: 1,
-      explanation: "In Takaful, any surplus from the contribution pool is shared among participants or donated to charity, unlike conventional insurance where profits go to shareholders."
+      explanation: t('fintech.quiz.takafulExplanation'),
     },
     completed: false,
     xpReward: 35,
   },
 ];
 
-interface Scenario {
-  id: string;
-  title: string;
-  situation: string;
-  options: { text: string; isCorrect: boolean; explanation: string }[];
-}
-
-const scenarios: Scenario[] = [
+const getScenarios = (t: (key: string) => string): Scenario[] => [
   {
     id: 'loan-choice',
-    title: 'The Loan Decision',
-    situation: "Your friend needs to borrow money for a small business. How should you help?",
+    title: t('fintech.scenario.loanDecision.title'),
+    situation: t('fintech.scenario.loanDecision.situation'),
     options: [
-      { text: "Lend with 10% interest", isCorrect: false, explanation: "Charging interest is riba and not allowed." },
-      { text: "Invest as a partner, sharing profit and loss", isCorrect: true, explanation: "This is called Musharakah - a halal partnership model!" },
-      { text: "Refuse to help", isCorrect: false, explanation: "While not wrong, there are better ways to help ethically." },
+      { text: t('fintech.scenario.loanOption1'), isCorrect: false, explanation: t('fintech.scenario.loanOption1Explanation') },
+      { text: t('fintech.scenario.loanOption2'), isCorrect: true, explanation: t('fintech.scenario.loanOption2Explanation') },
+      { text: t('fintech.scenario.loanOption3'), isCorrect: false, explanation: t('fintech.scenario.loanOption3Explanation') },
     ],
   },
   {
     id: 'charity-allocation',
-    title: 'Charity Budget',
-    situation: "You have $100 to give in charity. How would you allocate it wisely?",
+    title: t('fintech.scenario.charityBudget.title'),
+    situation: t('fintech.scenario.charityBudget.situation'),
     options: [
-      { text: "Give all to one big organization", isCorrect: false, explanation: "Valid, but diversifying impact can help more people." },
-      { text: "Split between local needy, orphans, and education", isCorrect: true, explanation: "Great thinking! Diversifying charity maximizes impact and benefit." },
-      { text: "Keep it for later", isCorrect: false, explanation: "It's better to give sooner - charity never decreases wealth." },
+      { text: t('fintech.scenario.charityOption1'), isCorrect: false, explanation: t('fintech.scenario.charityOption1Explanation') },
+      { text: t('fintech.scenario.charityOption2'), isCorrect: true, explanation: t('fintech.scenario.charityOption2Explanation') },
+      { text: t('fintech.scenario.charityOption3'), isCorrect: false, explanation: t('fintech.scenario.charityOption3Explanation') },
     ],
   },
   {
     id: 'mortgage-dilemma',
-    title: 'The Home Buying Dilemma',
-    situation: "You want to buy a house but don't have enough savings. What's the best approach?",
+    title: t('fintech.scenario.homeBuying.title'),
+    situation: t('fintech.scenario.homeBuying.situation'),
     options: [
-      { text: "Take a conventional mortgage with interest", isCorrect: false, explanation: "Conventional mortgages involve riba. There are halal alternatives available." },
-      { text: "Use Islamic financing like Murabaha or Ijarah", isCorrect: true, explanation: "Islamic home financing uses cost-plus sale (Murabaha) or lease-to-own (Ijarah) structures that avoid interest." },
-      { text: "Give up on home ownership", isCorrect: false, explanation: "There are halal pathways to home ownership - don't give up!" },
+      { text: t('fintech.scenario.mortgageOption1'), isCorrect: false, explanation: t('fintech.scenario.mortgageOption1Explanation') },
+      { text: t('fintech.scenario.mortgageOption2'), isCorrect: true, explanation: t('fintech.scenario.mortgageOption2Explanation') },
+      { text: t('fintech.scenario.mortgageOption3'), isCorrect: false, explanation: t('fintech.scenario.mortgageOption3Explanation') },
     ],
   },
   {
     id: 'investment-screening',
-    title: 'Stock Investment Screening',
-    situation: "You want to invest in stocks. A company looks profitable but makes 8% of its revenue from alcohol sales. What do you do?",
+    title: t('fintech.scenario.stockScreening.title'),
+    situation: t('fintech.scenario.stockScreening.situation'),
     options: [
-      { text: "Invest anyway since alcohol is a small percentage", isCorrect: false, explanation: "Most scholars recommend avoiding companies with more than 5% revenue from haram sources." },
-      { text: "Invest but donate the 8% of dividends to charity", isCorrect: false, explanation: "While purification is encouraged, it's better to avoid investments that exceed tolerance thresholds." },
-      { text: "Find a company that passes halal screening criteria", isCorrect: true, explanation: "Correct! Look for companies that pass financial and ethical screening - under 5% from haram sources, acceptable debt ratios." },
+      { text: t('fintech.scenario.stockOption1'), isCorrect: false, explanation: t('fintech.scenario.stockOption1Explanation') },
+      { text: t('fintech.scenario.stockOption2'), isCorrect: false, explanation: t('fintech.scenario.stockOption2Explanation') },
+      { text: t('fintech.scenario.stockOption3'), isCorrect: true, explanation: t('fintech.scenario.stockOption3Explanation') },
     ],
   },
   {
     id: 'crypto-trading',
-    title: 'Cryptocurrency Question',
-    situation: "A friend tells you about a crypto 'guaranteed returns' scheme promising 30% monthly returns. Should you invest?",
+    title: t('fintech.scenario.crypto.title'),
+    situation: t('fintech.scenario.crypto.situation'),
     options: [
-      { text: "Yes, if the returns are guaranteed it's safe", isCorrect: false, explanation: "Guaranteed returns that are too good to be true often indicate Ponzi schemes or fraud - this is haram regardless of the asset class." },
-      { text: "Only invest what you can afford to lose in legitimate crypto", isCorrect: true, explanation: "Correct! Legitimate crypto investment (without leverage/gambling) may be permissible, but 'guaranteed' high returns are a red flag for scams." },
-      { text: "Crypto is always haram so avoid it completely", isCorrect: false, explanation: "While scholars differ, many permit crypto as a medium of exchange. The issue here is the unrealistic promises, not crypto itself." },
-    ],
-  },
-  {
-    id: 'insurance-decision',
-    title: 'Insurance Needs',
-    situation: "You need health insurance for your family. What's the most Islamic approach?",
-    options: [
-      { text: "Buy conventional insurance - it's a necessity", isCorrect: false, explanation: "While some scholars allow it out of necessity, there are often takaful alternatives worth exploring first." },
-      { text: "Look for Takaful (Islamic cooperative insurance)", isCorrect: true, explanation: "Takaful is based on mutual cooperation and shared responsibility, avoiding the gharar (uncertainty) issues in conventional insurance." },
-      { text: "Don't get any insurance and rely on Allah", isCorrect: false, explanation: "While tawakkul is important, taking reasonable precautions (like Islamic insurance) is also encouraged - 'tie your camel and trust in Allah.'" },
-    ],
-  },
-  {
-    id: 'business-partnership',
-    title: 'Starting a Business',
-    situation: "You and a friend want to start a restaurant. How should you structure the partnership?",
-    options: [
-      { text: "Silent partner gives money, active partner does all work, profits split 50/50", isCorrect: false, explanation: "In Mudarabah, the capital provider's share should reflect only capital contribution, while the working partner's share reflects effort." },
-      { text: "Use Musharakah with agreed profit ratios and both contribute work", isCorrect: true, explanation: "Musharakah (full partnership) where both contribute capital and/or effort with pre-agreed profit ratios is ideal for active partnerships." },
-      { text: "Guarantee the investor a fixed return regardless of profit", isCorrect: false, explanation: "Guaranteed returns for a capital provider is riba. In Islamic finance, returns must be tied to actual business performance." },
-    ],
-  },
-  {
-    id: 'debt-management',
-    title: 'Debt Consolidation',
-    situation: "You have multiple debts with high interest rates. A company offers to consolidate them at a lower rate. What do you do?",
-    options: [
-      { text: "Take the consolidation loan to reduce overall interest", isCorrect: false, explanation: "This replaces one riba-based loan with another. It doesn't address the underlying issue." },
-      { text: "Seek a qard hasan (interest-free loan) from family or Islamic institutions", isCorrect: true, explanation: "Prioritize interest-free options first. Many communities and Islamic credit unions offer qard hasan for debt relief." },
-      { text: "Declare bankruptcy to escape the debt", isCorrect: false, explanation: "Islam encourages fulfilling obligations where possible. Explore all halal repayment options before considering this." },
-    ],
-  },
-  {
-    id: 'emergency-fund',
-    title: 'Building Emergency Savings',
-    situation: "You want to build an emergency fund. Where should you keep this money?",
-    options: [
-      { text: "High-yield savings account at a conventional bank", isCorrect: false, explanation: "Interest earned from conventional savings accounts is riba and should be avoided." },
-      { text: "Islamic savings account or invest in low-risk halal assets", isCorrect: true, explanation: "Islamic banks offer profit-sharing savings accounts, or you can keep it in a non-interest checking account while the core fund is preserved." },
-      { text: "Under your mattress to avoid any interest", isCorrect: false, explanation: "While avoiding interest is good, there are legitimate halal options that can provide some return while keeping money safe." },
-    ],
-  },
-  {
-    id: 'gold-investment',
-    title: 'Gold Investment Rules',
-    situation: "You want to buy gold as an investment. Your jeweler offers to exchange your old gold jewelry for new gold jewelry plus cash. Is this permissible?",
-    options: [
-      { text: "Yes, as long as the cash amount is fair", isCorrect: false, explanation: "Gold for gold exchanges require equal weight and immediate exchange. Adding cash creates riba al-fadl (excess in exchange)." },
-      { text: "Sell your old gold for cash, then separately buy new gold", isCorrect: true, explanation: "Correct! This creates two separate transactions, avoiding the prohibition on unequal gold-for-gold exchange." },
-      { text: "It doesn't matter since it's just jewelry", isCorrect: false, explanation: "Islamic rules on gold exchange apply whether it's jewelry or bullion. The form doesn't change the ruling." },
+      { text: t('fintech.scenario.cryptoOption1'), isCorrect: false, explanation: t('fintech.scenario.cryptoOption1Explanation') },
+      { text: t('fintech.scenario.cryptoOption2'), isCorrect: true, explanation: t('fintech.scenario.cryptoOption2Explanation') },
+      { text: t('fintech.scenario.cryptoOption3'), isCorrect: false, explanation: t('fintech.scenario.cryptoOption3Explanation') },
     ],
   },
 ];
 
 export const FintechEducationModule = ({ onXPGained }: { onXPGained?: (amount: number) => void }) => {
   const { t } = useTranslation();
+  
+  // Generate lessons and scenarios with translations
+  const lessons = getLessons(t);
+  const scenarios = getScenarios(t);
+  
   const [activeTab, setActiveTab] = useState<'lessons' | 'scenarios' | 'badges'>('lessons');
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonStep, setLessonStep] = useState<'content' | 'quiz' | 'complete'>('content');
