@@ -258,6 +258,8 @@ const resources = {
       "dashboard.quizDescription": "Quick daily quiz • Optional • +5 Points",
       "dashboard.quickAccess": "Quick Access",
       "dashboard.niyyahDisclaimer": "Your niyyah is what matters — points are just a tool to help you stay consistent.",
+      "dashboard.refreshAyah": "Get new ayah",
+      "dashboard.goToVerse": "Read in Quran",
 
       // Acts
       "acts.salah": "Salah",
@@ -1622,6 +1624,8 @@ const resources = {
       "dashboard.quizDescription": "Quiz quotidien • Optionnel • +5 Points",
       "dashboard.quickAccess": "Accès Rapide",
       "dashboard.niyyahDisclaimer": "Votre niyyah est ce qui compte — les points ne sont qu'un outil pour vous aider à rester constant.",
+      "dashboard.refreshAyah": "Nouveau verset",
+      "dashboard.goToVerse": "Lire dans le Coran",
 
       // Acts
       "acts.salah": "Salat",

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
   BookOpen, ChevronRight, Flame, Star, Trophy, Brain,
-  Sunrise, HandHeart, CircleDollarSign
+  Sunrise, HandHeart, CircleDollarSign, RefreshCw, ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
@@ -16,12 +16,20 @@ import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
 import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dailyProgressService';
 
-// Ayah keys for i18n
+// Ayah keys for i18n (using i18n translations)
 const AYAH_KEYS = [1, 2, 3, 4];
+
+// Reference parsing map for Ayah navigation (surah:verse)
+const AYAH_VERSE_MAP: Record<number, { surah: number; verse: number }> = {
+  1: { surah: 94, verse: 6 },   // Ash-Sharh 94:6
+  2: { surah: 65, verse: 2 },   // At-Talaq 65:2
+  3: { surah: 2, verse: 152 },  // Al-Baqarah 2:152
+  4: { surah: 93, verse: 5 },   // Ad-Duha 93:5
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { profile, todayPoints, actsCompleted, refetch } = useGuestProfile();
   
   const [ayahIndex, setAyahIndex] = useState(0);
@@ -36,7 +44,7 @@ const Dashboard = () => {
   const [showFirstActCelebration, setShowFirstActCelebration] = useState(false);
   const [celebrationPoints, setCelebrationPoints] = useState(0);
   const [actualActsCompleted, setActualActsCompleted] = useState(0);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [, setReloadKey] = useState(0);
 
   // Load data on mount and when returning to the page
   const loadData = useCallback(() => {
@@ -50,7 +58,7 @@ const Dashboard = () => {
     const lastRead = getLastReadPosition();
     setLastReadPositionState(lastRead);
     
-    const today = new Date().toISOString().split('T')[0];
+    
     
     // Get today's progress from daily progress service
     const todayProgress = getTodayProgress();
@@ -115,6 +123,20 @@ const Dashboard = () => {
     setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
   }, []);
 
+  // Randomize ayah function
+  const refreshAyah = () => {
+    const randomIndex = Math.floor(Math.random() * AYAH_KEYS.length) + 1;
+    setAyahIndex(randomIndex);
+  };
+
+  // Navigate to the verse in Quran
+  const goToAyahVerse = () => {
+    const verseData = AYAH_VERSE_MAP[ayahIndex];
+    if (verseData) {
+      navigate(`/quran?surah=${verseData.surah}&verse=${verseData.verse}`);
+    }
+  };
+
   // Build ayah object from i18n
   const ayahOfDay = {
     arabic: t(`ayah.${ayahIndex}.arabic`),
@@ -133,6 +155,14 @@ const Dashboard = () => {
   const levelProgress = profile.level < 10
     ? Math.floor((profile.barakahPoints % 100) / 100 * 100) 
     : 100;
+
+  // Route map for each act
+  const actRoutes: Record<string, string> = {
+    salah: '/practices',
+    quran: '/quran',
+    goodDeed: '/practices',
+    sadaqah: '/fintech',
+  };
 
   const todaysActs = [
     { id: 'salah', name: t('acts.salah'), icon: Sunrise, done: todaysActsStatus.salah },
@@ -285,8 +315,21 @@ const Dashboard = () => {
 
       {/* Ayah of the Day */}
       <div className="px-4 pb-4">
-        <h2 className="text-lg font-bold mb-3">{t('dashboard.ayahOfDay')}</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold">{t('dashboard.ayahOfDay')}</h2>
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={refreshAyah}
+              className="p-2 rounded-full bg-muted/50 hover:bg-muted transition-colors"
+              aria-label={t('dashboard.refreshAyah')}
+            >
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+          </div>
+        </div>
         <motion.div
+          key={ayahIndex}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -297,7 +340,17 @@ const Dashboard = () => {
             {ayahOfDay.transliteration}
           </p>
           <p className="text-sm text-center font-medium mb-3">"{ayahOfDay.translation}"</p>
-          <p className="text-xs text-muted-foreground text-center">{ayahOfDay.reference}</p>
+          <p className="text-xs text-muted-foreground text-center mb-4">{ayahOfDay.reference}</p>
+          
+          {/* Go to verse button */}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={goToAyahVerse}
+            className="w-full py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+          >
+            {t('dashboard.goToVerse')}
+            <ArrowRight className="w-4 h-4" />
+          </motion.button>
         </motion.div>
       </div>
 
@@ -317,15 +370,22 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          onClick={() => navigate('/practices')}
-          className="p-4 rounded-2xl bg-card border border-border shadow-sm cursor-pointer hover:bg-muted/30 transition-colors"
+          className="p-4 rounded-2xl bg-card border border-border shadow-sm"
         >
           <div className="grid grid-cols-4 gap-4">
             {todaysActs.map((act) => (
-              <div key={act.id} className="flex flex-col items-center gap-2">
+              <motion.button
+                key={act.id}
+                whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(actRoutes[act.id] || '/practices');
+                }}
+                className="flex flex-col items-center gap-2 cursor-pointer"
+              >
                 <div className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center",
-                  act.done ? "bg-success/20" : "bg-muted"
+                  "w-12 h-12 rounded-full flex items-center justify-center transition-colors",
+                  act.done ? "bg-success/20" : "bg-muted hover:bg-muted/70"
                 )}>
                   <act.icon className={cn(
                     "w-5 h-5",
@@ -333,7 +393,7 @@ const Dashboard = () => {
                   )} />
                 </div>
                 <span className="text-xs text-muted-foreground text-center">{act.name}</span>
-              </div>
+              </motion.button>
             ))}
           </div>
         </motion.div>
