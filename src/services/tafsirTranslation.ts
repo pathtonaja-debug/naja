@@ -3,6 +3,8 @@
  * Translates English tafsir to French using AI
  */
 
+import { supabase } from "@/integrations/supabase/client";
+
 const TRANSLATE_TAFSIR_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate-tafsir`;
 
 export interface TranslationResult {
@@ -22,11 +24,19 @@ export async function translateTafsirToFrench(
   verseKey: string
 ): Promise<string> {
   try {
+    // Get the user's session token for authentication
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    
+    if (!accessToken) {
+      throw new Error("User must be authenticated to translate tafsir");
+    }
+
     const response = await fetch(TRANSLATE_TAFSIR_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ text: englishText, verseKey }),
     });
