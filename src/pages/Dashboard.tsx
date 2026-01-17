@@ -36,6 +36,7 @@ const Dashboard = () => {
   const [showFirstActCelebration, setShowFirstActCelebration] = useState(false);
   const [celebrationPoints, setCelebrationPoints] = useState(0);
   const [actualActsCompleted, setActualActsCompleted] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Load data on mount and when returning to the page
   const loadData = useCallback(() => {
@@ -75,21 +76,37 @@ const Dashboard = () => {
     refetch();
   }, [refetch]);
 
-  // Load data on mount
+  // Load data on mount and set up focus/visibility listeners
   useEffect(() => {
     loadData();
-  }, [loadData]);
-
-  // Reload when page becomes visible (user returns from another page)
-  useEffect(() => {
+    
+    // Reload when page becomes visible (user returns from another tab)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         loadData();
       }
     };
     
+    // Reload on window focus (works better for SPA navigation)
+    const handleFocus = () => {
+      loadData();
+    };
+    
+    // Also listen for custom event from acts module
+    const handleActsUpdated = () => {
+      setReloadKey(prev => prev + 1);
+      loadData();
+    };
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('naja_acts_updated', handleActsUpdated);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('naja_acts_updated', handleActsUpdated);
+    };
   }, [loadData]);
 
   // Get today's ayah based on date

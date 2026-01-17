@@ -143,6 +143,9 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
     updateStreak(); // Update streak whenever an act is completed
     setTotalPointsEarned(prev => prev + act.points);
     onPointsEarned?.(act.points);
+    
+    // Dispatch custom event to notify other components (like Dashboard)
+    window.dispatchEvent(new CustomEvent('naja_acts_updated'));
 
     // If this was the first act ever, trigger celebration
     if (wasFirstAct) {
