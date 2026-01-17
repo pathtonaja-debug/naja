@@ -74,8 +74,8 @@ const BottomNav = () => {
 
   return (
     <>
-      <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-50 pb-safe">
-        <div className="relative flex items-end justify-center px-4 pb-4">
+      <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
+        <div className="relative flex items-end justify-center px-4 pb-[max(calc(env(safe-area-inset-bottom,_0px)_+_16px),_24px)]">
           <div className="relative">
             {/* Dock glow */}
             <div
