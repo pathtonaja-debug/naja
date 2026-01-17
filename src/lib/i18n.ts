@@ -644,6 +644,20 @@ const resources = {
       "progress.days.thu": "Thu",
       "progress.days.fri": "Fri",
       "progress.days.sat": "Sat",
+      "progress.noDataYet": "No data yet",
+      "progress.startTracking": "Complete acts to see your progress here",
+
+      // Leaderboard
+      "leaderboard.community": "Community",
+      "leaderboard.yourRank": "Your Rank",
+      "leaderboard.thisWeek": "This Week",
+      "leaderboard.pts": "pts",
+      "leaderboard.thisWeekTab": "This Week",
+      "leaderboard.allTime": "All Time",
+      "leaderboard.soloJourney": "Your Solo Journey",
+      "leaderboard.soloJourneyDescription": "Focus on your personal growth. Your niyyah is what matters most.",
+      "leaderboard.you": "You",
+      "leaderboard.disclaimer": "Focus on your own journey — this is just for friendly motivation. Your niyyah is what matters.",
 
       // Level names
       "levels.1": "The Seeker",
@@ -1983,6 +1997,20 @@ const resources = {
       "progress.days.thu": "Jeu",
       "progress.days.fri": "Ven",
       "progress.days.sat": "Sam",
+      "progress.noDataYet": "Aucune donnée",
+      "progress.startTracking": "Complétez des actes pour voir votre progression ici",
+
+      // Leaderboard
+      "leaderboard.community": "Communauté",
+      "leaderboard.yourRank": "Votre Rang",
+      "leaderboard.thisWeek": "Cette Semaine",
+      "leaderboard.pts": "pts",
+      "leaderboard.thisWeekTab": "Cette Semaine",
+      "leaderboard.allTime": "Tout le Temps",
+      "leaderboard.soloJourney": "Votre Parcours Personnel",
+      "leaderboard.soloJourneyDescription": "Concentrez-vous sur votre croissance personnelle. Votre niyyah est ce qui compte le plus.",
+      "leaderboard.you": "Vous",
+      "leaderboard.disclaimer": "Concentrez-vous sur votre propre parcours — ceci est juste pour la motivation. Votre niyyah est ce qui compte.",
 
       // Level names
       "levels.1": "Le Chercheur",
