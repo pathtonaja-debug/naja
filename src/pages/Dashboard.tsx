@@ -13,6 +13,8 @@ import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
+import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
+import { isNewUser, getOnboardingState } from '@/services/dailyProgressService';
 
 // Ayah keys for i18n
 const AYAH_KEYS = [1, 2, 3, 4];
@@ -30,9 +32,18 @@ const Dashboard = () => {
     goodDeed: false,
     sadaqah: false,
   });
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showFirstActCelebration, setShowFirstActCelebration] = useState(false);
+  const [celebrationPoints, setCelebrationPoints] = useState(0);
 
   // Load data on mount and when returning to the page
   const loadData = useCallback(() => {
+    // Check if should show welcome prompt
+    const onboarding = getOnboardingState();
+    if (!onboarding.hasSeenWelcome && isNewUser()) {
+      setShowWelcome(true);
+    }
+    
     // Load Quran last read position
     const lastRead = getLastReadPosition();
     setLastReadPositionState(lastRead);
@@ -111,11 +122,23 @@ const Dashboard = () => {
   ];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pb-24"
-    >
+    <>
+      {/* Onboarding Welcome Prompt */}
+      {showWelcome && <WelcomePrompt onDismiss={() => setShowWelcome(false)} />}
+      
+      {/* First Act Celebration */}
+      {showFirstActCelebration && (
+        <FirstActCelebration 
+          pointsEarned={celebrationPoints} 
+          onClose={() => setShowFirstActCelebration(false)} 
+        />
+      )}
+      
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-background pb-24"
+      >
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
         <p className="text-sm text-muted-foreground">{getGreeting()}</p>
@@ -125,6 +148,11 @@ const Dashboard = () => {
       {/* Ramadan Countdown Widget */}
       <div className="px-4 pb-4">
         <RamadanCountdown />
+      </div>
+
+      {/* First Act Prompt for new users */}
+      <div className="px-4 pb-4">
+        <FirstActPrompt />
       </div>
 
       {/* Goal Tracker Widget */}
@@ -322,6 +350,7 @@ const Dashboard = () => {
 
       <BottomNav />
     </motion.div>
+    </>
   );
 };
 

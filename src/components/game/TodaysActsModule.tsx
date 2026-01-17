@@ -8,6 +8,12 @@ import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { MANDATORY_PRAYERS, BARAKAH_REWARDS } from '@/data/practiceItems';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { 
+  recordCompletedAct, 
+  getTodayProgress,
+  getOnboardingState,
+  CompletedAct 
+} from '@/services/dailyProgressService';
 
 interface Act {
   id: string;
@@ -15,7 +21,7 @@ interface Act {
   icon: React.ReactNode;
   points: number;
   completed: boolean;
-  category: string;
+  category: CompletedAct['category'];
 }
 
 const prayerIcons: Record<string, React.ReactNode> = {
@@ -26,12 +32,22 @@ const prayerIcons: Record<string, React.ReactNode> = {
   isha: <Moon className="w-4 h-4" />,
 };
 
-export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount: number) => void }) => {
+interface TodaysActsModuleProps {
+  onPointsEarned?: (amount: number) => void;
+  onFirstActComplete?: (points: number) => void;
+}
+
+export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysActsModuleProps) => {
   const { addBarakahPoints, incrementActsCompleted } = useGuestProfile();
   const [acts, setActs] = useState<Act[]>([]);
   const [totalPointsEarned, setTotalPointsEarned] = useState(0);
+  const [isFirstAct, setIsFirstAct] = useState(false);
 
   useEffect(() => {
+    // Check if this will be the user's first act ever
+    const onboarding = getOnboardingState();
+    setIsFirstAct(!onboarding.hasCompletedFirstAct);
+    
     // Build acts from practice items
     const prayerActs: Act[] = MANDATORY_PRAYERS.map(p => ({
       id: p.id,
@@ -39,7 +55,7 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
       icon: prayerIcons[p.id] || <Moon className="w-4 h-4" />,
       points: p.barakahReward,
       completed: false,
-      category: 'prayer',
+      category: 'prayer' as const,
     }));
 
     const otherActs: Act[] = [
@@ -49,7 +65,7 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
         icon: <Book className="w-4 h-4" />,
         points: BARAKAH_REWARDS.QURAN_PAGE,
         completed: false,
-        category: 'quran',
+        category: 'quran' as const,
       },
       {
         id: 'dhikr',
@@ -57,14 +73,13 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
         icon: <Heart className="w-4 h-4" />,
         points: BARAKAH_REWARDS.DHIKR_33,
         completed: false,
-        category: 'dhikr',
+        category: 'dhikr' as const,
       },
     ];
 
-    // Load completed state from localStorage
-    const today = new Date().toISOString().split('T')[0];
-    const saved = localStorage.getItem(`acts_${today}`);
-    const completedIds = saved ? JSON.parse(saved) : [];
+    // Load completed state from daily progress service
+    const todayProgress = getTodayProgress();
+    const completedIds = todayProgress.acts.map(a => a.id);
     
     const allActs = [...prayerActs, ...otherActs].map(a => ({
       ...a,
@@ -72,18 +87,24 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
     }));
     
     setActs(allActs);
+    setTotalPointsEarned(todayProgress.points);
   }, []);
 
   const handleComplete = (actId: string) => {
     const act = acts.find(a => a.id === actId);
     if (!act || act.completed) return;
 
+    const wasFirstAct = isFirstAct;
+
     // Update state
     setActs(prev => prev.map(a => 
       a.id === actId ? { ...a, completed: true } : a
     ));
 
-    // Save to localStorage
+    // Record in daily progress service (this also saves to localStorage and updates onboarding state)
+    recordCompletedAct(actId, act.title, act.points, act.category, acts.length);
+
+    // Also save to old format for backward compatibility
     const today = new Date().toISOString().split('T')[0];
     const saved = localStorage.getItem(`acts_${today}`);
     const completedIds = saved ? JSON.parse(saved) : [];
@@ -95,6 +116,12 @@ export const TodaysActsModule = ({ onPointsEarned }: { onPointsEarned?: (amount:
     incrementActsCompleted();
     setTotalPointsEarned(prev => prev + act.points);
     onPointsEarned?.(act.points);
+
+    // If this was the first act ever, trigger celebration
+    if (wasFirstAct) {
+      setIsFirstAct(false);
+      onFirstActComplete?.(act.points);
+    }
 
     // Celebration
     toast.success(`+${act.points} Barakah Points`, {
