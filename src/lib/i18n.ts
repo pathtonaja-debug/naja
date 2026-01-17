@@ -945,6 +945,19 @@ const resources = {
       "onboarding.completeSetup": "Complete Setup",
       "onboarding.profileComplete": "Profile setup complete!",
       "onboarding.failedToSave": "Failed to save profile. Please try again.",
+      // Onboarding prompts
+      "onboarding.welcome.title": "Welcome to NAJA",
+      "onboarding.welcome.description": "Your personal companion for building lasting Islamic habits and growing closer to Allah.",
+      "onboarding.earnPoints.title": "Earn Barakah Points",
+      "onboarding.earnPoints.description": "Complete acts of worship like prayers, Quran reading, and dhikr to earn points and level up your spiritual journey.",
+      "onboarding.firstAct.title": "Complete Your First Act",
+      "onboarding.firstAct.description": "Start with something simple—pray, read a few verses, or do some dhikr. Every act counts!",
+      "onboarding.firstActPrompt.title": "Ready to Begin?",
+      "onboarding.firstActPrompt.description": "Complete your first act of worship to earn Barakah Points and start your journey.",
+      "onboarding.firstActPrompt.button": "Start First Act",
+      "onboarding.firstActComplete.title": "MashAllah!",
+      "onboarding.firstActComplete.description": "You've completed your first act. Keep going to build your streak!",
+      "common.skip": "Skip",
 
       // Toasts
       "toast.saved": "Saved",
@@ -2473,6 +2486,19 @@ const resources = {
       "onboarding.completeSetup": "Terminer la Configuration",
       "onboarding.profileComplete": "Configuration du profil terminée !",
       "onboarding.failedToSave": "Échec de l'enregistrement du profil. Veuillez réessayer.",
+      // Onboarding prompts
+      "onboarding.welcome.title": "Bienvenue sur NAJA",
+      "onboarding.welcome.description": "Votre compagnon personnel pour développer des habitudes islamiques durables et vous rapprocher d'Allah.",
+      "onboarding.earnPoints.title": "Gagnez des Points Baraka",
+      "onboarding.earnPoints.description": "Accomplissez des actes d'adoration comme les prières, la lecture du Coran et le dhikr pour gagner des points et progresser dans votre voyage spirituel.",
+      "onboarding.firstAct.title": "Accomplissez Votre Premier Acte",
+      "onboarding.firstAct.description": "Commencez par quelque chose de simple—priez, lisez quelques versets ou faites du dhikr. Chaque acte compte !",
+      "onboarding.firstActPrompt.title": "Prêt à Commencer ?",
+      "onboarding.firstActPrompt.description": "Accomplissez votre premier acte d'adoration pour gagner des Points Baraka et commencer votre voyage.",
+      "onboarding.firstActPrompt.button": "Premier Acte",
+      "onboarding.firstActComplete.title": "MashAllah !",
+      "onboarding.firstActComplete.description": "Vous avez accompli votre premier acte. Continuez pour maintenir votre série !",
+      "common.skip": "Passer",
 
       // Toasts
       "toast.saved": "Enregistré",
