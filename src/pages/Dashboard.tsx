@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card';
 import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
+import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 
 // Ayah keys for i18n
@@ -19,9 +20,10 @@ const AYAH_KEYS = [1, 2, 3, 4];
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { profile, todayPoints, actsCompleted } = useGuestProfile();
+  const { profile, todayPoints, actsCompleted, refetch } = useGuestProfile();
   
   const [ayahIndex, setAyahIndex] = useState(0);
+  const [lastReadPosition, setLastReadPositionState] = useState<LastReadPosition | null>(null);
   const [todaysActsStatus, setTodaysActsStatus] = useState({
     salah: false,
     quran: false,
@@ -29,22 +31,12 @@ const Dashboard = () => {
     sadaqah: false,
   });
 
-  // Get today's ayah based on date
-  useEffect(() => {
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-    setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
-  }, []);
-
-  // Build ayah object from i18n
-  const ayahOfDay = {
-    arabic: t(`ayah.${ayahIndex}.arabic`),
-    transliteration: t(`ayah.${ayahIndex}.transliteration`),
-    translation: t(`ayah.${ayahIndex}.translation`),
-    reference: t(`ayah.${ayahIndex}.reference`),
-  };
-
-  // Load today's acts status
-  useEffect(() => {
+  // Load data on mount and when returning to the page
+  const loadData = useCallback(() => {
+    // Load Quran last read position
+    const lastRead = getLastReadPosition();
+    setLastReadPositionState(lastRead);
+    
     const today = new Date().toISOString().split('T')[0];
     
     // Check prayer states
@@ -64,7 +56,41 @@ const Dashboard = () => {
       const quranDone = (parsed.history && parsed.history[today] > 0);
       setTodaysActsStatus(prev => ({ ...prev, quran: quranDone }));
     }
+    
+    // Refetch profile to get updated stats
+    refetch();
+  }, [refetch]);
+
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Reload when page becomes visible (user returns from another page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadData]);
+
+  // Get today's ayah based on date
+  useEffect(() => {
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+    setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
   }, []);
+
+  // Build ayah object from i18n
+  const ayahOfDay = {
+    arabic: t(`ayah.${ayahIndex}.arabic`),
+    transliteration: t(`ayah.${ayahIndex}.transliteration`),
+    translation: t(`ayah.${ayahIndex}.translation`),
+    reference: t(`ayah.${ayahIndex}.reference`),
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -105,6 +131,31 @@ const Dashboard = () => {
       <div className="px-4 pb-4">
         <GoalTrackerWidget />
       </div>
+
+      {/* Continue Reading Quran Widget */}
+      {lastReadPosition && (
+        <div className="px-4 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => navigate('/quran')}
+            className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-sm">{t('quran.continueReading')}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {lastReadPosition.chapterName || `Surah ${lastReadPosition.chapterId}`} • {t('quran.verse')} {lastReadPosition.verseNumber}
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Stats Cards Row */}
       <div className="px-4 pb-4">

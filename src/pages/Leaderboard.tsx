@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Medal, Crown, ChevronLeft } from 'lucide-react';
+import { Trophy, Medal, Crown, ChevronLeft, Users } from 'lucide-react';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface LeaderboardEntry {
   id: string;
@@ -17,25 +18,13 @@ interface LeaderboardEntry {
 
 const Leaderboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { profile } = useGuestProfile();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timeframe, setTimeframe] = useState<'week' | 'all'>('week');
 
   useEffect(() => {
-    // Generate mock leaderboard data
-    // In a real app, this would fetch from Supabase
-    const mockData: LeaderboardEntry[] = [
-      { id: '1', displayName: 'Abdullah', points: 2450, level: 8, isCurrentUser: false },
-      { id: '2', displayName: 'Fatima', points: 2100, level: 7, isCurrentUser: false },
-      { id: '3', displayName: 'Omar', points: 1890, level: 7, isCurrentUser: false },
-      { id: '4', displayName: 'Aisha', points: 1650, level: 6, isCurrentUser: false },
-      { id: '5', displayName: 'Yusuf', points: 1420, level: 5, isCurrentUser: false },
-      { id: '6', displayName: 'Maryam', points: 1200, level: 5, isCurrentUser: false },
-      { id: '7', displayName: 'Ibrahim', points: 980, level: 4, isCurrentUser: false },
-      { id: '8', displayName: 'Khadija', points: 750, level: 4, isCurrentUser: false },
-    ];
-
-    // Insert current user
+    // Only show current user - no mock data
     const userEntry: LeaderboardEntry = {
       id: profile.id,
       displayName: profile.displayName,
@@ -44,24 +33,22 @@ const Leaderboard = () => {
       isCurrentUser: true,
     };
 
-    // Combine and sort
-    const combined = [...mockData, userEntry].sort((a, b) => b.points - a.points);
-    setLeaderboard(combined);
+    setLeaderboard([userEntry]);
   }, [profile]);
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
-    if (rank === 2) return <Medal className="w-5 h-5 text-gray-400" />;
-    if (rank === 3) return <Medal className="w-5 h-5 text-amber-600" />;
-    return <span className="text-sm font-bold text-foreground/40">{rank}</span>;
+    if (rank === 1) return <Crown className="w-5 h-5 text-warn" />;
+    if (rank === 2) return <Medal className="w-5 h-5 text-muted-foreground" />;
+    if (rank === 3) return <Medal className="w-5 h-5 text-warn" />;
+    return <span className="text-sm font-bold text-muted-foreground">{rank}</span>;
   };
 
   const getRankBg = (rank: number, isCurrentUser: boolean) => {
-    if (isCurrentUser) return 'bg-pastel-lavender/30 border-pastel-lavender';
-    if (rank === 1) return 'bg-yellow-50 border-yellow-200';
-    if (rank === 2) return 'bg-gray-50 border-gray-200';
-    if (rank === 3) return 'bg-amber-50 border-amber-200';
-    return 'bg-white border-border/30';
+    if (isCurrentUser) return 'bg-secondary/20 border-secondary';
+    if (rank === 1) return 'bg-warn/10 border-warn/30';
+    if (rank === 2) return 'bg-muted/50 border-border';
+    if (rank === 3) return 'bg-warn/5 border-warn/20';
+    return 'bg-card border-border';
   };
 
   const userRank = leaderboard.findIndex(e => e.isCurrentUser) + 1;
@@ -70,10 +57,10 @@ const Leaderboard = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-pastel-cream pb-24"
+      className="min-h-screen bg-background pb-24"
     >
       <TopBar 
-        title="Community" 
+        title={t('leaderboard.community')} 
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
@@ -86,16 +73,16 @@ const Leaderboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+          className="p-4 rounded-2xl bg-card border border-border shadow-sm"
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-foreground/60">Your Rank</p>
+              <p className="text-sm text-muted-foreground">{t('leaderboard.yourRank')}</p>
               <p className="text-3xl font-bold text-foreground">#{userRank}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-foreground/60">This Week</p>
-              <p className="text-xl font-bold text-foreground">{profile.barakahPoints} pts</p>
+              <p className="text-sm text-muted-foreground">{t('leaderboard.thisWeek')}</p>
+              <p className="text-xl font-bold text-foreground">{profile.barakahPoints} {t('leaderboard.pts')}</p>
             </div>
           </div>
         </motion.div>
@@ -103,23 +90,42 @@ const Leaderboard = () => {
 
       {/* Timeframe Toggle */}
       <div className="px-4 pb-4">
-        <div className="flex gap-2 p-1 rounded-xl bg-white border border-border/30">
-          {(['week', 'all'] as const).map((t) => (
+        <div className="flex gap-2 p-1 rounded-xl bg-card border border-border">
+          {(['week', 'all'] as const).map((tf) => (
             <button
-              key={t}
-              onClick={() => setTimeframe(t)}
+              key={tf}
+              onClick={() => setTimeframe(tf)}
               className={cn(
                 "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all",
-                timeframe === t
-                  ? "bg-pastel-lavender text-foreground shadow-sm"
-                  : "text-foreground/50"
+                timeframe === tf
+                  ? "bg-secondary text-secondary-foreground shadow-sm"
+                  : "text-muted-foreground"
               )}
             >
-              {t === 'week' ? 'This Week' : 'All Time'}
+              {tf === 'week' ? t('leaderboard.thisWeekTab') : t('leaderboard.allTime')}
             </button>
           ))}
         </div>
       </div>
+
+      {/* Empty State / Solo Journey */}
+      {leaderboard.length === 1 && (
+        <div className="px-4 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 rounded-2xl bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20 text-center"
+          >
+            <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+              <Users className="w-8 h-8 text-secondary" />
+            </div>
+            <h3 className="font-semibold text-foreground mb-2">{t('leaderboard.soloJourney')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {t('leaderboard.soloJourneyDescription')}
+            </p>
+          </motion.div>
+        </div>
+      )}
 
       {/* Leaderboard List */}
       <div className="px-4 space-y-2">
@@ -137,14 +143,14 @@ const Leaderboard = () => {
               )}
             >
               {/* Rank */}
-              <div className="w-8 h-8 rounded-full bg-pastel-cream flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                 {getRankIcon(rank)}
               </div>
 
               {/* Avatar */}
               <div className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold",
-                entry.isCurrentUser ? "bg-pastel-lavender text-foreground" : "bg-pastel-blue/50 text-foreground"
+                entry.isCurrentUser ? "bg-secondary text-secondary-foreground" : "bg-primary/20 text-foreground"
               )}>
                 {entry.displayName.charAt(0).toUpperCase()}
               </div>
@@ -156,17 +162,17 @@ const Leaderboard = () => {
                   entry.isCurrentUser ? "text-foreground" : "text-foreground/80"
                 )}>
                   {entry.displayName}
-                  {entry.isCurrentUser && <span className="text-xs text-foreground/50 ml-1">(You)</span>}
+                  {entry.isCurrentUser && <span className="text-xs text-muted-foreground ml-1">({t('leaderboard.you')})</span>}
                 </p>
-                <p className="text-xs text-foreground/50">
-                  {SPIRITUAL_LEVELS[entry.level - 1] || 'The Seeker'} · Level {entry.level}
+                <p className="text-xs text-muted-foreground">
+                  {SPIRITUAL_LEVELS[entry.level - 1] || 'The Seeker'} · {t('dashboard.level')} {entry.level}
                 </p>
               </div>
 
               {/* Points */}
               <div className="text-right">
                 <p className="font-bold text-foreground">{entry.points}</p>
-                <p className="text-[10px] text-foreground/40">points</p>
+                <p className="text-[10px] text-muted-foreground">{t('common.points')}</p>
               </div>
             </motion.div>
           );
@@ -175,9 +181,8 @@ const Leaderboard = () => {
 
       {/* Disclaimer */}
       <div className="px-4 py-6">
-        <p className="text-[10px] text-foreground/40 text-center italic">
-          Leaderboard shows anonymous participants. Focus on your own journey — 
-          this is just for friendly motivation. Your niyyah is what matters.
+        <p className="text-[10px] text-muted-foreground text-center italic">
+          {t('leaderboard.disclaimer')}
         </p>
       </div>
 
