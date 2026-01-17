@@ -131,6 +131,21 @@ export const useGuestProfile = () => {
         const parsed = JSON.parse(stored);
         // Recalculate level based on points
         parsed.level = getLevelFromPoints(parsed.barakahPoints || 0);
+        
+        // Check if streak should be reset (no activity yesterday)
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        if (parsed.lastActivityDate && 
+            parsed.lastActivityDate !== today && 
+            parsed.lastActivityDate !== yesterdayStr) {
+          // Streak is broken - reset to 0
+          parsed.hasanatStreak = 0;
+          localStorage.setItem('naja_guest_profile', JSON.stringify(parsed));
+        }
+        
         setProfile(parsed);
       } catch {
         // Reset to default if corrupted
@@ -160,6 +175,9 @@ export const useGuestProfile = () => {
       } catch {
         setDailyStats(getDefaultDailyStats());
       }
+    } else {
+      // Reset daily stats for a new day
+      setDailyStats(getDefaultDailyStats());
     }
     
     setLoading(false);

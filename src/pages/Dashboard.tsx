@@ -14,7 +14,7 @@ import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
-import { isNewUser, getOnboardingState } from '@/services/dailyProgressService';
+import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dailyProgressService';
 
 // Ayah keys for i18n
 const AYAH_KEYS = [1, 2, 3, 4];
@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showFirstActCelebration, setShowFirstActCelebration] = useState(false);
   const [celebrationPoints, setCelebrationPoints] = useState(0);
+  const [actualActsCompleted, setActualActsCompleted] = useState(0);
 
   // Load data on mount and when returning to the page
   const loadData = useCallback(() => {
@@ -50,23 +51,25 @@ const Dashboard = () => {
     
     const today = new Date().toISOString().split('T')[0];
     
-    // Check prayer states
-    const prayerStored = localStorage.getItem('naja_prayer_states');
-    if (prayerStored) {
-      const parsed = JSON.parse(prayerStored);
-      if (parsed.date === today) {
-        const anyPrayerDone = Object.values(parsed.states).some((s: any) => s.done);
-        setTodaysActsStatus(prev => ({ ...prev, salah: anyPrayerDone }));
-      }
-    }
-
-    // Check Quran progress
-    const quranStored = localStorage.getItem('naja_quran_progress_v2');
-    if (quranStored) {
-      const parsed = JSON.parse(quranStored);
-      const quranDone = (parsed.history && parsed.history[today] > 0);
-      setTodaysActsStatus(prev => ({ ...prev, quran: quranDone }));
-    }
+    // Get today's progress from daily progress service
+    const todayProgress = getTodayProgress();
+    const completedActIds = todayProgress.acts.map(a => a.id);
+    
+    // Check prayer states - any prayer counts for salah
+    const anyPrayerDone = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].some(
+      prayerId => completedActIds.includes(prayerId)
+    );
+    
+    // Check each act category from the daily progress
+    setTodaysActsStatus({
+      salah: anyPrayerDone,
+      quran: completedActIds.includes('quran'),
+      goodDeed: completedActIds.includes('good_deed'),
+      sadaqah: completedActIds.includes('sadaqah'),
+    });
+    
+    // Update actual acts completed count
+    setActualActsCompleted(todayProgress.completed);
     
     // Refetch profile to get updated stats
     refetch();
@@ -225,7 +228,7 @@ const Dashboard = () => {
               <Trophy className="w-4 h-4 text-success" />
               <span className="text-xs text-muted-foreground">{t('common.done')}</span>
             </div>
-            <p className="text-xl font-bold">{actsCompleted}</p>
+            <p className="text-xl font-bold">{actualActsCompleted || actsCompleted}</p>
             <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
           </motion.div>
         </div>
