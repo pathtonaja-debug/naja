@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sun, Book, Heart, Moon, Sunrise, CloudSun, Sunset,
-  Apple, Gift, Check
+  Apple, Gift, Check, HandHeart, CircleDollarSign
 } from 'lucide-react';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { MANDATORY_PRAYERS, BARAKAH_REWARDS } from '@/data/practiceItems';
@@ -24,6 +24,12 @@ interface Act {
   category: CompletedAct['category'];
 }
 
+// Bonus acts configuration
+const BONUS_ACTS = [
+  { id: 'good_deed', title: 'Good Deed', icon: HandHeart, points: 15, category: 'habit' as const },
+  { id: 'sadaqah', title: 'Sadaqah', icon: CircleDollarSign, points: 25, category: 'habit' as const },
+];
+
 const prayerIcons: Record<string, React.ReactNode> = {
   fajr: <Sunrise className="w-4 h-4" />,
   dhuhr: <Sun className="w-4 h-4" />,
@@ -38,8 +44,9 @@ interface TodaysActsModuleProps {
 }
 
 export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysActsModuleProps) => {
-  const { addBarakahPoints, incrementActsCompleted } = useGuestProfile();
+  const { addBarakahPoints, incrementActsCompleted, updateStreak } = useGuestProfile();
   const [acts, setActs] = useState<Act[]>([]);
+  const [bonusActs, setBonusActs] = useState<Act[]>([]);
   const [totalPointsEarned, setTotalPointsEarned] = useState(0);
   const [isFirstAct, setIsFirstAct] = useState(false);
 
@@ -86,23 +93,42 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
       completed: completedIds.includes(a.id)
     }));
     
+    // Build bonus acts
+    const bonusActsState: Act[] = BONUS_ACTS.map(ba => ({
+      id: ba.id,
+      title: ba.title,
+      icon: <ba.icon className="w-4 h-4" />,
+      points: ba.points,
+      completed: completedIds.includes(ba.id),
+      category: ba.category,
+    }));
+    
     setActs(allActs);
+    setBonusActs(bonusActsState);
     setTotalPointsEarned(todayProgress.points);
   }, []);
 
-  const handleComplete = (actId: string) => {
-    const act = acts.find(a => a.id === actId);
+  const handleComplete = (actId: string, isBonus: boolean = false) => {
+    const actList = isBonus ? bonusActs : acts;
+    const act = actList.find(a => a.id === actId);
     if (!act || act.completed) return;
 
     const wasFirstAct = isFirstAct;
 
     // Update state
-    setActs(prev => prev.map(a => 
-      a.id === actId ? { ...a, completed: true } : a
-    ));
+    if (isBonus) {
+      setBonusActs(prev => prev.map(a => 
+        a.id === actId ? { ...a, completed: true } : a
+      ));
+    } else {
+      setActs(prev => prev.map(a => 
+        a.id === actId ? { ...a, completed: true } : a
+      ));
+    }
 
     // Record in daily progress service (this also saves to localStorage and updates onboarding state)
-    recordCompletedAct(actId, act.title, act.points, act.category, acts.length);
+    const totalActs = acts.length + bonusActs.length;
+    recordCompletedAct(actId, act.title, act.points, act.category, totalActs);
 
     // Also save to old format for backward compatibility
     const today = new Date().toISOString().split('T')[0];
@@ -111,9 +137,10 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
     completedIds.push(actId);
     localStorage.setItem(`acts_${today}`, JSON.stringify(completedIds));
 
-    // Update points
+    // Update points and streak
     addBarakahPoints(act.points);
     incrementActsCompleted();
+    updateStreak(); // Update streak whenever an act is completed
     setTotalPointsEarned(prev => prev + act.points);
     onPointsEarned?.(act.points);
 
@@ -235,22 +262,48 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
       <div className="pt-4 border-t border-border/30">
         <h3 className="text-sm font-semibold text-foreground mb-3">Bonus Acts</h3>
         <div className="grid grid-cols-2 gap-3">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="p-4 rounded-xl bg-white border border-border/30 text-left"
-          >
-            <Apple className="w-5 h-5 text-pastel-green mb-2" />
-            <p className="text-xs font-semibold text-foreground">Fasting</p>
-            <p className="text-[10px] text-foreground/50">Optional fast</p>
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="p-4 rounded-xl bg-white border border-border/30 text-left"
-          >
-            <Gift className="w-5 h-5 text-pastel-pink mb-2" />
-            <p className="text-xs font-semibold text-foreground">Charity</p>
-            <p className="text-[10px] text-foreground/50">Give Sadaqah</p>
-          </motion.button>
+          {bonusActs.map((act) => (
+            <motion.button
+              key={act.id}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleComplete(act.id, true)}
+              disabled={act.completed}
+              className={cn(
+                "p-4 rounded-xl border text-left transition-all",
+                act.completed 
+                  ? "bg-success/10 border-success/30" 
+                  : "bg-white border-border/30 hover:border-primary/30"
+              )}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center",
+                  act.completed ? "bg-success/20" : "bg-muted"
+                )}>
+                  {act.completed ? (
+                    <Check className="w-4 h-4 text-success" />
+                  ) : (
+                    <span className={cn(
+                      act.id === 'good_deed' ? "text-success" : "text-warn"
+                    )}>{act.icon}</span>
+                  )}
+                </div>
+                <span className={cn(
+                  "text-xs font-semibold",
+                  act.completed ? "text-success" : "text-muted-foreground"
+                )}>
+                  +{act.points}
+                </span>
+              </div>
+              <p className={cn(
+                "text-xs font-semibold",
+                act.completed ? "text-success line-through" : "text-foreground"
+              )}>{act.title}</p>
+              <p className="text-[10px] text-muted-foreground">
+                {act.id === 'good_deed' ? 'Any act of kindness' : 'Give Sadaqah'}
+              </p>
+            </motion.button>
+          ))}
         </div>
       </div>
 

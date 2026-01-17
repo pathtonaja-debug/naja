@@ -11,8 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { format, startOfWeek, addDays, isSameDay, isToday, subDays, getDaysInMonth, startOfMonth } from 'date-fns';
+import { 
+  getAllDailyProgress, 
+  calculateStreakFromProgress,
+  DailyProgress as FullDailyProgress 
+} from '@/services/dailyProgressService';
 
-interface DailyProgress {
+// Simplified type for display
+interface DailyProgressDisplay {
   date: string;
   completed: number;
   total: number;
@@ -22,14 +28,20 @@ interface DailyProgress {
 const STORAGE_KEY = 'naja_daily_progress_v1';
 
 // Get stored daily progress
-function getDailyProgress(): Record<string, DailyProgress> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return {};
-    return JSON.parse(stored);
-  } catch {
-    return {};
+function getDailyProgress(): Record<string, DailyProgressDisplay> {
+  const all = getAllDailyProgress();
+  const result: Record<string, DailyProgressDisplay> = {};
+  
+  for (const [key, value] of Object.entries(all)) {
+    result[key] = {
+      date: value.date,
+      completed: value.completed,
+      total: value.total,
+      points: value.points,
+    };
   }
+  
+  return result;
 }
 
 const Progress = () => {
@@ -37,8 +49,9 @@ const Progress = () => {
   const { t } = useTranslation();
   const { profile, getProgress, refetch } = useGuestProfile();
   const [activeTab, setActiveTab] = useState<'weekly' | 'monthly'>('weekly');
-  const [weeklyData, setWeeklyData] = useState<DailyProgress[]>([]);
-  const [monthlyData, setMonthlyData] = useState<Record<string, DailyProgress>>({});
+  const [weeklyData, setWeeklyData] = useState<DailyProgressDisplay[]>([]);
+  const [monthlyData, setMonthlyData] = useState<Record<string, DailyProgressDisplay>>({});
+  const [calculatedStreak, setCalculatedStreak] = useState(0);
 
   const progress = getProgress();
   const levelTitle = SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker';
@@ -47,9 +60,12 @@ const Progress = () => {
   const loadProgressData = useCallback(() => {
     const allProgress = getDailyProgress();
     
+    // Calculate streak from progress data
+    setCalculatedStreak(calculateStreakFromProgress());
+    
     // Build weekly data (current week, starting Monday)
     const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
-    const weekData: DailyProgress[] = [];
+    const weekData: DailyProgressDisplay[] = [];
     
     for (let i = 0; i < 7; i++) {
       const date = addDays(weekStart, i);
@@ -198,7 +214,7 @@ const Progress = () => {
             className="p-3 rounded-2xl bg-card border border-border shadow-sm text-center"
           >
             <Flame className="w-5 h-5 text-destructive mx-auto mb-1" />
-            <p className="text-lg font-bold text-foreground">{profile.hasanatStreak}</p>
+            <p className="text-lg font-bold text-foreground">{calculatedStreak || profile.hasanatStreak}</p>
             <p className="text-[10px] text-muted-foreground">{t('progress.dayStreak')}</p>
           </motion.div>
           

@@ -188,6 +188,34 @@ export function getWeeklySummary(): {
   return { totalPoints, totalActs, activeDays, avgCompletion };
 }
 
+// Calculate streak from daily progress data
+export function calculateStreakFromProgress(): number {
+  const all = getAllDailyProgress();
+  let streak = 0;
+  const today = new Date();
+  
+  // Start checking from today and go backwards
+  for (let i = 0; i < 365; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(checkDate.getDate() - i);
+    const dateKey = checkDate.toISOString().split('T')[0];
+    const progress = all[dateKey];
+    
+    // If there's activity for this day, increment streak
+    if (progress && progress.completed > 0) {
+      streak++;
+    } else if (i === 0) {
+      // If today has no activity yet, continue checking (don't break streak yet)
+      continue;
+    } else {
+      // No activity on a previous day, streak is broken
+      break;
+    }
+  }
+  
+  return streak;
+}
+
 // ============== Onboarding State Functions ==============
 const DEFAULT_ONBOARDING: OnboardingState = {
   hasCompletedFirstAct: false,
