@@ -92,6 +92,13 @@
     @apply border-border;
   }
 
+  html {
+    /* Prevent browser auto text inflation (mobile accessibility scaling)
+       Note: browsers can still allow user-zoom; this only disables automatic font inflation. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
