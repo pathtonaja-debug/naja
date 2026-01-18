@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { recordCompletedAct } from '@/services/dailyProgressService';
 import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
@@ -46,9 +47,13 @@ const SADAQAH_ICONS: Record<string, React.ReactNode> = {
 
 const Practices = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { addBarakahPoints, updateStreak } = useGuestProfile();
-  const [activeTab, setActiveTab] = useState<'prayers' | 'sadaqah'>('prayers');
+  const [activeTab, setActiveTab] = useState<'prayers' | 'sadaqah'>(() => {
+    const tab = searchParams.get('tab');
+    return tab === 'sadaqah' ? 'sadaqah' : 'prayers';
+  });
   const [expandedSection, setExpandedSection] = useState<string | null>('fard');
 
   const MANDATORY_PRAYERS = [
@@ -133,10 +138,16 @@ const Practices = () => {
       ...prev,
       [id]: { ...prev[id], done: newState }
     }));
-    
+
     if (newState) {
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
+
+      // Sync to daily progress (used by Dashboard / Progress)
+      const prayer = MANDATORY_PRAYERS.find(p => p.id === id);
+      recordCompletedAct(id, prayer?.name || id, BARAKAH_REWARDS.PRAYER_COMPLETED, 'prayer');
+      window.dispatchEvent(new CustomEvent('naja_acts_updated'));
+
       if (leveledUp) {
         toast.success(t('practices.levelUp', { level: newLevel }));
       } else {
@@ -183,6 +194,12 @@ const Practices = () => {
     };
     setSadaqahLogs(prev => [newLog, ...prev]);
     addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
+    updateStreak();
+
+    // Mark Sadaqah as done for today in the daily progress feed
+    recordCompletedAct('sadaqah', t('acts.sadaqah'), BARAKAH_REWARDS.CHARITY_GIVEN, 'habit');
+    window.dispatchEvent(new CustomEvent('naja_acts_updated'));
+
     toast.success(t('practices.sadaqahLogged', { points: BARAKAH_REWARDS.CHARITY_GIVEN }));
     setExpandedSadaqah(null);
   };
@@ -211,7 +228,7 @@ const Practices = () => {
         {/* Tab Selector */}
         <div className="flex gap-2 p-1 bg-muted rounded-xl">
           <button
-            onClick={() => setActiveTab('prayers')}
+            onClick={() => { setActiveTab('prayers'); setSearchParams({ tab: 'prayers' }); }}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all",
               activeTab === 'prayers' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"
@@ -221,7 +238,7 @@ const Practices = () => {
             {t('practices.prayers')}
           </button>
           <button
-            onClick={() => setActiveTab('sadaqah')}
+            onClick={() => { setActiveTab('sadaqah'); setSearchParams({ tab: 'sadaqah' }); }}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all",
               activeTab === 'sadaqah' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"

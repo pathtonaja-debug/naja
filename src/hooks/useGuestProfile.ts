@@ -16,6 +16,8 @@ export interface GuestProfile {
   level: number;
   barakahPoints: number;
   hasanatStreak: number;
+  // Tracks the last date the streak counter was updated (separate from activity)
+  lastStreakDate: string | null;
   lastActivityDate: string | null;
   createdAt: string;
 }
@@ -25,6 +27,7 @@ const DEFAULT_PROFILE: Omit<GuestProfile, 'id' | 'createdAt'> = {
   level: 1,
   barakahPoints: 0,
   hasanatStreak: 0,
+  lastStreakDate: null,
   lastActivityDate: null,
 };
 
@@ -132,15 +135,20 @@ export const useGuestProfile = () => {
         // Recalculate level based on points
         parsed.level = getLevelFromPoints(parsed.barakahPoints || 0);
         
+        // Ensure new fields exist
+        parsed.lastStreakDate = parsed.lastStreakDate ?? parsed.lastActivityDate ?? null;
+
         // Check if streak should be reset (no activity yesterday)
         const today = new Date().toISOString().split('T')[0];
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
-        
-        if (parsed.lastActivityDate && 
-            parsed.lastActivityDate !== today && 
-            parsed.lastActivityDate !== yesterdayStr) {
+
+        if (
+          parsed.lastStreakDate &&
+          parsed.lastStreakDate !== today &&
+          parsed.lastStreakDate !== yesterdayStr
+        ) {
           // Streak is broken - reset to 0
           parsed.hasanatStreak = 0;
           localStorage.setItem('naja_guest_profile', JSON.stringify(parsed));
@@ -245,33 +253,35 @@ export const useGuestProfile = () => {
 
   const updateStreak = useCallback(() => {
     const today = new Date().toISOString().split('T')[0];
-    
+
     setProfile(current => {
       if (!current) return current;
-      
+
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
-      
+
       let newStreak = current.hasanatStreak;
-      
-      if (current.lastActivityDate === today) {
-        // Already active today
+
+      // Use lastStreakDate to avoid "points updated activity" blocking the streak increment
+      if (current.lastStreakDate === today) {
+        // Already counted today
         return current;
-      } else if (current.lastActivityDate === yesterdayStr) {
+      } else if (current.lastStreakDate === yesterdayStr) {
         // Continue streak
         newStreak += 1;
       } else {
         // Streak broken, restart
         newStreak = 1;
       }
-      
+
       const updated: GuestProfile = {
         ...current,
         hasanatStreak: newStreak,
+        lastStreakDate: today,
         lastActivityDate: today,
       };
-      
+
       localStorage.setItem('naja_guest_profile', JSON.stringify(updated));
       return updated;
     });
@@ -303,6 +313,7 @@ export const useGuestProfile = () => {
     level: 1,
     barakahPoints: 0,
     hasanatStreak: 0,
+    lastStreakDate: null,
     lastActivityDate: null,
     createdAt: new Date().toISOString(),
   };

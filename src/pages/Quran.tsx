@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
 import { AppChapter } from '@/services/quranApi';
@@ -32,6 +32,7 @@ const PAGES_PER_JUZ = 20;
 
 const Quran = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
   const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'hifdh' | 'khatam'>('reading');
@@ -47,6 +48,36 @@ const Quran = () => {
   const [selectedChapter, setSelectedChapter] = useState<AppChapter | null>(null);
   const [lastRead, setLastRead] = useState<LastReadPosition | null>(null);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+
+  // Deep-link support: /quran?surah=2&verse=152
+  useEffect(() => {
+    const surahParam = searchParams.get('surah');
+    if (!surahParam) return;
+
+    const surahId = Number(surahParam);
+    if (!Number.isFinite(surahId) || surahId <= 0) return;
+
+    const verseParam = searchParams.get('verse');
+    if (verseParam) {
+      const verseNum = Number(verseParam);
+      if (Number.isFinite(verseNum) && verseNum > 0) {
+        sessionStorage.setItem('naja_scroll_to_verse', `${surahId}:${verseNum}`);
+      }
+    }
+
+    const chapterData: AppChapter = {
+      id: surahId,
+      nameSimple: `Surah ${surahId}`,
+      nameArabic: '',
+      translatedName: '',
+      revelationPlace: 'makkah',
+      versesCount: 0,
+      pages: [],
+    };
+
+    setSelectedChapter(chapterData);
+    setActiveTab('surahs');
+  }, [searchParams]);
 
   useEffect(() => {
     // Preload French tafsir data in background

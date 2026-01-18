@@ -133,6 +133,8 @@ const Dashboard = () => {
   const goToAyahVerse = () => {
     const verseData = AYAH_VERSE_MAP[ayahIndex];
     if (verseData) {
+      // Let Quran page & SurahReader pick this up and auto-scroll
+      sessionStorage.setItem('naja_scroll_to_verse', `${verseData.surah}:${verseData.verse}`);
       navigate(`/quran?surah=${verseData.surah}&verse=${verseData.verse}`);
     }
   };
@@ -161,7 +163,8 @@ const Dashboard = () => {
     salah: '/practices',
     quran: '/quran',
     goodDeed: '/practices',
-    sadaqah: '/fintech',
+    // Deep-link to Sadaqah tab
+    sadaqah: '/practices?tab=sadaqah',
   };
 
   const todaysActs = [
@@ -265,19 +268,19 @@ const Dashboard = () => {
             <p className="text-[10px] text-muted-foreground">{t('dashboard.hasanatStreak')}</p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="p-3 rounded-2xl bg-card border border-border shadow-sm"
-          >
-            <div className="flex items-center gap-1.5 mb-1">
-              <Trophy className="w-4 h-4 text-success" />
-              <span className="text-xs text-muted-foreground">{t('common.done')}</span>
-            </div>
-            <p className="text-xl font-bold">{actualActsCompleted || actsCompleted}</p>
-            <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="p-3 rounded-2xl bg-card border border-border shadow-sm"
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <Trophy className="w-4 h-4 text-success" />
+                <span className="text-xs text-muted-foreground">{t('common.done')}</span>
+              </div>
+              <p className="text-xl font-bold">{actualActsCompleted}</p>
+              <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
+            </motion.div>
         </div>
       </div>
 
