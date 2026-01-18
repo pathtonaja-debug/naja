@@ -195,28 +195,42 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     loadChapterInfo();
   }, [loadVerses, loadChapterInfo]);
 
-  // Scroll to verse after verses load (for Continue Reading)
+  // Scroll to verse after verses load (for Continue Reading / Deep Link)
   useEffect(() => {
     if (verses.length === 0) return;
     
     const scrollTarget = sessionStorage.getItem('naja_scroll_to_verse');
-    if (scrollTarget) {
-      sessionStorage.removeItem('naja_scroll_to_verse');
-      
-      // Wait for DOM to render
-      setTimeout(() => {
-        const element = document.getElementById(`verse-${scrollTarget}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Add highlight effect
-          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-          setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-          }, 2000);
-        }
-      }, 300);
+    if (!scrollTarget) return;
+    
+    // Parse target verse number from verseKey (e.g., "2:152" -> 152)
+    const [, verseNumStr] = scrollTarget.split(':');
+    const targetVerseNum = parseInt(verseNumStr, 10);
+    
+    // Check if target verse is loaded
+    const targetVerseLoaded = verses.some(v => v.verseNumber === targetVerseNum);
+    
+    if (!targetVerseLoaded && currentPage < totalPages && !loadingMore) {
+      // Need to load more pages to reach target verse
+      loadVerses(currentPage + 1, true);
+      return; // Will re-run when more verses load
     }
-  }, [verses]);
+    
+    // Target verse should be loaded now (or we've loaded all pages)
+    sessionStorage.removeItem('naja_scroll_to_verse');
+    
+    // Wait for DOM to render
+    setTimeout(() => {
+      const element = document.getElementById(`verse-${scrollTarget}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add highlight effect
+        element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+        setTimeout(() => {
+          element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+        }, 2000);
+      }
+    }, 300);
+  }, [verses, currentPage, totalPages, loadingMore, loadVerses]);
 
   const handleLoadMore = () => {
     if (currentPage < totalPages && !loadingMore) loadVerses(currentPage + 1, true);
