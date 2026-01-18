@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Info, Loader2, X, Languages } from 'lucide-react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Info, Loader2, X, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { AppChapter, AppVerse, ChapterInfo, getVersesByChapter, getChapterInfo, getTranslationIdForLanguage } from '@/services/quranApi';
+import { AppChapter, AppVerse, ChapterInfo, getVersesByChapter, getChapterInfo, getTranslationIdForLanguage, getChapter } from '@/services/quranApi';
 import {
   getCachedVerses,
   setCachedVerses,
@@ -24,6 +24,7 @@ import { TafsirSheet } from './TafsirSheet';
 interface SurahReaderProps {
   chapter: AppChapter;
   onBack: () => void;
+  onNavigateToSurah?: (chapter: AppChapter) => void;
 }
 
 function Sheet({
@@ -79,7 +80,7 @@ function Sheet({
   );
 }
 
-export function SurahReader({ chapter, onBack }: SurahReaderProps) {
+export function SurahReader({ chapter, onBack, onNavigateToSurah }: SurahReaderProps) {
   const { i18n, t } = useTranslation();
   const baseLang = useMemo(
     () => (i18n.language || 'en').toLowerCase().split('-')[0],
@@ -212,10 +213,53 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     toast(t('quran.readingPositionSaved'));
   };
 
+  // Surah navigation
+  const canGoPrevious = chapter.id > 1;
+  const canGoNext = chapter.id < 114;
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleNavigateToSurah = async (surahId: number) => {
+    if (!onNavigateToSurah || isNavigating) return;
+    setIsNavigating(true);
+    
+    try {
+      const newChapter = await getChapter(surahId, baseLang);
+      onNavigateToSurah(newChapter);
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      toast.error(t('quran.errorLoadingChapter'));
+    } finally {
+      setIsNavigating(false);
+    }
+  };
+
+  const handleSwipe = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 100;
+    const velocityThreshold = 500;
+    
+    // Only trigger on significant horizontal swipes
+    if (Math.abs(info.offset.y) > Math.abs(info.offset.x) * 0.5) return;
+    
+    if ((info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) && canGoPrevious) {
+      // Swipe right → previous surah
+      handleNavigateToSurah(chapter.id - 1);
+    } else if ((info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) && canGoNext) {
+      // Swipe left → next surah
+      handleNavigateToSurah(chapter.id + 1);
+    }
+  };
+
   const revelationLabel = chapter.revelationPlace === 'makkah' ? t('quran.meccan') : t('quran.medinan');
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      className="min-h-screen bg-background"
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.1}
+      onDragEnd={handleSwipe}
+    >
       {/* Header */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between p-4 max-w-3xl mx-auto">
@@ -318,6 +362,37 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
 
           </div>
         )}
+
+        {/* Surah Navigation Buttons */}
+        {onNavigateToSurah && (
+          <div className="flex items-center justify-between py-6 border-t mt-6">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!canGoPrevious || isNavigating}
+              onClick={() => handleNavigateToSurah(chapter.id - 1)}
+              className="flex items-center gap-2"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              {t('quran.previousSurah')}
+            </Button>
+            
+            <span className="text-sm text-muted-foreground">
+              {chapter.id} / 114
+            </span>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!canGoNext || isNavigating}
+              onClick={() => handleNavigateToSurah(chapter.id + 1)}
+              className="flex items-center gap-2"
+            >
+              {t('quran.nextSurah')}
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* About this Surah (Popup Sheet) */}
@@ -369,6 +444,6 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         onOpenChange={setTafsirOpen}
         verseKey={tafsirVerseKey}
       />
-    </div>
+    </motion.div>
   );
 }

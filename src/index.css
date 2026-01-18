@@ -93,10 +93,20 @@
   }
 
   html {
-    /* Prevent browser auto text inflation (mobile accessibility scaling)
-       Note: browsers can still allow user-zoom; this only disables automatic font inflation. */
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    /* Completely disable dynamic font scaling from accessibility settings */
+    -webkit-text-size-adjust: none !important;
+    -moz-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+    /* Prevent iOS text size adjustment */
+    -webkit-font-size-adjust: none;
+    /* Fixed font size base - prevents rem scaling */
+    font-size: 16px !important;
+  }
+
+  /* Override any system font scaling on all elements */
+  * {
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
   }
 
   body {

@@ -359,7 +359,11 @@ const Quran = () => {
         )}
 
         {activeTab === 'surahs' && selectedChapter && (
-          <SurahReader chapter={selectedChapter} onBack={handleBackFromReader} />
+          <SurahReader 
+            chapter={selectedChapter} 
+            onBack={handleBackFromReader} 
+            onNavigateToSurah={setSelectedChapter}
+          />
         )}
 
         {/* Hifdh Tab */}
