@@ -236,7 +236,7 @@ const Quran = () => {
                     nameArabic: '',
                     translatedName: '',
                     revelationPlace: 'makkah',
-                    versesCount: 0,
+                    versesCount: 286, // Use max to ensure API fetches all verses
                     pages: []
                   };
                   setSelectedChapter(chapterData);
