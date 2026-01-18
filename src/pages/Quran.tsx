@@ -55,7 +55,7 @@ const Quran = () => {
     if (!surahParam) return;
 
     const surahId = Number(surahParam);
-    if (!Number.isFinite(surahId) || surahId <= 0) return;
+    if (!Number.isFinite(surahId) || surahId <= 0 || surahId > 114) return;
 
     const verseParam = searchParams.get('verse');
     if (verseParam) {
@@ -65,13 +65,15 @@ const Quran = () => {
       }
     }
 
+    // Create chapter with a high versesCount to ensure verses are fetched
+    // The actual verse count will be returned by the API
     const chapterData: AppChapter = {
       id: surahId,
       nameSimple: `Surah ${surahId}`,
       nameArabic: '',
       translatedName: '',
       revelationPlace: 'makkah',
-      versesCount: 0,
+      versesCount: 286, // Use max possible (Al-Baqarah) to ensure API fetches all
       pages: [],
     };
 

@@ -4,17 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Arabic Font */
+/* Arabic Font - Nabi */
 @font-face {
-  font-family: 'Deco Type';
-  src: url('/fonts/Deco_Type.ttf') format('truetype');
+  font-family: 'Nabi';
+  src: url('/fonts/Nabi.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 .font-arabic {
-  font-family: 'Deco Type', 'Traditional Arabic', 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
+  font-family: 'Nabi', 'Traditional Arabic', 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
 }
 
 @layer base {
