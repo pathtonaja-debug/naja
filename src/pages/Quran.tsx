@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
-import { AppChapter } from '@/services/quranApi';
+import { AppChapter, getChapter } from '@/services/quranApi';
 import { getLastReadPosition, getBookmarks, Bookmark, LastReadPosition } from '@/services/quranReadingState';
 import { SurahList } from '@/components/quran/SurahList';
 import { SurahReader } from '@/components/quran/SurahReader';
@@ -65,20 +65,29 @@ const Quran = () => {
       }
     }
 
-    // Create chapter with a high versesCount to ensure verses are fetched
-    // The actual verse count will be returned by the API
-    const chapterData: AppChapter = {
-      id: surahId,
-      nameSimple: `Surah ${surahId}`,
-      nameArabic: '',
-      translatedName: '',
-      revelationPlace: 'makkah',
-      versesCount: 286, // Use max possible (Al-Baqarah) to ensure API fetches all
-      pages: [],
+    // Fetch real chapter data from API
+    const baseLang = (localStorage.getItem('naja_language') || 'en').split('-')[0];
+    const fetchChapter = async () => {
+      try {
+        const realChapter = await getChapter(surahId, baseLang);
+        setSelectedChapter(realChapter);
+        setActiveTab('surahs');
+      } catch {
+        // Fallback to minimal data if API fails
+        const fallback: AppChapter = {
+          id: surahId,
+          nameSimple: `Surah ${surahId}`,
+          nameArabic: '',
+          translatedName: '',
+          revelationPlace: 'makkah',
+          versesCount: 300,
+          pages: [],
+        };
+        setSelectedChapter(fallback);
+        setActiveTab('surahs');
+      }
     };
-
-    setSelectedChapter(chapterData);
-    setActiveTab('surahs');
+    fetchChapter();
   }, [searchParams]);
 
   useEffect(() => {
@@ -228,21 +237,30 @@ const Quran = () => {
             {lastRead && (
               <Card 
                 className="p-4 cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
-                onClick={() => {
-                  // Navigate to the surah reader with the chapter and scroll target
-                  const chapterData: AppChapter = { 
-                    id: lastRead.chapterId, 
-                    nameSimple: lastRead.chapterName || `Surah ${lastRead.chapterId}`,
-                    nameArabic: '',
-                    translatedName: '',
-                    revelationPlace: 'makkah',
-                    versesCount: 286, // Use max to ensure API fetches all verses
-                    pages: []
-                  };
-                  setSelectedChapter(chapterData);
+                onClick={async () => {
                   // Store scroll target in sessionStorage for SurahReader to pick up
                   sessionStorage.setItem('naja_scroll_to_verse', lastRead.verseKey);
-                  setActiveTab('surahs');
+                  
+                  // Fetch real chapter data from API
+                  const baseLang = (localStorage.getItem('naja_language') || 'en').split('-')[0];
+                  try {
+                    const realChapter = await getChapter(lastRead.chapterId, baseLang);
+                    setSelectedChapter(realChapter);
+                    setActiveTab('surahs');
+                  } catch {
+                    // Fallback to minimal data if API fails
+                    const fallback: AppChapter = { 
+                      id: lastRead.chapterId, 
+                      nameSimple: lastRead.chapterName || `Surah ${lastRead.chapterId}`,
+                      nameArabic: '',
+                      translatedName: '',
+                      revelationPlace: 'makkah',
+                      versesCount: 300,
+                      pages: []
+                    };
+                    setSelectedChapter(fallback);
+                    setActiveTab('surahs');
+                  }
                 }}
               >
                 <p className="text-xs text-muted-foreground mb-1">{t('quran.continueReading')}</p>
