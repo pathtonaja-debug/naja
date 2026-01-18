@@ -90,15 +90,11 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
   const [verses, setVerses] = useState<AppVerse[]>([]);
   const [chapterInfo, setChapterInfo] = useState<ChapterInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [aboutOpen, setAboutOpen] = useState(false);
   const [wordByWordEnabled, setWordByWordEnabled] = useState(false);
   const [frenchWbwReady, setFrenchWbwReady] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [tafsirVerseKey, setTafsirVerseKey] = useState<string | null>(null);
   const [tafsirOpen, setTafsirOpen] = useState(false);
@@ -114,17 +110,14 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     }
   }, [baseLang]);
 
-  const loadVerses = useCallback(async (page: number, append: boolean = false) => {
+  const loadVerses = useCallback(async () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-
-    if (!append) setLoading(true);
-    else setLoadingMore(true);
-
+    setLoading(true);
     setError(null);
 
     // Only use cached data for English to avoid serving stale word-by-word translations
-    if (page === 1 && !append && baseLang === 'en') {
+    if (baseLang === 'en') {
       const cached = getCachedVerses(chapter.id, translationId);
       if (cached && cached.length > 0) {
         setVerses(cached);
@@ -134,10 +127,10 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     }
 
     try {
+      // Load all verses at once - use chapter's verse count
       const result = await getVersesByChapter(chapter.id, {
         translationId,
-        page,
-        perPage: 50,
+        perPage: chapter.versesCount || 300,
         language: baseLang,
       });
 
@@ -146,32 +139,21 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         buildChapterWordIndex(chapter.id, result.verses);
       }
 
-      if (append) setVerses(prev => [...prev, ...result.verses]);
-      else {
-        setVerses(result.verses);
-        if (page === 1) setCachedVerses(chapter.id, translationId, result.verses);
-      }
-
-      setTotalPages(result.totalPages);
-      setCurrentPage(result.currentPage);
+      setVerses(result.verses);
+      setCachedVerses(chapter.id, translationId, result.verses);
     } catch {
-      if (page === 1) {
-        const stale = getStaleVerses(chapter.id, translationId);
-        if (stale && stale.length > 0) {
-          setVerses(stale);
-          toast('Content temporarily unavailable. Showing cached version.');
-        } else {
-          setError('Unable to load verses. Please check your connection and try again.');
-        }
+      const stale = getStaleVerses(chapter.id, translationId);
+      if (stale && stale.length > 0) {
+        setVerses(stale);
+        toast('Content temporarily unavailable. Showing cached version.');
       } else {
-        toast('Unable to load more verses. Please try again.');
+        setError('Unable to load verses. Please check your connection and try again.');
       }
     } finally {
       setLoading(false);
-      setLoadingMore(false);
       loadingRef.current = false;
     }
-  }, [chapter.id, translationId, baseLang]);
+  }, [chapter.id, chapter.versesCount, translationId, baseLang]);
 
   const loadChapterInfo = useCallback(async () => {
     const cached = getCachedChapterInfo(chapter.id);
@@ -191,7 +173,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
   }, [chapter.id, baseLang]);
 
   useEffect(() => {
-    loadVerses(1);
+    loadVerses();
     loadChapterInfo();
   }, [loadVerses, loadChapterInfo]);
 
@@ -202,20 +184,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
     const scrollTarget = sessionStorage.getItem('naja_scroll_to_verse');
     if (!scrollTarget) return;
     
-    // Parse target verse number from verseKey (e.g., "2:152" -> 152)
-    const [, verseNumStr] = scrollTarget.split(':');
-    const targetVerseNum = parseInt(verseNumStr, 10);
-    
-    // Check if target verse is loaded
-    const targetVerseLoaded = verses.some(v => v.verseNumber === targetVerseNum);
-    
-    if (!targetVerseLoaded && currentPage < totalPages && !loadingMore) {
-      // Need to load more pages to reach target verse
-      loadVerses(currentPage + 1, true);
-      return; // Will re-run when more verses load
-    }
-    
-    // Target verse should be loaded now (or we've loaded all pages)
+    // All verses are now loaded, clear storage and scroll
     sessionStorage.removeItem('naja_scroll_to_verse');
     
     // Wait for DOM to render
@@ -230,11 +199,8 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         }, 2000);
       }
     }, 300);
-  }, [verses, currentPage, totalPages, loadingMore, loadVerses]);
+  }, [verses]);
 
-  const handleLoadMore = () => {
-    if (currentPage < totalPages && !loadingMore) loadVerses(currentPage + 1, true);
-  };
 
   const handleTafsirRequest = (verseKey: string) => {
     setTafsirVerseKey(verseKey);
@@ -330,7 +296,7 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
         {error && (
           <Card className="p-8 text-center">
             <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => loadVerses(1)}>Try Again</Button>
+            <Button onClick={() => loadVerses()}>Try Again</Button>
           </Card>
         )}
 
@@ -350,23 +316,6 @@ export function SurahReader({ chapter, onBack }: SurahReaderProps) {
               />
             ))}
 
-            {currentPage < totalPages && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-              >
-                {loadingMore ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  `Load more (${currentPage}/${totalPages})`
-                )}
-              </Button>
-            )}
           </div>
         )}
       </div>
