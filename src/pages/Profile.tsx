@@ -8,14 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Moon, Sun, Trash2, Trophy, TrendingUp, 
-  Star, Flame, Users, Globe, LogOut
+  Star, Flame, Users, Globe, LogOut, Mail
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useGuestProfile, SPIRITUAL_LEVELS } from "@/hooks/useGuestProfile";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
@@ -26,10 +27,20 @@ const Profile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { profile, updateDisplayName, resetData } = useGuestProfile();
+  const { user: authUser } = useAuthUser();
   
-  const [name, setName] = useState(profile.displayName);
+  // Use auth display name if available, fall back to local profile
+  const displayName = authUser?.displayName || profile.displayName;
+  const [name, setName] = useState(displayName);
   const [saving, setSaving] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+
+  // Update name field when auth user loads
+  useEffect(() => {
+    if (authUser?.displayName) {
+      setName(authUser.displayName);
+    }
+  }, [authUser?.displayName]);
 
   const handleSave = () => {
     setSaving(true);
@@ -84,11 +95,11 @@ const Profile = () => {
           <div className="flex items-center gap-3">
             <Avatar className="w-16 h-16">
               <AvatarFallback className="bg-pastel-lavender text-foreground text-xl font-bold">
-                {profile.displayName.charAt(0).toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-lg font-bold text-foreground">{profile.displayName}</h2>
+              <h2 className="text-lg font-bold text-foreground">{displayName}</h2>
               <p className="text-sm text-foreground/60">{levelTitle}</p>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-xs text-foreground/50 flex items-center gap-1">
@@ -98,6 +109,12 @@ const Profile = () => {
                   <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} {t('profile.days')}
                 </span>
               </div>
+              {authUser?.email && (
+                <div className="flex items-center gap-1 mt-1">
+                  <Mail className="w-3 h-3 text-foreground/40" />
+                  <span className="text-xs text-foreground/40">{authUser.email}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -288,9 +305,15 @@ const Profile = () => {
           className="p-4 rounded-2xl bg-pastel-blue/20 border border-pastel-blue/30"
         >
           <p className="text-xs text-foreground/60 text-center">
-            🔒 {t('profile.anonymous')} 
-            <br />
-            {t('profile.deviceId')}: <span className="font-mono text-[10px]">{profile.id.slice(0, 8)}...</span>
+            🔒 {t('profile.dataSecure')}
+            {authUser?.provider && (
+              <>
+                <br />
+                <span className="text-[10px]">
+                  {authUser.provider === 'google' ? 'Connected with Google' : 'Signed in with email'}
+                </span>
+              </>
+            )}
           </p>
         </motion.div>
       </main>
