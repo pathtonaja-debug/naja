@@ -31,18 +31,18 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     
-    /* Primary - Deep Green */
-    --primary: var(--color-primary);
-    --primary-foreground: var(--text-inverted);
-    --primary-soft: var(--color-primary-soft);
+    /* Primary - Stone/Sand */
+    --primary: var(--color-pink);
+    --primary-foreground: var(--text-primary);
+    --primary-soft: var(--color-pink-soft);
     
-    /* Secondary - Stone/Sand */
-    --secondary: var(--color-pink);
+    /* Secondary - Lavender */
+    --secondary: var(--color-lavender);
     --secondary-foreground: var(--text-primary);
     
-    /* Accent - Amber/Orange */
-    --accent: var(--color-accent);
-    --accent-foreground: var(--text-inverted);
+    /* Accent - Blue */
+    --accent: var(--color-blue);
+    --accent-foreground: var(--text-primary);
     
     /* Success - Green */
     --success: var(--color-green);
@@ -63,14 +63,14 @@
     /* Borders */
     --border: var(--border-light);
     --input: var(--border-medium);
-    --ring: var(--color-primary);
+    --ring: var(--color-pink);
     
     /* Radius */
     --radius: var(--radius-md);
     
     /* Charts */
-    --chart-1: var(--color-primary);
-    --chart-2: var(--color-accent);
+    --chart-1: var(--color-pink);
+    --chart-2: var(--color-lavender);
     --chart-3: var(--color-green);
     --chart-4: var(--color-blue);
     --chart-5: var(--color-yellow);
@@ -84,8 +84,6 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     --border: var(--border-light);
-    --primary-foreground: var(--text-inverted);
-    --accent-foreground: var(--text-inverted);
   }
 }
 
@@ -95,13 +93,17 @@
   }
 
   html {
+    /* Completely disable dynamic font scaling from accessibility settings */
     -webkit-text-size-adjust: none !important;
     -moz-text-size-adjust: none !important;
     text-size-adjust: none !important;
+    /* Prevent iOS text size adjustment */
     -webkit-font-size-adjust: none;
+    /* Fixed font size base - prevents rem scaling */
     font-size: 16px !important;
   }
 
+  /* Override any system font scaling on all elements */
   * {
     -webkit-text-size-adjust: none !important;
     text-size-adjust: none !important;
@@ -153,15 +155,15 @@
   .text-pastel-blue { color: hsl(var(--color-blue-dark)); }
   .text-pastel-yellow { color: hsl(var(--color-yellow-dark)); }
   
-  /* Premium Card Styles */
+  /* Card Styles */
   .ios-card {
-    @apply rounded-2xl bg-card;
-    box-shadow: var(--shadow-card);
+    @apply rounded-xl bg-card;
+    box-shadow: var(--shadow-sm);
   }
   
   .ios-card-elevated {
-    @apply rounded-2xl bg-card;
-    box-shadow: var(--shadow-elevated);
+    @apply rounded-xl bg-card;
+    box-shadow: var(--shadow-md);
   }
   
   .ios-card-interactive {
@@ -173,39 +175,14 @@
     transform: scale(0.98);
   }
   
-  /* Premium Glass Card */
   .glass-card {
-    @apply rounded-2xl;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    @apply backdrop-blur-xl rounded-xl;
+    background: hsl(var(--surface-elevated) / 0.9);
+    border: 1px solid hsl(var(--border-light) / 0.5);
     box-shadow: var(--shadow-md);
   }
   
-  .glass-card-dark {
-    @apply rounded-2xl;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--shadow-lg);
-  }
-  
-  /* Premium Hero Card */
-  .hero-card-green {
-    @apply rounded-3xl overflow-hidden relative;
-    background: linear-gradient(145deg, hsl(152 35% 27%) 0%, hsl(152 35% 18%) 100%);
-    box-shadow: var(--shadow-premium);
-  }
-  
-  .hero-card-orange {
-    @apply rounded-3xl overflow-hidden relative;
-    background: linear-gradient(145deg, hsl(28 72% 63%) 0%, hsl(28 72% 50%) 100%);
-    box-shadow: var(--shadow-premium);
-  }
-  
-  /* Premium Button Styles */
+  /* Button Styles */
   .ios-button {
     @apply rounded-xl font-semibold transition-all;
     transition-duration: var(--duration-fast);
@@ -217,55 +194,15 @@
   }
   
   .ios-button-primary {
-    @apply ios-button px-5 py-3;
+    @apply ios-button px-4 py-2.5;
     background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    box-shadow: 0 4px 14px hsl(var(--primary) / 0.3);
-  }
-  
-  .ios-button-primary:hover {
-    box-shadow: 0 6px 20px hsl(var(--primary) / 0.4);
+    color: hsl(var(--foreground));
   }
   
   .ios-button-secondary {
-    @apply ios-button px-5 py-3;
+    @apply ios-button px-4 py-2.5;
     background: hsl(var(--primary-soft));
-    color: hsl(var(--primary));
-  }
-  
-  .ios-button-dark {
-    @apply ios-button px-5 py-3;
-    background: hsl(0 0% 10%);
-    color: hsl(0 0% 100%);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  }
-  
-  .ios-button-accent {
-    @apply ios-button px-5 py-3;
-    background: hsl(var(--accent));
-    color: hsl(var(--accent-foreground));
-    box-shadow: 0 4px 14px hsl(var(--accent) / 0.3);
-  }
-  
-  /* Gradient Progress Bar */
-  .progress-gradient {
-    @apply h-2 rounded-full overflow-hidden;
-    background: hsl(var(--muted));
-  }
-  
-  .progress-gradient-fill {
-    @apply h-full rounded-full;
-    background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
-  }
-  
-  .progress-gradient-green {
-    @apply h-full rounded-full;
-    background: linear-gradient(90deg, hsl(152 35% 35%) 0%, hsl(152 35% 50%) 100%);
-  }
-  
-  .progress-gradient-orange {
-    @apply h-full rounded-full;
-    background: linear-gradient(90deg, hsl(28 72% 55%) 0%, hsl(36 91% 55%) 100%);
+    color: hsl(var(--foreground));
   }
   
   /* Spacing */
