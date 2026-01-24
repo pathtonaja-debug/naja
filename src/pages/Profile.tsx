@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import cardBgGreen from '@/assets/card-bg-green.jpg';
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -29,13 +30,11 @@ const Profile = () => {
   const { profile, updateDisplayName, resetData } = useGuestProfile();
   const { user: authUser } = useAuthUser();
   
-  // Use auth display name if available, fall back to local profile
   const displayName = authUser?.displayName || profile.displayName;
   const [name, setName] = useState(displayName);
   const [saving, setSaving] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
 
-  // Update name field when auth user loads
   useEffect(() => {
     if (authUser?.displayName) {
       setName(authUser.displayName);
@@ -80,44 +79,69 @@ const Profile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-pastel-cream pb-24"
+      className="min-h-screen bg-background pb-28"
     >
       <TopBar title={t('profile.title')} />
 
-      {/* User Card */}
+      {/* Hero User Card with Background Image */}
       <motion.div 
         className="px-4 pb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="p-4 bg-white border-border/30">
-          <div className="flex items-center gap-3">
-            <Avatar className="w-16 h-16">
-              <AvatarFallback className="bg-pastel-lavender text-foreground text-xl font-bold">
-                {displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <h2 className="text-lg font-bold text-foreground">{displayName}</h2>
-              <p className="text-sm text-foreground/60">{levelTitle}</p>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-xs text-foreground/50 flex items-center gap-1">
-                  <Star className="w-3 h-3 text-pastel-yellow" /> {t('dashboard.level')} {profile.level}
-                </span>
-                <span className="text-xs text-foreground/50 flex items-center gap-1">
-                  <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} {t('profile.days')}
-                </span>
+        <div 
+          className="relative overflow-hidden rounded-3xl"
+          style={{ boxShadow: '0 20px 60px -15px rgba(45, 90, 71, 0.35)' }}
+        >
+          <img 
+            src={cardBgGreen} 
+            alt="" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-black/60" />
+          
+          <div className="relative z-10 p-5">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16 ring-2 ring-white/30">
+                <AvatarFallback className="bg-white/20 text-white text-xl font-bold backdrop-blur-sm">
+                  {displayName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white">{displayName}</h2>
+                <p className="text-sm text-white/70">{levelTitle}</p>
+                {authUser?.email && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <Mail className="w-3 h-3 text-white/50" />
+                    <span className="text-xs text-white/50">{authUser.email}</span>
+                  </div>
+                )}
               </div>
-              {authUser?.email && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Mail className="w-3 h-3 text-foreground/40" />
-                  <span className="text-xs text-foreground/40">{authUser.email}</span>
+            </div>
+            
+            <div className="flex items-center gap-6 mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <Star className="w-4 h-4 text-white" />
                 </div>
-              )}
+                <div>
+                  <p className="text-white font-bold">{t('dashboard.level')} {profile.level}</p>
+                  <p className="text-white/60 text-xs">{profile.barakahPoints} pts</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <Flame className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-bold">{profile.hasanatStreak}</p>
+                  <p className="text-white/60 text-xs">{t('profile.days')}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
       </motion.div>
 
       {/* Stats Overview */}
@@ -129,30 +153,30 @@ const Profile = () => {
       >
         <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.progress')}</h2>
         <div className="grid grid-cols-2 gap-3">
-          <Card className="p-4 bg-white border-border/30">
+          <Card className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-pastel-lavender/50 flex items-center justify-center">
-                <Star className="w-4 h-4 text-pastel-lavender" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Star className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-xs text-foreground/60">{t('profile.totalPoints')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.totalPoints')}</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{profile.barakahPoints}</p>
-            <p className="text-[10px] text-foreground/40">{t('dashboard.barakahPoints')}</p>
+            <p className="text-[10px] text-muted-foreground">{t('dashboard.barakahPoints')}</p>
           </Card>
           
-          <Card className="p-4 bg-white border-border/30">
+          <Card className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Flame className="w-4 h-4 text-orange-500" />
+              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Flame className="w-4 h-4 text-accent" />
               </div>
-              <span className="text-xs text-foreground/60">{t('profile.bestStreak')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.bestStreak')}</span>
             </div>
             <p className="text-2xl font-bold text-foreground">{profile.hasanatStreak}</p>
-            <p className="text-[10px] text-foreground/40">{t('profile.days')}</p>
+            <p className="text-[10px] text-muted-foreground">{t('profile.days')}</p>
           </Card>
         </div>
         
-        <p className="text-[10px] text-foreground/40 mt-2 text-center italic px-4">
+        <p className="text-[10px] text-muted-foreground mt-2 text-center italic px-4">
           {t('dashboard.niyyahDisclaimer')}
         </p>
       </motion.div>
@@ -164,23 +188,23 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Card className="bg-white border-border/30">
+        <Card>
           <ListCell
             title={t('profile.achievements')}
             subtitle={t('learn.badgesEarned')}
-            leftElement={<Trophy className="w-4 h-4 text-pastel-yellow" />}
+            leftElement={<Trophy className="w-4 h-4 text-warn" />}
             onPress={() => navigate('/achievements')}
           />
           <ListCell
             title={t('profile.progress')}
             subtitle={t('learn.viewAll')}
-            leftElement={<TrendingUp className="w-4 h-4 text-pastel-green" />}
+            leftElement={<TrendingUp className="w-4 h-4 text-success" />}
             onPress={() => navigate('/progress')}
           />
           <ListCell
             title={t('profile.leaderboard')}
             subtitle={t('profile.achievements')}
-            leftElement={<Users className="w-4 h-4 text-pastel-blue" />}
+            leftElement={<Users className="w-4 h-4 text-accent" />}
             onPress={() => navigate('/leaderboard')}
           />
         </Card>
@@ -194,22 +218,22 @@ const Profile = () => {
           transition={{ delay: 0.25 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.displayName')}</h2>
-          <Card className="p-3 space-y-3 bg-white border-border/30">
+          <Card className="p-3 space-y-3">
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-xs text-foreground/60">{t('profile.displayName')}</Label>
+              <Label htmlFor="name" className="text-xs text-muted-foreground">{t('profile.displayName')}</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('profile.displayName')}
-                className="h-10 text-sm bg-pastel-cream/50 border-border/30"
+                className="h-10 text-sm"
               />
             </div>
-            <Button onClick={handleSave} className="w-full h-10 text-sm" disabled={saving}>
+            <Button onClick={handleSave} variant="primary" className="w-full h-10 text-sm" disabled={saving}>
               {t('common.save')}
             </Button>
           </Card>
-          <p className="text-[10px] text-foreground/40 mt-1.5 px-1">
+          <p className="text-[10px] text-muted-foreground mt-1.5 px-1">
             {t('profile.anonymous')}
           </p>
         </motion.div>
@@ -221,10 +245,10 @@ const Profile = () => {
           transition={{ delay: 0.28 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.language')}</h2>
-          <Card className="bg-white border-border/30">
+          <Card>
             <div className="p-3 flex gap-2">
               <Button
-                variant={currentLang === 'en' ? 'default' : 'outline'}
+                variant={currentLang === 'en' ? 'primary' : 'outline'}
                 size="sm"
                 className="flex-1"
                 onClick={() => handleLanguageChange('en')}
@@ -233,7 +257,7 @@ const Profile = () => {
                 {t('profile.english')}
               </Button>
               <Button
-                variant={currentLang === 'fr' ? 'default' : 'outline'}
+                variant={currentLang === 'fr' ? 'primary' : 'outline'}
                 size="sm"
                 className="flex-1"
                 onClick={() => handleLanguageChange('fr')}
@@ -252,7 +276,7 @@ const Profile = () => {
           transition={{ delay: 0.3 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.preferences')}</h2>
-          <Card className="bg-white border-border/30">
+          <Card>
             <ListCell
               title={t('profile.darkMode')}
               subtitle={t('profile.preferences')}
@@ -270,7 +294,7 @@ const Profile = () => {
           transition={{ delay: 0.35 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.dataManagement')}</h2>
-          <Card className="bg-white border-border/30">
+          <Card>
             <ListCell
               title={t('profile.resetData')}
               subtitle={t('profile.resetConfirm').slice(0, 40) + '...'}
@@ -287,11 +311,11 @@ const Profile = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="bg-white border-border/30">
+          <Card>
             <ListCell
               title={t('auth.logout')}
               subtitle={t('auth.logoutConfirm').slice(0, 40) + '...'}
-              leftElement={<LogOut className="w-4 h-4 text-foreground/60" />}
+              leftElement={<LogOut className="w-4 h-4 text-muted-foreground" />}
               onPress={handleLogout}
             />
           </Card>
@@ -302,9 +326,9 @@ const Profile = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
-          className="p-4 rounded-2xl bg-pastel-blue/20 border border-pastel-blue/30"
+          className="glass-card p-4"
         >
-          <p className="text-xs text-foreground/60 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             🔒 {t('profile.dataSecure')}
             {authUser?.provider && (
               <>
