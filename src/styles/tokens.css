@@ -1,143 +1,77 @@
 /* ============================================ */
-/* SOPHISTICATED EARTH-TONE DESIGN SYSTEM */
-/* Brown/Mocha + Sage Green + Warm Beige */
+/* PASTEL HABIT TRACKER DESIGN SYSTEM */
+/* Exact Colors: #FFFDF7, #F5BCDD, #DFD9F9, #B6C682, #B9CBEC, #F5D96E */
 /* ============================================ */
 
 :root {
   /* ============================================ */
-  /* NEUTRAL FOUNDATION */
+  /* EXACT COLOR PALETTE (HSL conversions) */
   /* ============================================ */
   
-  /* Background #F5F5F5 */
-  --color-base: 0 0% 96%;
+  /* Background #FFFDF7 */
+  --color-base: 45 100% 99%;
   
-  /* Card/Surface #FFFFFF */
+  /* Stone/Sand #d6ccc2 */
+  --color-pink: 30 22% 80%;
+  --color-pink-soft: 30 22% 92%;
+  --color-pink-dark: 30 22% 45%;
+  
+  /* Lavender #DFD9F9 */
+  --color-lavender: 250 64% 92%;
+  --color-lavender-soft: 250 64% 96%;
+  --color-lavender-dark: 250 40% 60%;
+  
+  /* Green #B6C682 */
+  --color-green: 78 33% 64%;
+  --color-green-soft: 78 33% 85%;
+  --color-green-dark: 78 33% 45%;
+  
+  /* Blue #B9CBEC */
+  --color-blue: 215 56% 83%;
+  --color-blue-soft: 215 56% 92%;
+  --color-blue-dark: 215 45% 55%;
+  
+  /* Yellow #F5D96E */
+  --color-yellow: 46 86% 69%;
+  --color-yellow-soft: 46 86% 88%;
+  --color-yellow-dark: 46 70% 50%;
+  
+  /* Text Colors */
+  --text-primary: 0 0% 13%;
+  --text-secondary: 0 0% 45%;
+  --text-tertiary: 0 0% 60%;
+  --text-inverted: 0 0% 100%;
+  
+  /* Surface Hierarchy */
+  --surface-base: var(--color-base);
   --surface-card: 0 0% 100%;
   --surface-elevated: 0 0% 100%;
   
-  /* ============================================ */
-  /* BROWN/MOCHA FAMILY (Primary) */
-  /* ============================================ */
-  
-  /* Brown Light #D4A574 */
-  --color-brown-light: 28 52% 64%;
-  /* Brown Mid #B8835A */
-  --color-brown-mid: 24 40% 54%;
-  /* Brown Deep #9D6B47 */
-  --color-brown-deep: 21 38% 45%;
-  /* Brown Accent #8B5A3C */
-  --color-brown-accent: 20 40% 39%;
-  
-  /* Primary alias (uses brown) */
-  --color-pink: var(--color-brown-mid);
-  --color-pink-soft: var(--color-brown-light);
-  --color-pink-dark: var(--color-brown-deep);
+  /* Borders */
+  --border-light: 0 0% 92%;
+  --border-medium: 0 0% 88%;
   
   /* ============================================ */
-  /* SAGE GREEN FAMILY (Secondary) */
+  /* SHADOWS */
   /* ============================================ */
-  
-  /* Sage Light #A8C5A4 */
-  --color-sage-light: 115 24% 71%;
-  /* Sage Mid #7FA87B */
-  --color-sage-mid: 115 21% 57%;
-  /* Sage Dark #5D8359 */
-  --color-sage-dark: 115 20% 43%;
-  /* Sage Deep #4A6B47 */
-  --color-sage-deep: 118 19% 35%;
-  
-  /* Secondary alias (uses sage/lavender slot) */
-  --color-lavender: var(--color-sage-mid);
-  --color-lavender-soft: var(--color-sage-light);
-  --color-lavender-dark: var(--color-sage-dark);
-  
-  /* Success uses sage green */
-  --color-green: var(--color-sage-mid);
-  --color-green-soft: var(--color-sage-light);
-  --color-green-dark: var(--color-sage-deep);
-  
-  /* ============================================ */
-  /* WARM BEIGE/TAN FAMILY (Backgrounds) */
-  /* ============================================ */
-  
-  /* Tan Light #E8DDD1 */
-  --color-tan-light: 32 30% 86%;
-  /* Tan Mid #D4C4B0 */
-  --color-tan-mid: 32 28% 76%;
-  /* Tan Dark #C0B09C */
-  --color-tan-dark: 32 22% 68%;
-  
-  /* Accent uses tan/warm tones */
-  --color-blue: var(--color-tan-mid);
-  --color-blue-soft: var(--color-tan-light);
-  --color-blue-dark: var(--color-tan-dark);
-  
-  /* Yellow/Warning - warm amber */
-  --color-yellow: 35 70% 55%;
-  --color-yellow-soft: 35 50% 80%;
-  --color-yellow-dark: 30 60% 40%;
-  
-  /* ============================================ */
-  /* TEXT COLORS */
-  /* ============================================ */
-  
-  /* Text Primary #1A1A1A */
-  --text-primary: 0 0% 10%;
-  /* Text Secondary #666666 */
-  --text-secondary: 0 0% 40%;
-  /* Text Tertiary #999999 */
-  --text-tertiary: 0 0% 60%;
-  /* Text Inverted #FFFFFF */
-  --text-inverted: 0 0% 100%;
-  
-  /* ============================================ */
-  /* SURFACE HIERARCHY */
-  /* ============================================ */
-  
-  --surface-base: var(--color-base);
-  
-  /* ============================================ */
-  /* BORDERS */
-  /* ============================================ */
-  
-  --border-light: 32 15% 90%;
-  --border-medium: 32 15% 85%;
-  
-  /* ============================================ */
-  /* SHADOWS (Earth-toned) */
-  /* ============================================ */
-  
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-brown: 0 8px 24px rgba(157, 107, 71, 0.25);
-  --shadow-sage: 0 8px 24px rgba(93, 131, 89, 0.25);
-  
-  /* ============================================ */
-  /* GRADIENTS */
-  /* ============================================ */
-  
-  --gradient-brown: linear-gradient(135deg, hsl(28 52% 64%), hsl(24 40% 54%), hsl(21 38% 45%));
-  --gradient-sage: linear-gradient(135deg, hsl(115 21% 57%), hsl(115 20% 43%), hsl(118 19% 35%));
-  --gradient-sage-light: linear-gradient(135deg, hsl(115 24% 71%), hsl(115 21% 57%));
-  --gradient-warm: linear-gradient(135deg, hsl(32 30% 86%), hsl(32 28% 76%), hsl(32 22% 68%));
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
   
   /* ============================================ */
   /* GRID SYSTEM: 4 columns, 20px gutter, 16px margins */
   /* ============================================ */
-  
   --grid-columns: 4;
   --grid-gutter: 20px;
   --grid-margin: 16px;
   
   /* ============================================ */
-  /* RADII (Updated per guidelines) */
+  /* RADII */
   /* ============================================ */
-  
   --radius-xs: 8px;
-  --radius-sm: 10px;
-  --radius-md: 12px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
   --radius-lg: 20px;
   --radius-xl: 24px;
   --radius-2xl: 28px;
@@ -146,7 +80,6 @@
   /* ============================================ */
   /* MOTION */
   /* ============================================ */
-  
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-ios: cubic-bezier(0.42, 0, 0.58, 1);
@@ -154,23 +87,22 @@
   --duration-instant: 100ms;
   --duration-fast: 150ms;
   --duration-normal: 250ms;
-  --duration-slow: 300ms;
-  --duration-slower: 400ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
   
   /* ============================================ */
-  /* SPACING - 8px base unit */
+  /* SPACING - Compact */
   /* ============================================ */
-  
-  --space-1: 8px;
-  --space-2: 16px;
-  --space-3: 24px;
-  --space-4: 32px;
-  --space-5: 40px;
-  --space-6: 48px;
-  --space-8: 64px;
-  --space-10: 80px;
-  --space-12: 96px;
-  --space-16: 128px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
   
   /* Page Layout */
   --page-padding: 16px;
@@ -179,7 +111,6 @@
   /* ============================================ */
   /* TYPOGRAPHY */
   /* ============================================ */
-  
   --font-display: 28px;
   --font-title-1: 22px;
   --font-title-2: 18px;
@@ -197,49 +128,25 @@
 /* DARK MODE */
 /* ============================================ */
 .dark {
-  /* Surfaces */
   --surface-base: 0 0% 8%;
   --surface-card: 0 0% 12%;
   --surface-elevated: 0 0% 14%;
   
-  /* Text */
   --text-primary: 0 0% 95%;
   --text-secondary: 0 0% 70%;
   --text-tertiary: 0 0% 50%;
   
-  /* Borders */
   --border-light: 0 0% 18%;
   --border-medium: 0 0% 22%;
   
-  /* Brown Family (Adjusted for dark) */
-  --color-brown-light: 28 40% 50%;
-  --color-brown-mid: 24 35% 45%;
-  --color-brown-deep: 21 32% 38%;
-  --color-brown-accent: 20 35% 32%;
-  
-  --color-pink: var(--color-brown-mid);
-  --color-pink-soft: 24 25% 22%;
-  
-  /* Sage Family (Adjusted for dark) */
-  --color-sage-light: 115 18% 45%;
-  --color-sage-mid: 115 16% 38%;
-  --color-sage-dark: 115 14% 30%;
-  --color-sage-deep: 118 12% 25%;
-  
-  --color-lavender: var(--color-sage-mid);
-  --color-lavender-soft: 115 12% 22%;
-  
-  --color-green: var(--color-sage-mid);
-  --color-green-soft: 115 12% 22%;
-  
-  /* Tan Family (Adjusted for dark) */
-  --color-tan-light: 32 18% 35%;
-  --color-tan-mid: 32 15% 28%;
-  --color-tan-dark: 32 12% 22%;
-  
-  --color-blue: var(--color-tan-mid);
-  --color-blue-soft: 32 12% 22%;
-  
-  --color-yellow: 35 50% 45%;
-  --color-yellow-soft: 35 30% 25%;
+  --color-pink: 30 18% 55%;
+  --color-pink-soft: 30 18% 22%;
+  --color-lavender: 250 40% 50%;
+  --color-lavender-soft: 250 30% 25%;
+  --color-green: 78 30% 40%;
+  --color-green-soft: 78 25% 22%;
+  --color-blue: 215 40% 45%;
+  --color-blue-soft: 215 30% 25%;
+  --color-yellow: 46 60% 50%;
+  --color-yellow-soft: 46 40% 25%;
 }

@@ -31,55 +31,49 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     
-    /* Primary - Brown/Mocha */
-    --primary: var(--color-brown-mid);
-    --primary-foreground: var(--text-inverted);
-    --primary-soft: var(--color-brown-light);
-    --primary-deep: var(--color-brown-deep);
-    --primary-accent: var(--color-brown-accent);
+    /* Primary - Stone/Sand */
+    --primary: var(--color-pink);
+    --primary-foreground: var(--text-primary);
+    --primary-soft: var(--color-pink-soft);
     
-    /* Secondary - Sage Green */
-    --secondary: var(--color-sage-mid);
-    --secondary-foreground: var(--text-inverted);
-    --secondary-soft: var(--color-sage-light);
-    --secondary-deep: var(--color-sage-deep);
+    /* Secondary - Lavender */
+    --secondary: var(--color-lavender);
+    --secondary-foreground: var(--text-primary);
     
-    /* Accent - Warm Tan */
-    --accent: var(--color-tan-mid);
+    /* Accent - Blue */
+    --accent: var(--color-blue);
     --accent-foreground: var(--text-primary);
-    --accent-soft: var(--color-tan-light);
     
-    /* Success - Sage Green */
-    --success: var(--color-sage-mid);
-    --success-foreground: var(--text-inverted);
+    /* Success - Green */
+    --success: var(--color-green);
+    --success-foreground: var(--text-primary);
     
-    /* Warning - Warm Amber */
+    /* Warning - Yellow */
     --warn: var(--color-yellow);
     --warn-foreground: var(--text-primary);
     
     /* Muted */
-    --muted: var(--color-tan-light);
+    --muted: var(--border-light);
     --muted-foreground: var(--text-secondary);
     
     /* Destructive */
-    --destructive: var(--color-brown-deep);
+    --destructive: 0 72% 51%;
     --destructive-foreground: var(--text-inverted);
     
     /* Borders */
     --border: var(--border-light);
     --input: var(--border-medium);
-    --ring: var(--color-brown-accent);
+    --ring: var(--color-pink);
     
     /* Radius */
     --radius: var(--radius-md);
     
-    /* Charts - Earth tone palette */
-    --chart-1: var(--color-brown-deep);
-    --chart-2: var(--color-brown-mid);
-    --chart-3: var(--color-sage-mid);
-    --chart-4: var(--color-sage-dark);
-    --chart-5: var(--color-brown-light);
-    --chart-6: var(--color-sage-light);
+    /* Charts */
+    --chart-1: var(--color-pink);
+    --chart-2: var(--color-lavender);
+    --chart-3: var(--color-green);
+    --chart-4: var(--color-blue);
+    --chart-5: var(--color-yellow);
   }
 
   .dark {
@@ -90,11 +84,6 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     --border: var(--border-light);
-    
-    --primary: var(--color-brown-mid);
-    --primary-foreground: var(--text-inverted);
-    --secondary: var(--color-sage-mid);
-    --secondary-foreground: var(--text-inverted);
   }
 }
 
@@ -147,120 +136,47 @@
 }
 
 @layer utilities {
-  /* Earth Tone Background Colors - Brown Family */
-  .bg-brown-light { background: hsl(var(--color-brown-light)); }
-  .bg-brown-mid { background: hsl(var(--color-brown-mid)); }
-  .bg-brown-deep { background: hsl(var(--color-brown-deep)); }
-  .bg-brown-accent { background: hsl(var(--color-brown-accent)); }
-  
-  /* Earth Tone Background Colors - Sage Family */
-  .bg-sage-light { background: hsl(var(--color-sage-light)); }
-  .bg-sage-mid { background: hsl(var(--color-sage-mid)); }
-  .bg-sage-dark { background: hsl(var(--color-sage-dark)); }
-  .bg-sage-deep { background: hsl(var(--color-sage-deep)); }
-  
-  /* Earth Tone Background Colors - Tan Family */
-  .bg-tan-light { background: hsl(var(--color-tan-light)); }
-  .bg-tan-mid { background: hsl(var(--color-tan-mid)); }
-  .bg-tan-dark { background: hsl(var(--color-tan-dark)); }
-  
-  /* Legacy pastel aliases (for backward compatibility) */
-  .bg-pastel-pink { background: hsl(var(--color-brown-mid)); }
-  .bg-pastel-pink-soft { background: hsl(var(--color-brown-light)); }
-  .bg-pastel-lavender { background: hsl(var(--color-sage-mid)); }
-  .bg-pastel-lavender-soft { background: hsl(var(--color-sage-light)); }
-  .bg-pastel-green { background: hsl(var(--color-sage-mid)); }
-  .bg-pastel-green-soft { background: hsl(var(--color-sage-light)); }
-  .bg-pastel-blue { background: hsl(var(--color-tan-mid)); }
-  .bg-pastel-blue-soft { background: hsl(var(--color-tan-light)); }
+  /* Pastel Background Colors */
+  .bg-pastel-pink { background: hsl(var(--color-pink)); }
+  .bg-pastel-pink-soft { background: hsl(var(--color-pink-soft)); }
+  .bg-pastel-lavender { background: hsl(var(--color-lavender)); }
+  .bg-pastel-lavender-soft { background: hsl(var(--color-lavender-soft)); }
+  .bg-pastel-green { background: hsl(var(--color-green)); }
+  .bg-pastel-green-soft { background: hsl(var(--color-green-soft)); }
+  .bg-pastel-blue { background: hsl(var(--color-blue)); }
+  .bg-pastel-blue-soft { background: hsl(var(--color-blue-soft)); }
   .bg-pastel-yellow { background: hsl(var(--color-yellow)); }
   .bg-pastel-yellow-soft { background: hsl(var(--color-yellow-soft)); }
   
-  /* Earth Tone Text Colors */
-  .text-brown-light { color: hsl(var(--color-brown-light)); }
-  .text-brown-mid { color: hsl(var(--color-brown-mid)); }
-  .text-brown-deep { color: hsl(var(--color-brown-deep)); }
-  .text-brown-accent { color: hsl(var(--color-brown-accent)); }
-  .text-sage-mid { color: hsl(var(--color-sage-mid)); }
-  .text-sage-dark { color: hsl(var(--color-sage-dark)); }
-  .text-sage-deep { color: hsl(var(--color-sage-deep)); }
-  
-  /* Legacy text aliases */
-  .text-pastel-pink { color: hsl(var(--color-brown-deep)); }
-  .text-pastel-lavender { color: hsl(var(--color-sage-dark)); }
-  .text-pastel-green { color: hsl(var(--color-sage-deep)); }
-  .text-pastel-blue { color: hsl(var(--color-tan-dark)); }
+  /* Pastel Text Colors */
+  .text-pastel-pink { color: hsl(var(--color-pink-dark)); }
+  .text-pastel-lavender { color: hsl(var(--color-lavender-dark)); }
+  .text-pastel-green { color: hsl(var(--color-green-dark)); }
+  .text-pastel-blue { color: hsl(var(--color-blue-dark)); }
   .text-pastel-yellow { color: hsl(var(--color-yellow-dark)); }
-  
-  /* Gradient Utilities */
-  .bg-gradient-brown {
-    background: var(--gradient-brown);
-  }
-  
-  .bg-gradient-sage {
-    background: var(--gradient-sage);
-  }
-  
-  .bg-gradient-sage-light {
-    background: var(--gradient-sage-light);
-  }
-  
-  .bg-gradient-warm {
-    background: var(--gradient-warm);
-  }
-  
-  .text-gradient-brown {
-    background: var(--gradient-brown);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  /* Shadow Utilities */
-  .shadow-brown { box-shadow: var(--shadow-brown); }
-  .shadow-sage { box-shadow: var(--shadow-sage); }
   
   /* Card Styles */
   .ios-card {
-    @apply rounded-[20px] bg-card;
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-sm);
   }
   
   .ios-card-elevated {
-    @apply rounded-[20px] bg-card;
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-md);
   }
   
   .ios-card-interactive {
     @apply ios-card transition-all;
-    transition-duration: var(--duration-normal);
-    transition-timing-function: var(--ease-smooth);
-  }
-  
-  .ios-card-interactive:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
+    transition-duration: var(--duration-fast);
   }
   
   .ios-card-interactive:active {
     transform: scale(0.98);
   }
   
-  /* Premium gradient cards */
-  .card-gradient-brown {
-    background: var(--gradient-brown);
-    box-shadow: var(--shadow-brown);
-    color: hsl(var(--text-inverted));
-  }
-  
-  .card-gradient-sage {
-    background: var(--gradient-sage);
-    box-shadow: var(--shadow-sage);
-    color: hsl(var(--text-inverted));
-  }
-  
   .glass-card {
-    @apply backdrop-blur-xl rounded-[20px];
+    @apply backdrop-blur-xl rounded-xl;
     background: hsl(var(--surface-elevated) / 0.9);
     border: 1px solid hsl(var(--border-light) / 0.5);
     box-shadow: var(--shadow-md);
@@ -268,64 +184,25 @@
   
   /* Button Styles */
   .ios-button {
-    @apply rounded-[12px] font-semibold transition-all;
-    transition-duration: var(--duration-normal);
-    transition-timing-function: var(--ease-smooth);
-  }
-  
-  .ios-button:hover {
-    transform: translateY(-1px);
+    @apply rounded-xl font-semibold transition-all;
+    transition-duration: var(--duration-fast);
   }
   
   .ios-button:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
     opacity: 0.9;
   }
   
-  /* Primary CTA: Brown gradient with white text */
   .ios-button-primary {
     @apply ios-button px-4 py-2.5;
-    background: var(--gradient-brown);
-    color: hsl(var(--text-inverted));
-    box-shadow: var(--shadow-sm);
+    background: hsl(var(--primary));
+    color: hsl(var(--foreground));
   }
   
-  .ios-button-primary:hover {
-    box-shadow: var(--shadow-brown);
-  }
-  
-  /* Secondary: Sage with white text */
   .ios-button-secondary {
     @apply ios-button px-4 py-2.5;
-    background: hsl(var(--color-sage-mid));
-    color: hsl(var(--text-inverted));
-  }
-  
-  .ios-button-secondary:hover {
-    background: hsl(var(--color-sage-dark));
-  }
-  
-  /* Tertiary: White with dark border */
-  .ios-button-tertiary {
-    @apply ios-button px-4 py-2.5;
-    background: hsl(var(--surface-card));
-    color: hsl(var(--text-primary));
-    border: 1px solid hsl(var(--border-medium));
-  }
-  
-  .ios-button-tertiary:hover {
-    background: hsl(var(--color-tan-light));
-  }
-  
-  /* Black accent button */
-  .ios-button-black {
-    @apply ios-button px-4 py-2.5;
-    background: hsl(0 0% 0%);
-    color: hsl(var(--text-inverted));
-  }
-  
-  .ios-button-black:hover {
-    background: hsl(0 0% 20%);
+    background: hsl(var(--primary-soft));
+    color: hsl(var(--foreground));
   }
   
   /* Spacing */
@@ -348,12 +225,10 @@
   .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
   .animate-slide-up { animation: slide-up 0.3s ease-out; }
   .animate-scale-in { animation: scale-in 0.2s ease-out; }
-  .animate-gradient { animation: gradient-shift 3s ease-in-out infinite; }
   
   @media (prefers-reduced-motion: reduce) {
     .animate-spring, .animate-bounce-soft, .animate-pop, .animate-shake,
-    .animate-glow, .animate-float, .animate-pulse-soft, .animate-slide-up, 
-    .animate-scale-in, .animate-gradient {
+    .animate-glow, .animate-float, .animate-pulse-soft, .animate-slide-up, .animate-scale-in {
       animation: none;
       transition: opacity 0.2s ease;
     }
@@ -364,7 +239,7 @@
 @keyframes bounce-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 @keyframes pop { 0% { transform: scale(0.95); opacity: 0; } 50% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
-@keyframes glow { 0%, 100% { box-shadow: 0 0 12px hsl(var(--color-brown-mid) / 0.3); } 50% { box-shadow: 0 0 24px hsl(var(--color-brown-mid) / 0.5); } }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 12px hsl(var(--primary) / 0.3); } 50% { box-shadow: 0 0 24px hsl(var(--primary) / 0.5); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes slide-up { 0% { transform: translateY(16px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
@@ -374,4 +249,3 @@
 @keyframes progress-fill { 0% { width: 0%; } 100% { width: var(--progress-width, 100%); } }
 @keyframes ring-fill { 0% { stroke-dashoffset: 282.74; } 100% { stroke-dashoffset: var(--ring-offset, 0); } }
 @keyframes bar-grow { 0% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
-@keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
