@@ -43,17 +43,20 @@ const BottomNav = () => {
         )}
         aria-current={active ? "page" : undefined}
       >
-        {/* active bubble only */}
+        {/* active bubble */}
         {active && (
           <motion.div
             layoutId="nav-active-bubble"
-            className="absolute inset-0 rounded-full bg-primary/15"
+            className="absolute inset-0 rounded-full bg-white/15"
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
         )}
 
         <span className="relative z-10 flex items-center gap-1.5">
-          <Icon className={cn("h-5 w-5", active ? "text-primary" : "text-muted-foreground")} />
+          <Icon className={cn(
+            "h-5 w-5 transition-colors",
+            active ? "text-white" : "text-white/50"
+          )} />
           {/* Label only on active */}
           <AnimatePresence>
             {active && (
@@ -61,7 +64,7 @@ const BottomNav = () => {
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: "auto", opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                className="overflow-hidden whitespace-nowrap text-xs font-medium text-primary"
+                className="overflow-hidden whitespace-nowrap text-xs font-medium text-white"
               >
                 {t(item.labelKey)}
               </motion.span>
@@ -75,38 +78,29 @@ const BottomNav = () => {
   return (
     <>
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
-        <div className="relative flex items-end justify-center px-4 pb-[max(calc(env(safe-area-inset-bottom,_0px)_+_16px),_24px)]">
+        <div className="relative flex items-end justify-center px-4 pb-[max(calc(env(safe-area-inset-bottom,_0px)_+_12px),_20px)]">
           <div className="relative">
-            {/* Dock glow */}
-            <div
-              className="pointer-events-none absolute -inset-4 rounded-[40px] opacity-60"
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 100%, hsl(var(--primary) / 0.25) 0%, transparent 70%)",
-              }}
-            />
-
-            {/* Floating dock container */}
-            <div className="pointer-events-auto relative overflow-visible rounded-[28px] border border-white/10 bg-card/85 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
-              {/* Extra soft shine */}
+            {/* Floating dock container - DARK */}
+            <div className="pointer-events-auto relative overflow-visible rounded-[32px] bg-[hsl(0_0%_10%)] shadow-[0_16px_50px_-12px_rgba(0,0,0,0.5)]">
+              {/* Subtle top highlight */}
               <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-px"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-[32px]"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.18) 50%, transparent 95%)",
+                    "linear-gradient(90deg, transparent 10%, rgba(255,255,255,0.12) 50%, transparent 90%)",
                 }}
               />
 
-              <div className="flex items-center gap-1 px-2 py-2">
-                {/* Left pill */}
+              <div className="flex items-center gap-1 px-3 py-2.5">
+                {/* Left tabs */}
                 <div className="flex items-center gap-0.5">
                   {leftTabs.map((tab) => (
                     <NavButton key={tab.id} item={tab} />
                   ))}
                 </div>
 
-                {/* Center + button (wrap-around visual) */}
-                <div className="relative mx-1 flex items-center justify-center">
+                {/* Center + button */}
+                <div className="relative mx-2 flex items-center justify-center">
                   <motion.button
                     ref={plusBtnRef}
                     whileTap={{ scale: 0.92 }}
@@ -115,10 +109,9 @@ const BottomNav = () => {
                       "relative z-10",
                       "h-12 w-12 rounded-full",
                       "flex items-center justify-center",
-                      "bg-gradient-to-br from-primary to-primary/80",
-                      "text-primary-foreground",
-                      "shadow-[0_14px_30px_rgba(0,0,0,0.18)]",
-                      "ring-1 ring-white/30",
+                      "bg-gradient-to-br from-[hsl(152_35%_30%)] to-[hsl(152_35%_22%)]",
+                      "text-white",
+                      "shadow-[0_8px_24px_rgba(45,90,71,0.4)]",
                       "transition-transform hover:scale-[1.03]"
                     )}
                     aria-label="Open plus menu"
@@ -126,12 +119,9 @@ const BottomNav = () => {
                   >
                     <Plus className="h-6 w-6" />
                   </motion.button>
-
-                  {/* subtle halo around + */}
-                  <div className="pointer-events-none absolute inset-0 -m-1 rounded-full bg-primary/10 blur-md" />
                 </div>
 
-                {/* Right pill */}
+                {/* Right tabs */}
                 <div className="flex items-center gap-0.5">
                   {rightTabs.map((tab) => (
                     <NavButton key={tab.id} item={tab} />
@@ -143,7 +133,7 @@ const BottomNav = () => {
         </div>
       </nav>
 
-      {/* Floating + popover (glass + liquid) */}
+      {/* Floating + popover */}
       <PlusPopover
         open={plusOpen}
         onOpenChange={setPlusOpen}
