@@ -31,13 +31,12 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     
-    /* Primary - Pink */
-    --primary: var(--color-pink);
-    --primary-foreground: var(--text-primary);
-    --primary-soft: var(--color-pink-soft);
+    /* Primary - Black (Action) */
+    --primary: var(--color-action);
+    --primary-foreground: var(--text-inverted);
     
-    /* Secondary - Lavender */
-    --secondary: var(--color-lavender);
+    /* Secondary - Light gray */
+    --secondary: var(--color-hover);
     --secondary-foreground: var(--text-primary);
     
     /* Accent - Blue */
@@ -62,17 +61,17 @@
     
     /* Borders */
     --border: var(--border-light);
-    --input: var(--border-medium);
-    --ring: var(--color-pink);
+    --input: var(--border-light);
+    --ring: var(--color-action);
     
     /* Radius */
     --radius: var(--radius-md);
     
-    /* Charts */
-    --chart-1: var(--color-pink);
+    /* Charts - Semantic colors */
+    --chart-1: var(--color-blue);
     --chart-2: var(--color-lavender);
     --chart-3: var(--color-green);
-    --chart-4: var(--color-blue);
+    --chart-4: var(--color-teal);
     --chart-5: var(--color-yellow);
   }
 
@@ -84,6 +83,7 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     --border: var(--border-light);
+    --primary-foreground: var(--text-inverted);
   }
 }
 
@@ -136,33 +136,40 @@
 }
 
 @layer utilities {
-  /* Pastel Background Colors */
-  .bg-pastel-pink { background: hsl(var(--color-pink)); }
-  .bg-pastel-pink-soft { background: hsl(var(--color-pink-soft)); }
-  .bg-pastel-lavender { background: hsl(var(--color-lavender)); }
-  .bg-pastel-lavender-soft { background: hsl(var(--color-lavender-soft)); }
-  .bg-pastel-green { background: hsl(var(--color-green)); }
-  .bg-pastel-green-soft { background: hsl(var(--color-green-soft)); }
-  .bg-pastel-blue { background: hsl(var(--color-blue)); }
-  .bg-pastel-blue-soft { background: hsl(var(--color-blue-soft)); }
-  .bg-pastel-yellow { background: hsl(var(--color-yellow)); }
-  .bg-pastel-yellow-soft { background: hsl(var(--color-yellow-soft)); }
+  /* Semantic Accent Background Colors */
+  .bg-accent-lavender { background: hsl(var(--color-lavender)); }
+  .bg-accent-lavender-soft { background: hsl(var(--color-lavender-soft)); }
+  .bg-accent-green { background: hsl(var(--color-green)); }
+  .bg-accent-green-soft { background: hsl(var(--color-green-soft)); }
+  .bg-accent-blue { background: hsl(var(--color-blue)); }
+  .bg-accent-blue-soft { background: hsl(var(--color-blue-soft)); }
+  .bg-accent-yellow { background: hsl(var(--color-yellow)); }
+  .bg-accent-yellow-soft { background: hsl(var(--color-yellow-soft)); }
+  .bg-accent-teal { background: hsl(var(--color-teal)); }
+  .bg-accent-teal-soft { background: hsl(var(--color-teal-soft)); }
   
-  /* Pastel Text Colors */
-  .text-pastel-pink { color: hsl(var(--color-pink-dark)); }
-  .text-pastel-lavender { color: hsl(var(--color-lavender-dark)); }
-  .text-pastel-green { color: hsl(var(--color-green-dark)); }
-  .text-pastel-blue { color: hsl(var(--color-blue-dark)); }
-  .text-pastel-yellow { color: hsl(var(--color-yellow-dark)); }
+  /* Semantic Accent Text Colors */
+  .text-accent-lavender { color: hsl(var(--color-lavender-dark)); }
+  .text-accent-green { color: hsl(var(--color-green-dark)); }
+  .text-accent-blue { color: hsl(var(--color-blue-dark)); }
+  .text-accent-yellow { color: hsl(var(--color-yellow-dark)); }
+  .text-accent-teal { color: hsl(var(--color-teal-dark)); }
+  
+  /* UI State Colors */
+  .bg-hover { background: hsl(var(--color-hover)); }
+  .text-inactive { color: hsl(var(--color-inactive)); }
+  .border-divider { border-color: hsl(var(--border-divider)); }
   
   /* Card Styles */
   .ios-card {
     @apply rounded-xl bg-card;
+    border: 1px solid hsl(var(--border-light));
     box-shadow: var(--shadow-sm);
   }
   
   .ios-card-elevated {
     @apply rounded-xl bg-card;
+    border: 1px solid hsl(var(--border-light));
     box-shadow: var(--shadow-md);
   }
   
@@ -195,14 +202,15 @@
   
   .ios-button-primary {
     @apply ios-button px-4 py-2.5;
-    background: hsl(var(--color-pink-dark));
+    background: hsl(var(--color-action));
     color: hsl(var(--text-inverted));
   }
   
   .ios-button-secondary {
     @apply ios-button px-4 py-2.5;
-    background: hsl(var(--color-pink));
-    color: hsl(var(--color-pink-dark));
+    background: hsl(var(--color-hover));
+    color: hsl(var(--text-primary));
+    border: 1px solid hsl(var(--border-light));
   }
   
   /* Spacing */
@@ -220,7 +228,6 @@
   .animate-bounce-soft { animation: bounce-soft 0.4s var(--ease-spring); }
   .animate-pop { animation: pop 0.3s var(--ease-spring); }
   .animate-shake { animation: shake 0.4s var(--ease-smooth); }
-  .animate-glow { animation: glow 2s ease-in-out infinite; }
   .animate-float { animation: float 3s ease-in-out infinite; }
   .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
   .animate-slide-up { animation: slide-up 0.3s ease-out; }
@@ -228,7 +235,7 @@
   
   @media (prefers-reduced-motion: reduce) {
     .animate-spring, .animate-bounce-soft, .animate-pop, .animate-shake,
-    .animate-glow, .animate-float, .animate-pulse-soft, .animate-slide-up, .animate-scale-in {
+    .animate-float, .animate-pulse-soft, .animate-slide-up, .animate-scale-in {
       animation: none;
       transition: opacity 0.2s ease;
     }
@@ -239,7 +246,6 @@
 @keyframes bounce-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 @keyframes pop { 0% { transform: scale(0.95); opacity: 0; } 50% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
-@keyframes glow { 0%, 100% { box-shadow: 0 0 12px hsl(var(--color-pink) / 0.3); } 50% { box-shadow: 0 0 24px hsl(var(--color-pink) / 0.5); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes slide-up { 0% { transform: translateY(16px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }

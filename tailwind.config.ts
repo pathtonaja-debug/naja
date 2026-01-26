@@ -25,7 +25,6 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          soft: "hsl(var(--color-pink-soft))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -59,20 +58,28 @@ export default {
           DEFAULT: "hsl(var(--warn))",
           foreground: "hsl(var(--warn-foreground))",
         },
-        // Exact palette colors
-        pastel: {
-          pink: "hsl(var(--color-pink))",
-          "pink-soft": "hsl(var(--color-pink-soft))",
-          "pink-dark": "hsl(var(--color-pink-dark))",
+        // Semantic accent colors
+        semantic: {
           lavender: "hsl(var(--color-lavender))",
           "lavender-soft": "hsl(var(--color-lavender-soft))",
+          "lavender-dark": "hsl(var(--color-lavender-dark))",
           green: "hsl(var(--color-green))",
           "green-soft": "hsl(var(--color-green-soft))",
+          "green-dark": "hsl(var(--color-green-dark))",
           blue: "hsl(var(--color-blue))",
           "blue-soft": "hsl(var(--color-blue-soft))",
+          "blue-dark": "hsl(var(--color-blue-dark))",
           yellow: "hsl(var(--color-yellow))",
           "yellow-soft": "hsl(var(--color-yellow-soft))",
+          "yellow-dark": "hsl(var(--color-yellow-dark))",
+          teal: "hsl(var(--color-teal))",
+          "teal-soft": "hsl(var(--color-teal-soft))",
+          "teal-dark": "hsl(var(--color-teal-dark))",
         },
+        // UI state colors
+        inactive: "hsl(var(--color-inactive))",
+        hover: "hsl(var(--color-hover))",
+        divider: "hsl(var(--border-divider))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
