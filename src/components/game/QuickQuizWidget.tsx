@@ -12,7 +12,7 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
 
   if (loading) {
     return (
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 animate-pulse">
+      <div className="p-4 rounded-2xl bg-semantic-lavender-soft border border-border/30 animate-pulse">
         <div className="h-12" />
       </div>
     );
@@ -23,11 +23,11 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20"
+        className="p-4 rounded-2xl bg-semantic-green-soft border border-border/30"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-green-500" />
+          <div className="w-10 h-10 rounded-xl bg-semantic-green-dark flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-sm text-foreground">Quiz Complete!</h3>
@@ -44,11 +44,11 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       onClick={onStartQuiz}
-      className="w-full p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-left"
+      className="w-full p-4 rounded-2xl bg-semantic-lavender-soft border border-border/30 text-left"
     >
       <div className="flex items-center gap-3">
         <motion.div 
-          className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center"
+          className="w-12 h-12 rounded-xl bg-gradient-to-br from-[hsl(250,45%,55%)] to-[hsl(250,50%,65%)] flex items-center justify-center"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
@@ -57,15 +57,15 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-sm text-foreground">Daily Quiz</h3>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400">
-              +50 XP
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-semantic-lavender-soft text-semantic-lavender-dark border border-semantic-lavender-dark/20">
+              +50 Barakah
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
             Islamic Knowledge • 4 questions
           </p>
         </div>
-        <div className="flex items-center gap-1 text-purple-500">
+        <div className="flex items-center gap-1 text-semantic-lavender-dark">
           <Clock className="w-4 h-4" />
           <ChevronRight className="w-5 h-5" />
         </div>

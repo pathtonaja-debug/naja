@@ -7,6 +7,30 @@ import { cn } from "@/lib/utils";
 import { NAV_ITEMS, PLUS_MENU_ITEMS, isPathActive } from "@/lib/navigation";
 import { PlusPopover, type PlusMenuItem as UiPlusMenuItem } from "@/components/ui/plus-popover";
 
+// CSS variable-based semantic colors for navigation
+const semanticColorStyles = {
+  blue: {
+    active: 'bg-semantic-blue-soft',
+    icon: 'text-semantic-blue-dark',
+    text: 'text-semantic-blue-dark',
+  },
+  green: {
+    active: 'bg-semantic-green-soft',
+    icon: 'text-semantic-green-dark',
+    text: 'text-semantic-green-dark',
+  },
+  yellow: {
+    active: 'bg-semantic-yellow-soft',
+    icon: 'text-semantic-yellow-dark',
+    text: 'text-semantic-yellow-dark',
+  },
+  teal: {
+    active: 'bg-semantic-teal-soft',
+    icon: 'text-semantic-teal-dark',
+    text: 'text-semantic-teal-dark',
+  },
+} as const;
+
 const BottomNav = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -32,6 +56,7 @@ const BottomNav = () => {
   const NavButton = ({ item }: { item: typeof NAV_ITEMS[0] }) => {
     const Icon = item.icon;
     const active = isPathActive(location.pathname, item.path);
+    const colors = semanticColorStyles[item.semanticColor];
 
     return (
       <button
@@ -43,17 +68,17 @@ const BottomNav = () => {
         )}
         aria-current={active ? "page" : undefined}
       >
-        {/* active bubble - subtle gray */}
+        {/* active bubble with semantic color */}
         {active && (
           <motion.div
             layoutId="nav-active-bubble"
-            className="absolute inset-0 rounded-full bg-muted"
+            className={cn("absolute inset-0 rounded-full", colors.active)}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
         )}
 
         <span className="relative z-10 flex items-center gap-1.5">
-          <Icon className={cn("h-5 w-5", active ? "text-foreground" : "text-inactive")} />
+          <Icon className={cn("h-5 w-5", active ? colors.icon : "text-inactive")} />
           {/* Label only on active */}
           <AnimatePresence>
             {active && (
@@ -61,7 +86,7 @@ const BottomNav = () => {
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: "auto", opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                className="overflow-hidden whitespace-nowrap text-xs font-medium text-foreground"
+                className={cn("overflow-hidden whitespace-nowrap text-xs font-medium", colors.text)}
               >
                 {t(item.labelKey)}
               </motion.span>

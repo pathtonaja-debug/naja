@@ -18,13 +18,13 @@ interface CelebrationOverlayProps {
   subMessage?: string;
 }
 
-const pastelColors = [
-  'hsl(160, 45%, 75%)', // mint
-  'hsl(200, 55%, 80%)', // sky
-  'hsl(260, 45%, 80%)', // lavender
-  'hsl(350, 50%, 85%)', // rose
-  'hsl(45, 65%, 80%)',  // butter
-  'hsl(25, 60%, 82%)',  // peach
+// Semantic pastel colors without pink
+const semanticColors = [
+  'hsl(215, 56%, 83%)', // blue
+  'hsl(142, 40%, 65%)', // green
+  'hsl(46, 76%, 70%)',  // yellow
+  'hsl(174, 42%, 65%)', // teal
+  'hsl(250, 50%, 80%)', // lavender
 ];
 
 export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
@@ -43,7 +43,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
         x: Math.random() * 100,
         delay: Math.random() * 0.5,
         duration: 2 + Math.random() * 2,
-        color: pastelColors[Math.floor(Math.random() * pastelColors.length)],
+        color: semanticColors[Math.floor(Math.random() * semanticColors.length)],
         rotation: Math.random() * 360,
       }));
       setConfetti(pieces);

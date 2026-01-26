@@ -112,7 +112,7 @@ export const MonthView = ({
                     "aspect-square rounded-full flex flex-col items-center justify-center",
                     "transition-all duration-200",
                     isSameMonth(day, month) ? "text-foreground" : "text-foreground/30",
-                    isSelected && "bg-pink text-foreground shadow-elevation-2",
+                    isSelected && "bg-primary text-primary-foreground shadow-md",
                     !isSelected && isCurrentDay && "ring-2 ring-primary",
                     !isSelected && "hover:bg-white/20"
                   )}

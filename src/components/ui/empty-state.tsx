@@ -33,7 +33,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-        className="w-16 h-16 rounded-2xl bg-pastel-mint/50 flex items-center justify-center mb-4"
+        className="w-16 h-16 rounded-2xl bg-semantic-green-soft flex items-center justify-center mb-4"
       >
         {icon}
       </motion.div>

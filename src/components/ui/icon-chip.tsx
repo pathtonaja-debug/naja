@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-type IconChipColor = 'mint' | 'sky' | 'lavender' | 'rose' | 'peach' | 'butter' | 'sage' | 'gold';
+type IconChipColor = 'blue' | 'green' | 'yellow' | 'teal' | 'lavender' | 'muted';
 
 interface IconChipProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
   icon: React.ReactNode;
@@ -13,14 +13,12 @@ interface IconChipProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
 }
 
 const colorStyles: Record<IconChipColor, { bg: string; text: string }> = {
-  mint: { bg: 'bg-pastel-mint', text: 'text-[hsl(160,40%,35%)]' },
-  sky: { bg: 'bg-pastel-sky', text: 'text-[hsl(200,55%,35%)]' },
-  lavender: { bg: 'bg-pastel-lavender', text: 'text-[hsl(260,45%,40%)]' },
-  rose: { bg: 'bg-pastel-rose', text: 'text-[hsl(350,50%,40%)]' },
-  peach: { bg: 'bg-pastel-peach', text: 'text-[hsl(25,60%,35%)]' },
-  butter: { bg: 'bg-pastel-butter', text: 'text-[hsl(45,65%,35%)]' },
-  sage: { bg: 'bg-pastel-sage', text: 'text-[hsl(145,35%,30%)]' },
-  gold: { bg: 'bg-gold-soft', text: 'text-[hsl(40,65%,35%)]' },
+  blue: { bg: 'bg-semantic-blue-soft', text: 'text-semantic-blue-dark' },
+  green: { bg: 'bg-semantic-green-soft', text: 'text-semantic-green-dark' },
+  yellow: { bg: 'bg-semantic-yellow-soft', text: 'text-semantic-yellow-dark' },
+  teal: { bg: 'bg-semantic-teal-soft', text: 'text-semantic-teal-dark' },
+  lavender: { bg: 'bg-semantic-lavender-soft', text: 'text-semantic-lavender-dark' },
+  muted: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
 const sizeStyles = {
@@ -36,7 +34,7 @@ const iconSizeStyles = {
 };
 
 export const IconChip = React.forwardRef<HTMLDivElement, IconChipProps>(
-  ({ icon, label, color = 'mint', size = 'md', interactive = false, className, ...props }, ref) => {
+  ({ icon, label, color = 'blue', size = 'md', interactive = false, className, ...props }, ref) => {
     const { bg, text } = colorStyles[color];
 
     return (

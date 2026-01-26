@@ -6,37 +6,33 @@ interface ProgressCardProps {
   title: string;
   subtitle?: string;
   progress: number;
-  color?: 'mint' | 'sky' | 'lavender' | 'rose' | 'peach' | 'butter' | 'gold';
+  color?: 'blue' | 'green' | 'yellow' | 'teal' | 'lavender';
   icon?: React.ReactNode;
   showPercentage?: boolean;
   className?: string;
 }
 
 const gradientMap = {
-  mint: 'from-[hsl(160,40%,50%)] to-[hsl(145,35%,60%)]',
-  sky: 'from-[hsl(200,55%,55%)] to-[hsl(220,45%,60%)]',
-  lavender: 'from-[hsl(260,45%,60%)] to-[hsl(280,40%,65%)]',
-  rose: 'from-[hsl(350,50%,60%)] to-[hsl(330,45%,65%)]',
-  peach: 'from-[hsl(25,60%,60%)] to-[hsl(35,55%,65%)]',
-  butter: 'from-[hsl(45,65%,55%)] to-[hsl(40,60%,60%)]',
-  gold: 'from-[hsl(40,65%,55%)] to-[hsl(35,60%,60%)]',
+  blue: 'from-[hsl(215,50%,50%)] to-[hsl(215,45%,60%)]',
+  green: 'from-[hsl(142,40%,45%)] to-[hsl(142,35%,55%)]',
+  yellow: 'from-[hsl(46,70%,50%)] to-[hsl(46,65%,60%)]',
+  teal: 'from-[hsl(174,42%,45%)] to-[hsl(174,38%,55%)]',
+  lavender: 'from-[hsl(250,45%,55%)] to-[hsl(250,40%,65%)]',
 };
 
 const bgMap = {
-  mint: 'bg-pastel-mint/30',
-  sky: 'bg-pastel-sky/30',
-  lavender: 'bg-pastel-lavender/30',
-  rose: 'bg-pastel-rose/30',
-  peach: 'bg-pastel-peach/30',
-  butter: 'bg-pastel-butter/30',
-  gold: 'bg-gold-soft/30',
+  blue: 'bg-semantic-blue-soft',
+  green: 'bg-semantic-green-soft',
+  yellow: 'bg-semantic-yellow-soft',
+  teal: 'bg-semantic-teal-soft',
+  lavender: 'bg-semantic-lavender-soft',
 };
 
 export const ProgressCard: React.FC<ProgressCardProps> = ({
   title,
   subtitle,
   progress,
-  color = 'mint',
+  color = 'blue',
   icon,
   showPercentage = true,
   className,

@@ -28,12 +28,13 @@ export interface CalendarItem {
   updatedAt?: string;
 }
 
+// Semantic colors for categories (no pink)
 export const CATEGORY_COLORS: Record<CalendarCategory, string> = {
-  faith: 'hsl(var(--primary))',
-  work: 'hsl(var(--sky))',
-  study: 'hsl(var(--lilac))',
-  health: 'hsl(var(--pink))',
-  personal: 'hsl(var(--butter))',
+  faith: 'hsl(var(--color-lavender))',
+  work: 'hsl(var(--color-blue))',
+  study: 'hsl(var(--color-yellow))',
+  health: 'hsl(var(--color-green))',
+  personal: 'hsl(var(--color-teal))',
   other: 'hsl(var(--muted))',
 };
 
