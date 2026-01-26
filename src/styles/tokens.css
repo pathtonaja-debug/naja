@@ -53,30 +53,30 @@
   /* SEMANTIC ACCENT COLORS (Navigation/Categories) */
   /* ============================================ */
   
-  /* Lavender - Learn/Education */
-  --color-lavender: 250 64% 92%;
-  --color-lavender-soft: 250 64% 96%;
-  --color-lavender-dark: 250 40% 50%;
-  
-  /* Green - Success/Practices */
-  --color-green: 78 33% 64%;
-  --color-green-soft: 78 33% 85%;
-  --color-green-dark: 78 33% 40%;
-  
   /* Blue - Home/Dashboard */
   --color-blue: 215 56% 83%;
   --color-blue-soft: 215 56% 92%;
-  --color-blue-dark: 215 45% 45%;
+  --color-blue-dark: 215 50% 40%;
   
-  /* Yellow - Warnings/Highlights */
-  --color-yellow: 46 86% 69%;
-  --color-yellow-soft: 46 86% 88%;
-  --color-yellow-dark: 46 70% 45%;
+  /* Green - Success/Practices */
+  --color-green: 142 40% 65%;
+  --color-green-soft: 142 40% 88%;
+  --color-green-dark: 142 40% 35%;
+  
+  /* Yellow - Ramadan/Highlights */
+  --color-yellow: 46 76% 70%;
+  --color-yellow-soft: 46 76% 90%;
+  --color-yellow-dark: 46 70% 38%;
   
   /* Teal - Profile/Settings */
   --color-teal: 174 42% 65%;
   --color-teal-soft: 174 42% 88%;
-  --color-teal-dark: 174 42% 40%;
+  --color-teal-dark: 174 42% 35%;
+  
+  /* Lavender - Learn/Education */
+  --color-lavender: 250 50% 80%;
+  --color-lavender-soft: 250 50% 92%;
+  --color-lavender-dark: 250 40% 45%;
   
   /* Surface Hierarchy */
   --surface-base: var(--color-base);
@@ -160,33 +160,42 @@
 /* DARK MODE */
 /* ============================================ */
 .dark {
-  --color-base: 0 0% 8%;
-  --color-surface: 0 0% 12%;
+  --color-base: 0 0% 6%;
+  --color-surface: 0 0% 10%;
   --color-action: 0 0% 100%;
   
   --text-primary: 0 0% 95%;
-  --text-secondary: 0 0% 70%;
-  --text-tertiary: 0 0% 50%;
+  --text-secondary: 0 0% 65%;
+  --text-tertiary: 0 0% 45%;
   --text-inverted: 0 0% 0%;
   
-  --border-light: 0 0% 20%;
-  --border-divider: 0 0% 16%;
-  --color-inactive: 0 0% 40%;
-  --color-hover: 0 0% 14%;
+  --border-light: 0 0% 18%;
+  --border-divider: 0 0% 14%;
+  --color-inactive: 0 0% 35%;
+  --color-hover: 0 0% 12%;
   
   --surface-base: var(--color-base);
   --surface-card: var(--color-surface);
-  --surface-elevated: 0 0% 14%;
+  --surface-elevated: 0 0% 12%;
   
-  /* Dark mode accent adjustments */
-  --color-lavender: 250 40% 50%;
-  --color-lavender-soft: 250 30% 25%;
-  --color-green: 78 30% 45%;
-  --color-green-soft: 78 25% 22%;
-  --color-blue: 215 40% 50%;
-  --color-blue-soft: 215 30% 25%;
-  --color-yellow: 46 60% 50%;
-  --color-yellow-soft: 46 40% 25%;
-  --color-teal: 174 35% 45%;
-  --color-teal-soft: 174 25% 25%;
+  /* Dark mode semantic color adjustments - more saturated for visibility */
+  --color-blue: 215 50% 55%;
+  --color-blue-soft: 215 40% 20%;
+  --color-blue-dark: 215 55% 70%;
+  
+  --color-green: 142 40% 50%;
+  --color-green-soft: 142 30% 18%;
+  --color-green-dark: 142 45% 65%;
+  
+  --color-yellow: 46 70% 55%;
+  --color-yellow-soft: 46 50% 18%;
+  --color-yellow-dark: 46 75% 70%;
+  
+  --color-teal: 174 40% 50%;
+  --color-teal-soft: 174 30% 18%;
+  --color-teal-dark: 174 45% 65%;
+  
+  --color-lavender: 250 40% 60%;
+  --color-lavender-soft: 250 30% 20%;
+  --color-lavender-dark: 250 45% 75%;
 }

@@ -23,6 +23,24 @@ const iconMap: Record<string, any> = {
   'trophy': Trophy
 };
 
+// Semantic colors without pink
+const semanticColors = [
+  'bg-semantic-lavender-soft',
+  'bg-semantic-green-soft', 
+  'bg-semantic-yellow-soft',
+  'bg-semantic-blue-soft',
+  'bg-semantic-teal-soft',
+];
+
+// Ring segment colors (HSL values)
+const ringColors = [
+  'hsl(250, 50%, 80%)', // lavender
+  'hsl(142, 40%, 65%)', // green
+  'hsl(46, 76%, 70%)',  // yellow
+  'hsl(215, 56%, 83%)', // blue
+  'hsl(174, 42%, 65%)', // teal
+];
+
 const Habits = () => {
   const [habits, setHabits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,15 +86,6 @@ const Habits = () => {
 
   // Simulated weekly data for the bar chart
   const weeklyData = [65, 80, 45, 90, 70, 55, progress];
-  const pastelColors = [
-    'bg-gelato-lavender',
-    'bg-gelato-pink', 
-    'bg-gelato-green',
-    'bg-gelato-yellow',
-    'bg-gelato-blue',
-    'bg-gelato-peach',
-    'bg-gelato-lavender'
-  ];
 
   if (loading) {
     return (
@@ -132,7 +141,7 @@ const Habits = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-card rounded-2xl p-4 relative overflow-hidden border-0 shadow-soft">
+          <Card className="bg-card rounded-2xl p-4 relative overflow-hidden border shadow-sm">
             <div className="relative flex items-center justify-center py-4">
               {/* Habit Ring */}
               <div className="relative w-48 h-48">
@@ -148,8 +157,7 @@ const Habits = () => {
                     const actualLength = segmentLength - gap;
                     const offset = (startAngle / 360) * circumference;
                     
-                    const colors = ['#FFCBE1', '#D6E5BD', '#F9E1A8', '#BCD8EC', '#DCCCEC', '#FFDAB4'];
-                    const color = colors[index % colors.length];
+                    const color = ringColors[index % ringColors.length];
                     
                     return (
                       <motion.circle
@@ -158,7 +166,7 @@ const Habits = () => {
                         cy="50"
                         r={radius}
                         fill="none"
-                        stroke={habit.completed ? color : '#f0f0f0'}
+                        stroke={habit.completed ? color : 'hsl(0, 0%, 90%)'}
                         strokeWidth="12"
                         strokeLinecap="round"
                         strokeDasharray={`${actualLength} ${circumference - actualLength}`}
@@ -254,9 +262,9 @@ const Habits = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="bg-gelato-pink/30 border-0 rounded-xl p-3">
+            <Card className="bg-semantic-yellow-soft border-0 rounded-xl p-3">
               <p className="text-xs text-foreground">
-                Your habits score dropped <span className="text-gelato-pink-dark font-semibold">12%</span> compared to yesterday.
+                Your habits score dropped <span className="text-semantic-yellow-dark font-semibold">12%</span> compared to yesterday.
               </p>
               <Button variant="ghost" className="mt-1.5 h-7 px-3 text-xs font-semibold bg-foreground text-background rounded-full hover:bg-foreground/90">
                 Let's discuss
@@ -271,7 +279,7 @@ const Habits = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="bg-card border-0 rounded-2xl p-3 shadow-soft">
+          <Card className="bg-card border rounded-2xl p-3 shadow-sm">
             <h3 className="text-sm font-semibold text-foreground mb-3">Summary:</h3>
             <div className="flex items-end justify-between gap-1 h-24">
               {weeklyData.map((value, idx) => (
@@ -286,12 +294,12 @@ const Habits = () => {
                   <div className="w-full relative" style={{ height: '80px' }}>
                     {/* Secondary bar (lighter) */}
                     <div 
-                      className={`absolute bottom-0 w-full rounded-t-lg opacity-50 ${pastelColors[(idx + 3) % pastelColors.length]}`}
+                      className={`absolute bottom-0 w-full rounded-t-lg opacity-50 ${semanticColors[(idx + 3) % semanticColors.length]}`}
                       style={{ height: `${Math.max(value * 0.6, 10)}%` }}
                     />
                     {/* Primary bar */}
                     <motion.div 
-                      className={`absolute bottom-0 w-full rounded-t-lg ${pastelColors[idx]}`}
+                      className={`absolute bottom-0 w-full rounded-t-lg ${semanticColors[idx % semanticColors.length]}`}
                       initial={{ height: 0 }}
                       animate={{ height: `${Math.max(value * 0.8, 15)}%` }}
                       transition={{ delay: 0.5 + idx * 0.05, duration: 0.4, ease: "easeOut" }}
@@ -313,8 +321,7 @@ const Habits = () => {
           <AnimatePresence>
             {habits.map((habit, idx) => {
               const IconComponent = iconMap[habit.icon] || Star;
-              const colors = ['bg-gelato-lavender', 'bg-gelato-pink', 'bg-gelato-green', 'bg-gelato-yellow', 'bg-gelato-blue', 'bg-gelato-peach'];
-              const bgColor = colors[idx % colors.length];
+              const bgColor = semanticColors[idx % semanticColors.length];
               
               return (
                 <motion.div
@@ -372,9 +379,9 @@ const Habits = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Card className="bg-card rounded-2xl p-6 text-center border-0 shadow-soft">
-              <div className="w-12 h-12 rounded-full bg-gelato-pink/30 mx-auto mb-3 flex items-center justify-center">
-                <Star className="w-6 h-6 text-gelato-pink-dark" />
+            <Card className="bg-card rounded-2xl p-6 text-center border shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-semantic-lavender-soft mx-auto mb-3 flex items-center justify-center">
+                <Star className="w-6 h-6 text-semantic-lavender-dark" />
               </div>
               <h3 className="text-headline text-foreground mb-1">Start your journey</h3>
               <p className="text-xs text-muted-foreground mb-4">Add habits to track your spiritual growth</p>

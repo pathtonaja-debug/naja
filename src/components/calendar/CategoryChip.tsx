@@ -8,13 +8,14 @@ interface CategoryChipProps {
   className?: string;
 }
 
+// Semantic styles for categories (no pink)
 const CATEGORY_STYLES: Record<CalendarCategory, string> = {
-  faith: "bg-lilac/30 text-foreground border-lilac/25",
-  work: "bg-sky/30 text-foreground border-sky/25",
-  study: "bg-butter/30 text-foreground border-butter/25",
-  health: "bg-pink/30 text-foreground border-pink/25",
-  personal: "bg-olive/30 text-foreground border-olive/25",
-  other: "bg-foreground/15 text-foreground border-foreground/20",
+  faith: "bg-semantic-lavender-soft text-foreground border-[hsl(var(--color-lavender-dark)/0.25)]",
+  work: "bg-semantic-blue-soft text-foreground border-[hsl(var(--color-blue-dark)/0.25)]",
+  study: "bg-semantic-yellow-soft text-foreground border-[hsl(var(--color-yellow-dark)/0.25)]",
+  health: "bg-semantic-green-soft text-foreground border-[hsl(var(--color-green-dark)/0.25)]",
+  personal: "bg-semantic-teal-soft text-foreground border-[hsl(var(--color-teal-dark)/0.25)]",
+  other: "bg-muted text-foreground border-border",
 };
 
 export const CategoryChip = ({ category, size = "sm", className }: CategoryChipProps) => {
@@ -22,7 +23,7 @@ export const CategoryChip = ({ category, size = "sm", className }: CategoryChipP
     <Badge
       variant="outline"
       className={cn(
-        "rounded-pill backdrop-blur-2xl border font-semibold",
+        "rounded-full backdrop-blur-2xl border font-semibold",
         size === "sm" ? "text-[11px] px-2 py-0.5" : "text-[13px] px-3 py-1",
         CATEGORY_STYLES[category],
         className

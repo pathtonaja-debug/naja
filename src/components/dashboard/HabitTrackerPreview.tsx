@@ -18,21 +18,22 @@ interface HabitPreviewProps {
 
 const iconMap: Record<string, React.ReactNode> = {
   heart: <Heart className="w-4 h-4 text-primary-foreground" />,
-  "book-open": <BookOpen className="w-4 h-4 text-secondary-foreground" />,
-  star: <Star className="w-4 h-4 text-accent-foreground" />,
+  "book-open": <BookOpen className="w-4 h-4 text-primary-foreground" />,
+  star: <Star className="w-4 h-4 text-primary-foreground" />,
   sparkles: <Sparkles className="w-4 h-4 text-primary-foreground" />,
   sunrise: <Sunrise className="w-4 h-4 text-primary-foreground" />,
-  default: <Dumbbell className="w-4 h-4 text-accent-foreground" />,
+  default: <Dumbbell className="w-4 h-4 text-primary-foreground" />,
 };
 
+// Semantic color mapping for categories
 const colorMap: Record<string, { bg: string; iconBg: string }> = {
-  Prayer: { bg: "bg-primary/5", iconBg: "bg-primary" },
-  Dhikr: { bg: "bg-secondary/5", iconBg: "bg-secondary" },
-  Reflection: { bg: "bg-accent/5", iconBg: "bg-accent" },
-  Quran: { bg: "bg-primary/5", iconBg: "bg-primary" },
-  Spiritual: { bg: "bg-primary/5", iconBg: "bg-primary" },
-  Health: { bg: "bg-accent/5", iconBg: "bg-accent" },
-  default: { bg: "bg-muted/5", iconBg: "bg-muted" },
+  Prayer: { bg: "bg-semantic-yellow-soft", iconBg: "bg-semantic-yellow-dark" },
+  Dhikr: { bg: "bg-semantic-lavender-soft", iconBg: "bg-semantic-lavender-dark" },
+  Reflection: { bg: "bg-semantic-green-soft", iconBg: "bg-semantic-green-dark" },
+  Quran: { bg: "bg-semantic-blue-soft", iconBg: "bg-semantic-blue-dark" },
+  Spiritual: { bg: "bg-semantic-lavender-soft", iconBg: "bg-semantic-lavender-dark" },
+  Health: { bg: "bg-semantic-teal-soft", iconBg: "bg-semantic-teal-dark" },
+  default: { bg: "bg-muted", iconBg: "bg-muted-foreground" },
 };
 
 function HabitPreview({ icon, name, category, progress, total, completed, index }: HabitPreviewProps) {
@@ -46,7 +47,7 @@ function HabitPreview({ icon, name, category, progress, total, completed, index 
       transition={{ delay: index * 0.05, duration: 0.2 }}
       whileHover={{ scale: 1.01, x: 4 }}
       className={cn(
-        "liquid-glass p-2.5 rounded-xl border border-border/5 cursor-pointer",
+        "p-2.5 rounded-xl border border-border/30 cursor-pointer",
         colors.bg
       )}
     >
@@ -60,7 +61,7 @@ function HabitPreview({ icon, name, category, progress, total, completed, index 
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full flex items-center justify-center shadow-sm"
+              className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-semantic-green-dark rounded-full flex items-center justify-center shadow-sm"
             >
               <Check className="w-2 h-2 text-white" />
             </motion.div>
@@ -91,7 +92,7 @@ function HabitPreview({ icon, name, category, progress, total, completed, index 
 
 function HabitSkeleton() {
   return (
-    <div className="liquid-glass p-2.5 rounded-xl">
+    <div className="p-2.5 rounded-xl border border-border/30">
       <div className="flex items-center gap-2.5">
         <Skeleton className="w-8 h-8 rounded-lg" />
         <div className="flex-1">
@@ -133,7 +134,7 @@ export function HabitTrackerPreview() {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-primary text-xs h-7 px-2"
+          className="text-foreground text-xs h-7 px-2"
           onClick={() => navigate("/habits")}
         >
           <Plus className="w-3 h-3 mr-0.5" />

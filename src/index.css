@@ -137,23 +137,23 @@
 
 @layer utilities {
   /* Semantic Accent Background Colors */
-  .bg-accent-lavender { background: hsl(var(--color-lavender)); }
-  .bg-accent-lavender-soft { background: hsl(var(--color-lavender-soft)); }
-  .bg-accent-green { background: hsl(var(--color-green)); }
-  .bg-accent-green-soft { background: hsl(var(--color-green-soft)); }
-  .bg-accent-blue { background: hsl(var(--color-blue)); }
-  .bg-accent-blue-soft { background: hsl(var(--color-blue-soft)); }
-  .bg-accent-yellow { background: hsl(var(--color-yellow)); }
-  .bg-accent-yellow-soft { background: hsl(var(--color-yellow-soft)); }
-  .bg-accent-teal { background: hsl(var(--color-teal)); }
-  .bg-accent-teal-soft { background: hsl(var(--color-teal-soft)); }
+  .bg-semantic-blue { background: hsl(var(--color-blue)); }
+  .bg-semantic-blue-soft { background: hsl(var(--color-blue-soft)); }
+  .bg-semantic-green { background: hsl(var(--color-green)); }
+  .bg-semantic-green-soft { background: hsl(var(--color-green-soft)); }
+  .bg-semantic-yellow { background: hsl(var(--color-yellow)); }
+  .bg-semantic-yellow-soft { background: hsl(var(--color-yellow-soft)); }
+  .bg-semantic-teal { background: hsl(var(--color-teal)); }
+  .bg-semantic-teal-soft { background: hsl(var(--color-teal-soft)); }
+  .bg-semantic-lavender { background: hsl(var(--color-lavender)); }
+  .bg-semantic-lavender-soft { background: hsl(var(--color-lavender-soft)); }
   
   /* Semantic Accent Text Colors */
-  .text-accent-lavender { color: hsl(var(--color-lavender-dark)); }
-  .text-accent-green { color: hsl(var(--color-green-dark)); }
-  .text-accent-blue { color: hsl(var(--color-blue-dark)); }
-  .text-accent-yellow { color: hsl(var(--color-yellow-dark)); }
-  .text-accent-teal { color: hsl(var(--color-teal-dark)); }
+  .text-semantic-blue-dark { color: hsl(var(--color-blue-dark)); }
+  .text-semantic-green-dark { color: hsl(var(--color-green-dark)); }
+  .text-semantic-yellow-dark { color: hsl(var(--color-yellow-dark)); }
+  .text-semantic-teal-dark { color: hsl(var(--color-teal-dark)); }
+  .text-semantic-lavender-dark { color: hsl(var(--color-lavender-dark)); }
   
   /* UI State Colors */
   .bg-hover { background: hsl(var(--color-hover)); }
