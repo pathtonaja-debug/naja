@@ -41,14 +41,14 @@ export default function WeeklyProgress() {
   });
 
   return (
-    <Card className="backdrop-blur-3xl bg-gradient-to-br from-lilac/30 to-sky/20 border-white/15 rounded-[2rem] p-6">
+    <Card className="bg-card border border-border rounded-2xl p-6">
       <h3 className="text-lg font-medium text-foreground mb-4">Weekly Progress</h3>
       <div className="flex items-end justify-between gap-2 h-32">
         {days.map((day, idx) => (
           <div key={day} className="flex-1 flex flex-col items-center gap-2">
             <div className="flex-1 w-full flex items-end">
               <div
-                className="w-full rounded-t-xl bg-gradient-to-t from-olive/60 to-olive/40 backdrop-blur-xl border border-white/20 transition-all duration-300"
+                className="w-full rounded-t-xl bg-semantic-green-dark transition-all duration-300"
                 style={{ height: `${Math.max(dailyRates[idx], 5)}%` }}
               />
             </div>

@@ -69,10 +69,10 @@ export const DailyQuiz = ({ onComplete }: DailyQuizProps) => {
   // Already completed today
   if (hasCompletedToday && attempt) {
     return (
-      <Card className="p-4 rounded-2xl border-border bg-gradient-to-br from-primary/5 to-transparent">
+      <Card className="p-4 rounded-2xl border-border bg-semantic-green-soft">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Trophy className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 rounded-xl bg-semantic-green-dark/20 flex items-center justify-center">
+            <Trophy className="w-5 h-5 text-semantic-green-dark" />
           </div>
           <div>
             <h3 className="font-semibold text-foreground text-sm">Quiz Completed</h3>

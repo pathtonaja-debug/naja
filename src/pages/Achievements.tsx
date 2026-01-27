@@ -70,16 +70,16 @@ const Achievements = () => {
                       key={achievement.id}
                       className={`p-4 rounded-2xl border ${
                         earned 
-                          ? 'bg-primary/5 border-primary/20' 
+                          ? 'bg-semantic-yellow-soft border-semantic-yellow-dark/20' 
                           : 'bg-card border-border opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          earned ? 'bg-primary/20' : 'bg-muted'
+                          earned ? 'bg-semantic-yellow-dark/20' : 'bg-muted'
                         }`}>
                           {earned ? (
-                            <Trophy className="w-5 h-5 text-primary" />
+                            <Trophy className="w-5 h-5 text-semantic-yellow-dark" />
                           ) : (
                             <Lock className="w-4 h-4 text-muted-foreground" />
                           )}
@@ -88,7 +88,7 @@ const Achievements = () => {
                           <h3 className="font-medium text-foreground">{t(achievement.nameKey)}</h3>
                           <p className="text-xs text-muted-foreground">{t(achievement.descKey)}</p>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-primary">
+                        <div className="flex items-center gap-1 text-xs text-semantic-yellow-dark">
                           <Star className="w-3 h-3" />
                           <span>{achievement.points}</span>
                         </div>

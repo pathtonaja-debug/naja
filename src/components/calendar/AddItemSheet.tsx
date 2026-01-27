@@ -22,12 +22,12 @@ interface AddItemSheetProps {
 }
 
 const CATEGORY_OPTIONS: { value: CalendarCategory; label: string; color: string }[] = [
-  { value: 'faith', label: 'Faith', color: 'bg-primary/30' },
-  { value: 'work', label: 'Work', color: 'bg-sky/30' },
-  { value: 'study', label: 'Study', color: 'bg-secondary/30' },
-  { value: 'health', label: 'Health', color: 'bg-pink/30' },
-  { value: 'personal', label: 'Personal', color: 'bg-muted/30' },
-  { value: 'other', label: 'Other', color: 'bg-foreground/10' },
+  { value: 'faith', label: 'Faith', color: 'bg-semantic-lavender-soft' },
+  { value: 'work', label: 'Work', color: 'bg-semantic-blue-soft' },
+  { value: 'study', label: 'Study', color: 'bg-semantic-yellow-soft' },
+  { value: 'health', label: 'Health', color: 'bg-semantic-green-soft' },
+  { value: 'personal', label: 'Personal', color: 'bg-semantic-teal-soft' },
+  { value: 'other', label: 'Other', color: 'bg-muted' },
 ];
 
 export const AddItemSheet = ({

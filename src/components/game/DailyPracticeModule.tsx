@@ -180,7 +180,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+            className="h-full bg-semantic-green-dark rounded-full"
           />
         </div>
         <AnimatePresence>

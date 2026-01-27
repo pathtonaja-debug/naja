@@ -117,10 +117,10 @@ const Learn = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <Card className="p-4 bg-semantic-lavender-soft border-semantic-lavender-dark/20">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                <Brain className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-semantic-lavender-dark/20 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-semantic-lavender-dark" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold">{t('learn.dailyQuiz')}</h3>
@@ -129,7 +129,7 @@ const Learn = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/quiz')}
-                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium"
+                className="px-4 py-2 rounded-xl bg-semantic-lavender-dark text-white text-sm font-medium"
               >
                 {t('common.start')}
               </motion.button>

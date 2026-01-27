@@ -52,7 +52,7 @@ class ErrorBoundary extends Component<Props, State> {
             </p>
             <Button
               onClick={this.handleReset}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-12"
+              className="w-full bg-action hover:bg-action/90 text-white rounded-full h-12"
             >
               Reload App
             </Button>

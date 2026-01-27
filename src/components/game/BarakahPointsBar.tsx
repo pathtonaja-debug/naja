@@ -17,7 +17,7 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
     return (
       <div className="flex items-center gap-3">
         <motion.div 
-          className="relative w-10 h-10 rounded-xl bg-pastel-lavender flex items-center justify-center shadow-sm"
+          className="relative w-10 h-10 rounded-xl bg-semantic-lavender-soft flex items-center justify-center shadow-sm"
           whileHover={{ scale: 1.05 }}
         >
           <span className="text-foreground font-bold text-sm">{level}</span>
@@ -28,12 +28,12 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
             <span className="text-xs font-semibold text-foreground">{title}</span>
             <span className="text-xs text-foreground/50">{points} BP</span>
           </div>
-          <div className="h-2 bg-pastel-lavender/30 rounded-full overflow-hidden mt-1">
+          <div className="h-2 bg-semantic-lavender-soft rounded-full overflow-hidden mt-1">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${levelProgress}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-pastel-lavender rounded-full"
+              className="h-full bg-semantic-lavender-dark rounded-full"
             />
           </div>
         </div>
@@ -56,7 +56,7 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-4 rounded-2xl bg-white border border-border/30 shadow-sm"
+      className="p-4 rounded-2xl bg-card border border-border shadow-sm"
     >
       <div className="flex items-center gap-4">
         {/* Level Circle */}
@@ -64,7 +64,7 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
           className="relative"
           whileHover={{ scale: 1.05 }}
         >
-          <div className="w-16 h-16 rounded-2xl bg-pastel-lavender flex items-center justify-center shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-semantic-lavender-soft flex items-center justify-center shadow-sm">
             <span className="text-foreground font-bold text-xl">{level}</span>
           </div>
         </motion.div>
@@ -77,18 +77,18 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
               <p className="text-xs text-foreground/50">Level {level}</p>
             </div>
             <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-pastel-yellow" />
+              <Star className="w-4 h-4 text-semantic-yellow-dark" />
               <span className="font-bold text-foreground">{points.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="h-3 bg-pastel-lavender/30 rounded-full overflow-hidden">
+          <div className="h-3 bg-semantic-lavender-soft rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${levelProgress}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-pastel-lavender rounded-full relative"
+              className="h-full bg-semantic-lavender-dark rounded-full relative"
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
@@ -122,8 +122,8 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
           className="flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
         >
-          <div className="w-8 h-8 rounded-lg bg-pastel-yellow/30 flex items-center justify-center">
-            <Star className="w-4 h-4 text-pastel-yellow" />
+          <div className="w-8 h-8 rounded-lg bg-semantic-yellow-soft flex items-center justify-center">
+            <Star className="w-4 h-4 text-semantic-yellow-dark" />
           </div>
           <div>
             <p className="font-bold text-foreground">{points.toLocaleString()}</p>
@@ -135,8 +135,8 @@ export const BarakahPointsBar = ({ points, level, streak, compact = false }: Bar
           className="flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
         >
-          <div className="w-8 h-8 rounded-lg bg-pastel-green/30 flex items-center justify-center">
-            <Trophy className="w-4 h-4 text-pastel-green" />
+          <div className="w-8 h-8 rounded-lg bg-semantic-green-soft flex items-center justify-center">
+            <Trophy className="w-4 h-4 text-semantic-green-dark" />
           </div>
           <div>
             <p className="font-bold text-foreground">{level}</p>

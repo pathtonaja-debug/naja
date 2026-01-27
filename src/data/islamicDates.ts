@@ -489,24 +489,24 @@ export const hasIslamicEvent = (date: Date): boolean => {
 // Get color for event (for calendar dots)
 export const getEventColor = (eventId: string): string => {
   const colors: Record<string, string> = {
-    'islamic-new-year': 'hsl(var(--primary))',
-    'tasua': 'hsl(280 60% 55%)', // purple
-    'ashura': 'hsl(280 70% 50%)', // purple
-    'safar-start': 'hsl(200 60% 50%)', // blue
-    'rabi-al-awwal-start': 'hsl(120 50% 45%)', // green
-    'mawlid': 'hsl(120 60% 45%)', // green
-    'isra-miraj': 'hsl(210 80% 55%)', // blue
-    'shaban-start': 'hsl(280 50% 55%)', // purple
-    'shaban-15': 'hsl(280 60% 60%)', // light purple
-    'ramadan-start': 'hsl(45 90% 50%)', // gold
-    'nuzul-quran': 'hsl(45 85% 48%)', // gold
-    'last-ten-nights': 'hsl(45 95% 45%)', // bright gold
-    'laylatul-qadr': 'hsl(45 100% 45%)', // bright gold
-    'eid-al-fitr': 'hsl(350 80% 55%)', // pink/red
-    'dhul-hijjah-start': 'hsl(30 80% 55%)', // orange
-    'day-of-arafah': 'hsl(200 80% 50%)', // sky blue
-    'eid-al-adha': 'hsl(350 80% 55%)', // pink/red
-    'ayyam-al-tashreeq': 'hsl(30 70% 60%)', // light orange
+    'islamic-new-year': 'hsl(var(--semantic-lavender-dark))',
+    'tasua': 'hsl(var(--semantic-lavender-dark))', 
+    'ashura': 'hsl(var(--semantic-lavender-dark))', 
+    'safar-start': 'hsl(var(--semantic-blue-dark))', 
+    'rabi-al-awwal-start': 'hsl(var(--semantic-green-dark))', 
+    'mawlid': 'hsl(var(--semantic-green-dark))', 
+    'isra-miraj': 'hsl(var(--semantic-blue-dark))', 
+    'shaban-start': 'hsl(var(--semantic-lavender-dark))', 
+    'shaban-15': 'hsl(var(--semantic-lavender-dark))', 
+    'ramadan-start': 'hsl(var(--semantic-yellow-dark))', 
+    'nuzul-quran': 'hsl(var(--semantic-yellow-dark))', 
+    'last-ten-nights': 'hsl(var(--semantic-yellow-dark))', 
+    'laylatul-qadr': 'hsl(var(--semantic-yellow-dark))', 
+    'eid-al-fitr': 'hsl(var(--semantic-green-dark))', 
+    'dhul-hijjah-start': 'hsl(var(--semantic-yellow-dark))', 
+    'day-of-arafah': 'hsl(var(--semantic-blue-dark))', 
+    'eid-al-adha': 'hsl(var(--semantic-green-dark))', 
+    'ayyam-al-tashreeq': 'hsl(var(--semantic-yellow-dark))', 
   };
   return colors[eventId] || 'hsl(var(--primary))';
 };

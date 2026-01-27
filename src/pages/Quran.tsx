@@ -270,7 +270,7 @@ const Quran = () => {
             )}
 
             {/* Page Counter */}
-            <Card className="p-6 bg-gradient-to-br from-success/20 to-accent/10 border-success/20">
+            <Card className="p-6 bg-semantic-green-soft border-semantic-green-dark/20">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted-foreground">{t('quran.todayReading')}</p>

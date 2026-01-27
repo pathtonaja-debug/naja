@@ -80,7 +80,7 @@ const Profile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-pastel-cream pb-24"
+      className="min-h-screen bg-background pb-24"
     >
       <TopBar title={t('profile.title')} />
 
@@ -91,10 +91,10 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="p-4 bg-white border-border/30">
+        <Card className="p-4 bg-card border-border">
           <div className="flex items-center gap-3">
             <Avatar className="w-16 h-16">
-              <AvatarFallback className="bg-pastel-lavender text-foreground text-xl font-bold">
+              <AvatarFallback className="bg-semantic-teal-soft text-semantic-teal-dark text-xl font-bold">
                 {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -103,7 +103,7 @@ const Profile = () => {
               <p className="text-sm text-foreground/60">{levelTitle}</p>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-xs text-foreground/50 flex items-center gap-1">
-                  <Star className="w-3 h-3 text-pastel-yellow" /> {t('dashboard.level')} {profile.level}
+                  <Star className="w-3 h-3 text-semantic-yellow-dark" /> {t('dashboard.level')} {profile.level}
                 </span>
                 <span className="text-xs text-foreground/50 flex items-center gap-1">
                   <Flame className="w-3 h-3 text-orange-500" /> {profile.hasanatStreak} {t('profile.days')}
@@ -129,10 +129,10 @@ const Profile = () => {
       >
         <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.progress')}</h2>
         <div className="grid grid-cols-2 gap-3">
-          <Card className="p-4 bg-white border-border/30">
+          <Card className="p-4 bg-card border-border">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-pastel-lavender/50 flex items-center justify-center">
-                <Star className="w-4 h-4 text-pastel-lavender" />
+              <div className="w-8 h-8 rounded-lg bg-semantic-yellow-soft flex items-center justify-center">
+                <Star className="w-4 h-4 text-semantic-yellow-dark" />
               </div>
               <span className="text-xs text-foreground/60">{t('profile.totalPoints')}</span>
             </div>
@@ -140,10 +140,10 @@ const Profile = () => {
             <p className="text-[10px] text-foreground/40">{t('dashboard.barakahPoints')}</p>
           </Card>
           
-          <Card className="p-4 bg-white border-border/30">
+          <Card className="p-4 bg-card border-border">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Flame className="w-4 h-4 text-orange-500" />
+              <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                <Flame className="w-4 h-4 text-destructive" />
               </div>
               <span className="text-xs text-foreground/60">{t('profile.bestStreak')}</span>
             </div>
@@ -164,23 +164,23 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Card className="bg-white border-border/30">
+        <Card className="bg-card border-border">
           <ListCell
             title={t('profile.achievements')}
             subtitle={t('learn.badgesEarned')}
-            leftElement={<Trophy className="w-4 h-4 text-pastel-yellow" />}
+            leftElement={<Trophy className="w-4 h-4 text-semantic-yellow-dark" />}
             onPress={() => navigate('/achievements')}
           />
           <ListCell
             title={t('profile.progress')}
             subtitle={t('learn.viewAll')}
-            leftElement={<TrendingUp className="w-4 h-4 text-pastel-green" />}
+            leftElement={<TrendingUp className="w-4 h-4 text-semantic-green-dark" />}
             onPress={() => navigate('/progress')}
           />
           <ListCell
             title={t('profile.leaderboard')}
             subtitle={t('profile.achievements')}
-            leftElement={<Users className="w-4 h-4 text-pastel-blue" />}
+            leftElement={<Users className="w-4 h-4 text-semantic-blue-dark" />}
             onPress={() => navigate('/leaderboard')}
           />
         </Card>
@@ -194,7 +194,7 @@ const Profile = () => {
           transition={{ delay: 0.25 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.displayName')}</h2>
-          <Card className="p-3 space-y-3 bg-white border-border/30">
+          <Card className="p-3 space-y-3 bg-card border-border">
             <div className="space-y-1.5">
               <Label htmlFor="name" className="text-xs text-foreground/60">{t('profile.displayName')}</Label>
               <Input
@@ -202,7 +202,7 @@ const Profile = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('profile.displayName')}
-                className="h-10 text-sm bg-pastel-cream/50 border-border/30"
+                className="h-10 text-sm bg-muted/50 border-border"
               />
             </div>
             <Button onClick={handleSave} className="w-full h-10 text-sm" disabled={saving}>
@@ -221,7 +221,7 @@ const Profile = () => {
           transition={{ delay: 0.28 }}
         >
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.language')}</h2>
-          <Card className="bg-white border-border/30">
+          <Card className="bg-card border-border">
             <div className="p-3 flex gap-2">
               <Button
                 variant={currentLang === 'en' ? 'default' : 'outline'}
