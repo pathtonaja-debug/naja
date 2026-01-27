@@ -48,7 +48,7 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
     >
       <div className="flex items-center gap-3">
         <motion.div 
-          className="w-12 h-12 rounded-xl bg-gradient-to-br from-[hsl(250,45%,55%)] to-[hsl(250,50%,65%)] flex items-center justify-center"
+          className="w-12 h-12 rounded-xl bg-semantic-lavender-dark flex items-center justify-center"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >

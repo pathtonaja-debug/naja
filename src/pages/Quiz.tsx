@@ -200,8 +200,8 @@ const Quiz = () => {
             className={cn(
               "w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-6",
               isPerfect 
-                ? "bg-gradient-to-br from-yellow-400 to-orange-500" 
-                : "bg-gradient-to-br from-primary to-primary/70"
+                ? "bg-semantic-yellow-dark" 
+                : "bg-semantic-green-dark"
             )}
           >
             {isPerfect ? (
@@ -291,7 +291,7 @@ const Quiz = () => {
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-            className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+            className="h-full bg-semantic-lavender-dark rounded-full"
           />
         </div>
       </div>
@@ -307,10 +307,10 @@ const Quiz = () => {
             className="space-y-6"
           >
             {/* Question Card */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20">
+            <div className="p-6 rounded-2xl bg-semantic-lavender-soft border border-semantic-lavender-dark/20">
               <div className="flex items-center gap-2 mb-4">
-                <Brain className="w-5 h-5 text-purple-500" />
-                <span className="text-xs font-medium text-purple-500">{t('quiz.question')} {currentQuestion + 1}</span>
+                <Brain className="w-5 h-5 text-semantic-lavender-dark" />
+                <span className="text-xs font-medium text-semantic-lavender-dark">{t('quiz.question')} {currentQuestion + 1}</span>
               </div>
               <h2 className="text-lg font-bold text-foreground">{currentQ?.question}</h2>
             </div>

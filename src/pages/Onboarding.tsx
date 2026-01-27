@@ -121,7 +121,7 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {step === 1 && (
           <div className="relative animate-fade-in">
@@ -136,7 +136,7 @@ const Onboarding = () => {
               </div>
 
               <div className="flex justify-center mb-8">
-                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-semantic-green-soft flex items-center justify-center">
                   <span className="text-5xl">🕌</span>
                 </div>
               </div>

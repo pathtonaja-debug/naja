@@ -161,7 +161,7 @@ const Progress = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-2xl bg-gradient-to-br from-secondary/20 to-primary/10 border border-secondary/30"
+          className="p-4 rounded-2xl bg-semantic-blue-soft border border-semantic-blue-dark/20"
         >
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -183,7 +183,7 @@ const Progress = () => {
                 initial={{ width: 0 }}
                 animate={{ width: `${progress.percentage}%` }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className="h-full bg-secondary rounded-full"
+                className="h-full bg-semantic-blue-dark rounded-full"
               />
             </div>
             <p className="text-xs text-muted-foreground text-center">
@@ -241,7 +241,7 @@ const Progress = () => {
               className={cn(
                 "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all",
                 activeTab === tab
-                  ? "bg-secondary text-secondary-foreground shadow-sm"
+                  ? "bg-semantic-teal-dark text-white shadow-sm"
                   : "text-muted-foreground"
               )}
             >

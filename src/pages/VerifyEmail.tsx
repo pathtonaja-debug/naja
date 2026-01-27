@@ -97,12 +97,12 @@ export default function VerifyEmail() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background p-4">
-      <Card className="w-full max-w-md backdrop-blur-xl bg-card/80 border-border/30">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md bg-card border-border">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <Mail className="w-10 h-10 text-primary" />
+            <div className="w-20 h-20 rounded-full bg-semantic-blue-soft flex items-center justify-center">
+              <Mail className="w-10 h-10 text-semantic-blue-dark" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">
