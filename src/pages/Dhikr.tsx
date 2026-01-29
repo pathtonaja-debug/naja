@@ -162,7 +162,7 @@ const Dhikr = () => {
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
                 selectedPreset.id === preset.id
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-gradient-chromatic text-white shadow-glow"
                   : "bg-muted text-muted-foreground"
               )}
             >
@@ -243,7 +243,7 @@ const Dhikr = () => {
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
-              className="h-full bg-primary rounded-full"
+              className="h-full bg-gradient-chromatic rounded-full"
             />
           </div>
 
@@ -270,7 +270,7 @@ const Dhikr = () => {
               className={cn(
                 "w-16 h-10 rounded-xl text-sm font-medium transition-all",
                 customTarget === target
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-gradient-chromatic text-white shadow-glow"
                   : "bg-muted text-muted-foreground"
               )}
             >

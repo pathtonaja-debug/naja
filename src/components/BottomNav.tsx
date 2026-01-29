@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { NAV_ITEMS, PLUS_MENU_ITEMS, isPathActive } from "@/lib/navigation";
 import { PlusPopover, type PlusMenuItem as UiPlusMenuItem } from "@/components/ui/plus-popover";
 
-// CSS variable-based semantic colors for navigation
+// Chromatic palette-based semantic colors for navigation
 const semanticColorStyles = {
   blue: {
     active: 'bg-semantic-blue-soft',
@@ -20,9 +20,9 @@ const semanticColorStyles = {
     text: 'text-semantic-green-dark',
   },
   yellow: {
-    active: 'bg-semantic-yellow-soft',
-    icon: 'text-semantic-yellow-dark',
-    text: 'text-semantic-yellow-dark',
+    active: 'bg-semantic-gold-soft',
+    icon: 'text-semantic-gold-dark',
+    text: 'text-semantic-gold-dark',
   },
   teal: {
     active: 'bg-semantic-teal-soft',
@@ -102,7 +102,7 @@ const BottomNav = () => {
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
         <div className="relative flex items-end justify-center px-4 pb-[max(calc(env(safe-area-inset-bottom,_0px)_+_16px),_24px)]">
           <div className="relative">
-            {/* Floating dock container - clean white with subtle border */}
+            {/* Floating dock container - warm paper with subtle border */}
             <div className="pointer-events-auto relative overflow-visible rounded-[28px] border border-border bg-card shadow-lg">
               <div className="flex items-center gap-1 px-2 py-2">
                 {/* Left pill */}
@@ -112,7 +112,7 @@ const BottomNav = () => {
                   ))}
                 </div>
 
-                {/* Center + button - black primary action */}
+                {/* Center + button - animated gradient */}
                 <div className="relative mx-1 flex items-center justify-center">
                   <motion.button
                     ref={plusBtnRef}
@@ -122,9 +122,9 @@ const BottomNav = () => {
                       "relative z-10",
                       "h-12 w-12 rounded-full",
                       "flex items-center justify-center",
-                      "bg-primary",
-                      "text-primary-foreground",
-                      "shadow-md",
+                      "bg-gradient-animated",
+                      "text-white",
+                      "shadow-glow",
                       "transition-transform hover:scale-[1.03]"
                     )}
                     aria-label="Open plus menu"
