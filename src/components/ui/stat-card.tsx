@@ -6,20 +6,21 @@ interface StatCardProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
   icon: React.ReactNode;
   value: string | number;
   label: string;
-  color?: 'blue' | 'green' | 'yellow' | 'teal' | 'lavender' | 'muted';
+  color?: 'mint' | 'sky' | 'lavender' | 'rose' | 'peach' | 'butter' | 'sage';
 }
 
 const colorMap = {
-  blue: 'bg-semantic-blue-soft',
-  green: 'bg-semantic-green-soft',
-  yellow: 'bg-semantic-yellow-soft',
-  teal: 'bg-semantic-teal-soft',
-  lavender: 'bg-semantic-lavender-soft',
-  muted: 'bg-muted',
+  mint: 'bg-pastel-mint',
+  sky: 'bg-pastel-sky',
+  lavender: 'bg-pastel-lavender',
+  rose: 'bg-pastel-rose',
+  peach: 'bg-pastel-peach',
+  butter: 'bg-pastel-butter',
+  sage: 'bg-pastel-sage',
 };
 
 export const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
-  ({ icon, value, label, color = 'blue', className, ...props }, ref) => {
+  ({ icon, value, label, color = 'mint', className, ...props }, ref) => {
     return (
       <motion.div
         ref={ref}

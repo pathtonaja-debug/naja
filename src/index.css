@@ -28,51 +28,52 @@
     --surface: var(--surface-elevated);
     --card: var(--surface-card);
     --card-foreground: var(--text-primary);
-    --popover: var(--surface-elevated);
+    --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     
-    /* Primary - Coral gradient base */
-    --primary: var(--color-coral);
-    --primary-foreground: var(--text-inverted);
+    /* Primary - Pink */
+    --primary: var(--color-pink);
+    --primary-foreground: var(--text-primary);
+    --primary-soft: var(--color-pink-soft);
     
-    /* Secondary - Light warm */
-    --secondary: var(--color-hover);
+    /* Secondary - Lavender */
+    --secondary: var(--color-lavender);
     --secondary-foreground: var(--text-primary);
     
-    /* Accent - Violet */
-    --accent: var(--color-violet);
-    --accent-foreground: var(--text-inverted);
+    /* Accent - Blue */
+    --accent: var(--color-blue);
+    --accent-foreground: var(--text-primary);
     
     /* Success - Green */
     --success: var(--color-green);
     --success-foreground: var(--text-primary);
     
-    /* Warning - Gold */
-    --warn: var(--color-gold);
+    /* Warning - Yellow */
+    --warn: var(--color-yellow);
     --warn-foreground: var(--text-primary);
     
     /* Muted */
     --muted: var(--border-light);
     --muted-foreground: var(--text-secondary);
     
-    /* Destructive - Coral deep */
+    /* Destructive */
     --destructive: 0 72% 51%;
     --destructive-foreground: var(--text-inverted);
     
     /* Borders */
     --border: var(--border-light);
-    --input: var(--border-light);
-    --ring: var(--color-coral);
+    --input: var(--border-medium);
+    --ring: var(--color-pink);
     
     /* Radius */
     --radius: var(--radius-md);
     
-    /* Charts - Chromatic palette */
-    --chart-1: var(--color-coral);
-    --chart-2: var(--color-violet);
-    --chart-3: var(--color-blue);
-    --chart-4: var(--color-gold);
-    --chart-5: var(--color-green);
+    /* Charts */
+    --chart-1: var(--color-pink);
+    --chart-2: var(--color-lavender);
+    --chart-3: var(--color-green);
+    --chart-4: var(--color-blue);
+    --chart-5: var(--color-yellow);
   }
 
   .dark {
@@ -83,7 +84,6 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     --border: var(--border-light);
-    --primary-foreground: var(--text-inverted);
   }
 }
 
@@ -93,13 +93,17 @@
   }
 
   html {
+    /* Completely disable dynamic font scaling from accessibility settings */
     -webkit-text-size-adjust: none !important;
     -moz-text-size-adjust: none !important;
     text-size-adjust: none !important;
+    /* Prevent iOS text size adjustment */
     -webkit-font-size-adjust: none;
+    /* Fixed font size base - prevents rem scaling */
     font-size: 16px !important;
   }
 
+  /* Override any system font scaling on all elements */
   * {
     -webkit-text-size-adjust: none !important;
     text-size-adjust: none !important;
@@ -132,120 +136,33 @@
 }
 
 @layer utilities {
-  /* Chromatic Gradient Backgrounds */
-  .bg-gradient-chromatic {
-    background: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)), hsl(var(--color-blue)));
-  }
+  /* Pastel Background Colors */
+  .bg-pastel-pink { background: hsl(var(--color-pink)); }
+  .bg-pastel-pink-soft { background: hsl(var(--color-pink-soft)); }
+  .bg-pastel-lavender { background: hsl(var(--color-lavender)); }
+  .bg-pastel-lavender-soft { background: hsl(var(--color-lavender-soft)); }
+  .bg-pastel-green { background: hsl(var(--color-green)); }
+  .bg-pastel-green-soft { background: hsl(var(--color-green-soft)); }
+  .bg-pastel-blue { background: hsl(var(--color-blue)); }
+  .bg-pastel-blue-soft { background: hsl(var(--color-blue-soft)); }
+  .bg-pastel-yellow { background: hsl(var(--color-yellow)); }
+  .bg-pastel-yellow-soft { background: hsl(var(--color-yellow-soft)); }
   
-  .bg-gradient-warm {
-    background: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-gold)));
-  }
+  /* Pastel Text Colors */
+  .text-pastel-pink { color: hsl(var(--color-pink-dark)); }
+  .text-pastel-lavender { color: hsl(var(--color-lavender-dark)); }
+  .text-pastel-green { color: hsl(var(--color-green-dark)); }
+  .text-pastel-blue { color: hsl(var(--color-blue-dark)); }
+  .text-pastel-yellow { color: hsl(var(--color-yellow-dark)); }
   
-  .bg-gradient-cool {
-    background: linear-gradient(135deg, hsl(var(--color-violet)), hsl(var(--color-blue)));
-  }
-  
-  .bg-gradient-sunset {
-    background: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)));
-  }
-  
-  /* Animated Gradient */
-  .bg-gradient-animated {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--color-coral)),
-      hsl(var(--color-violet)),
-      hsl(var(--color-blue)),
-      hsl(var(--color-coral))
-    );
-    background-size: 300% 300%;
-    animation: gradient-flow 4s ease infinite;
-  }
-  
-  .bg-gradient-animated-slow {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--color-coral)),
-      hsl(var(--color-violet)),
-      hsl(var(--color-blue)),
-      hsl(var(--color-coral))
-    );
-    background-size: 300% 300%;
-    animation: gradient-flow 8s ease infinite;
-  }
-  
-  /* Chromatic Text */
-  .text-gradient-chromatic {
-    background: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)), hsl(var(--color-blue)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-animated {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--color-coral)),
-      hsl(var(--color-violet)),
-      hsl(var(--color-blue)),
-      hsl(var(--color-coral))
-    );
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-flow 4s ease infinite;
-  }
-
-  /* Semantic Accent Background Colors */
-  .bg-semantic-coral { background: hsl(var(--color-coral)); }
-  .bg-semantic-coral-soft { background: hsl(var(--color-coral-soft)); }
-  .bg-semantic-blue { background: hsl(var(--color-blue)); }
-  .bg-semantic-blue-soft { background: hsl(var(--color-blue-soft)); }
-  .bg-semantic-violet { background: hsl(var(--color-violet)); }
-  .bg-semantic-violet-soft { background: hsl(var(--color-violet-soft)); }
-  .bg-semantic-gold { background: hsl(var(--color-gold)); }
-  .bg-semantic-gold-soft { background: hsl(var(--color-gold-soft)); }
-  .bg-semantic-green { background: hsl(var(--color-green)); }
-  .bg-semantic-green-soft { background: hsl(var(--color-green-soft)); }
-  .bg-semantic-teal { background: hsl(var(--color-teal)); }
-  .bg-semantic-teal-soft { background: hsl(var(--color-teal-soft)); }
-  
-  /* Legacy semantic mappings */
-  .bg-semantic-yellow { background: hsl(var(--color-gold)); }
-  .bg-semantic-yellow-soft { background: hsl(var(--color-gold-soft)); }
-  .bg-semantic-lavender { background: hsl(var(--color-violet)); }
-  .bg-semantic-lavender-soft { background: hsl(var(--color-violet-soft)); }
-  
-  /* Semantic Accent Text Colors */
-  .text-semantic-coral-dark { color: hsl(var(--color-coral-dark)); }
-  .text-semantic-blue-dark { color: hsl(var(--color-blue-dark)); }
-  .text-semantic-violet-dark { color: hsl(var(--color-violet-dark)); }
-  .text-semantic-gold-dark { color: hsl(var(--color-gold-dark)); }
-  .text-semantic-green-dark { color: hsl(var(--color-green-dark)); }
-  .text-semantic-teal-dark { color: hsl(var(--color-teal-dark)); }
-  
-  /* Legacy mappings */
-  .text-semantic-yellow-dark { color: hsl(var(--color-gold-dark)); }
-  .text-semantic-lavender-dark { color: hsl(var(--color-violet-dark)); }
-  
-  /* UI State Colors */
-  .bg-hover { background: hsl(var(--color-hover)); }
-  .text-inactive { color: hsl(var(--color-inactive)); }
-  .border-divider { border-color: hsl(var(--border-divider)); }
-  
-  /* Card Styles - Ink and Paper */
+  /* Card Styles */
   .ios-card {
-    @apply rounded-xl;
-    background: hsl(var(--surface-card));
-    border: 1px solid hsl(var(--border-light));
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-sm);
   }
   
   .ios-card-elevated {
-    @apply rounded-xl;
-    background: hsl(var(--surface-elevated));
-    border: 1px solid hsl(var(--border-light));
+    @apply rounded-xl bg-card;
     box-shadow: var(--shadow-md);
   }
   
@@ -265,37 +182,6 @@
     box-shadow: var(--shadow-md);
   }
   
-  /* Gradient Card with animated border */
-  .gradient-card {
-    @apply rounded-xl relative overflow-hidden;
-    background: hsl(var(--surface-card));
-  }
-  
-  .gradient-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)), hsl(var(--color-blue)));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  }
-  
-  .gradient-card-animated::before {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--color-coral)),
-      hsl(var(--color-violet)),
-      hsl(var(--color-blue)),
-      hsl(var(--color-coral))
-    );
-    background-size: 300% 300%;
-    animation: gradient-flow 4s ease infinite;
-  }
-  
   /* Button Styles */
   .ios-button {
     @apply rounded-xl font-semibold transition-all;
@@ -309,33 +195,14 @@
   
   .ios-button-primary {
     @apply ios-button px-4 py-2.5;
-    background: hsl(var(--color-coral));
+    background: hsl(var(--color-pink-dark));
     color: hsl(var(--text-inverted));
-  }
-  
-  .ios-button-gradient {
-    @apply ios-button px-4 py-2.5 bg-gradient-animated;
-    color: white;
   }
   
   .ios-button-secondary {
     @apply ios-button px-4 py-2.5;
-    background: hsl(var(--color-hover));
-    color: hsl(var(--text-primary));
-    border: 1px solid hsl(var(--border-light));
-  }
-  
-  /* Glow effect for interactive elements */
-  .glow-coral {
-    box-shadow: 0 0 20px hsla(12, 90%, 60%, 0.3);
-  }
-  
-  .glow-violet {
-    box-shadow: 0 0 20px hsla(280, 85%, 55%, 0.3);
-  }
-  
-  .glow-blue {
-    box-shadow: 0 0 20px hsla(210, 100%, 55%, 0.3);
+    background: hsl(var(--color-pink));
+    color: hsl(var(--color-pink-dark));
   }
   
   /* Spacing */
@@ -343,7 +210,7 @@
   .safe-bottom { padding-bottom: var(--safe-bottom); }
   .section-gap { gap: var(--space-3); }
   
-  /* Safe area for mobile devices */
+  /* Safe area for mobile devices with home indicators */
   .pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px); }
   .mb-safe { margin-bottom: max(env(safe-area-inset-bottom, 16px), 16px); }
   .content-gap { gap: var(--space-2); }
@@ -353,17 +220,15 @@
   .animate-bounce-soft { animation: bounce-soft 0.4s var(--ease-spring); }
   .animate-pop { animation: pop 0.3s var(--ease-spring); }
   .animate-shake { animation: shake 0.4s var(--ease-smooth); }
+  .animate-glow { animation: glow 2s ease-in-out infinite; }
   .animate-float { animation: float 3s ease-in-out infinite; }
   .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
   .animate-slide-up { animation: slide-up 0.3s ease-out; }
   .animate-scale-in { animation: scale-in 0.2s ease-out; }
-  .animate-gradient { animation: gradient-flow 4s ease infinite; }
   
   @media (prefers-reduced-motion: reduce) {
     .animate-spring, .animate-bounce-soft, .animate-pop, .animate-shake,
-    .animate-float, .animate-pulse-soft, .animate-slide-up, .animate-scale-in,
-    .animate-gradient, .bg-gradient-animated, .bg-gradient-animated-slow,
-    .text-gradient-animated, .gradient-card-animated::before {
+    .animate-glow, .animate-float, .animate-pulse-soft, .animate-slide-up, .animate-scale-in {
       animation: none;
       transition: opacity 0.2s ease;
     }
@@ -374,6 +239,7 @@
 @keyframes bounce-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 @keyframes pop { 0% { transform: scale(0.95); opacity: 0; } 50% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 12px hsl(var(--color-pink) / 0.3); } 50% { box-shadow: 0 0 24px hsl(var(--color-pink) / 0.5); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes slide-up { 0% { transform: translateY(16px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
@@ -383,27 +249,3 @@
 @keyframes progress-fill { 0% { width: 0%; } 100% { width: var(--progress-width, 100%); } }
 @keyframes ring-fill { 0% { stroke-dashoffset: 282.74; } 100% { stroke-dashoffset: var(--ring-offset, 0); } }
 @keyframes bar-grow { 0% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
-
-/* Gradient flow animation */
-@keyframes gradient-flow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Gradient shimmer for loading states */
-@keyframes gradient-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--color-base)),
-    hsl(var(--color-coral) / 0.1),
-    hsl(var(--color-base))
-  );
-  background-size: 200% 100%;
-  animation: gradient-shimmer 2s linear infinite;
-}

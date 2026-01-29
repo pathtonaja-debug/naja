@@ -146,8 +146,8 @@ export function RamadanCountdown() {
         return (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-warm flex items-center justify-center">
-                <Moon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <Moon className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold">{t('ramadan.widget.preparing')}</h3>

@@ -20,12 +20,11 @@ const categoryIcons: Record<string, string> = {
   "Quran": "book-open",
 };
 
-// Semantic colors without pink
 const categoryColors: Record<string, string> = {
-  "Prayer": "hsl(46, 76%, 70%)",    // yellow
-  "Dhikr": "hsl(250, 50%, 80%)",    // lavender
-  "Reflection": "hsl(142, 40%, 65%)", // green
-  "Quran": "hsl(215, 56%, 83%)",    // blue
+  "Prayer": "#FFE5D9",
+  "Dhikr": "#FFC6FF",
+  "Reflection": "#CAFFBF",
+  "Quran": "#BDB2FF",
 };
 
 export default function HabitTracker() {
@@ -120,7 +119,7 @@ export default function HabitTracker() {
                   icon={categoryIcons[cat.category] || "target"}
                   habitCount={cat.total}
                   completedToday={cat.completed}
-                  color={categoryColors[cat.category] || "hsl(0, 0%, 90%)"}
+                  color={categoryColors[cat.category] || "#E8EAED"}
                 />
               </motion.div>
             ))}

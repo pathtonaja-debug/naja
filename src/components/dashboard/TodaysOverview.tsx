@@ -7,12 +7,12 @@ interface StatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string;
-  colorClass: string;
-  bgClass: string;
+  color: string;
+  bgColor: string;
   index: number;
 }
 
-function StatCard({ icon, label, value, colorClass, bgClass, index }: StatCardProps) {
+function StatCard({ icon, label, value, color, bgColor, index }: StatCardProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
@@ -20,24 +20,24 @@ function StatCard({ icon, label, value, colorClass, bgClass, index }: StatCardPr
       transition={{ delay: index * 0.05, duration: 0.2 }}
       whileHover={{ scale: 1.02, y: -1 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-card border border-border p-2 rounded-lg space-y-1"
+      className="liquid-glass p-2 rounded-lg space-y-1"
     >
       <div className="flex items-center gap-1.5">
-        <div className={`w-6 h-6 rounded-md ${bgClass} flex items-center justify-center`}>
+        <div className={`w-6 h-6 rounded-md ${bgColor} flex items-center justify-center`}>
           {icon}
         </div>
-        <div className={`px-1.5 py-0.5 rounded-full ${bgClass}`}>
-          <span className={`text-[10px] font-bold ${colorClass}`}>{value}</span>
+        <div className={`px-1.5 py-0.5 rounded-full ${bgColor}`}>
+          <span className={`text-[10px] font-bold ${color}`}>{value}</span>
         </div>
       </div>
-      <p className="text-[9px] text-muted-foreground font-medium">{label}</p>
+      <p className="text-[9px] text-foreground-muted font-medium">{label}</p>
     </motion.div>
   );
 }
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-card border border-border p-2 rounded-lg space-y-1">
+    <div className="liquid-glass p-2 rounded-lg space-y-1">
       <div className="flex items-center gap-1.5">
         <Skeleton className="w-6 h-6 rounded-md" />
         <Skeleton className="w-7 h-4 rounded-full" />
@@ -66,32 +66,32 @@ export function TodaysOverview() {
 
   const statCards = [
     {
-      icon: <CheckCircle2 className="w-3 h-3 text-semantic-coral-dark" />,
+      icon: <CheckCircle2 className="w-3 h-3 text-primary" />,
       label: "Prayers",
       value: `${stats.prayersCompleted}/${stats.prayersTotal}`,
-      colorClass: "text-semantic-coral-dark",
-      bgClass: "bg-semantic-coral-soft",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
     {
-      icon: <ListChecks className="w-3 h-3 text-semantic-violet-dark" />,
+      icon: <ListChecks className="w-3 h-3 text-secondary" />,
       label: "Habits",
       value: `${stats.habitsCompleted}/${stats.habitsTotal}`,
-      colorClass: "text-semantic-violet-dark",
-      bgClass: "bg-semantic-violet-soft",
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
     },
     {
-      icon: <HandMetal className="w-3 h-3 text-semantic-blue-dark" />,
+      icon: <HandMetal className="w-3 h-3 text-primary" />,
       label: "Dhikr",
       value: String(stats.dhikrCount),
-      colorClass: "text-semantic-blue-dark",
-      bgClass: "bg-semantic-blue-soft",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
     {
-      icon: <Flame className="w-3 h-3 text-semantic-gold-dark" />,
+      icon: <Flame className="w-3 h-3 text-accent" />,
       label: "Streak",
       value: `${stats.currentStreak}d`,
-      colorClass: "text-semantic-gold-dark",
-      bgClass: "bg-semantic-gold-soft",
+      color: "text-accent",
+      bgColor: "bg-accent/10",
     },
   ];
 

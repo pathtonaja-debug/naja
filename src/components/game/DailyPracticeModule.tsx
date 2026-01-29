@@ -180,7 +180,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-semantic-green-dark rounded-full"
+            className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
           />
         </div>
         <AnimatePresence>
@@ -235,7 +235,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
             whileTap={{ scale: 0.95 }}
             className="p-4 rounded-xl bg-muted/30 border border-border/30 text-left"
           >
-            <Gift className="w-5 h-5 text-semantic-teal-dark mb-2" />
+            <Gift className="w-5 h-5 text-pink-500 mb-2" />
             <p className="text-xs font-semibold text-foreground">Charity</p>
             <p className="text-[10px] text-muted-foreground">Give Sadaqah</p>
           </motion.button>

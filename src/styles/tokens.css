@@ -1,129 +1,66 @@
 /* ============================================ */
-/* INK AND PAPER DESIGN SYSTEM */
-/* Minimalist with warm undertones, chromatic gradients */
+/* PASTEL HABIT TRACKER DESIGN SYSTEM */
+/* Exact Colors: #FFFDF7, #F5BCDD, #DFD9F9, #B6C682, #B9CBEC, #F5D96E */
 /* ============================================ */
 
 :root {
   /* ============================================ */
-  /* CORE COLORS - Light Mode */
+  /* EXACT COLOR PALETTE (HSL conversions) */
   /* ============================================ */
   
-  /* Background: Off-white/cream */
-  --color-base: 40 20% 98%;
+  /* Background #FFFDF7 */
+  --color-base: 45 100% 99%;
   
-  /* Surface/Card: Warm white */
-  --color-surface: 40 15% 96%;
+  /* Pink #F5BCDD */
+  --color-pink: 330 72% 85%;
+  --color-pink-soft: 330 72% 92%;
+  --color-pink-dark: 330 55% 55%;
   
-  /* Foreground: Deep ink */
-  --color-ink: 0 0% 8%;
+  /* Lavender #DFD9F9 */
+  --color-lavender: 250 64% 92%;
+  --color-lavender-soft: 250 64% 96%;
+  --color-lavender-dark: 250 40% 60%;
   
-  /* Primary Action: Signature Blush gradient base */
-  --color-action: 12 90% 60%;
+  /* Green #B6C682 */
+  --color-green: 78 33% 64%;
+  --color-green-soft: 78 33% 85%;
+  --color-green-dark: 78 33% 45%;
   
-  /* ============================================ */
-  /* TEXT HIERARCHY */
-  /* ============================================ */
+  /* Blue #B9CBEC */
+  --color-blue: 215 56% 83%;
+  --color-blue-soft: 215 56% 92%;
+  --color-blue-dark: 215 45% 55%;
   
-  /* Primary Text: Deep ink */
-  --text-primary: 0 0% 8%;
+  /* Yellow #F5D96E */
+  --color-yellow: 46 86% 69%;
+  --color-yellow-soft: 46 86% 88%;
+  --color-yellow-dark: 46 70% 50%;
   
-  /* Secondary Text: Muted */
-  --text-secondary: 0 0% 40%;
-  
-  /* Tertiary Text: Light muted */
-  --text-tertiary: 0 0% 55%;
-  
-  /* Inverted Text: Warm white */
-  --text-inverted: 40 20% 98%;
-  
-  /* ============================================ */
-  /* CHROMATIC PALETTE */
-  /* ============================================ */
-  
-  /* Coral - Primary gradient start */
-  --color-coral: 12 90% 60%;
-  --color-coral-soft: 12 70% 92%;
-  --color-coral-dark: 12 85% 45%;
-  
-  /* Blue - Chromatic effect */
-  --color-blue: 210 100% 55%;
-  --color-blue-soft: 210 80% 92%;
-  --color-blue-dark: 210 90% 40%;
-  
-  /* Violet - Gradient midpoint */
-  --color-violet: 280 85% 55%;
-  --color-violet-soft: 280 60% 92%;
-  --color-violet-dark: 280 75% 40%;
-  
-  /* Gold - Accent highlights */
-  --color-gold: 45 100% 50%;
-  --color-gold-soft: 45 80% 90%;
-  --color-gold-dark: 45 90% 38%;
-  
-  /* ============================================ */
-  /* SEMANTIC COLORS (mapped from chromatic) */
-  /* ============================================ */
-  
-  /* Green - Success/Practices */
-  --color-green: 142 60% 45%;
-  --color-green-soft: 142 50% 92%;
-  --color-green-dark: 142 55% 32%;
-  
-  /* Teal - Profile/Settings */
-  --color-teal: 174 55% 45%;
-  --color-teal-soft: 174 45% 92%;
-  --color-teal-dark: 174 50% 32%;
-  
-  /* Yellow - mapped to Gold */
-  --color-yellow: var(--color-gold);
-  --color-yellow-soft: var(--color-gold-soft);
-  --color-yellow-dark: var(--color-gold-dark);
-  
-  /* Lavender - mapped to Violet */
-  --color-lavender: var(--color-violet);
-  --color-lavender-soft: var(--color-violet-soft);
-  --color-lavender-dark: var(--color-violet-dark);
-  
-  /* ============================================ */
-  /* UI ELEMENTS */
-  /* ============================================ */
-  
-  /* Border: Warm gray */
-  --border-light: 35 20% 88%;
-  
-  /* Divider: Lighter warm gray */
-  --border-divider: 35 15% 92%;
-  
-  /* Inactive: Muted warm */
-  --color-inactive: 35 10% 75%;
-  
-  /* Hover: Slightly darker cream */
-  --color-hover: 40 18% 95%;
+  /* Text Colors */
+  --text-primary: 0 0% 13%;
+  --text-secondary: 0 0% 45%;
+  --text-tertiary: 0 0% 60%;
+  --text-inverted: 0 0% 100%;
   
   /* Surface Hierarchy */
   --surface-base: var(--color-base);
-  --surface-card: var(--color-surface);
+  --surface-card: 0 0% 100%;
   --surface-elevated: 0 0% 100%;
   
-  /* ============================================ */
-  /* GRADIENTS */
-  /* ============================================ */
-  --gradient-chromatic: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)), hsl(var(--color-blue)));
-  --gradient-warm: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-gold)));
-  --gradient-cool: linear-gradient(135deg, hsl(var(--color-violet)), hsl(var(--color-blue)));
-  --gradient-sunset: linear-gradient(135deg, hsl(var(--color-coral)), hsl(var(--color-violet)));
+  /* Borders */
+  --border-light: 0 0% 92%;
+  --border-medium: 0 0% 88%;
   
   /* ============================================ */
-  /* SHADOWS - Warm tinted */
+  /* SHADOWS */
   /* ============================================ */
-  --shadow-xs: 0 1px 2px hsla(35, 20%, 20%, 0.04);
-  --shadow-sm: 0 2px 8px hsla(35, 20%, 20%, 0.06);
-  --shadow-md: 0 4px 16px hsla(35, 20%, 20%, 0.08);
-  --shadow-lg: 0 8px 32px hsla(35, 20%, 20%, 0.12);
-  --shadow-glow: 0 0 20px hsla(12, 90%, 60%, 0.3);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
   
   /* ============================================ */
-  /* GRID SYSTEM */
+  /* GRID SYSTEM: 4 columns, 20px gutter, 16px margins */
   /* ============================================ */
   --grid-columns: 4;
   --grid-gutter: 20px;
@@ -154,7 +91,7 @@
   --duration-slower: 600ms;
   
   /* ============================================ */
-  /* SPACING */
+  /* SPACING - Compact */
   /* ============================================ */
   --space-1: 4px;
   --space-2: 8px;
@@ -188,65 +125,28 @@
 }
 
 /* ============================================ */
-/* DARK MODE - Near black with warm accents */
+/* DARK MODE */
 /* ============================================ */
 .dark {
-  /* Background: Near black */
-  --color-base: 0 0% 5%;
+  --surface-base: 0 0% 8%;
+  --surface-card: 0 0% 12%;
+  --surface-elevated: 0 0% 14%;
   
-  /* Surface/Card: Dark charcoal */
-  --color-surface: 0 0% 8%;
+  --text-primary: 0 0% 95%;
+  --text-secondary: 0 0% 70%;
+  --text-tertiary: 0 0% 50%;
   
-  /* Foreground: Warm white */
-  --color-ink: 40 20% 95%;
-  
-  /* Text hierarchy */
-  --text-primary: 40 20% 95%;
-  --text-secondary: 40 10% 60%;
-  --text-tertiary: 40 5% 45%;
-  --text-inverted: 0 0% 5%;
-  
-  /* Borders - dark mode */
   --border-light: 0 0% 18%;
-  --border-divider: 0 0% 14%;
-  --color-inactive: 0 0% 40%;
-  --color-hover: 0 0% 12%;
+  --border-medium: 0 0% 22%;
   
-  /* Surfaces */
-  --surface-base: var(--color-base);
-  --surface-card: var(--color-surface);
-  --surface-elevated: 0 0% 12%;
-  
-  /* Chromatic colors - brighter for dark mode */
-  --color-coral: 12 92% 62%;
-  --color-coral-soft: 12 60% 18%;
-  --color-coral-dark: 12 88% 72%;
-  
-  --color-blue: 210 100% 60%;
-  --color-blue-soft: 210 60% 18%;
-  --color-blue-dark: 210 95% 72%;
-  
-  --color-violet: 280 88% 60%;
-  --color-violet-soft: 280 50% 18%;
-  --color-violet-dark: 280 80% 72%;
-  
-  --color-gold: 45 100% 55%;
-  --color-gold-soft: 45 60% 18%;
-  --color-gold-dark: 45 95% 68%;
-  
-  /* Semantic - brighter for dark mode */
-  --color-green: 142 60% 50%;
-  --color-green-soft: 142 40% 16%;
-  --color-green-dark: 142 55% 65%;
-  
-  --color-teal: 174 55% 50%;
-  --color-teal-soft: 174 35% 16%;
-  --color-teal-dark: 174 50% 65%;
-  
-  /* Shadows - darker with glow effect */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px hsla(12, 90%, 60%, 0.4);
+  --color-pink: 330 50% 45%;
+  --color-pink-soft: 330 40% 25%;
+  --color-lavender: 250 40% 50%;
+  --color-lavender-soft: 250 30% 25%;
+  --color-green: 78 30% 40%;
+  --color-green-soft: 78 25% 22%;
+  --color-blue: 215 40% 45%;
+  --color-blue-soft: 215 30% 25%;
+  --color-yellow: 46 60% 50%;
+  --color-yellow-soft: 46 40% 25%;
 }

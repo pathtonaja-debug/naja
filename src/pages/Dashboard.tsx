@@ -220,11 +220,11 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('/quran')}
-            className="p-4 rounded-2xl bg-semantic-violet-soft border border-semantic-violet-dark/20 cursor-pointer hover:bg-semantic-violet-soft/80 transition-colors"
+            className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-sunset flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-sm">{t('quran.continueReading')}</h3>
@@ -307,7 +307,7 @@ const Dashboard = () => {
               initial={{ width: 0 }}
               animate={{ width: `${levelProgress}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-gradient-chromatic rounded-full"
+              className="h-full bg-secondary rounded-full"
             />
           </div>
           <p className="text-[10px] text-muted-foreground mt-2 text-center italic">
@@ -336,7 +336,7 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-5 rounded-2xl bg-semantic-gold-soft border border-semantic-gold-dark/20"
+          className="p-5 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20"
         >
           <p className="text-2xl font-arabic text-center mb-3 leading-loose">{ayahOfDay.arabic}</p>
           <p className="text-sm text-muted-foreground text-center italic mb-2">
@@ -349,7 +349,7 @@ const Dashboard = () => {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={goToAyahVerse}
-            className="w-full py-2.5 rounded-xl bg-gradient-warm text-white text-sm font-medium flex items-center justify-center gap-2 transition-colors hover:shadow-glow"
+            className="w-full py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium flex items-center justify-center gap-2 transition-colors"
           >
             {t('dashboard.goToVerse')}
             <ArrowRight className="w-4 h-4" />
@@ -410,10 +410,10 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="p-4 bg-semantic-violet-soft border-semantic-violet-dark/20">
+          <Card className="p-4 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-cool flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-accent" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold">{t('dashboard.testKnowledge')}</h3>
@@ -422,7 +422,7 @@ const Dashboard = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/quiz')}
-                className="px-4 py-2 rounded-xl bg-gradient-chromatic text-white text-sm font-medium hover:shadow-glow"
+                className="px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium"
               >
                 {t('common.start')}
               </motion.button>

@@ -9,13 +9,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card border border-border text-foreground rounded-xl shadow-sm hover:bg-hover",
-        primary: "bg-gradient-chromatic text-white rounded-xl shadow-md hover:shadow-lg border-0",
-        gradient: "bg-gradient-animated text-white rounded-xl shadow-md hover:shadow-glow border-0",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl shadow-sm",
-        outline: "border border-border bg-transparent text-foreground hover:bg-hover rounded-xl",
-        secondary: "bg-card border border-border text-foreground hover:bg-hover rounded-xl shadow-sm",
-        ghost: "text-foreground hover:bg-hover rounded-xl",
+        default: "liquid-glass rounded-pill shadow-elevation-2",
+        primary: "bg-gradient-primary text-primary-foreground rounded-pill shadow-elevation-3 hover:shadow-elevation-2 border-0",
+        destructive: "bg-destructive/60 backdrop-blur-2xl text-destructive-foreground hover:bg-destructive/80 border border-white/20 rounded-pill shadow-elevation-2",
+        outline: "border border-border liquid-glass rounded-pill hover:bg-white/30 dark:hover:bg-white/20",
+        secondary: "bg-secondary/50 backdrop-blur-2xl text-secondary-foreground hover:bg-secondary/70 border border-white/20 rounded-pill shadow-elevation-2",
+        ghost: "hover:bg-white/20 backdrop-blur-2xl rounded-pill dark:hover:bg-white/15",
         link: "text-foreground underline-offset-4 hover:underline",
       },
       size: {
