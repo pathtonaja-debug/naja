@@ -258,13 +258,13 @@ const Practices = () => {
             <Card className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">{t('practices.todaysProgress')}</span>
-                <span className="text-lg font-bold text-primary">{fardCompleted}/5 {t('practices.fard')}</span>
+                <span className="text-lg font-bold text-gradient-chromatic">{fardCompleted}/5 {t('practices.fard')}</span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(fardCompleted / 5) * 100}%` }}
-                  className="h-full bg-primary rounded-full"
+                  className="h-full bg-gradient-chromatic rounded-full"
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
