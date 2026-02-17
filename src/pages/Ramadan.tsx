@@ -27,6 +27,7 @@ import { DailyIbadahTracker } from '@/components/ramadan/DailyIbadahTracker';
 import { DailyReminderCard } from '@/components/ramadan/DailyReminderCard';
 import { RamadanHeatmap } from '@/components/ramadan/RamadanHeatmap';
 import { RamadanGoals } from '@/components/ramadan/RamadanGoals';
+import { LastTenNightsTracker } from '@/components/ramadan/LastTenNightsTracker';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'stories';
@@ -43,8 +44,8 @@ const Ramadan = () => {
     const forced: PhaseInfo = {
       ...detected,
       phase: 'active',
-      currentDayOfRamadan: detected.currentDayOfRamadan ?? 1,
-      isLastTenNights: false,
+      currentDayOfRamadan: detected.currentDayOfRamadan ?? 25,
+      isLastTenNights: true,
     };
     setPhaseInfo(forced);
     const ibadah = getTodayIbadah();
@@ -182,6 +183,11 @@ const Ramadan = () => {
 
             {/* Monthly Goals */}
             <RamadanGoals />
+
+            {/* Last 10 Nights Tracker */}
+            {phaseInfo.isLastTenNights && (
+              <LastTenNightsTracker currentDayOfRamadan={phaseInfo.currentDayOfRamadan ?? 25} />
+            )}
 
             {/* Quran Reading Plan */}
             <QuranPlanTracker />
@@ -386,7 +392,8 @@ const Ramadan = () => {
       animate={{ opacity: 1 }}
       className={cn(
         "min-h-screen bg-background pb-24",
-        phaseInfo?.phase === 'active' && "ramadan-active"
+        phaseInfo?.phase === 'active' && "ramadan-active",
+        phaseInfo?.isLastTenNights && "ramadan-last-ten"
       )}
     >
       <TopBar title={t('ramadan.title')} />

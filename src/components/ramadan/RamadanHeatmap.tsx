@@ -15,7 +15,7 @@ const DEFAULT_IBADAH: DailyIbadah = {
   taraweeh: false,
   quranPages: 0,
   dhikrDone: false,
-  charityAmount: 0,
+  charityDone: false,
   tahajjud: false,
 };
 
