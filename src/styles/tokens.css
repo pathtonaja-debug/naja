@@ -11,10 +11,10 @@
   /* Background #FFFDF7 */
   --color-base: 45 100% 99%;
   
-  /* Pink #F5BCDD */
-  --color-pink: 330 72% 85%;
-  --color-pink-soft: 330 72% 92%;
-  --color-pink-dark: 330 55% 55%;
+  /* Olive #3b3923 */
+  --color-pink: 50 24% 18%;
+  --color-pink-soft: 50 20% 90%;
+  --color-pink-dark: 50 24% 12%;
   
   /* Lavender #DFD9F9 */
   --color-lavender: 250 64% 92%;
@@ -139,8 +139,8 @@
   --border-light: 0 0% 18%;
   --border-medium: 0 0% 22%;
   
-  --color-pink: 330 50% 45%;
-  --color-pink-soft: 330 40% 25%;
+  --color-pink: 50 24% 60%;
+  --color-pink-soft: 50 20% 25%;
   --color-lavender: 250 40% 50%;
   --color-lavender-soft: 250 30% 25%;
   --color-green: 78 30% 40%;
