@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { BookOpen, HandHeart, Moon as MoonIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, HandHeart, Moon as MoonIcon, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,20 @@ import {
 } from '@/services/ramadanDailyTracker';
 
 const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
+
+const checkVariants = {
+  unchecked: { scale: 1 },
+  checked: {
+    scale: [1, 1.3, 0.9, 1.05, 1],
+    transition: { duration: 0.4, times: [0, 0.2, 0.5, 0.75, 1] },
+  },
+};
+
+const checkmarkVariants = {
+  hidden: { scale: 0, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { type: 'spring' as const, stiffness: 500, damping: 15 } },
+  exit: { scale: 0, opacity: 0, transition: { duration: 0.15 } },
+};
 
 export function DailyIbadahTracker() {
   const { t } = useTranslation();
@@ -58,58 +72,55 @@ export function DailyIbadahTracker() {
       <div className="mb-3">
         <p className="text-caption-1 text-muted-foreground mb-2">{t('ramadan.ibadah.prayers')}</p>
         <div className="flex gap-2">
-          {PRAYERS.map((prayer) => (
-            <button
-              key={prayer}
-              onClick={() => togglePrayer(prayer)}
-              className="flex flex-col items-center gap-1 flex-1"
-            >
-              <motion.div
-                whileTap={{ scale: 0.85 }}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-caption-2 font-medium transition-colors",
-                  ibadah.prayers[prayer]
-                    ? "bg-success/20 text-success"
-                    : "bg-muted text-muted-foreground"
-                )}
+          {PRAYERS.map((prayer) => {
+            const done = ibadah.prayers[prayer];
+            return (
+              <button
+                key={prayer}
+                onClick={() => togglePrayer(prayer)}
+                className="flex flex-col items-center gap-1 flex-1"
               >
-                {ibadah.prayers[prayer] ? '✓' : prayer[0]}
-              </motion.div>
-              <span className="text-caption-2 text-muted-foreground">{prayer}</span>
-            </button>
-          ))}
+                <motion.div
+                  animate={done ? 'checked' : 'unchecked'}
+                  variants={checkVariants}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center text-caption-2 font-medium transition-colors",
+                    done ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  <AnimatePresence mode="wait">
+                    {done ? (
+                      <motion.div key="check" variants={checkmarkVariants} initial="hidden" animate="visible" exit="exit">
+                        <Check className="w-3.5 h-3.5" />
+                      </motion.div>
+                    ) : (
+                      <motion.span key="letter" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        {prayer[0]}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+                <span className="text-caption-2 text-muted-foreground">{prayer}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Toggle grid */}
       <div className="grid grid-cols-3 gap-2">
-        {/* Taraweeh */}
-        <button
-          onClick={() => update({ taraweeh: !ibadah.taraweeh })}
-          className={cn(
-            "p-3 rounded-xl text-center transition-colors",
-            ibadah.taraweeh ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
-          )}
-        >
-          <MoonIcon className="w-4 h-4 mx-auto mb-1" />
-          <span className="text-caption-1 font-medium">{t('ramadan.ibadah.taraweeh')}</span>
-        </button>
-
-        {/* Quran */}
-        <button
-          onClick={() => update({ quranPages: ibadah.quranPages + 4 })}
-          className={cn(
-            "p-3 rounded-xl text-center transition-colors",
-            ibadah.quranPages > 0 ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
-          )}
-        >
-          <BookOpen className="w-4 h-4 mx-auto mb-1" />
-          <span className="text-caption-1 font-medium">
-            {ibadah.quranPages > 0 ? `${ibadah.quranPages}p` : t('ramadan.ibadah.quran')}
-          </span>
-        </button>
-
-        {/* Dhikr */}
+        <ToggleCell
+          active={ibadah.taraweeh}
+          onToggle={() => update({ taraweeh: !ibadah.taraweeh })}
+          icon={<MoonIcon className="w-4 h-4" />}
+          label={t('ramadan.ibadah.taraweeh')}
+        />
+        <ToggleCell
+          active={ibadah.quranPages > 0}
+          onToggle={() => update({ quranPages: ibadah.quranPages + 4 })}
+          icon={<BookOpen className="w-4 h-4" />}
+          label={ibadah.quranPages > 0 ? `${ibadah.quranPages}p` : t('ramadan.ibadah.quran')}
+        />
         <button
           onClick={() => navigate('/dhikr')}
           className="p-3 rounded-xl text-center bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
@@ -117,31 +128,55 @@ export function DailyIbadahTracker() {
           <span className="text-base mb-1 block">📿</span>
           <span className="text-caption-1 font-medium">{t('ramadan.ibadah.dhikr')}</span>
         </button>
-
-        {/* Charity */}
-        <button
-          onClick={() => update({ charityDone: !ibadah.charityDone })}
-          className={cn(
-            "p-3 rounded-xl text-center transition-colors",
-            ibadah.charityDone ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
-          )}
-        >
-          <HandHeart className="w-4 h-4 mx-auto mb-1" />
-          <span className="text-caption-1 font-medium">{t('ramadan.ibadah.charity')}</span>
-        </button>
-
-        {/* Tahajjud */}
-        <button
-          onClick={() => update({ tahajjud: !ibadah.tahajjud })}
-          className={cn(
-            "p-3 rounded-xl text-center transition-colors",
-            ibadah.tahajjud ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
-          )}
-        >
-          <span className="text-base mb-1 block">🌙</span>
-          <span className="text-caption-1 font-medium">{t('ramadan.ibadah.tahajjud')}</span>
-        </button>
+        <ToggleCell
+          active={ibadah.charityDone}
+          onToggle={() => update({ charityDone: !ibadah.charityDone })}
+          icon={<HandHeart className="w-4 h-4" />}
+          label={t('ramadan.ibadah.charity')}
+        />
+        <ToggleCell
+          active={ibadah.tahajjud}
+          onToggle={() => update({ tahajjud: !ibadah.tahajjud })}
+          icon={<span className="text-base">🌙</span>}
+          label={t('ramadan.ibadah.tahajjud')}
+        />
       </div>
     </Card>
+  );
+}
+
+interface ToggleCellProps {
+  active: boolean;
+  onToggle: () => void;
+  icon: React.ReactNode;
+  label: string;
+}
+
+function ToggleCell({ active, onToggle, icon, label }: ToggleCellProps) {
+  return (
+    <motion.button
+      onClick={onToggle}
+      animate={active ? 'checked' : 'unchecked'}
+      variants={checkVariants}
+      className={cn(
+        "p-3 rounded-xl text-center transition-colors",
+        active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
+      )}
+    >
+      <div className="mx-auto mb-1 w-4 h-4 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {active ? (
+            <motion.div key="check" variants={checkmarkVariants} initial="hidden" animate="visible" exit="exit">
+              <Check className="w-4 h-4" />
+            </motion.div>
+          ) : (
+            <motion.div key="icon" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {icon}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      <span className="text-caption-1 font-medium">{label}</span>
+    </motion.button>
   );
 }

@@ -157,6 +157,19 @@ const resources = {
       "ramadan.lastTen.duaTitle": "Dua for Laylatul Qadr",
       "ramadan.lastTen.duaTranslation": "O Allah, You are the Pardoner and You love to pardon, so pardon me.",
 
+      // Eid Summary
+      "ramadan.eid.summaryBadge": "Ramadan Complete",
+      "ramadan.eid.summaryTitle": "Your Ramadan Journey",
+      "ramadan.eid.summarySubtitle": "May Allah accept all your worship",
+      "ramadan.eid.fastingDays": "Fasting Days",
+      "ramadan.eid.prayers": "Prayers",
+      "ramadan.eid.taraweeh": "Taraweeh",
+      "ramadan.eid.quranPages": "Quran Pages",
+      "ramadan.eid.charityDays": "Charity Days",
+      "ramadan.eid.tahajjud": "Tahajjud",
+      "ramadan.eid.closingMessage": "Every act of worship, no matter how small, is seen and rewarded by Allah.",
+      "ramadan.eid.disclaimer": "Your niyyah is what matters — points are just a tool to help you stay consistent.",
+
       // Daily Content - Hadiths
       "ramadan.daily.hadith.1": "Whoever fasts Ramadan out of sincere faith and hoping for reward, all his past sins will be forgiven.",
       "ramadan.daily.hadith.2": "When Ramadan begins, the gates of Paradise are opened, the gates of Hell are closed, and the devils are chained.",
@@ -1669,6 +1682,19 @@ const resources = {
       "ramadan.lastTen.itikaaf": "I'tikaaf / Retraite",
       "ramadan.lastTen.duaTitle": "Dua pour Laylat al-Qadr",
       "ramadan.lastTen.duaTranslation": "Ô Allah, Tu es le Pardonneur et Tu aimes pardonner, alors pardonne-moi.",
+
+      // Eid Summary (FR)
+      "ramadan.eid.summaryBadge": "Ramadan Terminé",
+      "ramadan.eid.summaryTitle": "Votre parcours Ramadan",
+      "ramadan.eid.summarySubtitle": "Qu'Allah accepte toutes vos adorations",
+      "ramadan.eid.fastingDays": "Jours de jeûne",
+      "ramadan.eid.prayers": "Prières",
+      "ramadan.eid.taraweeh": "Taraweeh",
+      "ramadan.eid.quranPages": "Pages du Coran",
+      "ramadan.eid.charityDays": "Jours de charité",
+      "ramadan.eid.tahajjud": "Tahajjud",
+      "ramadan.eid.closingMessage": "Chaque acte d'adoration, aussi petit soit-il, est vu et récompensé par Allah.",
+      "ramadan.eid.disclaimer": "Votre niyyah est ce qui compte — les points ne sont qu'un outil pour rester constant.",
 
       // Daily Content - Hadiths (FR)
       "ramadan.daily.hadith.1": "Quiconque jeûne le Ramadan avec foi et espérance de récompense, tous ses péchés passés lui seront pardonnés.",

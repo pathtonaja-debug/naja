@@ -28,6 +28,7 @@ import { DailyReminderCard } from '@/components/ramadan/DailyReminderCard';
 import { RamadanHeatmap } from '@/components/ramadan/RamadanHeatmap';
 import { RamadanGoals } from '@/components/ramadan/RamadanGoals';
 import { LastTenNightsTracker } from '@/components/ramadan/LastTenNightsTracker';
+import { EidSummaryCard } from '@/components/ramadan/EidSummaryCard';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'stories';
@@ -234,6 +235,9 @@ const Ramadan = () => {
       case 'eid':
         return (
           <div className="space-y-6">
+            {/* Eid Summary Card */}
+            <EidSummaryCard />
+
             {/* Eid Guidance */}
             <div>
               <h3 className="text-lg font-semibold mb-3">{t('ramadan.eid.title')}</h3>

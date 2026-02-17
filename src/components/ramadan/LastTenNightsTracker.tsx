@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { Sparkles, Star, Moon, BookOpen, Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Star, Moon, BookOpen, Heart, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -160,27 +160,45 @@ export function LastTenNightsTracker({ currentDayOfRamadan }: LastTenNightsProps
         </div>
 
         <div className="space-y-2">
-          {CHECKLIST_ITEMS.map(item => (
-            <motion.button
-              key={item.key}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => toggle(item.key)}
-              className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-xl transition-colors",
-                checklist[item.key]
-                  ? "bg-success/10 text-success"
-                  : "bg-muted/50 text-muted-foreground"
-              )}
-            >
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                checklist[item.key] ? "bg-success/20" : "bg-muted"
-              )}>
-                {checklist[item.key] ? '✓' : item.icon}
-              </div>
-              <span className="text-subhead font-medium">{t(item.labelKey)}</span>
-            </motion.button>
-          ))}
+          {CHECKLIST_ITEMS.map(item => {
+            const done = checklist[item.key];
+            return (
+              <motion.button
+                key={item.key}
+                animate={done ? { scale: [1, 1.03, 0.97, 1] } : { scale: 1 }}
+                transition={{ duration: 0.35 }}
+                onClick={() => toggle(item.key)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl transition-colors",
+                  done ? "bg-success/10 text-success" : "bg-muted/50 text-muted-foreground"
+                )}
+              >
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                  done ? "bg-success/20" : "bg-muted"
+                )}>
+                  <AnimatePresence mode="wait">
+                    {done ? (
+                      <motion.div
+                        key="check"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                      >
+                        <Check className="w-4 h-4" />
+                      </motion.div>
+                    ) : (
+                      <motion.div key="icon" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        {item.icon}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                <span className="text-subhead font-medium">{t(item.labelKey)}</span>
+              </motion.button>
+            );
+          })}
         </div>
       </Card>
 
