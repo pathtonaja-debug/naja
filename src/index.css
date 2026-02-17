@@ -32,9 +32,9 @@
     --popover: var(--surface-card);
     --popover-foreground: var(--text-primary);
     
-    /* Primary - Pink */
+    /* Primary - Olive */
     --primary: var(--color-pink);
-    --primary-foreground: var(--text-primary);
+    --primary-foreground: 0 0% 100%;
     --primary-soft: var(--color-pink-soft);
     
     /* Secondary - Lavender */

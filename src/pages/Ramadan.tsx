@@ -25,6 +25,8 @@ import { QuranPlanTracker } from '@/components/ramadan/QuranPlanTracker';
 import { RamadanHeader } from '@/components/ramadan/RamadanHeader';
 import { DailyIbadahTracker } from '@/components/ramadan/DailyIbadahTracker';
 import { DailyReminderCard } from '@/components/ramadan/DailyReminderCard';
+import { RamadanHeatmap } from '@/components/ramadan/RamadanHeatmap';
+import { RamadanGoals } from '@/components/ramadan/RamadanGoals';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'stories';
@@ -174,6 +176,12 @@ const Ramadan = () => {
 
             {/* Daily Ibadah Tracker */}
             <DailyIbadahTracker />
+
+            {/* 30-Day Heatmap */}
+            <RamadanHeatmap currentDay={phaseInfo.currentDayOfRamadan ?? 1} />
+
+            {/* Monthly Goals */}
+            <RamadanGoals />
 
             {/* Quran Reading Plan */}
             <QuranPlanTracker />

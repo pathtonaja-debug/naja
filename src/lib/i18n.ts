@@ -128,6 +128,22 @@ const resources = {
       "ramadan.quran.stayOnTrack": "Read {{pages}} pages to stay on track",
       "ramadan.quran.totalProgress": "Page {{read}} of 604",
 
+      // Phase 2 - Heatmap
+      "ramadan.heatmap.title": "30-Day Overview",
+      "ramadan.heatmap.daysActive": "days active",
+      "ramadan.heatmap.lastTen": "Last 10",
+
+      // Phase 2 - Goals
+      "ramadan.goals.title": "Ramadan Goals",
+      "ramadan.goals.khatm": "Quran Khatm",
+      "ramadan.goals.khatmUnit": "khatm",
+      "ramadan.goals.taraweeh": "Taraweeh Nights",
+      "ramadan.goals.nights": "nights",
+      "ramadan.goals.charity": "Charity Total",
+      "ramadan.goals.setKhatmTarget": "Set Khatm Target",
+      "ramadan.goals.setTaraweehTarget": "Set Taraweeh Target",
+      "ramadan.goals.setCharityTarget": "Set Charity Target",
+
       // Daily Content - Hadiths
       "ramadan.daily.hadith.1": "Whoever fasts Ramadan out of sincere faith and hoping for reward, all his past sins will be forgiven.",
       "ramadan.daily.hadith.2": "When Ramadan begins, the gates of Paradise are opened, the gates of Hell are closed, and the devils are chained.",
@@ -1611,6 +1627,22 @@ const resources = {
       "ramadan.quran.pagesRemaining": "{{pages}} pages restantes aujourd'hui",
       "ramadan.quran.stayOnTrack": "Lisez {{pages}} pages pour rester en bonne voie",
       "ramadan.quran.totalProgress": "Page {{read}} sur 604",
+
+      // Phase 2 - Heatmap (FR)
+      "ramadan.heatmap.title": "Aperçu 30 jours",
+      "ramadan.heatmap.daysActive": "jours actifs",
+      "ramadan.heatmap.lastTen": "10 derniers",
+
+      // Phase 2 - Goals (FR)
+      "ramadan.goals.title": "Objectifs Ramadan",
+      "ramadan.goals.khatm": "Khatm du Coran",
+      "ramadan.goals.khatmUnit": "khatm",
+      "ramadan.goals.taraweeh": "Nuits de Taraweeh",
+      "ramadan.goals.nights": "nuits",
+      "ramadan.goals.charity": "Charité totale",
+      "ramadan.goals.setKhatmTarget": "Définir l'objectif Khatm",
+      "ramadan.goals.setTaraweehTarget": "Définir l'objectif Taraweeh",
+      "ramadan.goals.setCharityTarget": "Définir l'objectif Charité",
 
       // Daily Content - Hadiths (FR)
       "ramadan.daily.hadith.1": "Quiconque jeûne le Ramadan avec foi et espérance de récompense, tous ses péchés passés lui seront pardonnés.",
