@@ -17,6 +17,34 @@
   --ring: var(--ramadan-olive);
 }
 
+/* ============================================ */
+/* LAST 10 NIGHTS — Deeper, more reverent      */
+/* ============================================ */
+.ramadan-last-ten {
+  --ramadan-olive: 50 24% 14%;
+  --ramadan-olive-light: 50 20% 24%;
+  --ramadan-gold: 43 60% 50%;
+  --ramadan-gold-soft: 43 52% 70%;
+  --ramadan-gold-glow: 43 52% 80%;
+
+  --primary: var(--ramadan-olive);
+  --primary-foreground: 45 100% 99%;
+  --ring: var(--ramadan-olive);
+  --background: 45 30% 96%;
+}
+
+.dark .ramadan-last-ten {
+  --ramadan-olive: 50 24% 65%;
+  --ramadan-olive-light: 50 20% 50%;
+  --ramadan-gold: 43 60% 58%;
+  --ramadan-gold-soft: 43 40% 28%;
+  --ramadan-gold-glow: 43 40% 22%;
+
+  --primary: var(--ramadan-olive);
+  --primary-foreground: 0 0% 8%;
+  --background: 220 15% 6%;
+}
+
 .dark .ramadan-active {
   --ramadan-olive: 50 24% 60%;
   --ramadan-olive-light: 50 20% 45%;

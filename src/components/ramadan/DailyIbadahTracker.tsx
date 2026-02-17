@@ -120,16 +120,14 @@ export function DailyIbadahTracker() {
 
         {/* Charity */}
         <button
-          onClick={() => update({ charityAmount: ibadah.charityAmount + 5 })}
+          onClick={() => update({ charityDone: !ibadah.charityDone })}
           className={cn(
             "p-3 rounded-xl text-center transition-colors",
-            ibadah.charityAmount > 0 ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
+            ibadah.charityDone ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
           )}
         >
           <HandHeart className="w-4 h-4 mx-auto mb-1" />
-          <span className="text-caption-1 font-medium">
-            {ibadah.charityAmount > 0 ? `$${ibadah.charityAmount}` : t('ramadan.ibadah.charity')}
-          </span>
+          <span className="text-caption-1 font-medium">{t('ramadan.ibadah.charity')}</span>
         </button>
 
         {/* Tahajjud */}

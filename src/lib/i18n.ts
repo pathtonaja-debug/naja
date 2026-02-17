@@ -144,6 +144,19 @@ const resources = {
       "ramadan.goals.setTaraweehTarget": "Set Taraweeh Target",
       "ramadan.goals.setCharityTarget": "Set Charity Target",
 
+      // Phase 3 - Last 10 Nights
+      "ramadan.lastTen.title": "Last 10 Nights",
+      "ramadan.lastTen.subtitle": "Seek Laylatul Qadr — better than a thousand months",
+      "ramadan.lastTen.oddNight": "Night {{night}} — a possible Laylatul Qadr",
+      "ramadan.lastTen.checklist": "Tonight's Checklist",
+      "ramadan.lastTen.qiyam": "Qiyam al-Layl",
+      "ramadan.lastTen.istighfar": "100× Istighfar",
+      "ramadan.lastTen.extraQuran": "Extra Quran Reading",
+      "ramadan.lastTen.longDua": "Long Personal Dua",
+      "ramadan.lastTen.itikaaf": "I'tikaaf / Seclusion",
+      "ramadan.lastTen.duaTitle": "Dua for Laylatul Qadr",
+      "ramadan.lastTen.duaTranslation": "O Allah, You are the Pardoner and You love to pardon, so pardon me.",
+
       // Daily Content - Hadiths
       "ramadan.daily.hadith.1": "Whoever fasts Ramadan out of sincere faith and hoping for reward, all his past sins will be forgiven.",
       "ramadan.daily.hadith.2": "When Ramadan begins, the gates of Paradise are opened, the gates of Hell are closed, and the devils are chained.",
@@ -1643,6 +1656,19 @@ const resources = {
       "ramadan.goals.setKhatmTarget": "Définir l'objectif Khatm",
       "ramadan.goals.setTaraweehTarget": "Définir l'objectif Taraweeh",
       "ramadan.goals.setCharityTarget": "Définir l'objectif Charité",
+
+      // Phase 3 - Last 10 Nights (FR)
+      "ramadan.lastTen.title": "Les 10 dernières nuits",
+      "ramadan.lastTen.subtitle": "Cherchez Laylat al-Qadr — meilleure que mille mois",
+      "ramadan.lastTen.oddNight": "Nuit {{night}} — possible Laylat al-Qadr",
+      "ramadan.lastTen.checklist": "Liste de la nuit",
+      "ramadan.lastTen.qiyam": "Qiyam al-Layl",
+      "ramadan.lastTen.istighfar": "100× Istighfar",
+      "ramadan.lastTen.extraQuran": "Lecture supplémentaire du Coran",
+      "ramadan.lastTen.longDua": "Longue Dua personnelle",
+      "ramadan.lastTen.itikaaf": "I'tikaaf / Retraite",
+      "ramadan.lastTen.duaTitle": "Dua pour Laylat al-Qadr",
+      "ramadan.lastTen.duaTranslation": "Ô Allah, Tu es le Pardonneur et Tu aimes pardonner, alors pardonne-moi.",
 
       // Daily Content - Hadiths (FR)
       "ramadan.daily.hadith.1": "Quiconque jeûne le Ramadan avec foi et espérance de récompense, tous ses péchés passés lui seront pardonnés.",

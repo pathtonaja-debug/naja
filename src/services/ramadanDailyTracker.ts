@@ -11,7 +11,7 @@ export interface DailyIbadah {
   taraweeh: boolean;
   quranPages: number;
   dhikrDone: boolean;
-  charityAmount: number;
+  charityDone: boolean;
   tahajjud: boolean;
 }
 
@@ -47,7 +47,7 @@ const DEFAULT_IBADAH: DailyIbadah = {
   taraweeh: false,
   quranPages: 0,
   dhikrDone: false,
-  charityAmount: 0,
+  charityDone: false,
   tahajjud: false,
 };
 
@@ -83,7 +83,7 @@ export function getCompletionPercent(ibadah: DailyIbadah): number {
   // Dhikr
   if (ibadah.dhikrDone) done++;
   // Charity
-  if (ibadah.charityAmount > 0) done++;
+  if (ibadah.charityDone) done++;
   // Tahajjud
   if (ibadah.tahajjud) done++;
 
