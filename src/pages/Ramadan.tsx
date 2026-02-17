@@ -36,7 +36,15 @@ const Ramadan = () => {
   const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
 
   useEffect(() => {
-    setPhaseInfo(getRamadanPhase());
+    const detected = getRamadanPhase();
+    // Force active mode — Ramadan 1446 has started
+    const forced: PhaseInfo = {
+      ...detected,
+      phase: 'active',
+      currentDayOfRamadan: detected.currentDayOfRamadan ?? 1,
+      isLastTenNights: false,
+    };
+    setPhaseInfo(forced);
     const ibadah = getTodayIbadah();
     setFastingStatus(ibadah.fasting);
   }, []);
