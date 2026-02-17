@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart3, TrendingUp } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -67,6 +67,62 @@ function InsightRow({ label, value, pct, emoji }: InsightRowProps) {
   );
 }
 
+/** Weekly breakdown helper */
+function getWeeklyBreakdown(stats: DayStats[]) {
+  const weeks: { label: string; stats: DayStats[] }[] = [];
+  for (let i = 0; i < stats.length; i += 7) {
+    const chunk = stats.slice(i, i + 7);
+    const weekNum = Math.floor(i / 7) + 1;
+    weeks.push({ label: `Week ${weekNum}`, stats: chunk });
+  }
+  return weeks;
+}
+
+function WeekCard({ label, stats }: { label: string; stats: DayStats[] }) {
+  const { t } = useTranslation();
+  if (stats.length === 0) return null;
+
+  const avgPct = Math.round(stats.reduce((s, d) => s + d.pct, 0) / stats.length);
+  const fastingDays = stats.filter(s => s.fasting).length;
+  const prayers = stats.reduce((s, d) => s + d.prayerCount, 0);
+  const quranPages = stats.reduce((s, d) => s + d.quranPages, 0);
+  const taraweeh = stats.filter(s => s.taraweeh).length;
+
+  return (
+    <Card className="p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-subhead font-semibold">{label}</span>
+        <span className={cn(
+          "text-caption-1 font-bold px-2 py-0.5 rounded-full",
+          avgPct >= 75 ? "bg-success/15 text-success" :
+          avgPct >= 50 ? "bg-warn/15 text-warn" :
+          "bg-muted text-muted-foreground"
+        )}>
+          {avgPct}%
+        </span>
+      </div>
+      <div className="grid grid-cols-4 gap-2 text-center">
+        <div>
+          <p className="text-subhead font-bold">{fastingDays}/{stats.length}</p>
+          <p className="text-caption-2 text-muted-foreground">🍽️ {t('ramadan.insights.fasting')}</p>
+        </div>
+        <div>
+          <p className="text-subhead font-bold">{prayers}/{stats.length * 5}</p>
+          <p className="text-caption-2 text-muted-foreground">🕌 {t('ramadan.insights.prayers')}</p>
+        </div>
+        <div>
+          <p className="text-subhead font-bold">{quranPages}</p>
+          <p className="text-caption-2 text-muted-foreground">📖 {t('ramadan.insights.pages')}</p>
+        </div>
+        <div>
+          <p className="text-subhead font-bold">{taraweeh}/{stats.length}</p>
+          <p className="text-caption-2 text-muted-foreground">🌙 {t('ramadan.insights.taraweehShort')}</p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function RamadanInsights() {
   const { t } = useTranslation();
   const [stats, setStats] = useState<DayStats[]>([]);
@@ -88,14 +144,10 @@ export function RamadanInsights() {
     const tahajjudNights = stats.filter(s => s.tahajjud).length;
     const totalDonations = getTotalDonations();
 
-    // Find strongest day
     const strongest = stats.reduce((best, d) => d.pct > best.pct ? d : best, stats[0]);
     const strongestDayNum = stats.indexOf(strongest) + 1;
-
-    // Average completion
     const avgPct = Math.round(stats.reduce((s, d) => s + d.pct, 0) / totalDays);
 
-    // Current streak
     let streak = 0;
     for (let i = stats.length - 1; i >= 0; i--) {
       if (stats[i].pct >= 50) streak++;
@@ -108,6 +160,8 @@ export function RamadanInsights() {
       totalDonations, strongestDayNum, strongest, avgPct, streak,
     };
   }, [stats]);
+
+  const weeks = useMemo(() => getWeeklyBreakdown(stats), [stats]);
 
   if (!insights || insights.totalDays < 1) {
     return null;
@@ -137,6 +191,19 @@ export function RamadanInsights() {
           </div>
         </div>
       </Card>
+
+      {/* Weekly breakdown */}
+      {weeks.length > 1 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-subhead font-medium text-muted-foreground">{t('ramadan.insights.weeklyBreakdown')}</span>
+          </div>
+          {weeks.map((w, i) => (
+            <WeekCard key={i} label={w.label} stats={w.stats} />
+          ))}
+        </div>
+      )}
 
       {/* Detailed stats */}
       <Card className="p-4 space-y-3">
