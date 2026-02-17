@@ -71,6 +71,8 @@ const Ramadan = () => {
         phase = 'eid';
       } else if (apiHijriMonth === 10) {
         phase = 'shawwal';
+      } else {
+        phase = 'preparing';
       }
 
       setPhaseInfo({
