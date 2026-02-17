@@ -205,23 +205,6 @@ const Ramadan = () => {
               <DailyReminderCard dayOfRamadan={phaseInfo.currentDayOfRamadan} />
             )}
 
-            {/* Quick Duas Access */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3">{t('ramadan.quickDuas')}</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {RAMADAN_DUAS.filter(d => d.category === 'suhoor' || d.category === 'iftar').slice(0, 2).map((dua) => (
-                  <Card 
-                    key={dua.id} 
-                    className="p-4 cursor-pointer hover:bg-muted/30 transition-colors"
-                    onClick={() => setActiveTab('duas')}
-                  >
-                    <h4 className="font-medium text-sm mb-1">{t(dua.titleKey)}</h4>
-                    <p className="text-xs text-muted-foreground line-clamp-2 font-arabic">{dua.arabic}</p>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
             {/* Laylatul Qadr (Last 10 nights) */}
             {phaseInfo.isLastTenNights && (
               <Card className="p-4 bg-gradient-to-br from-warn/10 to-warn/5 border-warn/20">
