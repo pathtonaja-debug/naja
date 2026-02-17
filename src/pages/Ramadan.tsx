@@ -197,8 +197,6 @@ const Ramadan = () => {
             {/* Quran Reading Plan */}
             <QuranPlanTracker />
 
-            {/* Fasting Health & Meals */}
-            <FastingHealthTracker />
 
             {/* Charity & Impact */}
             <CharityTracker />
@@ -353,6 +351,9 @@ const Ramadan = () => {
 
     return (
       <div className="space-y-6">
+        {/* Meal logging + water intake + niyyah */}
+        <FastingHealthTracker />
+
         {categories.map((category) => {
           const categoryTips = HEALTH_TIPS.filter(tip => tip.category === category.id);
           if (categoryTips.length === 0) return null;
