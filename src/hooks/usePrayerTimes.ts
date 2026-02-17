@@ -1,7 +1,8 @@
-// Hook for managing prayer times with user location
+// Hook for managing prayer times with Aladhan API (free, no key required)
+// Uses location from localStorage — local-first, no Supabase dependency
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "./useProfile";
+import { getUserLocation } from "@/services/locationStore";
+import { fetchPrayerData } from "@/services/prayerApiService";
 
 export interface PrayerTime {
   name: string;
@@ -20,10 +21,17 @@ export interface PrayerTimesData {
   next: string;
   nextInMinutes: number;
   prayers: PrayerTime[];
+  hijriDate?: string;
+  gregorianDate?: string;
+}
+
+const PRAYER_NAMES = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"] as const;
+
+function stripTimezone(timeStr: string): string {
+  return timeStr?.split(" ")[0] || timeStr;
 }
 
 export function usePrayerTimes() {
-  const { profile } = useProfile();
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState<string>("--:--");
@@ -31,27 +39,34 @@ export function usePrayerTimes() {
   const fetchPrayerTimes = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Use profile location or default
-      const lat = profile?.latitude ?? 25.2;
-      const lon = profile?.longitude ?? 55.3;
-      const method = profile?.prayer_method ?? "MWL";
 
-      const { data, error } = await supabase.functions.invoke("prayer-times", {
-        body: { latitude: lat, longitude: lon, method },
-      });
+      const location = getUserLocation();
+      const lat = location?.lat ?? 25.2;
+      const lng = location?.lng ?? 55.3;
+      const timezone = location?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const method = location?.method ?? 2;
 
-      if (error) throw error;
+      const data = await fetchPrayerData(lat, lng, timezone, method);
+
+      if (!data) throw new Error("No prayer data");
+
+      const timings = data.prayers;
+      const fajr = stripTimezone(timings.Fajr);
+      const dhuhr = stripTimezone(timings.Dhuhr);
+      const asr = stripTimezone(timings.Asr);
+      const maghrib = stripTimezone(timings.Maghrib);
+      const isha = stripTimezone(timings.Isha);
+      const sunrise = stripTimezone(timings.Sunrise);
 
       const now = new Date();
       const currentTime = now.getHours() * 60 + now.getMinutes();
 
       const prayersList = [
-        { name: "Fajr", time: data.fajr },
-        { name: "Dhuhr", time: data.dhuhr },
-        { name: "Asr", time: data.asr },
-        { name: "Maghrib", time: data.maghrib },
-        { name: "Isha", time: data.isha },
+        { name: "Fajr", time: fajr },
+        { name: "Dhuhr", time: dhuhr },
+        { name: "Asr", time: asr },
+        { name: "Maghrib", time: maghrib },
+        { name: "Isha", time: isha },
       ];
 
       // Calculate next prayer
@@ -76,7 +91,7 @@ export function usePrayerTimes() {
         nextInMinutes = 24 * 60 - currentTime + fajrTime;
       }
 
-      // Build prayers array with completion status
+      // Build prayers array
       const prayers: PrayerTime[] = prayersList.map((p) => {
         const [hours, minutes] = p.time.split(":").map(Number);
         const prayerTime = hours * 60 + minutes;
@@ -86,15 +101,17 @@ export function usePrayerTimes() {
       });
 
       setPrayerTimes({
-        fajr: data.fajr,
-        dhuhr: data.dhuhr,
-        asr: data.asr,
-        maghrib: data.maghrib,
-        isha: data.isha,
-        sunrise: data.sunrise,
+        fajr,
+        dhuhr,
+        asr,
+        maghrib,
+        isha,
+        sunrise,
         next: nextPrayer,
         nextInMinutes,
         prayers,
+        hijriDate: data.hijri.formatted,
+        gregorianDate: data.gregorian.formatted,
       });
     } catch (error) {
       console.error("Failed to fetch prayer times:", error);
@@ -102,23 +119,23 @@ export function usePrayerTimes() {
       setPrayerTimes({
         fajr: "05:32",
         dhuhr: "12:45",
-        asr: "03:58",
-        maghrib: "06:15",
-        isha: "07:42",
+        asr: "15:58",
+        maghrib: "18:15",
+        isha: "19:42",
         next: "Asr",
         nextInMinutes: 45,
         prayers: [
           { name: "Fajr", time: "05:32", isCompleted: true, isNext: false },
           { name: "Dhuhr", time: "12:45", isCompleted: true, isNext: false },
-          { name: "Asr", time: "03:58", isCompleted: false, isNext: true },
-          { name: "Maghrib", time: "06:15", isCompleted: false, isNext: false },
-          { name: "Isha", time: "07:42", isCompleted: false, isNext: false },
+          { name: "Asr", time: "15:58", isCompleted: false, isNext: true },
+          { name: "Maghrib", time: "18:15", isCompleted: false, isNext: false },
+          { name: "Isha", time: "19:42", isCompleted: false, isNext: false },
         ],
       });
     } finally {
       setLoading(false);
     }
-  }, [profile?.latitude, profile?.longitude, profile?.prayer_method]);
+  }, []);
 
   // Update countdown every minute
   useEffect(() => {
@@ -148,7 +165,6 @@ export function usePrayerTimes() {
         }
       }
 
-      // If no prayer found today, next is Fajr tomorrow
       if (nextInMinutes === 0) {
         const [hours, minutes] = prayersList[0].time.split(":").map(Number);
         const fajrTime = hours * 60 + minutes;

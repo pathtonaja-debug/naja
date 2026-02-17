@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
   BookOpen, ChevronRight, Flame, Star, Trophy, Brain,
-  Sunrise, HandHeart, CircleDollarSign, RefreshCw, ArrowRight
+  Sunrise, HandHeart, CircleDollarSign, RefreshCw, ArrowRight,
+  MapPin, Calendar
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
@@ -15,22 +16,26 @@ import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingSt
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
 import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dailyProgressService';
+import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { getUserLocation } from '@/services/locationStore';
+import { CityOnboarding } from '@/components/onboarding/CityOnboarding';
 
 // Ayah keys for i18n (using i18n translations)
 const AYAH_KEYS = [1, 2, 3, 4];
 
 // Reference parsing map for Ayah navigation (surah:verse)
 const AYAH_VERSE_MAP: Record<number, { surah: number; verse: number }> = {
-  1: { surah: 94, verse: 6 },   // Ash-Sharh 94:6
-  2: { surah: 65, verse: 2 },   // At-Talaq 65:2
-  3: { surah: 2, verse: 152 },  // Al-Baqarah 2:152
-  4: { surah: 93, verse: 5 },   // Ad-Duha 93:5
+  1: { surah: 94, verse: 6 },
+  2: { surah: 65, verse: 2 },
+  3: { surah: 2, verse: 152 },
+  4: { surah: 93, verse: 5 },
 };
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { profile, todayPoints, actsCompleted, refetch } = useGuestProfile();
+  const { prayerTimes, loading: prayerLoading, countdown } = usePrayerTimes();
   
   const [ayahIndex, setAyahIndex] = useState(0);
   const [lastReadPosition, setLastReadPositionState] = useState<LastReadPosition | null>(null);
@@ -45,31 +50,31 @@ const Dashboard = () => {
   const [celebrationPoints, setCelebrationPoints] = useState(0);
   const [actualActsCompleted, setActualActsCompleted] = useState(0);
   const [, setReloadKey] = useState(0);
+  const [needsLocation, setNeedsLocation] = useState(false);
+
+  // Check if user has location set
+  useEffect(() => {
+    const loc = getUserLocation();
+    if (!loc) setNeedsLocation(true);
+  }, []);
 
   // Load data on mount and when returning to the page
   const loadData = useCallback(() => {
-    // Check if should show welcome prompt
     const onboarding = getOnboardingState();
     if (!onboarding.hasSeenWelcome && isNewUser()) {
       setShowWelcome(true);
     }
     
-    // Load Quran last read position
     const lastRead = getLastReadPosition();
     setLastReadPositionState(lastRead);
     
-    
-    
-    // Get today's progress from daily progress service
     const todayProgress = getTodayProgress();
     const completedActIds = todayProgress.acts.map(a => a.id);
     
-    // Check prayer states - any prayer counts for salah
     const anyPrayerDone = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].some(
       prayerId => completedActIds.includes(prayerId)
     );
     
-    // Check each act category from the daily progress
     setTodaysActsStatus({
       salah: anyPrayerDone,
       quran: completedActIds.includes('quran'),
@@ -77,30 +82,17 @@ const Dashboard = () => {
       sadaqah: completedActIds.includes('sadaqah'),
     });
     
-    // Update actual acts completed count
     setActualActsCompleted(todayProgress.completed);
-    
-    // Refetch profile to get updated stats
     refetch();
   }, [refetch]);
 
-  // Load data on mount and set up focus/visibility listeners
   useEffect(() => {
     loadData();
     
-    // Reload when page becomes visible (user returns from another tab)
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        loadData();
-      }
+      if (document.visibilityState === 'visible') loadData();
     };
-    
-    // Reload on window focus (works better for SPA navigation)
-    const handleFocus = () => {
-      loadData();
-    };
-    
-    // Also listen for custom event from acts module
+    const handleFocus = () => loadData();
     const handleActsUpdated = () => {
       setReloadKey(prev => prev + 1);
       loadData();
@@ -117,29 +109,24 @@ const Dashboard = () => {
     };
   }, [loadData]);
 
-  // Get today's ayah based on date
   useEffect(() => {
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
     setAyahIndex((dayOfYear % AYAH_KEYS.length) + 1);
   }, []);
 
-  // Randomize ayah function
   const refreshAyah = () => {
     const randomIndex = Math.floor(Math.random() * AYAH_KEYS.length) + 1;
     setAyahIndex(randomIndex);
   };
 
-  // Navigate to the verse in Quran
   const goToAyahVerse = () => {
     const verseData = AYAH_VERSE_MAP[ayahIndex];
     if (verseData) {
-      // Let Quran page & SurahReader pick this up and auto-scroll
       sessionStorage.setItem('naja_scroll_to_verse', `${verseData.surah}:${verseData.verse}`);
       navigate(`/quran?surah=${verseData.surah}&verse=${verseData.verse}`);
     }
   };
 
-  // Build ayah object from i18n
   const ayahOfDay = {
     arabic: t(`ayah.${ayahIndex}.arabic`),
     transliteration: t(`ayah.${ayahIndex}.transliteration`),
@@ -158,12 +145,10 @@ const Dashboard = () => {
     ? Math.floor((profile.barakahPoints % 100) / 100 * 100) 
     : 100;
 
-  // Route map for each act
   const actRoutes: Record<string, string> = {
     salah: '/practices',
     quran: '/quran',
     goodDeed: '/practices',
-    // Deep-link to Sadaqah tab
     sadaqah: '/practices?tab=sadaqah',
   };
 
@@ -174,12 +159,22 @@ const Dashboard = () => {
     { id: 'sadaqah', name: t('acts.sadaqah'), icon: CircleDollarSign, done: todaysActsStatus.sadaqah },
   ];
 
+  // Show city onboarding if no location set
+  if (needsLocation) {
+    return (
+      <CityOnboarding onComplete={() => {
+        setNeedsLocation(false);
+        window.location.reload();
+      }} />
+    );
+  }
+
+  const location = getUserLocation();
+
   return (
     <>
-      {/* Onboarding Welcome Prompt */}
       {showWelcome && <WelcomePrompt onDismiss={() => setShowWelcome(false)} />}
       
-      {/* First Act Celebration */}
       {showFirstActCelebration && (
         <FirstActCelebration 
           pointsEarned={celebrationPoints} 
@@ -192,11 +187,88 @@ const Dashboard = () => {
         animate={{ opacity: 1 }}
         className="min-h-screen bg-background pb-24"
       >
-      {/* Header */}
-      <div className="px-4 pt-6 pb-4">
+      {/* Header with Hijri/Gregorian dates */}
+      <div className="px-4 pt-6 pb-2">
         <p className="text-sm text-muted-foreground">{getGreeting()}</p>
         <h1 className="text-2xl font-bold">{profile.displayName}</h1>
+        {location && (
+          <div className="flex items-center gap-1.5 mt-1 text-muted-foreground">
+            <MapPin className="w-3.5 h-3.5" />
+            <span className="text-xs">{location.city}</span>
+          </div>
+        )}
       </div>
+
+      {/* Dates display */}
+      {prayerTimes?.hijriDate && (
+        <div className="px-4 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2.5 text-xs text-muted-foreground"
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            <span className="font-medium text-foreground">{prayerTimes.hijriDate}</span>
+            <span className="text-muted-foreground/50">|</span>
+            <span>{prayerTimes.gregorianDate}</span>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Prayer Times Card */}
+      {prayerTimes && (
+        <div className="px-4 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold">{t('dashboard.prayerTimes')}</h3>
+                <span className="text-xs text-muted-foreground">
+                  {t('dashboard.nextIn', { time: countdown })}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {prayerTimes.prayers.map((prayer) => (
+                  <div
+                    key={prayer.name}
+                    className={cn(
+                      "flex items-center justify-between px-3 py-2 rounded-lg transition-colors",
+                      prayer.isNext
+                        ? "bg-primary/10 border border-primary/20"
+                        : prayer.isCompleted
+                        ? "opacity-50"
+                        : ""
+                    )}
+                  >
+                    <span className={cn(
+                      "text-sm font-medium",
+                      prayer.isNext ? "text-primary" : "text-foreground"
+                    )}>
+                      {prayer.name}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "text-sm",
+                        prayer.isNext ? "text-primary font-semibold" : "text-muted-foreground"
+                      )}>
+                        {prayer.time}
+                      </span>
+                      {prayer.isNext && (
+                        <span className="text-[9px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full uppercase">
+                          {t('dashboard.next')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      )}
 
       {/* Ramadan Countdown Widget */}
       <div className="px-4 pb-4">
@@ -345,7 +417,6 @@ const Dashboard = () => {
           <p className="text-sm text-center font-medium mb-3">"{ayahOfDay.translation}"</p>
           <p className="text-xs text-muted-foreground text-center mb-4">{ayahOfDay.reference}</p>
           
-          {/* Go to verse button */}
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={goToAyahVerse}

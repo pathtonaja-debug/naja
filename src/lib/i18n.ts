@@ -1633,6 +1633,15 @@ const resources = {
       "fintech.badge.charityChampion": "Charity Champion",
       "fintech.badge.fairTradeMindset": "Fair Trade Mindset",
       "fintech.badge.financeScholar": "Finance Scholar",
+
+      // Location & Prayer Sync
+      "location.onboarding.title": "Assalamu Alaikum",
+      "location.onboarding.subtitle": "Enter your city so we can show you accurate prayer times",
+      "location.onboarding.searchPlaceholder": "Search for your city...",
+      "location.onboarding.confirm": "Continue",
+      "dashboard.prayerTimes": "Prayer Times",
+      "dashboard.nextIn": "Next in {{time}}",
+      "dashboard.next": "Next",
     }
   },
   fr: {
@@ -3256,6 +3265,15 @@ const resources = {
       "islamicDates.mawlid.action2": "Lisez sa seerah (biographie)",
       "islamicDates.mawlid.action3": "Partagez des histoires de son caractère",
       "islamicDates.mawlid.action4": "Rassemblez-vous pour le rappel et l'apprentissage",
+
+      // Location & Prayer Sync (FR)
+      "location.onboarding.title": "Assalamu Alaikum",
+      "location.onboarding.subtitle": "Entrez votre ville pour afficher les horaires de prière précis",
+      "location.onboarding.searchPlaceholder": "Rechercher votre ville...",
+      "location.onboarding.confirm": "Continuer",
+      "dashboard.prayerTimes": "Horaires de prière",
+      "dashboard.nextIn": "Prochaine dans {{time}}",
+      "dashboard.next": "Prochaine",
     }
   }
 };

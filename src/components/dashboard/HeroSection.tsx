@@ -1,6 +1,7 @@
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { getUserLocation } from "@/services/locationStore";
 import mosqueIllustration from "@/assets/illustrations/mosque-illustration.png";
 
 interface HeroSectionProps {
@@ -11,10 +12,9 @@ interface HeroSectionProps {
 
 export function HeroSection({ userName = "User", city, country }: HeroSectionProps) {
   const { prayerTimes, countdown } = usePrayerTimes();
+  const location = getUserLocation();
   
-  const locationDisplay = city && country 
-    ? `${city}, ${country}` 
-    : city || country || "Location not set";
+  const locationDisplay = location?.city || city || country || "Location not set";
 
   // Get next prayer info from prayers array
   const nextPrayerInfo = prayerTimes?.prayers?.find(p => p.isNext);
@@ -40,7 +40,7 @@ export function HeroSection({ userName = "User", city, country }: HeroSectionPro
       
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-between p-3.5">
-        {/* Top Section - Greeting */}
+        {/* Top Section - Greeting + Hijri date */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -54,6 +54,12 @@ export function HeroSection({ userName = "User", city, country }: HeroSectionPro
             <MapPin className="w-2.5 h-2.5" />
             <span>{locationDisplay}</span>
           </div>
+          {prayerTimes?.hijriDate && (
+            <div className="flex items-center gap-1 mt-0.5 text-white/60 text-[9px]">
+              <Calendar className="w-2.5 h-2.5" />
+              <span>{prayerTimes.hijriDate}</span>
+            </div>
+          )}
         </motion.div>
         
         {/* Bottom Section - Next Prayer */}
