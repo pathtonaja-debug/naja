@@ -35,30 +35,57 @@ export async function fetchPrayerData(
   method: number = 2
 ): Promise<AladhanPrayerData | null> {
   try {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
     const adj = getHijriAdj();
 
-    let url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=${method}&timezonestring=${timezone}`;
+    // When user has an adjustment, we fetch the adjusted Gregorian day instead
+    // because the Aladhan `adjustment` param is unreliable for shifting dates.
+    const now = new Date();
+    const targetDate = new Date(now);
     if (adj !== 0) {
-      url += `&adjustment=${adj}`;
+      targetDate.setDate(targetDate.getDate() + adj);
     }
+
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth() + 1;
+    const day = targetDate.getDate();
+
+    const url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=${method}&timezonestring=${timezone}`;
     const res = await fetch(url);
 
     if (!res.ok) throw new Error("Aladhan API request failed");
 
     const json = await res.json();
-    const todayData = json.data[day - 1];
+    const dayData = json.data[day - 1];
 
-    if (!todayData) throw new Error("No data for today");
+    if (!dayData) throw new Error("No data for target day");
 
-    const hijri = todayData.date.hijri;
-    const gregorian = todayData.date.gregorian;
+    const hijri = dayData.date.hijri;
+    const gregorian = dayData.date.gregorian;
+
+    // Use prayer timings from today (not the shifted day) for salah times
+    let prayerTimings = dayData.timings;
+    if (adj !== 0) {
+      const todayYear = now.getFullYear();
+      const todayMonth = now.getMonth() + 1;
+      const todayDay = now.getDate();
+      // If we shifted to a different month, fetch today's month too
+      if (todayMonth !== month || todayYear !== year) {
+        const todayUrl = `https://api.aladhan.com/v1/calendar/${todayYear}/${todayMonth}?latitude=${lat}&longitude=${lng}&method=${method}&timezonestring=${timezone}`;
+        const todayRes = await fetch(todayUrl);
+        if (todayRes.ok) {
+          const todayJson = await todayRes.json();
+          const todayData = todayJson.data[todayDay - 1];
+          if (todayData) prayerTimings = todayData.timings;
+        }
+      } else {
+        // Same month, just grab today's entry
+        const todayData = json.data[todayDay - 1];
+        if (todayData) prayerTimings = todayData.timings;
+      }
+    }
 
     return {
-      prayers: todayData.timings,
+      prayers: prayerTimings,
       hijri: {
         date: hijri.date,
         day: hijri.day,
