@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Search, Loader2, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { searchCity, CityResult } from "@/services/locationService";
+import { searchCity, CityResult, getDefaultMethod } from "@/services/locationService";
 import { saveUserLocation } from "@/services/locationStore";
+import { MethodOnboarding } from "./MethodOnboarding";
 
 interface CityOnboardingProps {
   onComplete: () => void;
@@ -17,7 +18,7 @@ export function CityOnboarding({ onComplete }: CityOnboardingProps) {
   const [results, setResults] = useState<CityResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [selected, setSelected] = useState<CityResult | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [step, setStep] = useState<"city" | "method">("city");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -46,24 +47,38 @@ export function CityOnboarding({ onComplete }: CityOnboardingProps) {
     setResults([]);
   };
 
-  const handleConfirm = () => {
+  const handleCityConfirm = () => {
     if (!selected) return;
-    setSaving(true);
+    setStep("method");
+  };
+
+  const handleMethodComplete = (method: number) => {
+    if (!selected) return;
 
     saveUserLocation({
       city: selected.name,
       lat: selected.lat,
       lng: selected.lng,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      method: 2,
+      method,
     });
 
-    // Small delay for animation
     setTimeout(() => {
       onComplete();
-    }, 300);
+    }, 200);
   };
 
+  // Step 2: Method selection
+  if (step === "method" && selected) {
+    return (
+      <MethodOnboarding
+        defaultMethod={getDefaultMethod(selected.countryCode)}
+        onComplete={handleMethodComplete}
+      />
+    );
+  }
+
+  // Step 1: City search
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -163,16 +178,11 @@ export function CityOnboarding({ onComplete }: CityOnboardingProps) {
               </div>
 
               <Button
-                onClick={handleConfirm}
-                disabled={saving}
+                onClick={handleCityConfirm}
                 className="w-full h-12"
               >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 mr-2" />
-                )}
-                {t("location.onboarding.confirm")}
+                <ChevronRight className="w-4 h-4 mr-2" />
+                {t("common.continue")}
               </Button>
             </motion.div>
           )}
