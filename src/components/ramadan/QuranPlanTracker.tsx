@@ -60,6 +60,11 @@ export function QuranPlanTracker() {
     ? Math.min(100, Math.round((todayProgress.pagesRead / todayProgress.target) * 100))
     : 0;
 
+  // Calculate total pages read across all days
+  const totalPagesRead = plan
+    ? Object.values(plan.dailyProgress).reduce((sum, day) => sum + day.pagesRead, 0)
+    : 0;
+
   // No plan selected - show selector
   if (!plan) {
     return (
@@ -119,7 +124,21 @@ export function QuranPlanTracker() {
         </div>
 
         {/* Progress Bar */}
-        <Progress value={progressPercent} className="h-2 mb-4" />
+        <Progress value={progressPercent} className="h-2 mb-2" />
+
+        {/* Pages remaining + total progress */}
+        {todayProgress && (
+          <div className="mb-4 space-y-1">
+            {todayProgress.pagesRead < todayProgress.target && (
+              <p className="text-xs text-muted-foreground">
+                {t('ramadan.quran.stayOnTrack', { pages: todayProgress.target - todayProgress.pagesRead })}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {t('ramadan.quran.totalProgress', { read: totalPagesRead })}
+            </p>
+          </div>
+        )}
 
         {/* Reading Mode Toggle */}
         <div className="flex gap-2 mb-4">

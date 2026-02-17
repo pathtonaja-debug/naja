@@ -1,0 +1,67 @@
+/* ============================================ */
+/* RAMADAN ACTIVE THEME                        */
+/* Deep olive ink + champagne gold accents      */
+/* ============================================ */
+
+.ramadan-active {
+  /* Ramadan Accent Colors (HSL) */
+  --ramadan-olive: 50 24% 18%;         /* #3b3923 */
+  --ramadan-olive-light: 50 20% 30%;
+  --ramadan-gold: 43 52% 54%;          /* #c9a84c */
+  --ramadan-gold-soft: 43 52% 75%;
+  --ramadan-gold-glow: 43 52% 85%;
+
+  /* Override primary with olive */
+  --primary: var(--ramadan-olive);
+  --primary-foreground: 45 100% 99%;
+  --ring: var(--ramadan-olive);
+}
+
+.dark .ramadan-active {
+  --ramadan-olive: 50 24% 60%;
+  --ramadan-olive-light: 50 20% 45%;
+  --ramadan-gold: 43 52% 60%;
+  --ramadan-gold-soft: 43 40% 30%;
+  --ramadan-gold-glow: 43 40% 25%;
+
+  --primary: var(--ramadan-olive);
+  --primary-foreground: 0 0% 8%;
+}
+
+/* Decorative star twinkle */
+@keyframes ramadan-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes ramadan-lantern-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+@keyframes ramadan-crescent-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(3deg); }
+}
+
+.ramadan-star {
+  animation: ramadan-twinkle 3s ease-in-out infinite;
+}
+.ramadan-star:nth-child(2) { animation-delay: 0.5s; }
+.ramadan-star:nth-child(3) { animation-delay: 1s; }
+.ramadan-star:nth-child(4) { animation-delay: 1.5s; }
+.ramadan-star:nth-child(5) { animation-delay: 2s; }
+
+.ramadan-lantern {
+  animation: ramadan-lantern-glow 4s ease-in-out infinite;
+}
+
+.ramadan-crescent {
+  animation: ramadan-crescent-float 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ramadan-star, .ramadan-lantern, .ramadan-crescent {
+    animation: none;
+  }
+}

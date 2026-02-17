@@ -22,6 +22,10 @@ import {
 } from '@/data/ramadanContent';
 import { PrepChecklist } from '@/components/ramadan/PrepChecklist';
 import { QuranPlanTracker } from '@/components/ramadan/QuranPlanTracker';
+import { RamadanHeader } from '@/components/ramadan/RamadanHeader';
+import { DailyIbadahTracker } from '@/components/ramadan/DailyIbadahTracker';
+import { DailyReminderCard } from '@/components/ramadan/DailyReminderCard';
+import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'stories';
 
@@ -29,10 +33,18 @@ const Ramadan = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [phaseInfo, setPhaseInfo] = useState<PhaseInfo | null>(null);
+  const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
 
   useEffect(() => {
     setPhaseInfo(getRamadanPhase());
+    const ibadah = getTodayIbadah();
+    setFastingStatus(ibadah.fasting);
   }, []);
+
+  const handleFastingStatusChange = (status: 'fasting' | 'excused') => {
+    setFastingStatus(status);
+    updateIbadah({ fasting: status });
+  };
 
   const tabs = [
     { id: 'overview', labelKey: 'ramadan.tabs.overview', icon: Moon },
@@ -145,8 +157,23 @@ const Ramadan = () => {
       case 'active':
         return (
           <div className="space-y-6">
+            {/* Ramadan Dashboard Header */}
+            <RamadanHeader
+              phaseInfo={phaseInfo}
+              fastingStatus={fastingStatus}
+              onFastingStatusChange={handleFastingStatusChange}
+            />
+
+            {/* Daily Ibadah Tracker */}
+            <DailyIbadahTracker />
+
             {/* Quran Reading Plan */}
             <QuranPlanTracker />
+
+            {/* Daily Reminder Card */}
+            {phaseInfo.currentDayOfRamadan && (
+              <DailyReminderCard dayOfRamadan={phaseInfo.currentDayOfRamadan} />
+            )}
 
             {/* Quick Duas Access */}
             <div>
@@ -177,14 +204,6 @@ const Ramadan = () => {
                     <p className="text-sm text-muted-foreground">{t('ramadan.laylatulQadr.description')}</p>
                   </div>
                 </div>
-              </Card>
-            )}
-
-            {/* I'tikaf */}
-            {phaseInfo.isLastTenNights && (
-              <Card className="p-4">
-                <h3 className="font-semibold mb-2">{t('ramadan.itikaf.title')}</h3>
-                <p className="text-sm text-muted-foreground">{t('ramadan.itikaf.description')}</p>
               </Card>
             )}
           </div>
@@ -349,7 +368,10 @@ const Ramadan = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pb-24"
+      className={cn(
+        "min-h-screen bg-background pb-24",
+        phaseInfo?.phase === 'active' && "ramadan-active"
+      )}
     >
       <TopBar title={t('ramadan.title')} />
 
