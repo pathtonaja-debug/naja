@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
-  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3
+  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3, Settings
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { 
   getRamadanPhase, 
@@ -36,6 +37,7 @@ import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { RamadanReport } from '@/components/ramadan/RamadanReport';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
+import { PrayerSettingsSheet } from '@/components/settings/PrayerSettingsSheet';
 
 type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
 
@@ -44,7 +46,8 @@ const Ramadan = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [phaseInfo, setPhaseInfo] = useState<PhaseInfo | null>(null);
   const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
-  const { data: prayerData } = usePrayerSync();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { data: prayerData, refetch } = usePrayerSync();
 
   useEffect(() => {
     const detected = getRamadanPhase();
@@ -429,7 +432,14 @@ const Ramadan = () => {
         phaseInfo?.isLastTenNights && "ramadan-last-ten"
       )}
     >
-      <TopBar title={t('ramadan.title')} />
+      <TopBar
+        title={t('ramadan.title')}
+        rightElement={
+          <Button variant="ghost" size="icon" onClick={() => setSettingsOpen(true)}>
+            <Settings className="w-5 h-5 text-muted-foreground" />
+          </Button>
+        }
+      />
 
       {/* Phase Header */}
       <div className="px-4">
@@ -490,6 +500,12 @@ const Ramadan = () => {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <PrayerSettingsSheet
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        onSaved={() => refetch()}
+      />
 
       <BottomNav />
     </motion.div>

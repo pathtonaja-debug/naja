@@ -1242,7 +1242,20 @@ const resources = {
       "settings.saveSettings": "Save Settings",
       "settings.locationSaved": "Location settings saved",
 
-      // Dua - Additional
+      // Prayer Settings Sheet
+      "prayerSettings.title": "Prayer & Location Settings",
+      "prayerSettings.subtitle": "Manage your city, calculation method, and calendar adjustment.",
+      "prayerSettings.city": "City",
+      "prayerSettings.method": "Calculation Method",
+      "prayerSettings.notSet": "Not set",
+      "prayerSettings.changeCity": "Change City",
+      "prayerSettings.changeMethod": "Change Method",
+      "prayerSettings.hijriAdjust": "Hijri Date Correction",
+      "prayerSettings.hijriAdjustHint": "Adjust if the date doesn't match your local moonsighting.",
+      "prayerSettings.default": "(default)",
+      "prayerSettings.day": "day",
+      "common.noResults": "No results found",
+
       "dua.namesUsed": "Names of Allah used",
 
       // Guided Dua Wizard
@@ -3052,7 +3065,20 @@ const resources = {
       "settings.saveSettings": "Enregistrer les Paramètres",
       "settings.locationSaved": "Paramètres de localisation enregistrés",
 
-      // Dua - Additional
+      // Prayer Settings Sheet
+      "prayerSettings.title": "Paramètres de Prière et Localisation",
+      "prayerSettings.subtitle": "Gérez votre ville, méthode de calcul et ajustement du calendrier.",
+      "prayerSettings.city": "Ville",
+      "prayerSettings.method": "Méthode de Calcul",
+      "prayerSettings.notSet": "Non défini",
+      "prayerSettings.changeCity": "Changer de Ville",
+      "prayerSettings.changeMethod": "Changer de Méthode",
+      "prayerSettings.hijriAdjust": "Correction de la Date Hijri",
+      "prayerSettings.hijriAdjustHint": "Ajustez si la date ne correspond pas à votre observation locale de la lune.",
+      "prayerSettings.default": "(par défaut)",
+      "prayerSettings.day": "jour",
+      "common.noResults": "Aucun résultat trouvé",
+
       "dua.namesUsed": "Noms d'Allah utilisés",
 
       // Guided Dua Wizard
