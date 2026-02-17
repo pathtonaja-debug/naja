@@ -29,6 +29,10 @@ import { RamadanHeatmap } from '@/components/ramadan/RamadanHeatmap';
 import { RamadanGoals } from '@/components/ramadan/RamadanGoals';
 import { LastTenNightsTracker } from '@/components/ramadan/LastTenNightsTracker';
 import { EidSummaryCard } from '@/components/ramadan/EidSummaryCard';
+import { FastingHealthTracker } from '@/components/ramadan/FastingHealthTracker';
+import { RamadanJournal } from '@/components/ramadan/RamadanJournal';
+import { CharityTracker } from '@/components/ramadan/CharityTracker';
+import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'stories';
@@ -193,10 +197,22 @@ const Ramadan = () => {
             {/* Quran Reading Plan */}
             <QuranPlanTracker />
 
+            {/* Fasting Health & Meals */}
+            <FastingHealthTracker />
+
+            {/* Charity & Impact */}
+            <CharityTracker />
+
+            {/* Daily Reflection Journal */}
+            <RamadanJournal />
+
             {/* Daily Reminder Card */}
             {phaseInfo.currentDayOfRamadan && (
               <DailyReminderCard dayOfRamadan={phaseInfo.currentDayOfRamadan} />
             )}
+
+            {/* Insights & Analytics */}
+            <RamadanInsights />
 
             {/* Quick Duas Access */}
             <div>
