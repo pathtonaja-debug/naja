@@ -33,6 +33,7 @@ import { FastingHealthTracker } from '@/components/ramadan/FastingHealthTracker'
 import { RamadanJournal } from '@/components/ramadan/RamadanJournal';
 import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
+import { RamadanReport } from '@/components/ramadan/RamadanReport';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
 type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
@@ -243,6 +244,9 @@ const Ramadan = () => {
           <div className="space-y-6">
             {/* Eid Summary Card */}
             <EidSummaryCard />
+
+            {/* Full Ramadan Report */}
+            <RamadanReport />
 
             {/* Eid Guidance */}
             <div>
@@ -463,6 +467,7 @@ const Ramadan = () => {
               <div className="space-y-6">
                 <RamadanHeatmap currentDay={phaseInfo?.currentDayOfRamadan ?? 1} />
                 <RamadanInsights />
+                <RamadanReport />
               </div>
             )}
             {activeTab === 'stories' && renderStories()}
