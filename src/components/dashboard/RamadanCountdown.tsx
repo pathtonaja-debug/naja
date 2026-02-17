@@ -27,17 +27,16 @@ export function RamadanCountdown() {
 
   // Initialize phase (sync first, then async)
   useEffect(() => {
-    // Load sync immediately for fast initial render
+    // Force active mode — Ramadan 1446 has started
     const syncPhase = getRamadanPhase();
-    setPhaseInfo(syncPhase);
+    const forced = {
+      ...syncPhase,
+      phase: 'active' as const,
+      currentDayOfRamadan: syncPhase.currentDayOfRamadan ?? 1,
+      isLastTenNights: false,
+    };
+    setPhaseInfo(forced);
     setIsLoading(false);
-    
-    // Then fetch async for accuracy
-    getRamadanPhaseAsync()
-      .then(asyncPhase => {
-        setPhaseInfo(asyncPhase);
-      })
-      .catch(console.warn);
     
     // Refresh phase hourly
     phaseIntervalRef.current = setInterval(() => {
