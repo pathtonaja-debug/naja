@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Moon, Star, Sun, CloudMoon } from 'lucide-react';
+import { Moon, Star, Sun, CloudMoon, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from '@/components/ui/progress-ring';
@@ -97,7 +97,12 @@ export function RamadanHeader({ phaseInfo, fastingStatus, onFastingStatusChange 
               : "bg-muted text-muted-foreground"
           )}
         >
-          ✅ {t('ramadan.fastingToday')}
+          {fastingStatus === 'fasting' ? (
+            <Check className="w-4 h-4 mr-1.5 inline-block" />
+          ) : (
+            <Moon className="w-4 h-4 mr-1.5 inline-block opacity-50" />
+          )}
+          {t('ramadan.fastingToday')}
         </button>
         <button
           onClick={() => onFastingStatusChange('excused')}
@@ -108,7 +113,8 @@ export function RamadanHeader({ phaseInfo, fastingStatus, onFastingStatusChange 
               : "bg-muted text-muted-foreground"
           )}
         >
-          ⚪ {t('ramadan.excused')}
+          <Moon className="w-4 h-4 mr-1.5 inline-block opacity-50" />
+          {t('ramadan.excused')}
         </button>
       </div>
     </Card>

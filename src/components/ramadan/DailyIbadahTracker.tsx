@@ -86,11 +86,11 @@ export function DailyIbadahTracker() {
           <h3 className="text-headline font-semibold">{t('ramadan.ibadah.title')}</h3>
           {streak > 0 && (
             <p className="text-caption-1 text-muted-foreground">
-              🔥 {streak} {t('ramadan.ibadah.streak')}
+              {streak} {t('ramadan.ibadah.streak')}
             </p>
           )}
         </div>
-        <ProgressRing progress={pct} size={48} strokeWidth={3.5} label={`${pct}%`} />
+        <ProgressRing progress={pct} size={48} strokeWidth={3.5} />
       </div>
 
       {/* Prayer dots */}
