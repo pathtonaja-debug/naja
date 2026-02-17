@@ -20,6 +20,14 @@ export interface AladhanPrayerData {
   };
 }
 
+function getHijriAdj(): number {
+  try {
+    const v = localStorage.getItem('naja_hijri_adjustment');
+    if (v !== null) return parseInt(v, 10) || 0;
+  } catch { /* ignore */ }
+  return 0;
+}
+
 export async function fetchPrayerData(
   lat: number,
   lng: number,
@@ -31,8 +39,12 @@ export async function fetchPrayerData(
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
     const day = now.getDate();
+    const adj = getHijriAdj();
 
-    const url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=${method}&timezonestring=${timezone}`;
+    let url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=${method}&timezonestring=${timezone}`;
+    if (adj !== 0) {
+      url += `&adjustment=${adj}`;
+    }
     const res = await fetch(url);
 
     if (!res.ok) throw new Error("Aladhan API request failed");

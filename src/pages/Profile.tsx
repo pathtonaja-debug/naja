@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Moon, Sun, Trash2, Trophy, TrendingUp, 
-  Star, Flame, Users, Globe, LogOut, Mail
+  Star, Flame, Users, Globe, LogOut, Mail, MapPin
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState, useEffect } from "react";
@@ -21,6 +21,8 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { PrayerSettingsSheet } from "@/components/settings/PrayerSettingsSheet";
+import { getUserLocation } from "@/services/locationStore";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -34,6 +36,7 @@ const Profile = () => {
   const [name, setName] = useState(displayName);
   const [saving, setSaving] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+  const [prayerSettingsOpen, setPrayerSettingsOpen] = useState(false);
 
   // Update name field when auth user loads
   useEffect(() => {
@@ -183,6 +186,12 @@ const Profile = () => {
             leftElement={<Users className="w-4 h-4 text-pastel-blue" />}
             onPress={() => navigate('/leaderboard')}
           />
+          <ListCell
+            title={t('prayerSettings.title')}
+            subtitle={getUserLocation()?.city || t('prayerSettings.notSet')}
+            leftElement={<MapPin className="w-4 h-4 text-primary" />}
+            onPress={() => setPrayerSettingsOpen(true)}
+          />
         </Card>
       </motion.div>
 
@@ -317,6 +326,11 @@ const Profile = () => {
           </p>
         </motion.div>
       </main>
+
+      <PrayerSettingsSheet
+        open={prayerSettingsOpen}
+        onOpenChange={setPrayerSettingsOpen}
+      />
 
       <BottomNav />
     </motion.div>
