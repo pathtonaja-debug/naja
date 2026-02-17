@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
-  Moon, Heart, Utensils, ScrollText, Sparkles, Star
+  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
@@ -35,7 +35,7 @@ import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 
-type TabType = 'overview' | 'duas' | 'food' | 'stories';
+type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
 
 const Ramadan = () => {
   const { t } = useTranslation();
@@ -66,6 +66,8 @@ const Ramadan = () => {
     { id: 'overview', labelKey: 'ramadan.tabs.overview', icon: Moon },
     { id: 'duas', labelKey: 'ramadan.tabs.duas', icon: Heart },
     { id: 'food', labelKey: 'ramadan.tabs.food', icon: Utensils },
+    { id: 'reflection', labelKey: 'ramadan.tabs.reflection', icon: PenLine },
+    { id: 'insights', labelKey: 'ramadan.tabs.insights', icon: BarChart3 },
     { id: 'stories', labelKey: 'ramadan.tabs.stories', icon: ScrollText },
   ];
 
@@ -183,9 +185,6 @@ const Ramadan = () => {
             {/* Daily Ibadah Tracker */}
             <DailyIbadahTracker />
 
-            {/* 30-Day Heatmap */}
-            <RamadanHeatmap currentDay={phaseInfo.currentDayOfRamadan ?? 1} />
-
             {/* Monthly Goals */}
             <RamadanGoals />
 
@@ -197,20 +196,13 @@ const Ramadan = () => {
             {/* Quran Reading Plan */}
             <QuranPlanTracker />
 
-
             {/* Charity & Impact */}
             <CharityTracker />
-
-            {/* Daily Reflection Journal */}
-            <RamadanJournal />
 
             {/* Daily Reminder Card */}
             {phaseInfo.currentDayOfRamadan && (
               <DailyReminderCard dayOfRamadan={phaseInfo.currentDayOfRamadan} />
             )}
-
-            {/* Insights & Analytics */}
-            <RamadanInsights />
 
             {/* Quick Duas Access */}
             <div>
@@ -462,6 +454,17 @@ const Ramadan = () => {
             {activeTab === 'overview' && renderOverview()}
             {activeTab === 'duas' && renderDuas()}
             {activeTab === 'food' && renderFood()}
+            {activeTab === 'reflection' && (
+              <div className="space-y-6">
+                <RamadanJournal />
+              </div>
+            )}
+            {activeTab === 'insights' && (
+              <div className="space-y-6">
+                <RamadanHeatmap currentDay={phaseInfo?.currentDayOfRamadan ?? 1} />
+                <RamadanInsights />
+              </div>
+            )}
             {activeTab === 'stories' && renderStories()}
           </motion.div>
         </AnimatePresence>
