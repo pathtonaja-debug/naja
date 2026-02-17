@@ -14,6 +14,7 @@ import {
   type PhaseInfo 
 } from '@/services/ramadanState';
 import { getUserTimeZone } from '@/services/islamicCalendarApi';
+import { usePrayerSync } from '@/hooks/usePrayerSync';
 
 export function RamadanCountdown() {
   const { t } = useTranslation();
@@ -24,18 +25,48 @@ export function RamadanCountdown() {
   const [ramadanStart, setRamadanStart] = useState<Date | null>(null);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { data: prayerData } = usePrayerSync();
 
-  // Initialize phase (sync first, then async)
+  // Initialize phase from sync fallback, then refine with API Hijri data
   useEffect(() => {
-    // Force active mode — Ramadan 1446 has started
     const syncPhase = getRamadanPhase();
-    const forced = {
-      ...syncPhase,
-      phase: 'active' as const,
-      currentDayOfRamadan: syncPhase.currentDayOfRamadan ?? 1,
-      isLastTenNights: false,
-    };
-    setPhaseInfo(forced);
+    
+    // If we have real Hijri data from the Aladhan API, use it for accurate phase
+    if (prayerData?.hijri) {
+      const apiMonth = prayerData.hijri.month.number;
+      const apiDay = parseInt(prayerData.hijri.day, 10);
+
+      let phase = syncPhase.phase;
+      let currentDayOfRamadan = syncPhase.currentDayOfRamadan;
+      let isLastTenNights = syncPhase.isLastTenNights;
+
+      if (apiMonth === 9) {
+        phase = 'active';
+        currentDayOfRamadan = apiDay;
+        isLastTenNights = apiDay >= 21;
+      } else if (apiMonth === 10 && apiDay <= 3) {
+        phase = 'eid';
+      } else if (apiMonth === 10) {
+        phase = 'shawwal';
+      } else {
+        phase = 'preparing';
+      }
+
+      setPhaseInfo({
+        ...syncPhase,
+        phase,
+        currentDayOfRamadan,
+        isLastTenNights,
+        hijriDate: {
+          day: apiDay,
+          month: apiMonth,
+          monthName: prayerData.hijri.month.en,
+          year: parseInt(prayerData.hijri.year, 10),
+        },
+      });
+    } else {
+      setPhaseInfo(syncPhase);
+    }
     setIsLoading(false);
     
     // Refresh phase hourly
@@ -43,7 +74,7 @@ export function RamadanCountdown() {
       getRamadanPhaseAsync()
         .then(setPhaseInfo)
         .catch(() => setPhaseInfo(getRamadanPhase()));
-    }, 60 * 60 * 1000); // Every hour
+    }, 60 * 60 * 1000);
     
     return () => {
       if (phaseIntervalRef.current) {
@@ -51,7 +82,7 @@ export function RamadanCountdown() {
         phaseIntervalRef.current = null;
       }
     };
-  }, []);
+  }, [prayerData]);
 
   // Fetch Ramadan start date when in preparing phase
   useEffect(() => {
