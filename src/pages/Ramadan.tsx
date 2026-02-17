@@ -35,6 +35,7 @@ import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { RamadanReport } from '@/components/ramadan/RamadanReport';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
+import { usePrayerSync } from '@/hooks/usePrayerSync';
 
 type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
 
@@ -43,20 +44,52 @@ const Ramadan = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [phaseInfo, setPhaseInfo] = useState<PhaseInfo | null>(null);
   const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
+  const { data: prayerData } = usePrayerSync();
 
   useEffect(() => {
     const detected = getRamadanPhase();
-    // Force active mode — Ramadan 1446 has started
-    const forced: PhaseInfo = {
-      ...detected,
-      phase: 'active',
-      currentDayOfRamadan: detected.currentDayOfRamadan ?? 25,
-      isLastTenNights: true,
-    };
-    setPhaseInfo(forced);
+
+    // If we have real Hijri data from the Aladhan API, use it to override
+    // the local fallback calculation for more accurate Ramadan day detection
+    if (prayerData?.hijri) {
+      const apiHijriMonth = prayerData.hijri.month.number;
+      const apiHijriDay = parseInt(prayerData.hijri.day, 10);
+      const apiHijriYear = parseInt(prayerData.hijri.year, 10);
+
+      let phase = detected.phase;
+      let currentDayOfRamadan = detected.currentDayOfRamadan;
+      let isLastTenNights = detected.isLastTenNights;
+
+      if (apiHijriMonth === 9) {
+        phase = 'active';
+        currentDayOfRamadan = apiHijriDay;
+        isLastTenNights = apiHijriDay >= 21;
+      } else if (apiHijriMonth === 10 && apiHijriDay <= 3) {
+        phase = 'eid';
+      } else if (apiHijriMonth === 10) {
+        phase = 'shawwal';
+      }
+
+      setPhaseInfo({
+        ...detected,
+        phase,
+        currentDayOfRamadan,
+        isLastTenNights,
+        hijriDate: {
+          day: apiHijriDay,
+          month: apiHijriMonth,
+          monthName: prayerData.hijri.month.en,
+          year: apiHijriYear,
+        },
+      });
+    } else {
+      // Fallback to local calculation when API data isn't available yet
+      setPhaseInfo(detected);
+    }
+
     const ibadah = getTodayIbadah();
     setFastingStatus(ibadah.fasting);
-  }, []);
+  }, [prayerData]);
 
   const handleFastingStatusChange = (status: 'fasting' | 'excused') => {
     setFastingStatus(status);
