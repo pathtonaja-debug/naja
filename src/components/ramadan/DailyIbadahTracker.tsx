@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, HandHeart, Moon as MoonIcon, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { ProgressRing } from '@/components/ui/progress-ring';
+import { CelebrationOverlay } from '@/components/ui/celebration-overlay';
 import { cn } from '@/lib/utils';
 import {
   getTodayIbadah,
@@ -30,14 +31,19 @@ const checkmarkVariants = {
   exit: { scale: 0, opacity: 0, transition: { duration: 0.15 } },
 };
 
+const CELEBRATED_KEY = 'naja_ramadan_celebrated_100';
+
 export function DailyIbadahTracker() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [ibadah, setIbadah] = useState<DailyIbadah>(getTodayIbadah());
   const [streak, setStreak] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const prevPctRef = useRef<number>(0);
 
   useEffect(() => {
     setStreak(getIbadahStreak());
+    prevPctRef.current = getCompletionPercent(getTodayIbadah());
   }, []);
 
   const pct = getCompletionPercent(ibadah);
@@ -46,6 +52,18 @@ export function DailyIbadahTracker() {
     const updated = updateIbadah(updates);
     setIbadah(updated);
     setStreak(getIbadahStreak());
+
+    const newPct = getCompletionPercent(updated);
+    // Celebrate when hitting 100% for the first time today
+    if (newPct >= 100 && prevPctRef.current < 100) {
+      const today = new Date().toISOString().slice(0, 10);
+      const celebrated = localStorage.getItem(CELEBRATED_KEY);
+      if (celebrated !== today) {
+        localStorage.setItem(CELEBRATED_KEY, today);
+        setShowCelebration(true);
+      }
+    }
+    prevPctRef.current = newPct;
   }, []);
 
   const togglePrayer = (prayer: string) => {
@@ -54,6 +72,13 @@ export function DailyIbadahTracker() {
   };
 
   return (
+    <>
+    <CelebrationOverlay
+      isVisible={showCelebration}
+      onComplete={() => setShowCelebration(false)}
+      message="ما شاء الله! 🌙"
+      subMessage={t('ramadan.ibadah.completionMessage')}
+    />
     <Card className="p-4">
       {/* Header with progress */}
       <div className="flex items-center justify-between mb-4">
@@ -142,6 +167,7 @@ export function DailyIbadahTracker() {
         />
       </div>
     </Card>
+    </>
   );
 }
 

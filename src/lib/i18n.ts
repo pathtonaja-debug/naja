@@ -117,6 +117,7 @@ const resources = {
       "ramadan.ibadah.tahajjud": "Tahajjud",
       "ramadan.ibadah.streak": "day streak",
       "ramadan.ibadah.completed": "completed",
+      "ramadan.ibadah.completionMessage": "You completed all your ibadah today! May Allah accept it.",
 
       // Active Ramadan - Daily Reminder
       "ramadan.reminder.title": "Daily Reminder",
@@ -1737,6 +1738,7 @@ const resources = {
       "ramadan.ibadah.tahajjud": "Tahajjud",
       "ramadan.ibadah.streak": "jours consécutifs",
       "ramadan.ibadah.completed": "complété",
+      "ramadan.ibadah.completionMessage": "Vous avez complété toute votre ibadah aujourd'hui ! Qu'Allah l'accepte.",
 
       // Active Ramadan - Daily Reminder (FR)
       "ramadan.reminder.title": "Rappel du jour",
