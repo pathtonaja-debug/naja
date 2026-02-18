@@ -90,11 +90,11 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <AppWithPush />
           <Toaster />
           <Sonner />
           <BrowserRouter>
             <NavigationProvider>
+              <AppWithPush />
               <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Index />} />

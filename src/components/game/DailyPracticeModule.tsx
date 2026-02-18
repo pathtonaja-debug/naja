@@ -79,6 +79,16 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
         }
       }
 
+      // Load morning dua progress
+      const duaStored = localStorage.getItem('naja_morning_dua');
+      let duaCompleted = false;
+      if (duaStored) {
+        const parsed = JSON.parse(duaStored);
+        if (parsed.date === today) {
+          duaCompleted = parsed.done;
+        }
+      }
+
       // Additional quests
       const additionalQuests: Quest[] = [
         {
@@ -106,7 +116,7 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
           description: 'Recite your morning supplications',
           icon: <Sparkles className="w-5 h-5" />,
           pointsReward: BARAKAH_REWARDS.DUA_CREATED,
-          completed: false,
+          completed: duaCompleted,
         },
       ];
 
@@ -125,6 +135,12 @@ export const DailyPracticeModule = ({ onXPGained }: { onXPGained?: (amount: numb
   const handleCompleteQuest = (questId: string, questType: string) => {
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) return;
+
+    // Persist completion to localStorage
+    const today = new Date().toISOString().split('T')[0];
+    if (questId === 'morning-dua') {
+      localStorage.setItem('naja_morning_dua', JSON.stringify({ date: today, done: true }));
+    }
 
     // Optimistic update
     setQuests(prev => prev.map(q => 

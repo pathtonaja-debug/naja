@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 
 // Generate a stable UUID for this device
+import { generateUUID } from '@/lib/uuid';
+
 const getDeviceId = (): string => {
   const stored = localStorage.getItem('naja_device_id');
   if (stored) return stored;
   
-  const newId = crypto.randomUUID();
+  const newId = generateUUID();
   localStorage.setItem('naja_device_id', newId);
   return newId;
 };
