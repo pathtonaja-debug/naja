@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
-  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3, Settings
+  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3, Settings, ChevronRight
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
@@ -39,7 +39,8 @@ import { RamadanReport } from '@/components/ramadan/RamadanReport';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
 import { PrayerSettingsSheet } from '@/components/settings/PrayerSettingsSheet';
-
+import { StoryDetailSheet } from '@/components/ramadan/StoryDetailSheet';
+import type { RamadanStory } from '@/data/ramadanContent';
 type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
 
 const Ramadan = () => {
@@ -48,6 +49,7 @@ const Ramadan = () => {
   const [phaseInfo, setPhaseInfo] = useState<PhaseInfo | null>(null);
   const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [selectedStory, setSelectedStory] = useState<RamadanStory | null>(null);
   const { data: prayerData, refetch } = usePrayerSync();
 
   useEffect(() => {
@@ -417,9 +419,18 @@ const Ramadan = () => {
               <h3 className="text-lg font-semibold mb-3">{t(category.labelKey)}</h3>
               <div className="space-y-3">
                 {categoryStories.map((story) => (
-                  <Card key={story.id} className="p-4">
-                    <h4 className="font-medium mb-2">{t(story.titleKey)}</h4>
-                    <p className="text-sm text-muted-foreground">{t(story.contentKey)}</p>
+                  <Card
+                    key={story.id}
+                    className="p-4 cursor-pointer hover:bg-muted/30 active:scale-[0.98] transition-all"
+                    onClick={() => setSelectedStory(story)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-medium mb-1">{t(story.titleKey)}</h4>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{t(story.contentKey)}</p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-muted-foreground/50 flex-shrink-0" />
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -513,6 +524,12 @@ const Ramadan = () => {
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         onSaved={() => refetch()}
+      />
+
+      <StoryDetailSheet
+        story={selectedStory}
+        open={!!selectedStory}
+        onOpenChange={(open) => { if (!open) setSelectedStory(null); }}
       />
 
       <BottomNav />
