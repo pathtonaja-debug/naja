@@ -180,11 +180,7 @@ const Dashboard = () => {
         />
       )}
       
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-background pb-24"
-      >
+      <div className="min-h-screen bg-background pb-24">
       {/* Header with Hijri/Gregorian dates */}
       <div className="px-4 pt-6 pb-2">
         <p className="text-sm text-muted-foreground">{getGreeting()}</p>
@@ -200,71 +196,61 @@ const Dashboard = () => {
       {/* Dates display */}
       {prayerTimes?.hijriDate && (
         <div className="px-4 pb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2.5 text-xs text-muted-foreground"
-          >
+          <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
             <Calendar className="w-3.5 h-3.5" />
             <span className="font-medium text-foreground">{prayerTimes.hijriDate}</span>
             <span className="text-muted-foreground/50">|</span>
             <span>{prayerTimes.gregorianDate}</span>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Prayer Times Card */}
       {prayerTimes && (
         <div className="px-4 pb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-          >
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold">{t('dashboard.prayerTimes')}</h3>
-                <span className="text-xs text-muted-foreground">
-                  {t('dashboard.nextIn', { time: countdown })}
-                </span>
-              </div>
-              <div className="space-y-1.5">
-                {prayerTimes.prayers.map((prayer) => (
-                  <div
-                    key={prayer.name}
-                    className={cn(
-                      "flex items-center justify-between px-3 py-2 rounded-lg transition-colors",
-                      prayer.isNext
-                        ? "bg-primary/10 border border-primary/20"
-                        : prayer.isCompleted
-                        ? "opacity-50"
-                        : ""
-                    )}
-                  >
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold">{t('dashboard.prayerTimes')}</h3>
+              <span className="text-xs text-muted-foreground">
+                {t('dashboard.nextIn', { time: countdown })}
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              {prayerTimes.prayers.map((prayer) => (
+                <div
+                  key={prayer.name}
+                  className={cn(
+                    "flex items-center justify-between px-3 py-2 rounded-lg transition-colors",
+                    prayer.isNext
+                      ? "bg-primary/10 border border-primary/20"
+                      : prayer.isCompleted
+                      ? "opacity-50"
+                      : ""
+                  )}
+                >
+                  <span className={cn(
+                    "text-sm font-medium",
+                    prayer.isNext ? "text-primary" : "text-foreground"
+                  )}>
+                    {prayer.name}
+                  </span>
+                  <div className="flex items-center gap-2">
                     <span className={cn(
-                      "text-sm font-medium",
-                      prayer.isNext ? "text-primary" : "text-foreground"
+                      "text-sm",
+                      prayer.isNext ? "text-primary font-semibold" : "text-muted-foreground"
                     )}>
-                      {prayer.name}
+                      {prayer.time}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "text-sm",
-                        prayer.isNext ? "text-primary font-semibold" : "text-muted-foreground"
-                      )}>
-                        {prayer.time}
+                    {prayer.isNext && (
+                      <span className="text-[9px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full uppercase">
+                        {t('dashboard.next')}
                       </span>
-                      {prayer.isNext && (
-                        <span className="text-[9px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full uppercase">
-                          {t('dashboard.next')}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
       )}
 
@@ -286,9 +272,7 @@ const Dashboard = () => {
       {/* Continue Reading Quran Widget */}
       {lastReadPosition && (
         <div className="px-4 pb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div
             onClick={() => navigate('/quran')}
             className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors"
           >
@@ -304,64 +288,45 @@ const Dashboard = () => {
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Stats Cards Row */}
       <div className="px-4 pb-4">
         <div className="grid grid-cols-3 gap-3">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-3 rounded-2xl bg-card border border-border shadow-sm"
-          >
+          <div className="p-3 rounded-2xl bg-card border border-border shadow-sm">
             <div className="flex items-center gap-1.5 mb-1">
               <Star className="w-4 h-4 text-warn" />
               <span className="text-xs text-muted-foreground">{t('dashboard.today')}</span>
             </div>
             <p className="text-xl font-bold">{todayPoints}</p>
             <p className="text-[10px] text-muted-foreground">{t('dashboard.barakahPoints')}</p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="p-3 rounded-2xl bg-card border border-border shadow-sm"
-          >
+          <div className="p-3 rounded-2xl bg-card border border-border shadow-sm">
             <div className="flex items-center gap-1.5 mb-1">
               <Flame className="w-4 h-4 text-destructive" />
               <span className="text-xs text-muted-foreground">{t('dashboard.streak')}</span>
             </div>
             <p className="text-xl font-bold">{profile.hasanatStreak}</p>
             <p className="text-[10px] text-muted-foreground">{t('dashboard.hasanatStreak')}</p>
-          </motion.div>
+          </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-3 rounded-2xl bg-card border border-border shadow-sm"
-            >
-              <div className="flex items-center gap-1.5 mb-1">
-                <Trophy className="w-4 h-4 text-success" />
-                <span className="text-xs text-muted-foreground">{t('common.done')}</span>
-              </div>
-              <p className="text-xl font-bold">{actualActsCompleted}</p>
-              <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
-            </motion.div>
+          <div className="p-3 rounded-2xl bg-card border border-border shadow-sm">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Trophy className="w-4 h-4 text-success" />
+              <span className="text-xs text-muted-foreground">{t('common.done')}</span>
+            </div>
+            <p className="text-xl font-bold">{actualActsCompleted}</p>
+            <p className="text-[10px] text-muted-foreground">{t('dashboard.actsToday')}</p>
+          </div>
         </div>
       </div>
 
       {/* Level Progress Card */}
       <div className="px-4 pb-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="p-4 rounded-2xl bg-card border border-border shadow-sm"
-        >
+        <div className="p-4 rounded-2xl bg-card border border-border shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <div>
               <p className="text-sm font-semibold">{SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker'}</p>
@@ -383,7 +348,7 @@ const Dashboard = () => {
           <p className="text-[10px] text-muted-foreground mt-2 text-center italic">
             {t('dashboard.niyyahDisclaimer')}
           </p>
-        </motion.div>
+        </div>
       </div>
 
       {/* Ayah of the Day */}
@@ -401,11 +366,8 @@ const Dashboard = () => {
             </motion.button>
           </div>
         </div>
-        <motion.div
+        <div
           key={ayahIndex}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
           className="p-5 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20"
         >
           <p className="text-2xl font-arabic text-center mb-3 leading-loose">{ayahOfDay.arabic}</p>
@@ -423,7 +385,7 @@ const Dashboard = () => {
             {t('dashboard.goToVerse')}
             <ArrowRight className="w-4 h-4" />
           </motion.button>
-        </motion.div>
+        </div>
       </div>
 
       {/* Today's Acts for Allah - Compact Recap */}
@@ -438,12 +400,7 @@ const Dashboard = () => {
           </button>
         </div>
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="p-4 rounded-2xl bg-card border border-border shadow-sm"
-        >
+        <div className="p-4 rounded-2xl bg-card border border-border shadow-sm">
           <div className="grid grid-cols-4 gap-4">
             {todaysActs.map((act) => (
               <motion.button
@@ -468,40 +425,34 @@ const Dashboard = () => {
               </motion.button>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Quiz of the Day */}
       <div className="px-4 pb-4">
         <h2 className="text-lg font-bold mb-3">{t('dashboard.quizOfDay')}</h2>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="p-4 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
-                <Brain className="w-6 h-6 text-accent" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold">{t('dashboard.testKnowledge')}</h3>
-                <p className="text-xs text-muted-foreground">{t('dashboard.quizDescription')}</p>
-              </div>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/quiz')}
-                className="px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium"
-              >
-                {t('common.start')}
-              </motion.button>
+        <Card className="p-4 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+              <Brain className="w-6 h-6 text-accent" />
             </div>
-          </Card>
-        </motion.div>
+            <div className="flex-1">
+              <h3 className="font-semibold">{t('dashboard.testKnowledge')}</h3>
+              <p className="text-xs text-muted-foreground">{t('dashboard.quizDescription')}</p>
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/quiz')}
+              className="px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium"
+            >
+              {t('common.start')}
+            </motion.button>
+          </div>
+        </Card>
       </div>
 
       <BottomNav />
-    </motion.div>
+    </div>
     </>
   );
 };
