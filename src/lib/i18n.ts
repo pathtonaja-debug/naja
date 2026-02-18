@@ -985,6 +985,9 @@ const resources = {
       "practices.qada": "Qada",
       "practices.levelUp": "Level Up! You're now Level {{level}}",
       "practices.sadaqahLogged": "Sadaqah logged. +{{points}} Barakah Points",
+      "practices.beforeFard": "Before Fard",
+      "practices.afterFard": "After Fard",
+      "practices.standalonePrayers": "Additional Prayers",
 
       // Prayer descriptions
       "practices.prayer.fajr": "Dawn prayer",
@@ -2812,6 +2815,9 @@ const resources = {
       "practices.qada": "Qada",
       "practices.levelUp": "Niveau supérieur ! Vous êtes maintenant Niveau {{level}}",
       "practices.sadaqahLogged": "Sadaqah enregistrée. +{{points}} Points de Baraka",
+      "practices.beforeFard": "Avant le Fard",
+      "practices.afterFard": "Après le Fard",
+      "practices.standalonePrayers": "Prières Supplémentaires",
 
       // Prayer descriptions
       "practices.prayer.fajr": "Prière de l'aube",

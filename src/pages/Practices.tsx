@@ -16,12 +16,33 @@ import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
+import type { LucideIcon } from 'lucide-react';
+
+/* ── Types ── */
 
 interface PrayerState {
   done: boolean;
   onTime: boolean;
   inCongregation: boolean;
   madeUp: boolean;
+}
+
+interface SunnahItem {
+  id: string;
+  nameKey: string;
+  rakats: number;
+  position: 'before' | 'after';
+  muakkadah: boolean; // emphasized sunnah
+}
+
+interface PrayerGroup {
+  id: string;
+  name: string;
+  descriptionKey: string;
+  icon: LucideIcon;
+  fardRakats: number;
+  spikeLabel?: string; // e.g. "Sunnah Mu'akkadah" badge
+  sunnahs: SunnahItem[];
 }
 
 interface SadaqahLog {
@@ -31,6 +52,8 @@ interface SadaqahLog {
   note?: string;
   amount?: number;
 }
+
+/* ── Sadaqah icons (compact w-4) ── */
 
 const SADAQAH_ICONS: Record<string, React.ReactNode> = {
   'money': <Coins className="w-4 h-4" />,
@@ -45,34 +68,77 @@ const SADAQAH_ICONS: Record<string, React.ReactNode> = {
   'dhikr': <Star className="w-4 h-4" />,
 };
 
+/* ── Component ── */
+
 const Practices = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { addBarakahPoints, updateStreak } = useGuestProfile();
+
   const [activeTab, setActiveTab] = useState<'prayers' | 'sadaqah'>(() => {
     const tab = searchParams.get('tab');
     return tab === 'sadaqah' ? 'sadaqah' : 'prayers';
   });
-  const [expandedSection, setExpandedSection] = useState<string | null>('fard');
 
-  const MANDATORY_PRAYERS = [
-    { id: 'fajr', name: 'Fajr', description: t('practices.prayer.fajr'), icon: Sunrise },
-    { id: 'dhuhr', name: 'Dhuhr', description: t('practices.prayer.dhuhr'), icon: Sun },
-    { id: 'asr', name: 'Asr', description: t('practices.prayer.asr'), icon: CloudSun },
-    { id: 'maghrib', name: 'Maghrib', description: t('practices.prayer.maghrib'), icon: Sunset },
-    { id: 'isha', name: 'Isha', description: t('practices.prayer.isha'), icon: Moon },
+  /* ── Grouped prayer data ── */
+
+  const PRAYER_GROUPS: PrayerGroup[] = [
+    {
+      id: 'fajr',
+      name: 'Fajr',
+      descriptionKey: 'practices.prayer.fajr',
+      icon: Sunrise,
+      fardRakats: 2,
+      sunnahs: [
+        { id: 'fajr_sunnah', nameKey: 'practices.sunnah.fajrSunnah', rakats: 2, position: 'before', muakkadah: true },
+      ],
+    },
+    {
+      id: 'dhuhr',
+      name: 'Dhuhr',
+      descriptionKey: 'practices.prayer.dhuhr',
+      icon: Sun,
+      fardRakats: 4,
+      sunnahs: [
+        { id: 'dhuhr_before', nameKey: 'practices.sunnah.dhuhrBefore', rakats: 4, position: 'before', muakkadah: true },
+        { id: 'dhuhr_after', nameKey: 'practices.sunnah.dhuhrAfter', rakats: 2, position: 'after', muakkadah: true },
+      ],
+    },
+    {
+      id: 'asr',
+      name: 'Asr',
+      descriptionKey: 'practices.prayer.asr',
+      icon: CloudSun,
+      fardRakats: 4,
+      sunnahs: [], // No mu'akkadah sunnah for Asr
+    },
+    {
+      id: 'maghrib',
+      name: 'Maghrib',
+      descriptionKey: 'practices.prayer.maghrib',
+      icon: Sunset,
+      fardRakats: 3,
+      sunnahs: [
+        { id: 'maghrib_after', nameKey: 'practices.sunnah.maghribAfter', rakats: 2, position: 'after', muakkadah: true },
+      ],
+    },
+    {
+      id: 'isha',
+      name: 'Isha',
+      descriptionKey: 'practices.prayer.isha',
+      icon: Moon,
+      fardRakats: 4,
+      sunnahs: [
+        { id: 'isha_after', nameKey: 'practices.sunnah.ishaAfter', rakats: 2, position: 'after', muakkadah: true },
+        { id: 'witr', nameKey: 'practices.sunnah.witr', rakats: 3, position: 'after', muakkadah: true },
+      ],
+    },
   ];
 
-  const SUNNAH_PRAYERS = [
-    { id: 'fajr_sunnah', name: t('practices.sunnah.fajrSunnah'), description: t('practices.sunnah.fajrSunnahDesc'), rakats: 2, timing: t('practices.sunnah.beforeFajr') },
-    { id: 'dhuhr_before', name: t('practices.sunnah.dhuhrBefore'), description: t('practices.sunnah.dhuhrBeforeDesc'), rakats: 4, timing: t('practices.sunnah.beforeDhuhr') },
-    { id: 'dhuhr_after', name: t('practices.sunnah.dhuhrAfter'), description: t('practices.sunnah.dhuhrAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterDhuhr') },
-    { id: 'maghrib_after', name: t('practices.sunnah.maghribAfter'), description: t('practices.sunnah.maghribAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterMaghrib') },
-    { id: 'isha_after', name: t('practices.sunnah.ishaAfter'), description: t('practices.sunnah.ishaAfterDesc'), rakats: 2, timing: t('practices.sunnah.afterIsha') },
-    { id: 'witr', name: t('practices.sunnah.witr'), description: t('practices.sunnah.witrDesc'), rakats: 3, timing: t('practices.sunnah.afterIsha') },
-    { id: 'tahajjud', name: t('practices.sunnah.tahajjud'), description: t('practices.sunnah.tahajjudDesc'), rakats: 8, timing: t('practices.sunnah.lateNight') },
-    { id: 'duha', name: t('practices.sunnah.duha'), description: t('practices.sunnah.duhaDesc'), rakats: 4, timing: t('practices.sunnah.midMorning') },
+  const STANDALONE_PRAYERS = [
+    { id: 'tahajjud', nameKey: 'practices.sunnah.tahajjud', descKey: 'practices.sunnah.tahajjudDesc', rakats: 8, icon: Moon },
+    { id: 'duha', nameKey: 'practices.sunnah.duha', descKey: 'practices.sunnah.duhaDesc', rakats: 4, icon: Sun },
   ];
 
   const SADAQAH_TYPES = [
@@ -84,7 +150,8 @@ const Practices = () => {
     { id: 'knowledge', name: t('sadaqah.knowledge'), arabicName: 'نشر العلم', description: t('sadaqah.knowledgeDesc'), examples: [t('sadaqah.knowledgeExample1'), t('sadaqah.knowledgeExample2'), t('sadaqah.knowledgeExample3')], reward: t('sadaqah.knowledgeReward'), color: 'bg-info/10 border-info/20 text-info' },
   ];
 
-  // Prayer states
+  /* ── State ── */
+
   const [prayerStates, setPrayerStates] = useState<Record<string, PrayerState>>(() => {
     const today = new Date().toISOString().split('T')[0];
     const stored = localStorage.getItem('naja_prayer_states');
@@ -92,13 +159,12 @@ const Practices = () => {
       const parsed = JSON.parse(stored);
       if (parsed.date === today) return parsed.states;
     }
-    return MANDATORY_PRAYERS.reduce((acc, p) => ({
+    return PRAYER_GROUPS.reduce((acc, g) => ({
       ...acc,
-      [p.id]: { done: false, onTime: false, inCongregation: false, madeUp: false }
+      [g.id]: { done: false, onTime: false, inCongregation: false, madeUp: false }
     }), {});
   });
 
-  // Sunnah states
   const [sunnahStates, setSunnahStates] = useState<Record<string, boolean>>(() => {
     const today = new Date().toISOString().split('T')[0];
     const stored = localStorage.getItem('naja_sunnah_states');
@@ -106,10 +172,15 @@ const Practices = () => {
       const parsed = JSON.parse(stored);
       if (parsed.date === today) return parsed.states;
     }
-    return SUNNAH_PRAYERS.reduce((acc, p) => ({ ...acc, [p.id]: false }), {});
+    const allSunnahs = [
+      ...PRAYER_GROUPS.flatMap(g => g.sunnahs),
+      ...STANDALONE_PRAYERS,
+    ];
+    return allSunnahs.reduce((acc, s) => ({ ...acc, [s.id]: false }), {});
   });
 
-  // Sadaqah logs
+  const [expandedGroup, setExpandedGroup] = useState<string | null>('fajr');
+
   const [sadaqahLogs, setSadaqahLogs] = useState<SadaqahLog[]>(() => {
     const stored = localStorage.getItem('naja_sadaqah_logs');
     return stored ? JSON.parse(stored) : [];
@@ -117,7 +188,8 @@ const Practices = () => {
 
   const [expandedSadaqah, setExpandedSadaqah] = useState<string | null>(null);
 
-  // Save states
+  /* ── Persistence ── */
+
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     localStorage.setItem('naja_prayer_states', JSON.stringify({ date: today, states: prayerStates }));
@@ -132,18 +204,20 @@ const Practices = () => {
     localStorage.setItem('naja_sadaqah_logs', JSON.stringify(sadaqahLogs));
   }, [sadaqahLogs]);
 
+  /* ── Handlers ── */
+
   const togglePrayerDone = (id: string) => {
-    const newState = !prayerStates[id].done;
+    const newState = !prayerStates[id]?.done;
     setPrayerStates(prev => ({
       ...prev,
-      [id]: { ...prev[id], done: newState }
+      [id]: { ...(prev[id] || { done: false, onTime: false, inCongregation: false, madeUp: false }), done: newState }
     }));
 
     if (newState) {
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
-      const prayer = MANDATORY_PRAYERS.find(p => p.id === id);
-      recordCompletedAct(id, prayer?.name || id, BARAKAH_REWARDS.PRAYER_COMPLETED, 'prayer');
+      const group = PRAYER_GROUPS.find(g => g.id === id);
+      recordCompletedAct(id, group?.name || id, BARAKAH_REWARDS.PRAYER_COMPLETED, 'prayer');
       window.dispatchEvent(new CustomEvent('naja_acts_updated'));
 
       if (leveledUp) {
@@ -157,10 +231,10 @@ const Practices = () => {
   const togglePrayerOption = (id: string, option: 'onTime' | 'inCongregation' | 'madeUp') => {
     setPrayerStates(prev => ({
       ...prev,
-      [id]: { ...prev[id], [option]: !prev[id][option] }
+      [id]: { ...prev[id], [option]: !prev[id]?.[option] }
     }));
     
-    if (!prayerStates[id][option]) {
+    if (!prayerStates[id]?.[option]) {
       let points = 0;
       if (option === 'onTime') points = BARAKAH_REWARDS.PRAYER_ON_TIME;
       if (option === 'inCongregation') points = BARAKAH_REWARDS.PRAYER_IN_JAMAAH;
@@ -181,14 +255,12 @@ const Practices = () => {
     }
   };
 
-  const logSadaqah = (typeId: string, note?: string, amount?: number) => {
+  const logSadaqah = (typeId: string) => {
     const today = new Date().toISOString().split('T')[0];
     const newLog: SadaqahLog = {
       id: Date.now().toString(),
       typeId,
       date: today,
-      note,
-      amount,
     };
     setSadaqahLogs(prev => [newLog, ...prev]);
     addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
@@ -204,12 +276,41 @@ const Practices = () => {
     return sadaqahLogs.filter(log => log.date === today).length;
   };
 
-  const fardCompleted = Object.values(prayerStates).filter(p => p.done).length;
-  const sunnahCompleted = Object.values(sunnahStates).filter(Boolean).length;
+  /* ── Derived ── */
 
-  const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
+  const fardCompleted = PRAYER_GROUPS.filter(g => prayerStates[g.id]?.done).length;
+  const allSunnahIds = [
+    ...PRAYER_GROUPS.flatMap(g => g.sunnahs.map(s => s.id)),
+    ...STANDALONE_PRAYERS.map(s => s.id),
+  ];
+  const sunnahCompleted = allSunnahIds.filter(id => sunnahStates[id]).length;
+
+  /* ── Sunnah sub-row renderer ── */
+
+  const renderSunnahRow = (s: SunnahItem) => (
+    <div
+      key={s.id}
+      className={cn(
+        "flex items-center gap-2.5 py-2 px-3 pl-12 cursor-pointer transition-all",
+        sunnahStates[s.id] && "bg-secondary/5"
+      )}
+      onClick={() => toggleSunnah(s.id)}
+    >
+      <div className={cn(
+        "w-6 h-6 rounded-md flex items-center justify-center transition-all shrink-0",
+        sunnahStates[s.id] ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
+      )}>
+        {sunnahStates[s.id] ? <Check className="w-3 h-3" /> : <Star className="w-3 h-3" />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-medium">
+          {t(s.nameKey)}
+          <span className="text-muted-foreground ml-1">({s.rakats}R)</span>
+        </span>
+      </div>
+      <span className="text-[10px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</span>
+    </div>
+  );
 
   return (
     <motion.div 
@@ -246,7 +347,7 @@ const Practices = () => {
 
         {activeTab === 'prayers' && (
           <>
-            {/* Inline Progress Bar */}
+            {/* Inline Progress */}
             <div className="flex items-center gap-3">
               <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
                 {fardCompleted}/5 {t('practices.fard')}
@@ -260,98 +361,138 @@ const Practices = () => {
               </div>
               {sunnahCompleted > 0 && (
                 <span className="text-[10px] font-medium text-secondary bg-secondary/10 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                  +{sunnahCompleted} {t('practices.sunnah.label', { defaultValue: 'sunnah' })}
+                  +{sunnahCompleted} sunnah
                 </span>
               )}
             </div>
 
-            {/* Fard Prayers Section */}
-            <div>
-              <button 
-                onClick={() => toggleSection('fard')}
-                className="w-full flex items-center justify-between py-2"
-              >
-                <h3 className="text-sm font-semibold">{t('practices.fardPrayers')}</h3>
-                {expandedSection === 'fard' ? (
-                  <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
-              
-              <AnimatePresence>
-                {expandedSection === 'fard' && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <Card className="divide-y divide-border overflow-hidden">
-                      {MANDATORY_PRAYERS.map((prayer) => {
-                        const state = prayerStates[prayer.id];
-                        const Icon = prayer.icon;
-                        
-                        return (
-                          <div key={prayer.id}>
-                            <div 
+            {/* Prayer Groups */}
+            <div className="space-y-2">
+              {PRAYER_GROUPS.map((group) => {
+                const state = prayerStates[group.id];
+                const Icon = group.icon;
+                const isExpanded = expandedGroup === group.id;
+                const sunnahsBefore = group.sunnahs.filter(s => s.position === 'before');
+                const sunnahsAfter = group.sunnahs.filter(s => s.position === 'after');
+                const groupSunnahDone = group.sunnahs.filter(s => sunnahStates[s.id]).length;
+
+                return (
+                  <Card key={group.id} className="overflow-hidden">
+                    {/* Fard header row */}
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
+                        state?.done && "bg-primary/5"
+                      )}
+                      onClick={() => setExpandedGroup(isExpanded ? null : group.id)}
+                    >
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0",
+                        state?.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      )}>
+                        {state?.done ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-sm font-semibold">{group.name}</h4>
+                          <span className="text-[10px] text-muted-foreground">{group.fardRakats}R</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">{t(group.descriptionKey)}</p>
+                      </div>
+
+                      {/* mini progress for group sunnahs */}
+                      {group.sunnahs.length > 0 && (
+                        <span className={cn(
+                          "text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0",
+                          groupSunnahDone === group.sunnahs.length
+                            ? "bg-secondary/20 text-secondary"
+                            : "bg-muted text-muted-foreground"
+                        )}>
+                          {groupSunnahDone}/{group.sunnahs.length}
+                        </span>
+                      )}
+
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                      )}
+                    </div>
+
+                    {/* Expanded content */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-border">
+                            {/* Sunnahs before */}
+                            {sunnahsBefore.length > 0 && (
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 pt-2 pb-1 pl-12">
+                                  {t('practices.beforeFard')}
+                                </p>
+                                {sunnahsBefore.map(renderSunnahRow)}
+                              </div>
+                            )}
+
+                            {/* Fard row (toggle) */}
+                            <div
                               className={cn(
-                                "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
-                                state?.done && "bg-primary/5"
+                                "flex items-center gap-2.5 py-2.5 px-3 cursor-pointer transition-all border-y border-border/50",
+                                state?.done ? "bg-primary/8" : "bg-muted/20"
                               )}
-                              onClick={() => togglePrayerDone(prayer.id)}
+                              onClick={() => togglePrayerDone(group.id)}
                             >
                               <div className={cn(
-                                "w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0",
-                                state?.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                                "w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0 ml-[22px]",
+                                state?.done ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary"
                               )}>
-                                {state?.done ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                                {state?.done ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-medium">{prayer.name}</h4>
-                                <p className="text-[11px] text-muted-foreground">{prayer.description}</p>
+                                <span className="text-xs font-semibold text-primary">
+                                  {t('practices.fard')} — {group.fardRakats} {t('practices.rakats', { defaultValue: "rak'at" })}
+                                </span>
                               </div>
-                              <span className="text-[11px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.PRAYER_COMPLETED}</span>
+                              <span className="text-[10px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.PRAYER_COMPLETED}</span>
                             </div>
 
-                            {/* Prayer Options */}
+                            {/* Prayer options chips */}
                             {state?.done && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
-                                className="flex gap-1.5 px-3 pb-2.5"
+                                className="flex gap-1.5 px-3 py-2 pl-12"
                               >
                                 <button
-                                  onClick={() => togglePrayerOption(prayer.id, 'onTime')}
+                                  onClick={() => togglePrayerOption(group.id, 'onTime')}
                                   className={cn(
                                     "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
-                                    state.onTime 
-                                      ? "bg-success/20 text-success" 
-                                      : "bg-muted text-muted-foreground"
+                                    state.onTime ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"
                                   )}
                                 >
                                   <Clock className="w-3 h-3" />
                                   {t('practices.onTime')}
                                 </button>
                                 <button
-                                  onClick={() => togglePrayerOption(prayer.id, 'inCongregation')}
+                                  onClick={() => togglePrayerOption(group.id, 'inCongregation')}
                                   className={cn(
                                     "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
-                                    state.inCongregation 
-                                      ? "bg-accent/20 text-accent" 
-                                      : "bg-muted text-muted-foreground"
+                                    state.inCongregation ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"
                                   )}
                                 >
                                   <Users className="w-3 h-3" />
                                   {t('practices.inCongregation')}
                                 </button>
                                 <button
-                                  onClick={() => togglePrayerOption(prayer.id, 'madeUp')}
+                                  onClick={() => togglePrayerOption(group.id, 'madeUp')}
                                   className={cn(
                                     "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
-                                    state.madeUp 
-                                      ? "bg-warn/20 text-warn" 
-                                      : "bg-muted text-muted-foreground"
+                                    state.madeUp ? "bg-warn/20 text-warn" : "bg-muted text-muted-foreground"
                                   )}
                                 >
                                   <RotateCcw className="w-3 h-3" />
@@ -359,72 +500,58 @@ const Practices = () => {
                                 </button>
                               </motion.div>
                             )}
-                          </div>
-                        );
-                      })}
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
 
-            {/* Sunnah/Nafl Section */}
-            <div>
-              <button 
-                onClick={() => toggleSection('sunnah')}
-                className="w-full flex items-center justify-between py-2"
-              >
-                <h3 className="text-sm font-semibold">{t('practices.sunnahNafl')}</h3>
-                {expandedSection === 'sunnah' ? (
-                  <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {expandedSection === 'sunnah' && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <Card className="divide-y divide-border overflow-hidden">
-                      {SUNNAH_PRAYERS.map((prayer) => (
-                        <div
-                          key={prayer.id}
-                          className={cn(
-                            "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
-                            sunnahStates[prayer.id] && "bg-secondary/5"
-                          )}
-                          onClick={() => toggleSunnah(prayer.id)}
-                        >
-                          <div className={cn(
-                            "w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0",
-                            sunnahStates[prayer.id] 
-                              ? "bg-secondary text-secondary-foreground" 
-                              : "bg-muted text-muted-foreground"
-                          )}>
-                            {sunnahStates[prayer.id] ? (
-                              <Check className="w-3.5 h-3.5" />
-                            ) : (
-                              <Star className="w-3.5 h-3.5" />
+                            {/* Sunnahs after */}
+                            {sunnahsAfter.length > 0 && (
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-3 pt-2 pb-1 pl-12">
+                                  {t('practices.afterFard')}
+                                </p>
+                                {sunnahsAfter.map(renderSunnahRow)}
+                              </div>
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium">
-                              {prayer.name}
-                              <span className="text-[11px] text-muted-foreground ml-1.5">{prayer.rakats}R</span>
-                            </h4>
-                          </div>
-                          <span className="text-[11px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</span>
-                        </div>
-                      ))}
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Standalone Prayers (Tahajjud, Duha) */}
+            <div>
+              <h3 className="text-sm font-semibold mb-2">{t('practices.standalonePrayers')}</h3>
+              <Card className="divide-y divide-border overflow-hidden">
+                {STANDALONE_PRAYERS.map((prayer) => {
+                  const Icon = prayer.icon;
+                  return (
+                    <div
+                      key={prayer.id}
+                      className={cn(
+                        "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
+                        sunnahStates[prayer.id] && "bg-secondary/5"
+                      )}
+                      onClick={() => toggleSunnah(prayer.id)}
+                    >
+                      <div className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0",
+                        sunnahStates[prayer.id] ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
+                      )}>
+                        {sunnahStates[prayer.id] ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium">
+                          {t(prayer.nameKey)}
+                          <span className="text-[11px] text-muted-foreground ml-1.5">{prayer.rakats}R</span>
+                        </h4>
+                        <p className="text-[11px] text-muted-foreground">{t(prayer.descKey)}</p>
+                      </div>
+                      <span className="text-[11px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</span>
+                    </div>
+                  );
+                })}
+              </Card>
             </div>
 
             {/* Quick Actions — horizontal pills */}
@@ -457,23 +584,16 @@ const Practices = () => {
         {/* Sadaqah Tab */}
         {activeTab === 'sadaqah' && (
           <div className="space-y-3">
-            {/* Today's Summary — compact */}
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-medium text-muted-foreground">{t('practices.todaysSadaqah')}</span>
               <span className="text-sm font-bold text-primary">{getTodaySadaqahCount()}</span>
             </div>
 
-            {/* Sadaqah Types */}
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">{t('practices.logSadaqah')}</h3>
               {SADAQAH_TYPES.map((type) => (
                 <motion.div key={type.id} whileTap={{ scale: 0.98 }}>
-                  <Card 
-                    className={cn(
-                      "overflow-hidden transition-all",
-                      expandedSadaqah === type.id && "ring-2 ring-primary/50"
-                    )}
-                  >
+                  <Card className={cn("overflow-hidden transition-all", expandedSadaqah === type.id && "ring-2 ring-primary/50")}>
                     <button
                       onClick={() => setExpandedSadaqah(expandedSadaqah === type.id ? null : type.id)}
                       className="w-full p-3 text-left"
@@ -504,7 +624,6 @@ const Practices = () => {
                         >
                           <div className="px-3 pb-3 space-y-2.5">
                             <p className="text-xs text-muted-foreground">{type.description}</p>
-                            
                             <div>
                               <p className="text-[11px] font-medium mb-1.5">{t('common.examples')}</p>
                               <ul className="space-y-0.5">
@@ -516,11 +635,9 @@ const Practices = () => {
                                 ))}
                               </ul>
                             </div>
-
                             <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/10">
                               <p className="text-[11px] italic text-foreground">{type.reward}</p>
                             </div>
-
                             <button
                               onClick={() => logSadaqah(type.id)}
                               className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-sm flex items-center justify-center gap-2"
@@ -537,7 +654,6 @@ const Practices = () => {
               ))}
             </div>
 
-            {/* Recent Logs */}
             {sadaqahLogs.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">{t('practices.recentActs')}</h3>
