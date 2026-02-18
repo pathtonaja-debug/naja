@@ -226,4 +226,24 @@ export const enrichmentNotifications = {
       body: "Teste tes connaissances — le quiz du jour t'attend",
     }),
   },
+  adhkarMorning: {
+    en: (): NotificationContent => ({
+      title: '🌅 Morning Adhkar',
+      body: 'Start your day with the remembrance of Allah — Adhkar al-Sabah',
+    }),
+    fr: (): NotificationContent => ({
+      title: '🌅 Adhkar du Matin',
+      body: 'Commence ta journée par le rappel d\'Allah — Adhkar al-Sabah',
+    }),
+  },
+  adhkarEvening: {
+    en: (): NotificationContent => ({
+      title: '🌇 Evening Adhkar',
+      body: 'End your day with the remembrance of Allah — Adhkar al-Masa',
+    }),
+    fr: (): NotificationContent => ({
+      title: '🌇 Adhkar du Soir',
+      body: 'Termine ta journée par le rappel d\'Allah — Adhkar al-Masa',
+    }),
+  },
 };

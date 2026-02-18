@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/card';
 import { useGuestProfile, SPIRITUAL_LEVELS, getProgressInLevel } from '@/hooks/useGuestProfile';
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
+import { WeeklySummaryCard } from '@/components/dashboard/WeeklySummaryCard';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
@@ -451,6 +452,11 @@ const Dashboard = () => {
             </motion.button>
           </div>
         </Card>
+      </div>
+
+      {/* Weekly Summary Card */}
+      <div className="px-4 pb-4">
+        <WeeklySummaryCard />
       </div>
 
       <BottomNav />

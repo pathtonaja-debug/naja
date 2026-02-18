@@ -339,6 +339,24 @@ Deno.serve(async (req) => {
         : { title: '🌙 Before you sleep...', body: 'How did you serve Allah today? Open the app to reflect' };
       await logAndSend('reflection', reflectionTime, t.title, t.body);
     }
+
+    // === ADHKAR NOTIFICATIONS ===
+    // Morning Adhkar — at Fajr time
+    if (isWithinWindow(fajrDate, nowUtc) && await shouldSend('adhkar_morning')) {
+      const t = lang === 'fr'
+        ? { title: '🌅 Adhkar du Matin', body: "Commence ta journée par le rappel d'Allah — Adhkar al-Sabah" }
+        : { title: '🌅 Morning Adhkar', body: 'Start your day with the remembrance of Allah — Adhkar al-Sabah' };
+      await logAndSend('adhkar_morning', fajrDate, t.title, t.body);
+    }
+
+    // Evening Adhkar — at Maghrib time
+    const maghribDate = parsePrayerTime(times.maghrib, tz);
+    if (isWithinWindow(maghribDate, nowUtc) && await shouldSend('adhkar_evening')) {
+      const t = lang === 'fr'
+        ? { title: '🌇 Adhkar du Soir', body: "Termine ta journée par le rappel d'Allah — Adhkar al-Masa" }
+        : { title: '🌇 Evening Adhkar', body: 'End your day with the remembrance of Allah — Adhkar al-Masa' };
+      await logAndSend('adhkar_evening', maghribDate, t.title, t.body);
+    }
   }
 
   return new Response(JSON.stringify({ sent: totalSent }), {

@@ -15,7 +15,7 @@ import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
-import WelcomeNewUser from "./pages/WelcomeNewUser";
+
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Dates from "./pages/Dates";
@@ -117,7 +117,7 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/welcome" element={<ProtectedRoute><WelcomeNewUser /></ProtectedRoute>} />
+                  
                   
                   {/* Protected routes */}
                   <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />

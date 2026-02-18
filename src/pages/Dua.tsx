@@ -5,6 +5,8 @@ import {
   Sparkles, Trash2, Folder, FolderPlus, MoreVertical, Pencil, BookOpen
 } from 'lucide-react';
 import { QuranicDuasList } from '@/components/dua/QuranicDuasList';
+import { AdhkarReader } from '@/components/dua/AdhkarReader';
+import { MORNING_ADHKAR, EVENING_ADHKAR } from '@/data/adhkarData';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
@@ -24,7 +26,7 @@ import { WriteOwnDua } from '@/components/dua/WriteOwnDua';
 import { SaveDuaSheet } from '@/components/dua/SaveDuaSheet';
 import { DUA_TOPICS } from '@/data/duaTopics';
 
-type ViewMode = 'library' | 'builder-choice' | 'guided' | 'write-own' | 'quranic-duas';
+type ViewMode = 'library' | 'builder-choice' | 'guided' | 'write-own' | 'quranic-duas' | 'adhkar-morning' | 'adhkar-evening';
 type LibraryTab = 'all' | 'folders' | 'favorites';
 
 const Dua = () => {
@@ -277,6 +279,14 @@ const Dua = () => {
     );
   }
 
+  if (viewMode === 'adhkar-morning') {
+    return <AdhkarReader title={t('adhkar.morning')} items={MORNING_ADHKAR} storageKey="naja_adhkar_morning" onBack={() => setViewMode('library')} />;
+  }
+
+  if (viewMode === 'adhkar-evening') {
+    return <AdhkarReader title={t('adhkar.evening')} items={EVENING_ADHKAR} storageKey="naja_adhkar_evening" onBack={() => setViewMode('library')} />;
+  }
+
   if (viewMode === 'builder-choice') {
     return (
       <motion.div
@@ -365,6 +375,26 @@ const Dua = () => {
           </button>
         }
       />
+
+      {/* Morning & Evening Adhkar Cards */}
+      <div className="px-4 pb-3 grid grid-cols-2 gap-3">
+        <button
+          onClick={() => setViewMode('adhkar-morning')}
+          className="p-4 rounded-2xl bg-card border border-primary/20 hover:border-primary/40 transition-all text-left"
+        >
+          <span className="text-2xl mb-2 block">🌅</span>
+          <h4 className="font-semibold text-sm">{t('adhkar.morning')}</h4>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{t('adhkar.morningDesc')}</p>
+        </button>
+        <button
+          onClick={() => setViewMode('adhkar-evening')}
+          className="p-4 rounded-2xl bg-card border border-secondary/20 hover:border-secondary/40 transition-all text-left"
+        >
+          <span className="text-2xl mb-2 block">🌇</span>
+          <h4 className="font-semibold text-sm">{t('adhkar.evening')}</h4>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{t('adhkar.eveningDesc')}</p>
+        </button>
+      </div>
 
       {/* Search */}
       <div className="px-4 pb-3">

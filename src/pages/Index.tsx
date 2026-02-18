@@ -39,12 +39,7 @@ const Index = () => {
       }
     };
 
-    // Small delay for smooth transition
-    const timer = setTimeout(() => {
-      checkAuthAndRedirect();
-    }, 800);
-
-    return () => clearTimeout(timer);
+    checkAuthAndRedirect();
   }, [navigate]);
 
   if (checking) {
