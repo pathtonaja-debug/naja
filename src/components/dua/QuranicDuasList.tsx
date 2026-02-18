@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { BookOpen, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +13,6 @@ export function QuranicDuasList({ onBack }: QuranicDuasListProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const lang = getCurrentLanguage();
-  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const goToVerse = (dua: QuranicDua) => {
     navigate(`/quran?surah=${dua.surah}&verse=${dua.verse}`);
@@ -24,63 +21,40 @@ export function QuranicDuasList({ onBack }: QuranicDuasListProps) {
   return (
     <div className="space-y-3">
       {QURANIC_DUAS.map((dua) => {
-        const isExpanded = expandedId === dua.id;
         const translation = lang === 'fr' ? dua.translationKeyFr : dua.translationKeyEn;
 
         return (
           <Card
             key={dua.id}
-            className="overflow-hidden transition-all"
+            className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20"
           >
-            <button
-              onClick={() => setExpandedId(isExpanded ? null : dua.id)}
-              className="w-full p-4 text-left"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                      {dua.verseLabel}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      #{dua.id}
-                    </span>
-                  </div>
-                  <p className="text-base font-arabic text-right leading-loose mt-2">
-                    {dua.arabic}
-                  </p>
-                </div>
-                <ChevronRight className={`w-4 h-4 text-muted-foreground mt-1 transition-transform shrink-0 ${isExpanded ? 'rotate-90' : ''}`} />
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary" />
               </div>
-            </button>
+              <div>
+                <h3 className="font-semibold text-sm">#{dua.id}</h3>
+                <p className="text-xs text-muted-foreground">{dua.verseLabel}</p>
+              </div>
+            </div>
 
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
-                    <p className="text-sm text-muted-foreground italic">
-                      {dua.transliteration}
-                    </p>
-                    <p className="text-sm text-foreground">
-                      {translation}
-                    </p>
-                    <button
-                      onClick={() => goToVerse(dua)}
-                      className="flex items-center gap-2 text-xs font-medium text-primary hover:underline"
-                    >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      {t('quranicDuas.viewInQuran')} ({dua.verseLabel})
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <p className="text-lg font-arabic text-right leading-loose mb-2">
+              {dua.arabic}
+            </p>
+            <p className="text-xs text-muted-foreground italic mb-1">
+              {dua.transliteration}
+            </p>
+            <p className="text-sm text-foreground mb-3">
+              {translation}
+            </p>
+
+            <button
+              onClick={() => goToVerse(dua)}
+              className="flex items-center gap-2 text-xs font-medium text-primary hover:underline"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              {t('quranicDuas.viewInQuran')} ({dua.verseLabel})
+            </button>
           </Card>
         );
       })}
