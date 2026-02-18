@@ -157,7 +157,7 @@ export interface RamadanStory {
 }
 
 export const RAMADAN_STORIES: RamadanStory[] = [
-  // History
+  // ===== History (10) =====
   {
     id: 'revelation-quran',
     titleKey: 'ramadan.stories.revelationQuran',
@@ -176,7 +176,49 @@ export const RAMADAN_STORIES: RamadanStory[] = [
     contentKey: 'ramadan.stories.fathMakkahContent',
     category: 'history',
   },
-  // Prophets
+  {
+    id: 'laylatul-qadr',
+    titleKey: 'ramadan.stories.laylatulQadr',
+    contentKey: 'ramadan.stories.laylatulQadrContent',
+    category: 'history',
+  },
+  {
+    id: 'isra-miraj',
+    titleKey: 'ramadan.stories.israMiraj',
+    contentKey: 'ramadan.stories.israMirajContent',
+    category: 'history',
+  },
+  {
+    id: 'first-adhan',
+    titleKey: 'ramadan.stories.firstAdhan',
+    contentKey: 'ramadan.stories.firstAdhanContent',
+    category: 'history',
+  },
+  {
+    id: 'hijrah',
+    titleKey: 'ramadan.stories.hijrah',
+    contentKey: 'ramadan.stories.hijrahContent',
+    category: 'history',
+  },
+  {
+    id: 'treaty-hudaybiyyah',
+    titleKey: 'ramadan.stories.treatyHudaybiyyah',
+    contentKey: 'ramadan.stories.treatyHudaybiyyahContent',
+    category: 'history',
+  },
+  {
+    id: 'farewell-sermon',
+    titleKey: 'ramadan.stories.farewellSermon',
+    contentKey: 'ramadan.stories.farewellSermonContent',
+    category: 'history',
+  },
+  {
+    id: 'compilation-quran',
+    titleKey: 'ramadan.stories.compilationQuran',
+    contentKey: 'ramadan.stories.compilationQuranContent',
+    category: 'history',
+  },
+  // ===== Prophets (10) =====
   {
     id: 'prophet-generosity',
     titleKey: 'ramadan.stories.prophetGenerosity',
@@ -189,7 +231,55 @@ export const RAMADAN_STORIES: RamadanStory[] = [
     contentKey: 'ramadan.stories.prophetItikafContent',
     category: 'prophets',
   },
-  // Companions
+  {
+    id: 'prophet-tahajjud',
+    titleKey: 'ramadan.stories.prophetTahajjud',
+    contentKey: 'ramadan.stories.prophetTahajjudContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-kindness',
+    titleKey: 'ramadan.stories.prophetKindness',
+    contentKey: 'ramadan.stories.prophetKindnessContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-forgiveness',
+    titleKey: 'ramadan.stories.prophetForgiveness',
+    contentKey: 'ramadan.stories.prophetForgivenessContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-charity',
+    titleKey: 'ramadan.stories.prophetCharity',
+    contentKey: 'ramadan.stories.prophetCharityContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-patience',
+    titleKey: 'ramadan.stories.prophetPatience',
+    contentKey: 'ramadan.stories.prophetPatienceContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-family',
+    titleKey: 'ramadan.stories.prophetFamily',
+    contentKey: 'ramadan.stories.prophetFamilyContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-dua',
+    titleKey: 'ramadan.stories.prophetDua',
+    contentKey: 'ramadan.stories.prophetDuaContent',
+    category: 'prophets',
+  },
+  {
+    id: 'prophet-last-ramadan',
+    titleKey: 'ramadan.stories.prophetLastRamadan',
+    contentKey: 'ramadan.stories.prophetLastRamadanContent',
+    category: 'prophets',
+  },
+  // ===== Companions (10) =====
   {
     id: 'companions-fasting',
     titleKey: 'ramadan.stories.companionsFasting',
@@ -200,6 +290,54 @@ export const RAMADAN_STORIES: RamadanStory[] = [
     id: 'companions-quran',
     titleKey: 'ramadan.stories.companionsQuran',
     contentKey: 'ramadan.stories.companionsQuranContent',
+    category: 'companions',
+  },
+  {
+    id: 'bilal-story',
+    titleKey: 'ramadan.stories.bilalStory',
+    contentKey: 'ramadan.stories.bilalStoryContent',
+    category: 'companions',
+  },
+  {
+    id: 'khadijah-sacrifice',
+    titleKey: 'ramadan.stories.khadijahSacrifice',
+    contentKey: 'ramadan.stories.khadijahSacrificeContent',
+    category: 'companions',
+  },
+  {
+    id: 'abu-bakr-generosity',
+    titleKey: 'ramadan.stories.abuBakrGenerosity',
+    contentKey: 'ramadan.stories.abuBakrGenerosityContent',
+    category: 'companions',
+  },
+  {
+    id: 'umar-justice',
+    titleKey: 'ramadan.stories.umarJustice',
+    contentKey: 'ramadan.stories.umarJusticeContent',
+    category: 'companions',
+  },
+  {
+    id: 'uthman-quran',
+    titleKey: 'ramadan.stories.uthmanQuran',
+    contentKey: 'ramadan.stories.uthmanQuranContent',
+    category: 'companions',
+  },
+  {
+    id: 'ali-devotion',
+    titleKey: 'ramadan.stories.aliDevotion',
+    contentKey: 'ramadan.stories.aliDevotionContent',
+    category: 'companions',
+  },
+  {
+    id: 'salman-farsi',
+    titleKey: 'ramadan.stories.salmanFarsi',
+    contentKey: 'ramadan.stories.salmanFarsiContent',
+    category: 'companions',
+  },
+  {
+    id: 'aisha-knowledge',
+    titleKey: 'ramadan.stories.aishaKnowledge',
+    contentKey: 'ramadan.stories.aishaKnowledgeContent',
     category: 'companions',
   },
 ];
