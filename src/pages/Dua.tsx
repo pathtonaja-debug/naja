@@ -4,6 +4,7 @@ import {
   Plus, Heart, Search, ChevronLeft, X, 
   Sparkles, Trash2, Folder, FolderPlus, MoreVertical, Pencil, BookOpen
 } from 'lucide-react';
+import { QuranicDuasList } from '@/components/dua/QuranicDuasList';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ import { WriteOwnDua } from '@/components/dua/WriteOwnDua';
 import { SaveDuaSheet } from '@/components/dua/SaveDuaSheet';
 import { DUA_TOPICS } from '@/data/duaTopics';
 
-type ViewMode = 'library' | 'builder-choice' | 'guided' | 'write-own';
+type ViewMode = 'library' | 'builder-choice' | 'guided' | 'write-own' | 'quranic-duas';
 type LibraryTab = 'all' | 'folders' | 'favorites';
 
 const Dua = () => {
@@ -252,6 +253,30 @@ const Dua = () => {
     );
   }
 
+  if (viewMode === 'quranic-duas') {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-background pb-24"
+      >
+        <TopBar 
+          title={t('dua.quranicDuas')} 
+          leftElement={
+            <button onClick={() => setViewMode('library')} className="p-2 -ml-2">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          }
+        />
+        <div className="px-4 py-2">
+          <p className="text-sm text-muted-foreground mb-4">{t('dua.quranicDuasDesc')}</p>
+          <QuranicDuasList onBack={() => setViewMode('library')} />
+        </div>
+        <BottomNav />
+      </motion.div>
+    );
+  }
+
   if (viewMode === 'builder-choice') {
     return (
       <motion.div
@@ -387,6 +412,23 @@ const Dua = () => {
         ) : libraryTab === 'folders' ? (
           // Folders view
           <div className="space-y-3">
+            {/* Built-in Quranic Duas folder */}
+            <button
+              onClick={() => setViewMode('quranic-duas')}
+              className="w-full p-4 rounded-2xl bg-card border border-primary/20 hover:border-primary/40 transition-all flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <span className="font-medium">{t('dua.quranicDuas')}</span>
+                  <p className="text-xs text-muted-foreground">{t('dua.quranicDuasDesc')}</p>
+                </div>
+              </div>
+              <ChevronLeft className="w-4 h-4 rotate-180 text-muted-foreground" />
+            </button>
+
             {/* Create folder button */}
             <Button
               variant="outline"
@@ -465,6 +507,24 @@ const Dua = () => {
         ) : (
           // All / Favorites view
           <div className="space-y-3">
+            {/* Quranic Duas shortcut in "all" tab */}
+            {libraryTab === 'all' && !searchQuery && (
+              <button
+                onClick={() => setViewMode('quranic-duas')}
+                className="w-full p-4 rounded-2xl bg-card border border-primary/20 hover:border-primary/40 transition-all flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <span className="font-medium">{t('dua.quranicDuas')}</span>
+                    <p className="text-xs text-muted-foreground">{t('dua.quranicDuasDesc')}</p>
+                  </div>
+                </div>
+                <ChevronLeft className="w-4 h-4 rotate-180 text-muted-foreground" />
+              </button>
+            )}
             {filteredDuas.length === 0 ? (
               <div className="text-center py-12">
                 <Sparkles className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />

@@ -34,6 +34,7 @@ import { FastingHealthTracker } from '@/components/ramadan/FastingHealthTracker'
 import { RamadanJournal } from '@/components/ramadan/RamadanJournal';
 import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
+import { DailyDuaCard } from '@/components/ramadan/DailyDuaCard';
 import { RamadanReport } from '@/components/ramadan/RamadanReport';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
@@ -237,6 +238,11 @@ const Ramadan = () => {
 
             {/* Charity & Impact */}
             <CharityTracker />
+
+            {/* Daily Dua to Learn */}
+            {phaseInfo.currentDayOfRamadan && (
+              <DailyDuaCard dayOfRamadan={phaseInfo.currentDayOfRamadan} />
+            )}
 
             {/* Daily Reminder Card */}
             {phaseInfo.currentDayOfRamadan && (
