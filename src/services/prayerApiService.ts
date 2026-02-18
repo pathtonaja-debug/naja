@@ -34,6 +34,14 @@ export async function fetchPrayerData(
   timezone: string,
   method: number = 2
 ): Promise<AladhanPrayerData | null> {
+  // Check sessionStorage cache first
+  const today = new Date();
+  const cacheKey = `naja_prayer_cache_${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}_${lat.toFixed(2)}_${lng.toFixed(2)}_${method}`;
+  try {
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached) as AladhanPrayerData;
+  } catch { /* ignore */ }
+
   try {
     const adj = getHijriAdj();
 
@@ -84,7 +92,7 @@ export async function fetchPrayerData(
       }
     }
 
-    return {
+    const result: AladhanPrayerData = {
       prayers: prayerTimings,
       hijri: {
         date: hijri.date,
@@ -102,6 +110,11 @@ export async function fetchPrayerData(
         formatted: `${gregorian.day} ${gregorian.month.en} ${gregorian.year}`,
       },
     };
+
+    // Cache in sessionStorage
+    try { sessionStorage.setItem(cacheKey, JSON.stringify(result)); } catch { /* ignore */ }
+
+    return result;
   } catch (error) {
     console.error("Failed to fetch prayer data from Aladhan:", error);
     return null;

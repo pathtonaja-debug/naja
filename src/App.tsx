@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext, useContext } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -37,38 +37,52 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Protected route wrapper
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+// Auth context to cache session app-wide
+interface AuthContextType {
+  session: any | null;
+  isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({ session: null, isLoading: true });
+
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setAuthenticated(true);
-      } else {
-        navigate("/auth", { replace: true, state: { from: location.pathname } });
-      }
-      setLoading(false);
-    };
+    // Initial session check — only once
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      setSession(s);
+      setIsLoading(false);
+    });
 
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate("/auth", { replace: true });
-      } else {
-        setAuthenticated(true);
-      }
+    // Listen for changes (login/logout/token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, location]);
+  }, []);
 
-  if (loading) {
+  return (
+    <AuthContext.Provider value={{ session, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Protected route wrapper — reads cached session, no extra getSession calls
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { session, isLoading } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && !session) {
+      navigate("/auth", { replace: true });
+    }
+  }, [isLoading, session, navigate]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -76,7 +90,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return authenticated ? <>{children}</> : null;
+  return session ? <>{children}</> : null;
 }
 
 // Wrapper to call hooks at top level
@@ -93,44 +107,46 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <NavigationProvider>
-              <AppWithPush />
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/welcome" element={<ProtectedRoute><WelcomeNewUser /></ProtectedRoute>} />
-                
-                {/* Protected routes */}
-                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/dates" element={<ProtectedRoute><Dates /></ProtectedRoute>} />
-                <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
-                <Route path="/practices" element={<ProtectedRoute><Practices /></ProtectedRoute>} />
-                <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
-                <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
-                <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-                <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
-                <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-                <Route path="/dua" element={<ProtectedRoute><Dua /></ProtectedRoute>} />
-                <Route path="/quran" element={<ProtectedRoute><Quran /></ProtectedRoute>} />
-                <Route path="/dhikr" element={<ProtectedRoute><Dhikr /></ProtectedRoute>} />
-                <Route path="/fintech" element={<ProtectedRoute><Fintech /></ProtectedRoute>} />
-                <Route path="/ramadan" element={<ProtectedRoute><Ramadan /></ProtectedRoute>} />
-                
-                {/* Legacy routes redirect */}
-                <Route path="/calendar" element={<Navigate to="/dates" replace />} />
-                <Route path="/habits" element={<Navigate to="/practices" replace />} />
-                
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </NavigationProvider>
+            <AuthProvider>
+              <NavigationProvider>
+                <AppWithPush />
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/welcome" element={<ProtectedRoute><WelcomeNewUser /></ProtectedRoute>} />
+                  
+                  {/* Protected routes */}
+                  <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/dates" element={<ProtectedRoute><Dates /></ProtectedRoute>} />
+                  <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
+                  <Route path="/practices" element={<ProtectedRoute><Practices /></ProtectedRoute>} />
+                  <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
+                  <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
+                  <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+                  <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+                  <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+                  <Route path="/dua" element={<ProtectedRoute><Dua /></ProtectedRoute>} />
+                  <Route path="/quran" element={<ProtectedRoute><Quran /></ProtectedRoute>} />
+                  <Route path="/dhikr" element={<ProtectedRoute><Dhikr /></ProtectedRoute>} />
+                  <Route path="/fintech" element={<ProtectedRoute><Fintech /></ProtectedRoute>} />
+                  <Route path="/ramadan" element={<ProtectedRoute><Ramadan /></ProtectedRoute>} />
+                  
+                  {/* Legacy routes redirect */}
+                  <Route path="/calendar" element={<Navigate to="/dates" replace />} />
+                  <Route path="/habits" element={<Navigate to="/practices" replace />} />
+                  
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </NavigationProvider>
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
