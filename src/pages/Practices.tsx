@@ -33,16 +33,16 @@ interface SadaqahLog {
 }
 
 const SADAQAH_ICONS: Record<string, React.ReactNode> = {
-  'money': <Coins className="w-5 h-5" />,
-  'food': <Heart className="w-5 h-5" />,
-  'smile': <Smile className="w-5 h-5" />,
-  'help': <HelpingHand className="w-5 h-5" />,
-  'remove_harm': <Trash2 className="w-5 h-5" />,
-  'knowledge': <GraduationCap className="w-5 h-5" />,
-  'dua': <HandHeart className="w-5 h-5" />,
-  'visit_sick': <Stethoscope className="w-5 h-5" />,
-  'reconciliation': <Handshake className="w-5 h-5" />,
-  'dhikr': <Star className="w-5 h-5" />,
+  'money': <Coins className="w-4 h-4" />,
+  'food': <Heart className="w-4 h-4" />,
+  'smile': <Smile className="w-4 h-4" />,
+  'help': <HelpingHand className="w-4 h-4" />,
+  'remove_harm': <Trash2 className="w-4 h-4" />,
+  'knowledge': <GraduationCap className="w-4 h-4" />,
+  'dua': <HandHeart className="w-4 h-4" />,
+  'visit_sick': <Stethoscope className="w-4 h-4" />,
+  'reconciliation': <Handshake className="w-4 h-4" />,
+  'dhikr': <Star className="w-4 h-4" />,
 };
 
 const Practices = () => {
@@ -142,8 +142,6 @@ const Practices = () => {
     if (newState) {
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
-
-      // Sync to daily progress (used by Dashboard / Progress)
       const prayer = MANDATORY_PRAYERS.find(p => p.id === id);
       recordCompletedAct(id, prayer?.name || id, BARAKAH_REWARDS.PRAYER_COMPLETED, 'prayer');
       window.dispatchEvent(new CustomEvent('naja_acts_updated'));
@@ -195,11 +193,8 @@ const Practices = () => {
     setSadaqahLogs(prev => [newLog, ...prev]);
     addBarakahPoints(BARAKAH_REWARDS.CHARITY_GIVEN);
     updateStreak();
-
-    // Mark Sadaqah as done for today in the daily progress feed
     recordCompletedAct('sadaqah', t('acts.sadaqah'), BARAKAH_REWARDS.CHARITY_GIVEN, 'habit');
     window.dispatchEvent(new CustomEvent('naja_acts_updated'));
-
     toast.success(t('practices.sadaqahLogged', { points: BARAKAH_REWARDS.CHARITY_GIVEN }));
     setExpandedSadaqah(null);
   };
@@ -224,7 +219,7 @@ const Practices = () => {
     >
       <TopBar title={t('practices.title')} />
       
-      <div className="px-4 space-y-4">
+      <div className="px-4 space-y-3">
         {/* Tab Selector */}
         <div className="flex gap-2 p-1 bg-muted rounded-xl">
           <button
@@ -249,34 +244,32 @@ const Practices = () => {
           </button>
         </div>
 
-        {/* Disclaimer */}
-        <p className="text-xs text-muted-foreground text-center italic px-4">{t('dashboard.niyyahDisclaimer')}</p>
-
         {activeTab === 'prayers' && (
           <>
-            {/* Overall Progress */}
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium">{t('practices.todaysProgress')}</span>
-                <span className="text-lg font-bold text-primary">{fardCompleted}/5 {t('practices.fard')}</span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
+            {/* Inline Progress Bar */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                {fardCompleted}/5 {t('practices.fard')}
+              </span>
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(fardCompleted / 5) * 100}%` }}
                   className="h-full bg-primary rounded-full"
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                {t('practices.sunnahPrayersCompleted', { count: sunnahCompleted })}
-              </p>
-            </Card>
+              {sunnahCompleted > 0 && (
+                <span className="text-[10px] font-medium text-secondary bg-secondary/10 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                  +{sunnahCompleted} {t('practices.sunnah.label', { defaultValue: 'sunnah' })}
+                </span>
+              )}
+            </div>
 
             {/* Fard Prayers Section */}
             <div>
               <button 
                 onClick={() => toggleSection('fard')}
-                className="w-full flex items-center justify-between py-3"
+                className="w-full flex items-center justify-between py-2"
               >
                 <h3 className="text-sm font-semibold">{t('practices.fardPrayers')}</h3>
                 {expandedSection === 'fard' ? (
@@ -292,33 +285,33 @@ const Practices = () => {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="space-y-2 overflow-hidden"
+                    className="overflow-hidden"
                   >
-                    {MANDATORY_PRAYERS.map((prayer) => {
-                      const state = prayerStates[prayer.id];
-                      const Icon = prayer.icon;
-                      
-                      return (
-                        <motion.div key={prayer.id} whileTap={{ scale: 0.98 }}>
-                          <Card className={cn(
-                            "p-4 transition-all",
-                            state?.done && "bg-primary/5 border-primary/20"
-                          )}>
+                    <Card className="divide-y divide-border overflow-hidden">
+                      {MANDATORY_PRAYERS.map((prayer) => {
+                        const state = prayerStates[prayer.id];
+                        const Icon = prayer.icon;
+                        
+                        return (
+                          <div key={prayer.id}>
                             <div 
-                              className="flex items-center gap-3 cursor-pointer"
+                              className={cn(
+                                "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
+                                state?.done && "bg-primary/5"
+                              )}
                               onClick={() => togglePrayerDone(prayer.id)}
                             >
                               <div className={cn(
-                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                                "w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0",
                                 state?.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                               )}>
-                                {state?.done ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                {state?.done ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
                               </div>
-                              <div className="flex-1">
-                                <h4 className="font-medium">{prayer.name}</h4>
-                                <p className="text-xs text-muted-foreground">{prayer.description}</p>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-medium">{prayer.name}</h4>
+                                <p className="text-[11px] text-muted-foreground">{prayer.description}</p>
                               </div>
-                              <span className="text-xs text-primary font-medium">+{BARAKAH_REWARDS.PRAYER_COMPLETED}</span>
+                              <span className="text-[11px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.PRAYER_COMPLETED}</span>
                             </div>
 
                             {/* Prayer Options */}
@@ -326,50 +319,50 @@ const Practices = () => {
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
-                                className="flex gap-2 mt-3 pt-3 border-t border-border"
+                                className="flex gap-1.5 px-3 pb-2.5"
                               >
                                 <button
                                   onClick={() => togglePrayerOption(prayer.id, 'onTime')}
                                   className={cn(
-                                    "flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all",
+                                    "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
                                     state.onTime 
                                       ? "bg-success/20 text-success" 
                                       : "bg-muted text-muted-foreground"
                                   )}
                                 >
-                                  <Clock className="w-3.5 h-3.5" />
+                                  <Clock className="w-3 h-3" />
                                   {t('practices.onTime')}
                                 </button>
                                 <button
                                   onClick={() => togglePrayerOption(prayer.id, 'inCongregation')}
                                   className={cn(
-                                    "flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all",
+                                    "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
                                     state.inCongregation 
                                       ? "bg-accent/20 text-accent" 
                                       : "bg-muted text-muted-foreground"
                                   )}
                                 >
-                                  <Users className="w-3.5 h-3.5" />
+                                  <Users className="w-3 h-3" />
                                   {t('practices.inCongregation')}
                                 </button>
                                 <button
                                   onClick={() => togglePrayerOption(prayer.id, 'madeUp')}
                                   className={cn(
-                                    "flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all",
+                                    "flex-1 flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg text-[11px] font-medium transition-all",
                                     state.madeUp 
                                       ? "bg-warn/20 text-warn" 
                                       : "bg-muted text-muted-foreground"
                                   )}
                                 >
-                                  <RotateCcw className="w-3.5 h-3.5" />
+                                  <RotateCcw className="w-3 h-3" />
                                   {t('practices.qada')}
                                 </button>
                               </motion.div>
                             )}
-                          </Card>
-                        </motion.div>
-                      );
-                    })}
+                          </div>
+                        );
+                      })}
+                    </Card>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -379,7 +372,7 @@ const Practices = () => {
             <div>
               <button 
                 onClick={() => toggleSection('sunnah')}
-                className="w-full flex items-center justify-between py-3"
+                className="w-full flex items-center justify-between py-2"
               >
                 <h3 className="text-sm font-semibold">{t('practices.sunnahNafl')}</h3>
                 {expandedSection === 'sunnah' ? (
@@ -395,67 +388,66 @@ const Practices = () => {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="space-y-2 overflow-hidden"
+                    className="overflow-hidden"
                   >
-                    {SUNNAH_PRAYERS.map((prayer) => (
-                      <motion.div key={prayer.id} whileTap={{ scale: 0.98 }}>
-                        <Card 
+                    <Card className="divide-y divide-border overflow-hidden">
+                      {SUNNAH_PRAYERS.map((prayer) => (
+                        <div
+                          key={prayer.id}
                           className={cn(
-                            "p-4 cursor-pointer transition-all",
-                            sunnahStates[prayer.id] && "bg-secondary/10 border-secondary/20"
+                            "flex items-center gap-3 py-2.5 px-3 cursor-pointer transition-all",
+                            sunnahStates[prayer.id] && "bg-secondary/5"
                           )}
                           onClick={() => toggleSunnah(prayer.id)}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className={cn(
-                              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
-                              sunnahStates[prayer.id] 
-                                ? "bg-secondary text-secondary-foreground" 
-                                : "bg-muted text-muted-foreground"
-                            )}>
-                              {sunnahStates[prayer.id] ? (
-                                <Check className="w-4 h-4" />
-                              ) : (
-                                <Star className="w-4 h-4" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-sm">{prayer.name}</h4>
-                              <p className="text-xs text-muted-foreground">{prayer.description}</p>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-xs text-muted-foreground">{prayer.rakats}R</span>
-                              <p className="text-xs text-primary font-medium">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</p>
-                            </div>
+                          <div className={cn(
+                            "w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0",
+                            sunnahStates[prayer.id] 
+                              ? "bg-secondary text-secondary-foreground" 
+                              : "bg-muted text-muted-foreground"
+                          )}>
+                            {sunnahStates[prayer.id] ? (
+                              <Check className="w-3.5 h-3.5" />
+                            ) : (
+                              <Star className="w-3.5 h-3.5" />
+                            )}
                           </div>
-                        </Card>
-                      </motion.div>
-                    ))}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium">
+                              {prayer.name}
+                              <span className="text-[11px] text-muted-foreground ml-1.5">{prayer.rakats}R</span>
+                            </h4>
+                          </div>
+                          <span className="text-[11px] text-primary font-medium shrink-0">+{BARAKAH_REWARDS.SUNNAH_PRAYER}</span>
+                        </div>
+                      ))}
+                    </Card>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions — horizontal pills */}
             <div>
-              <h3 className="text-sm font-semibold mb-3">{t('practices.morePractices')}</h3>
-              <div className="grid grid-cols-4 gap-3">
+              <h3 className="text-sm font-semibold mb-2">{t('practices.morePractices')}</h3>
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
                 {[
                   { icon: BookOpen, label: t('acts.quran'), path: '/quran', color: "bg-success/10 text-success" },
                   { icon: Heart, label: t('nav.dhikr'), path: '/dhikr', color: "bg-primary/10 text-primary" },
                   { icon: Star, label: t('nav.dua'), path: '/dua', color: "bg-warn/10 text-warn" },
-                  { icon: Coins, label: t('acts.sadaqah'), onClick: () => setActiveTab('sadaqah'), color: "bg-accent/10 text-accent" },
+                  { icon: Coins, label: t('acts.sadaqah'), onClick: () => { setActiveTab('sadaqah'); setSearchParams({ tab: 'sadaqah' }); }, color: "bg-accent/10 text-accent" },
                 ].map((item) => (
-                  <Card 
-                    key={item.label} 
-                    className="p-3 text-center cursor-pointer hover:bg-muted/50 transition-all"
+                  <button
+                    key={item.label}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0",
+                      item.color
+                    )}
                     onClick={() => item.onClick ? item.onClick() : navigate(item.path!)}
                   >
-                    <div className={cn("w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center", item.color)}>
-                      <item.icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-xs font-medium">{item.label}</span>
-                  </Card>
+                    <item.icon className="w-3.5 h-3.5" />
+                    {item.label}
+                  </button>
                 ))}
               </div>
             </div>
@@ -464,20 +456,15 @@ const Practices = () => {
 
         {/* Sadaqah Tab */}
         {activeTab === 'sadaqah' && (
-          <div className="space-y-4">
-            {/* Today's Summary */}
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">{t('practices.todaysSadaqah')}</span>
-                <span className="text-lg font-bold text-primary">{getTodaySadaqahCount()}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('practices.sadaqahQuote')}
-              </p>
-            </Card>
+          <div className="space-y-3">
+            {/* Today's Summary — compact */}
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-medium text-muted-foreground">{t('practices.todaysSadaqah')}</span>
+              <span className="text-sm font-bold text-primary">{getTodaySadaqahCount()}</span>
+            </div>
 
-            {/* Sadaqah Types Grid */}
-            <div className="space-y-3">
+            {/* Sadaqah Types */}
+            <div className="space-y-2">
               <h3 className="text-sm font-semibold">{t('practices.logSadaqah')}</h3>
               {SADAQAH_TYPES.map((type) => (
                 <motion.div key={type.id} whileTap={{ scale: 0.98 }}>
@@ -489,20 +476,20 @@ const Practices = () => {
                   >
                     <button
                       onClick={() => setExpandedSadaqah(expandedSadaqah === type.id ? null : type.id)}
-                      className="w-full p-4 text-left"
+                      className="w-full p-3 text-left"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", type.color)}>
-                          {SADAQAH_ICONS[type.id] || <Coins className="w-5 h-5" />}
+                      <div className="flex items-center gap-2.5">
+                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", type.color)}>
+                          {SADAQAH_ICONS[type.id] || <Coins className="w-4 h-4" />}
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-sm">{type.name}</h4>
-                          <p className="text-xs text-muted-foreground">{type.arabicName}</p>
+                          <p className="text-[11px] text-muted-foreground">{type.arabicName}</p>
                         </div>
                         {expandedSadaqah === type.id ? (
-                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                          <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" />
                         ) : (
-                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                         )}
                       </div>
                     </button>
@@ -515,28 +502,28 @@ const Practices = () => {
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-4 pb-4 space-y-3">
-                            <p className="text-sm text-muted-foreground">{type.description}</p>
+                          <div className="px-3 pb-3 space-y-2.5">
+                            <p className="text-xs text-muted-foreground">{type.description}</p>
                             
                             <div>
-                              <p className="text-xs font-medium mb-2">{t('common.examples')}</p>
-                              <ul className="space-y-1">
+                              <p className="text-[11px] font-medium mb-1.5">{t('common.examples')}</p>
+                              <ul className="space-y-0.5">
                                 {type.examples.slice(0, 3).map((ex, i) => (
-                                  <li key={i} className="text-xs text-muted-foreground flex items-center gap-2">
-                                    <span className="w-1 h-1 rounded-full bg-primary" />
+                                  <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                                    <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
                                     {ex}
                                   </li>
                                 ))}
                               </ul>
                             </div>
 
-                            <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
-                              <p className="text-xs italic text-foreground">{type.reward}</p>
+                            <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                              <p className="text-[11px] italic text-foreground">{type.reward}</p>
                             </div>
 
                             <button
                               onClick={() => logSadaqah(type.id)}
-                              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm flex items-center justify-center gap-2"
+                              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-sm flex items-center justify-center gap-2"
                             >
                               <Plus className="w-4 h-4" />
                               {t('practices.logThis')}
@@ -552,23 +539,23 @@ const Practices = () => {
 
             {/* Recent Logs */}
             {sadaqahLogs.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <h3 className="text-sm font-semibold">{t('practices.recentActs')}</h3>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {sadaqahLogs.slice(0, 5).map((log) => {
                     const type = SADAQAH_TYPES.find(t => t.id === log.typeId);
                     if (!type) return null;
                     return (
-                      <Card key={log.id} className="p-3">
-                        <div className="flex items-center gap-3">
-                          <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", type.color)}>
-                            {SADAQAH_ICONS[type.id] || <Coins className="w-4 h-4" />}
+                      <Card key={log.id} className="p-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", type.color)}>
+                            {SADAQAH_ICONS[type.id] || <Coins className="w-3.5 h-3.5" />}
                           </div>
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium">{type.name}</p>
-                            <p className="text-xs text-muted-foreground">{log.date}</p>
+                            <p className="text-[11px] text-muted-foreground">{log.date}</p>
                           </div>
-                          <Check className="w-4 h-4 text-success" />
+                          <Check className="w-3.5 h-3.5 text-success shrink-0" />
                         </div>
                       </Card>
                     );
@@ -578,6 +565,9 @@ const Practices = () => {
             )}
           </div>
         )}
+
+        {/* Disclaimer at bottom */}
+        <p className="text-[11px] text-muted-foreground text-center italic px-4 pt-2">{t('dashboard.niyyahDisclaimer')}</p>
       </div>
 
       <BottomNav />
