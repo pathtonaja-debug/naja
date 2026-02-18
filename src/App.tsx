@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 import { NavigationProvider } from "./components/NavigationProvider";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -78,11 +79,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return authenticated ? <>{children}</> : null;
 }
 
+// Wrapper to call hooks at top level
+function AppWithPush() {
+  usePushNotifications();
+  return null;
+}
+
 const App = () => (
   <ErrorBoundary>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          <AppWithPush />
           <Toaster />
           <Sonner />
           <BrowserRouter>

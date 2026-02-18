@@ -530,6 +530,38 @@ export type Database = {
           },
         ]
       }
+      notification_log: {
+        Row: {
+          id: string
+          notification_type: string
+          scheduled_for: string
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notification_type: string
+          scheduled_for: string
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notification_type?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -651,6 +683,41 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          platform: string | null
+          token: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          platform?: string | null
+          token: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          platform?: string | null
+          token?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quiz_attempts: {
         Row: {
