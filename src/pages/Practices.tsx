@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { recordCompletedAct } from '@/services/dailyProgressService';
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
+import { hapticSuccess, hapticLight } from '@/lib/haptics';
 import type { LucideIcon } from 'lucide-react';
 
 /* ── Types ── */
@@ -179,7 +180,23 @@ const Practices = () => {
     return allSunnahs.reduce((acc, s) => ({ ...acc, [s.id]: false }), {});
   });
 
-  const [expandedGroup, setExpandedGroup] = useState<string | null>('fajr');
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(() => {
+    const prayerParam = searchParams.get('prayer');
+    return prayerParam || 'fajr';
+  });
+
+  // Refs for auto-scroll
+  const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Auto-scroll to prayer param on mount
+  useEffect(() => {
+    const prayerParam = searchParams.get('prayer');
+    if (prayerParam && groupRefs.current[prayerParam]) {
+      setTimeout(() => {
+        groupRefs.current[prayerParam]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, []);
 
   const [sadaqahLogs, setSadaqahLogs] = useState<SadaqahLog[]>(() => {
     const stored = localStorage.getItem('naja_sadaqah_logs');
@@ -214,6 +231,7 @@ const Practices = () => {
     }));
 
     if (newState) {
+      hapticSuccess();
       const { leveledUp, newLevel } = addBarakahPoints(BARAKAH_REWARDS.PRAYER_COMPLETED);
       updateStreak();
       const group = PRAYER_GROUPS.find(g => g.id === id);
@@ -250,6 +268,7 @@ const Practices = () => {
     setSunnahStates(prev => ({ ...prev, [id]: newState }));
     
     if (newState) {
+      hapticLight();
       addBarakahPoints(BARAKAH_REWARDS.SUNNAH_PRAYER);
       toast.success(t('toast.pointsEarned', { points: BARAKAH_REWARDS.SUNNAH_PRAYER }));
     }
@@ -377,7 +396,7 @@ const Practices = () => {
                 const groupSunnahDone = group.sunnahs.filter(s => sunnahStates[s.id]).length;
 
                 return (
-                  <Card key={group.id} className="overflow-hidden">
+                  <Card key={group.id} ref={(el) => { groupRefs.current[group.id] = el; }} className="overflow-hidden">
                     {/* Fard header row */}
                     <div
                       className={cn(

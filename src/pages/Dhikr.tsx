@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BARAKAH_REWARDS } from '@/data/practiceItems';
+import { hapticLight, hapticSuccess } from '@/lib/haptics';
 
 interface DhikrPreset {
   id: string;
@@ -121,12 +122,11 @@ const Dhikr = () => {
     setCount(newCount);
 
     // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
+    hapticLight();
 
     // Check if target reached
     if (newCount === customTarget) {
+      hapticSuccess();
       setShowCompleted(true);
       
       // Award points

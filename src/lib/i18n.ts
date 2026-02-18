@@ -740,6 +740,17 @@ const resources = {
       "dua.quranicDuas": "Quranic Duas",
       "dua.quranicDuasDesc": "40 Rabbana Duas from the Quran",
 
+      // Adhkar
+      "adhkar.morning": "Morning Adhkar",
+      "adhkar.evening": "Evening Adhkar",
+      "adhkar.morningDesc": "Adhkar al-Sabah",
+      "adhkar.eveningDesc": "Adhkar al-Masa",
+      "adhkar.allCompleted": "All adhkar completed!",
+
+      // Dashboard
+      "dashboard.weeklyRecap": "Weekly Recap",
+      "dashboard.habitsCompleted": "Habits",
+
       // Quranic Duas
       "quranicDuas.viewInQuran": "View in Quran",
       "quranicDuas.folderName": "Quranic Duas",
@@ -2451,6 +2462,17 @@ const resources = {
       "dua.continueToSave": "Continuer pour Enregistrer",
       "dua.quranicDuas": "Invocations Coraniques",
       "dua.quranicDuasDesc": "40 Invocations Rabbana du Coran",
+
+      // Adhkar
+      "adhkar.morning": "Adhkar du Matin",
+      "adhkar.evening": "Adhkar du Soir",
+      "adhkar.morningDesc": "Adhkar al-Sabah",
+      "adhkar.eveningDesc": "Adhkar al-Masa",
+      "adhkar.allCompleted": "Tous les adhkar sont complétés !",
+
+      // Dashboard
+      "dashboard.weeklyRecap": "Récap Hebdomadaire",
+      "dashboard.habitsCompleted": "Habitudes",
 
       // Quranic Duas
       "quranicDuas.viewInQuran": "Voir dans le Coran",

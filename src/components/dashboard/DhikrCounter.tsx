@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { BeadsAnimation } from "@/components/dhikr/BeadsAnimation";
 import tasbihWatercolor from "@/assets/illustrations/tasbih-watercolor.png";
+import { hapticLight, hapticSuccess } from "@/lib/haptics";
 
 const DHIKR_PHRASES = [
   { arabic: "سُبْحَانَ ٱللَّٰهِ", transliteration: "SubhanAllah", meaning: "Glory be to Allah" },
@@ -91,13 +92,12 @@ export function DhikrCounter() {
     const newCount = count + 1;
     setCount(newCount);
     saveSession(newCount);
+    hapticLight();
     
     // Celebrate when reaching target
     if (newCount === target) {
       toast.success("Target reached! SubhanAllah!");
-      if (navigator.vibrate) {
-        navigator.vibrate([50, 50, 50]);
-      }
+      hapticSuccess();
     }
   };
 

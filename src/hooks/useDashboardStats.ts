@@ -27,7 +27,14 @@ export function useDashboardStats() {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const userId = await getAuthenticatedUserId();
+      let userId: string;
+      try {
+        userId = await getAuthenticatedUserId();
+      } catch {
+        // Auth not ready yet — degrade gracefully
+        setLoading(false);
+        return;
+      }
       const today = format(new Date(), "yyyy-MM-dd");
       const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd");
       const weekEnd = format(endOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd");
