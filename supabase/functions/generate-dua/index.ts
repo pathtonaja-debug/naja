@@ -54,10 +54,12 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const topic = typeof body.topic === "string" ? body.topic : "general";
-    const selectedNames = Array.isArray(body.selectedNames) ? body.selectedNames.filter((x: unknown) => typeof x === "string") : [];
-    const shortDescription = typeof body.shortDescription === "string" ? body.shortDescription : "";
-    const details = typeof body.details === "string" ? body.details : "";
+    const topic = typeof body.topic === "string" ? body.topic.slice(0, 100) : "general";
+    const selectedNames = Array.isArray(body.selectedNames)
+      ? body.selectedNames.filter((x: unknown) => typeof x === "string").slice(0, 10).map((n: string) => n.slice(0, 100))
+      : [];
+    const shortDescription = typeof body.shortDescription === "string" ? body.shortDescription.slice(0, 500) : "";
+    const details = typeof body.details === "string" ? body.details.slice(0, 2000) : "";
     const makeLonger = Boolean(body.makeLonger);
 
     if (!shortDescription) {
