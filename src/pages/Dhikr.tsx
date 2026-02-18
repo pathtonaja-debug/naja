@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { ChevronLeft, RotateCcw, Check, Sparkles, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { TasbihArc } from '@/components/dhikr/TasbihArc';
@@ -58,6 +60,39 @@ const DHIKR_PRESETS: DhikrPreset[] = [
 ];
 
 const TARGET_OPTIONS = [33, 99, 100];
+
+/* ── Manual log sub-component ── */
+function ManualDhikrLog({ onAdd, t }: { onAdd: (n: number) => void; t: (k: string) => string }) {
+  const [value, setValue] = useState('');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const num = parseInt(value, 10);
+    if (!num || num < 1) return;
+    onAdd(num);
+    setValue('');
+    toast.success(`+${num} ${t('dhikr.dhikrCounted')}`);
+  };
+  return (
+    <div className="px-4 pt-4">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 p-3 rounded-2xl bg-card border border-border shadow-sm">
+        <Input
+          type="number"
+          inputMode="numeric"
+          min={1}
+          max={10000}
+          placeholder={t('dhikr.manualPlaceholder') || 'Enter count…'}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="flex-1 h-10 rounded-xl bg-muted/50 border-0 text-center text-lg font-semibold"
+        />
+        <Button type="submit" size="icon" disabled={!value || parseInt(value) < 1} className="h-10 w-10 rounded-xl shrink-0">
+          <Plus className="w-5 h-5" />
+        </Button>
+      </form>
+      <p className="text-[11px] text-muted-foreground text-center mt-1.5">{t('dhikr.manualHint') || 'Log dhikr you already counted'}</p>
+    </div>
+  );
+}
 
 const Dhikr = () => {
   const navigate = useNavigate();
@@ -279,6 +314,34 @@ const Dhikr = () => {
           ))}
         </div>
       </div>
+
+      {/* Manual Log */}
+      <ManualDhikrLog
+        onAdd={(amount) => {
+          const newCount = Math.min(count + amount, customTarget);
+          const overflow = count + amount - customTarget;
+          setCount(newCount);
+
+          // Update today total
+          const today = new Date().toISOString().split('T')[0];
+          const added = Math.min(amount, customTarget - count + (overflow > 0 ? 0 : 0));
+          const newTotal = totalToday + amount;
+          setTotalToday(newTotal);
+          localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
+
+          if (newCount >= customTarget && !showCompleted) {
+            setShowCompleted(true);
+            const points = BARAKAH_REWARDS.DHIKR_33;
+            addBarakahPoints(points);
+            toast.success(`${t('dhikr.mashallah')} ${customTarget} ${t('dhikr.completed')}. +${points} ${t('dashboard.barakahPoints')}`);
+            setTimeout(() => {
+              setShowCompleted(false);
+              setCount(0);
+            }, 2000);
+          }
+        }}
+        t={t}
+      />
 
       {/* Today's Stats */}
       <div className="px-4 pt-4">
