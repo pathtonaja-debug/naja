@@ -709,6 +709,8 @@ const resources = {
       "dhikr.translations.allahuakbar": "Allah is the Greatest",
       "dhikr.translations.istighfar": "I seek forgiveness from Allah",
       "dhikr.translations.salawat": "O Allah, send blessings upon Muhammad",
+      "dhikr.manualPlaceholder": "Enter count…",
+      "dhikr.manualHint": "Log dhikr you already counted",
 
       // Journal
       "journal.title": "Journal",
@@ -2355,6 +2357,8 @@ const resources = {
       "dhikr.translations.allahuakbar": "Allah est le Plus Grand",
       "dhikr.translations.istighfar": "Je demande pardon à Allah",
       "dhikr.translations.salawat": "Ô Allah, envoie des bénédictions sur Muhammad",
+      "dhikr.manualPlaceholder": "Entrer le nombre…",
+      "dhikr.manualHint": "Enregistrer des dhikr déjà comptés",
 
       // Journal
       "journal.title": "Journal",
