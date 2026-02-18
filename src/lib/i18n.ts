@@ -688,6 +688,16 @@ const resources = {
       "dua.yourDua": "Your dua",
       "dua.placeholder": "Ya Allah, I ask You...",
       "dua.continueToSave": "Continue to Save",
+      "dua.quranicDuas": "Quranic Duas",
+      "dua.quranicDuasDesc": "40 Rabbana Duas from the Quran",
+
+      // Quranic Duas
+      "quranicDuas.viewInQuran": "View in Quran",
+      "quranicDuas.folderName": "Quranic Duas",
+
+      // Ramadan Daily Dua
+      "ramadan.dailyDua.title": "Dua of the Day",
+      "ramadan.dailyDua.subtitle": "Surah {{verse}} — learn it today",
 
       // Dhikr
       "dhikr.title": "Dhikr",
@@ -2341,6 +2351,16 @@ const resources = {
       "dua.yourDua": "Votre invocation",
       "dua.placeholder": "Ya Allah, je Te demande...",
       "dua.continueToSave": "Continuer pour Enregistrer",
+      "dua.quranicDuas": "Invocations Coraniques",
+      "dua.quranicDuasDesc": "40 Invocations Rabbana du Coran",
+
+      // Quranic Duas
+      "quranicDuas.viewInQuran": "Voir dans le Coran",
+      "quranicDuas.folderName": "Invocations Coraniques",
+
+      // Ramadan Daily Dua
+      "ramadan.dailyDua.title": "Dua du Jour",
+      "ramadan.dailyDua.subtitle": "Sourate {{verse}} — apprenez-la aujourd'hui",
 
       // Dhikr
       "dhikr.title": "Dhikr",
