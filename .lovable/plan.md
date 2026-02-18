@@ -1,67 +1,57 @@
 
 
-# Make Practices Tab More Compact
+## Fix: Dashboard Loading Delay and Slow Page Transitions
 
-## Current Issues
-- Each Fard prayer card is very tall (~80px) with large icons and generous padding
-- The progress card, disclaimer, and tab selector together take significant space above the fold
-- The "More Practices" grid at the bottom uses large icon cards
-- Sunnah prayer cards are similarly oversized
-- Sadaqah cards have large expanded areas
-- Users must scroll significantly to see all content
+### Root Causes Identified
 
-## Changes
+1. **ProtectedRoute auth check blocks every navigation** -- Each route change calls `supabase.auth.getSession()` and shows a spinner until it resolves. This causes the blank white screen you see.
 
-### 1. Compact the Progress Summary (inline it with the tab selector)
-- Move the "0/5 Fard" progress into the same row as the tab selector header, removing the separate Card wrapper
-- Replace the thick progress bar with a slim 2px version
-- Remove the standalone "Sunnah prayers completed" text line; fold it into a small badge
+2. **PageTransition uses `mode="wait"`** -- This means the old page must fully exit-animate before the new page starts entering, doubling the perceived transition time.
 
-### 2. Shrink Fard Prayer Rows
-- Reduce each prayer card from a full Card with p-4 to a slim list-row style (py-2.5 px-3)
-- Reduce icon size from w-10 h-10 to w-8 h-8
-- Remove the card wrapper around each prayer; use a single Card for the whole list with dividers
-- Keep the on-time/congregation/qada buttons but make them smaller chips (py-1.5)
+3. **Dashboard has excessive staggered animations** -- 8+ sections each have `initial={{ opacity: 0, y: 20 }}` with increasing delays (up to 0.3s), so the page feels like it takes nearly a second to fully appear even after data is ready.
 
-### 3. Shrink Sunnah Prayer Rows
-- Same treatment: single Card container, slim rows with dividers
-- Show rakats inline with the name instead of in a separate column
+4. **Prayer API fetches entire month calendar** -- `fetchPrayerData` downloads the full month from Aladhan API on every dashboard mount, adding network latency before any prayer data renders.
 
-### 4. Compact the "More Practices" Grid
-- Change from a 4-column card grid with large icons to a horizontal scrollable row of small chips/pills
-- Each chip: icon + label, no card border, smaller footprint
+---
 
-### 5. Compact Sadaqah Tab
-- Reduce sadaqah type card padding
-- Smaller icons (w-8 h-8 instead of w-10 h-10)
+### Changes
 
-### 6. Move disclaimer
-- Move the niyyah disclaimer to the very bottom of the page instead of between the tabs and content
+#### 1. Cache auth session in ProtectedRoute (`src/App.tsx`)
+- Cache the auth session result at the app level so subsequent route navigations don't re-check auth from scratch
+- Use a React context/ref to store the session once verified, and only re-check on `onAuthStateChange`
+- This eliminates the blank white screen on every page navigation
+
+#### 2. Switch PageTransition to `mode="popLayout"` and use faster timing (`src/components/PageTransition.tsx`)
+- Change `AnimatePresence mode="wait"` to `mode="popLayout"` so enter and exit animations overlap (no more double-wait)
+- Switch from spring to a fast tween: `duration: 0.2, ease: "easeOut"`
+- Reduce slide distances (from `100%`/`-30%` to `60%`/`-15%`) for snappier feel
+
+#### 3. Remove staggered animation delays from Dashboard (`src/pages/Dashboard.tsx`)
+- Remove all `initial`, `animate`, and `transition={{ delay }}` props from inner sections
+- Keep the single top-level `motion.div` fade-in (with no delay) so the page appears instantly
+- Convert inner `motion.div` wrappers to plain `div` where they only exist for entrance animations
+
+#### 4. Cache prayer API response (`src/services/prayerApiService.ts`)
+- Cache the Aladhan response in `sessionStorage` keyed by date + coordinates
+- On subsequent loads (same day, same location), use cached data instantly
+- This makes the dashboard prayer card render immediately on return visits
 
 ---
 
 ### Technical Details
 
-**Files changed:** `src/pages/Practices.tsx` (single file edit)
+**Files to modify:**
+- `src/App.tsx` -- Lift auth state into a shared context, remove per-route `getSession()` calls
+- `src/components/PageTransition.tsx` -- Faster animation config
+- `src/pages/Dashboard.tsx` -- Remove staggered motion delays
+- `src/services/prayerApiService.ts` -- Add sessionStorage cache
 
-**Key changes:**
-- Fard prayers: Replace individual `<Card>` per prayer with one wrapping `<Card>` containing divider-separated rows. Reduce padding from `p-4` to `py-2.5 px-3`. Icons from `w-10 h-10` to `w-8 h-8`.
-- Sunnah prayers: Same single-Card approach with slim rows.
-- Progress section: Remove `<Card>` wrapper, inline progress as a slim bar directly below the tab selector.
-- "More Practices" grid: Convert from `grid grid-cols-4` of Cards to a `flex gap-2 overflow-x-auto` row of pill buttons.
-- Sadaqah cards: Reduce icon from `w-10 h-10` to `w-8 h-8`, padding from `p-4` to `p-3`.
-- Move disclaimer `<p>` to bottom of the page content.
-- Reduce `space-y-4` gaps to `space-y-3` throughout.
-
-**No new files, no new dependencies, no storage keys changed.**
-
-**Routes affected:** `/practices`
+**Storage keys touched:** `naja_prayer_cache` (new, sessionStorage)
 
 **Manual test checklist:**
-- Tap each Fard prayer to mark done; verify on-time/congregation/qada chips appear and work
-- Tap each Sunnah prayer to toggle
-- Tap "More Practices" pills to navigate to Quran/Dhikr/Dua/Sadaqah
-- Switch to Sadaqah tab; expand a type and log one
-- Verify the page feels noticeably shorter and more scannable
-- Test in both light and dark mode
+- Navigate to /dashboard -- should appear instantly without blank screen
+- Navigate between tabs (Home, Practices, Ramadan, Profile) -- transitions should be fast and smooth
+- Swipe back gesture should still work
+- Prayer times should load instantly on second visit
+- Refresh the page -- dashboard should load without delay
 
