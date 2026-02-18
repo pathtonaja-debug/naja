@@ -217,15 +217,16 @@ const Dashboard = () => {
             </div>
             <div className="space-y-1.5">
               {prayerTimes.prayers.map((prayer) => (
-                <div
+                <button
                   key={prayer.name}
+                  onClick={() => navigate(`/practices?prayer=${prayer.name.toLowerCase()}`)}
                   className={cn(
-                    "flex items-center justify-between px-3 py-2 rounded-lg transition-colors",
+                    "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer active:scale-[0.98]",
                     prayer.isNext
                       ? "bg-primary/10 border border-primary/20"
                       : prayer.isCompleted
                       ? "opacity-50"
-                      : ""
+                      : "hover:bg-muted/50"
                   )}
                 >
                   <span className={cn(
@@ -246,8 +247,9 @@ const Dashboard = () => {
                         {t('dashboard.next')}
                       </span>
                     )}
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </Card>
