@@ -37,9 +37,9 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const prompt = body?.prompt;
+    const prompt = typeof body?.prompt === "string" ? body.prompt.slice(0, 3000) : "";
 
-    if (!prompt || typeof prompt !== "string") {
+    if (!prompt) {
       return new Response(JSON.stringify({ error: "Prompt is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

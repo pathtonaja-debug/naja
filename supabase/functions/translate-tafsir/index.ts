@@ -37,9 +37,11 @@ serve(async (req) => {
       );
     }
 
-    const { text, verseKey } = await req.json();
+    const rawBody = await req.json();
+    const text = typeof rawBody.text === "string" ? rawBody.text.slice(0, 10000) : "";
+    const verseKey = typeof rawBody.verseKey === "string" ? rawBody.verseKey.slice(0, 20) : "";
 
-    if (!text || typeof text !== "string") {
+    if (!text) {
       return new Response(
         JSON.stringify({ error: "Missing or invalid 'text' parameter" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
