@@ -9,7 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '@/components/BottomNav';
 import { Card } from '@/components/ui/card';
-import { useGuestProfile, SPIRITUAL_LEVELS } from '@/hooks/useGuestProfile';
+import { useGuestProfile, SPIRITUAL_LEVELS, getProgressInLevel } from '@/hooks/useGuestProfile';
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
@@ -141,9 +141,7 @@ const Dashboard = () => {
     return t('dashboard.greeting.evening');
   };
 
-  const levelProgress = profile.level < 10
-    ? Math.floor((profile.barakahPoints % 100) / 100 * 100) 
-    : 100;
+  const { percentage: levelProgress } = getProgressInLevel(profile.barakahPoints);
 
   const actRoutes: Record<string, string> = {
     salah: '/practices',

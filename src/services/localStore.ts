@@ -250,21 +250,8 @@ export function updateGamification(updates: Partial<LocalGamification>): LocalGa
   return updated;
 }
 
-// Point rewards (renamed from XP_REWARDS)
-export const BARAKAH_REWARDS = {
-  PRAYER_COMPLETED: 15,
-  HABIT_COMPLETED: 10,
-  DHIKR_TARGET: 20,
-  DHIKR_33: 20,
-  QUIZ_CORRECT_ANSWER: 25,
-  QUIZ_PERFECT_SCORE: 50,
-  DAILY_LOGIN: 5,
-  REFLECTION_WRITTEN: 15,
-  DUA_CREATED: 10,
-  QURAN_PAGE: 5,
-  QURAN_JUZ: 50,
-  QURAN_KHATAM: 500,
-} as const;
+// Re-export BARAKAH_REWARDS from the single source of truth
+export { BARAKAH_REWARDS } from '@/data/practiceItems';
 
 // Level calculations
 export function getPointsForLevel(level: number): number {
