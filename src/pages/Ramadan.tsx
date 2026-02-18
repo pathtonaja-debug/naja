@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
-  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3, Settings, ChevronRight
+  Moon, Heart, Utensils, ScrollText, Sparkles, Star, PenLine, BarChart3, Settings, ChevronRight, CheckCircle2, Trophy
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { TopBar } from '@/components/ui/top-bar';
@@ -40,6 +40,7 @@ import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
 import { PrayerSettingsSheet } from '@/components/settings/PrayerSettingsSheet';
 import { StoryDetailSheet } from '@/components/ramadan/StoryDetailSheet';
+import { getReadStories, getQuizResults } from '@/services/ramadanStoryProgress';
 import type { RamadanStory } from '@/data/ramadanContent';
 type TabType = 'overview' | 'duas' | 'food' | 'reflection' | 'insights' | 'stories';
 
@@ -50,7 +51,14 @@ const Ramadan = () => {
   const [fastingStatus, setFastingStatus] = useState<'fasting' | 'excused' | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState<RamadanStory | null>(null);
+  const [readStories, setReadStories] = useState<Set<string>>(() => getReadStories());
+  const [quizResults, setQuizResults] = useState<Record<string, { score: number }>>(() => getQuizResults());
   const { data: prayerData, refetch } = usePrayerSync();
+
+  const refreshProgress = useCallback(() => {
+    setReadStories(getReadStories());
+    setQuizResults(getQuizResults());
+  }, []);
 
   useEffect(() => {
     const detected = getRamadanPhase();
@@ -418,21 +426,34 @@ const Ramadan = () => {
             <div key={category.id}>
               <h3 className="text-lg font-semibold mb-3">{t(category.labelKey)}</h3>
               <div className="space-y-3">
-                {categoryStories.map((story) => (
-                  <Card
-                    key={story.id}
-                    className="p-4 cursor-pointer hover:bg-muted/30 active:scale-[0.98] transition-all"
-                    onClick={() => setSelectedStory(story)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <h4 className="font-medium mb-1">{t(story.titleKey)}</h4>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{t(story.contentKey)}</p>
+                {categoryStories.map((story) => {
+                  const isRead = readStories.has(story.id);
+                  const quiz = quizResults[story.id];
+                  return (
+                    <Card
+                      key={story.id}
+                      className="p-4 cursor-pointer hover:bg-muted/30 active:scale-[0.98] transition-all"
+                      onClick={() => setSelectedStory(story)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <h4 className="font-medium mb-1">{t(story.titleKey)}</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{t(story.contentKey)}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          {quiz && (
+                            <span className="text-xs font-medium text-primary">{quiz.score}/3</span>
+                          )}
+                          {isRead ? (
+                            <CheckCircle2 className="w-5 h-5 text-success" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-muted-foreground/50" />
+                          )}
+                        </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground/50 flex-shrink-0" />
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           );
@@ -530,6 +551,7 @@ const Ramadan = () => {
         story={selectedStory}
         open={!!selectedStory}
         onOpenChange={(open) => { if (!open) setSelectedStory(null); }}
+        onProgressChange={refreshProgress}
       />
 
       <BottomNav />
