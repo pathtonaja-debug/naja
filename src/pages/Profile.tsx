@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { PrayerSettingsSheet } from "@/components/settings/PrayerSettingsSheet";
+import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { getUserLocation } from "@/services/locationStore";
 
 const Profile = () => {
@@ -269,6 +270,9 @@ const Profile = () => {
               rightElement={<Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />}
               showChevron={false}
             />
+            <div className="border-t border-border/20 px-3">
+              <NotificationSettings />
+            </div>
           </Card>
         </motion.div>
 
