@@ -31,7 +31,7 @@ const Dates = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background pb-28">
+    <div className="min-h-screen bg-background pb-28">
       <TopBar title={t('dates.title')} />
       
       <div className="px-4 space-y-4">
@@ -171,7 +171,7 @@ const Dates = () => {
       </Sheet>
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

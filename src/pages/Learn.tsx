@@ -104,11 +104,7 @@ const Learn = () => {
   const totalBadges = modules.filter(m => m.quizPassed).length;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="min-h-screen bg-background pb-28"
-    >
+    <div className="min-h-screen bg-background pb-28">
       <TopBar title={t('learn.title')} />
       
       <div className="px-4 space-y-4">
@@ -512,7 +508,7 @@ const Learn = () => {
       )}
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

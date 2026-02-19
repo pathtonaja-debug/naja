@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -54,19 +54,11 @@ const BottomNav = () => {
 
         <span className="relative z-10 flex items-center gap-1.5">
           <Icon className={cn("h-5 w-5", active ? "text-primary" : "text-muted-foreground")} />
-          {/* Label only on active */}
-          <AnimatePresence>
-            {active && (
-              <motion.span
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: "auto", opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                className="overflow-hidden whitespace-nowrap text-xs font-medium text-primary"
-              >
-                {t(item.labelKey)}
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {active && (
+            <span className="overflow-hidden whitespace-nowrap text-xs font-medium text-primary">
+              {t(item.labelKey)}
+            </span>
+          )}
         </span>
       </button>
     );
@@ -107,9 +99,8 @@ const BottomNav = () => {
 
                 {/* Center + button (wrap-around visual) */}
                 <div className="relative mx-1 flex items-center justify-center">
-                  <motion.button
+                  <button
                     ref={plusBtnRef}
-                    whileTap={{ scale: 0.92 }}
                     onClick={() => setPlusOpen((v) => !v)}
                     className={cn(
                       "relative z-10",
@@ -119,13 +110,13 @@ const BottomNav = () => {
                       "text-primary-foreground",
                       "shadow-[0_14px_30px_rgba(0,0,0,0.18)]",
                       "ring-1 ring-white/30",
-                      "transition-transform hover:scale-[1.03]"
+                      "transition-transform active:scale-95"
                     )}
                     aria-label="Open plus menu"
                     aria-expanded={plusOpen}
                   >
                     <Plus className="h-6 w-6" />
-                  </motion.button>
+                  </button>
 
                   {/* subtle halo around + */}
                   <div className="pointer-events-none absolute inset-0 -m-1 rounded-full bg-primary/10 blur-md" />

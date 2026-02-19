@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trophy, Star, Lock } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+
 import { useGuestProfile } from "@/hooks/useGuestProfile";
 import { useTranslation } from "react-i18next";
 
@@ -43,7 +43,7 @@ const Achievements = () => {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-2.5">
         <div className="flex items-center gap-2">
           <Button size="icon" variant="ghost" onClick={() => navigate(-1)} className="rounded-full h-8 w-8">
@@ -102,7 +102,7 @@ const Achievements = () => {
         })}
       </main>
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

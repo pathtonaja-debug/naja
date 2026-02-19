@@ -332,11 +332,7 @@ const Practices = () => {
   );
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="min-h-screen bg-background pb-28"
-    >
+    <div className="min-h-screen bg-background pb-28">
       <TopBar title={t('practices.title')} />
       
       <div className="px-4 space-y-3">
@@ -706,7 +702,7 @@ const Practices = () => {
       </div>
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

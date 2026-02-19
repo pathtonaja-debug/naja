@@ -91,11 +91,7 @@ const Habits = () => {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pb-20"
-    >
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="px-3 pt-10 pb-2">
         <div className="flex items-center justify-between mb-3">
@@ -396,7 +392,7 @@ const Habits = () => {
       />
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

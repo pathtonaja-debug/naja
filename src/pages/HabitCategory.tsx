@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, BarChart3 } from "lucide-react";
-import { motion } from "framer-motion";
+
 import { Button } from "@/components/ui/button";
 import HabitCard from "@/components/habits/HabitCard";
 import BottomNav from "@/components/BottomNav";
@@ -101,13 +101,8 @@ export default function HabitCategory() {
           </div>
         ) : habits.length > 0 ? (
           <div className="space-y-3">
-            {habits.map((habit, index) => (
-              <motion.div
-                key={habit.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * index }}
-              >
+            {habits.map((habit) => (
+              <div key={habit.id}>
                 <HabitCard
                   id={habit.id}
                   name={habit.name}
@@ -119,15 +114,11 @@ export default function HabitCategory() {
                   onToggle={handleToggle}
                   onClick={handleHabitClick}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+          <div className="text-center py-12">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-accent/20 flex items-center justify-center">
               <BarChart3 className="w-10 h-10 text-muted-foreground" />
             </div>
@@ -140,7 +131,7 @@ export default function HabitCategory() {
             <Button onClick={() => navigate("/habits")}>
               Go Back
             </Button>
-          </motion.div>
+          </div>
         )}
       </div>
 

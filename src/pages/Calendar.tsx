@@ -119,20 +119,10 @@ const Calendar = () => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background"
-    >
+    <div className="min-h-screen bg-background">
       <TopBar title="Islamic Calendar" />
 
-      <motion.div 
-        className="px-4 pt-2 pb-3"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
+      <div className="px-4 pt-2 pb-3">
         <SegmentedControl
           value={view}
           onValueChange={(value) => setView(value as ViewType)}
@@ -141,7 +131,7 @@ const Calendar = () => {
             { label: "Monthly", value: "month" },
           ]}
         />
-      </motion.div>
+      </div>
 
       <div className="pb-32 overflow-y-auto">
         {view === "week" && (
@@ -201,7 +191,7 @@ const Calendar = () => {
       />
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 
