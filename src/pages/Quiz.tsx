@@ -66,11 +66,7 @@ const Quiz = () => {
   // Already completed today
   if (hasCompletedToday && attempt) {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-background pb-24"
-      >
+      <div className="min-h-screen bg-background pb-24">
         <div className="px-4 pt-4 pb-2 flex items-center gap-3">
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -122,18 +118,14 @@ const Quiz = () => {
         </div>
 
         <BottomNav />
-      </motion.div>
+      </div>
     );
   }
 
   // No quiz available
   if (!quiz || !questions.length) {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-background pb-24"
-      >
+      <div className="min-h-screen bg-background pb-24">
         <div className="px-4 pt-4 pb-2 flex items-center gap-3">
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -173,7 +165,7 @@ const Quiz = () => {
         </div>
 
         <BottomNav />
-      </motion.div>
+      </div>
     );
   }
 
@@ -183,11 +175,7 @@ const Quiz = () => {
     const isPerfect = quizResult.score === questions.length;
     
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-background pb-24"
-      >
+      <div className="min-h-screen bg-background pb-24">
         <div className="px-4 pt-4 pb-2">
           <h1 className="text-xl font-bold text-foreground text-center">{t('quiz.quizComplete')}</h1>
         </div>
@@ -254,17 +242,13 @@ const Quiz = () => {
         </div>
 
         <BottomNav />
-      </motion.div>
+      </div>
     );
   }
 
   // Quiz in progress
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-background pb-24"
-    >
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -390,7 +374,7 @@ const Quiz = () => {
       </div>
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

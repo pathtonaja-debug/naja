@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sun, Book, Heart, Moon, Sunrise, CloudSun, Sunset,
   Apple, Gift, Check, HandHeart, CircleDollarSign
@@ -185,40 +184,27 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
       {/* Progress Bar */}
       <div className="relative">
         <div className="h-2 bg-pastel-lavender/30 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-pastel-lavender rounded-full"
+          <div
+            className="h-full bg-pastel-lavender rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
           />
         </div>
-        <AnimatePresence>
-          {totalPointsEarned > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="absolute -top-6 right-0 text-xs font-bold text-pastel-lavender"
-            >
-              +{totalPointsEarned} Today
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {totalPointsEarned > 0 && (
+          <div className="absolute -top-6 right-0 text-xs font-bold text-pastel-lavender">
+            +{totalPointsEarned} Today
+          </div>
+        )}
       </div>
 
       {/* Act Cards */}
-      <motion.div layout className="space-y-2">
-        {acts.map((act, index) => (
-          <motion.button
+      <div className="space-y-2">
+        {acts.map((act) => (
+          <button
             key={act.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => handleComplete(act.id)}
             disabled={act.completed}
             className={cn(
-              "w-full p-3 rounded-xl border flex items-center gap-3 transition-all",
+              "w-full p-3 rounded-xl border flex items-center gap-3 transition-all active:scale-[0.98]",
               act.completed 
                 ? "bg-pastel-green/20 border-pastel-green/30" 
                 : "bg-white border-border/30 hover:border-pastel-lavender/50"
@@ -257,22 +243,21 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
             )}>
               +{act.points}
             </span>
-          </motion.button>
+          </button>
         ))}
-      </motion.div>
+      </div>
 
       {/* Bonus Acts */}
       <div className="pt-4 border-t border-border/30">
         <h3 className="text-sm font-semibold text-foreground mb-3">Bonus Acts</h3>
         <div className="grid grid-cols-2 gap-3">
           {bonusActs.map((act) => (
-            <motion.button
+            <button
               key={act.id}
-              whileTap={{ scale: 0.95 }}
               onClick={() => handleComplete(act.id, true)}
               disabled={act.completed}
               className={cn(
-                "p-4 rounded-xl border text-left transition-all",
+                "p-4 rounded-xl border text-left transition-all active:scale-95",
                 act.completed 
                   ? "bg-success/10 border-success/30" 
                   : "bg-white border-border/30 hover:border-primary/30"
@@ -305,7 +290,7 @@ export const TodaysActsModule = ({ onPointsEarned, onFirstActComplete }: TodaysA
               <p className="text-[10px] text-muted-foreground">
                 {act.id === 'good_deed' ? 'Any act of kindness' : 'Give Sadaqah'}
               </p>
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>

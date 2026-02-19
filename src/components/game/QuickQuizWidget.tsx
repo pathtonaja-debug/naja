@@ -1,7 +1,5 @@
-import { motion } from 'framer-motion';
 import { Brain, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { useDailyQuiz } from '@/hooks/useDailyQuiz';
-import { cn } from '@/lib/utils';
 
 interface QuickQuizWidgetProps {
   onStartQuiz: () => void;
@@ -20,11 +18,7 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
 
   if (hasCompletedToday) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20"
-      >
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-green-500" />
@@ -34,26 +28,19 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
             <p className="text-xs text-muted-foreground">Come back tomorrow for a new challenge</p>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileTap={{ scale: 0.98 }}
+    <button
       onClick={onStartQuiz}
-      className="w-full p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-left"
+      className="w-full p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-left active:scale-[0.98] transition-transform"
     >
       <div className="flex items-center gap-3">
-        <motion.div 
-          className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center"
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center">
           <Brain className="w-6 h-6 text-white" />
-        </motion.div>
+        </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-sm text-foreground">Daily Quiz</h3>
@@ -70,6 +57,6 @@ export const QuickQuizWidget = ({ onStartQuiz }: QuickQuizWidgetProps) => {
           <ChevronRight className="w-5 h-5" />
         </div>
       </div>
-    </motion.button>
+    </button>
   );
 };

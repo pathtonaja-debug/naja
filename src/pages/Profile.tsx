@@ -80,12 +80,7 @@ const Profile = () => {
   const levelTitle = SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker';
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-pastel-cream pb-24"
-    >
+    <div className="min-h-screen bg-pastel-cream pb-24">
       <TopBar title={t('profile.title')} />
 
       {/* User Card */}
@@ -337,7 +332,7 @@ const Profile = () => {
       />
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

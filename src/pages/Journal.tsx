@@ -61,12 +61,7 @@ const Journal = () => {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-background pb-24 relative overflow-hidden"
-    >
+    <div className="min-h-screen bg-background pb-24 relative overflow-hidden">
       {/* Watercolor decoration */}
       <motion.img 
         src={quranWatercolor}
@@ -246,7 +241,7 @@ const Journal = () => {
       </main>
 
       <BottomNav />
-    </motion.div>
+    </div>
   );
 };
 

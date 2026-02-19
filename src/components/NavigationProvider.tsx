@@ -1,8 +1,5 @@
 /**
- * Navigation provider that sets up global navigation features:
- * - Swipe-from-left-edge to go back
- * - Scroll position persistence
- * - Page transition animations
+ * Navigation provider — scroll persistence + swipe back
  */
 import { useScrollPersistence } from '@/hooks/useScrollPersistence';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
@@ -13,10 +10,8 @@ interface NavigationProviderProps {
 }
 
 export function NavigationProvider({ children }: NavigationProviderProps) {
-  // Initialize scroll persistence
   useScrollPersistence();
   
-  // Initialize swipe-back gesture
   useSwipeBack({
     edgeThreshold: 25,
     swipeThreshold: 70,
