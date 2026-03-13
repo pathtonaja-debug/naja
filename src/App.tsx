@@ -33,6 +33,7 @@ import Quran from "./pages/Quran";
 import Dhikr from "./pages/Dhikr";
 import Fintech from "./pages/Fintech";
 import Ramadan from "./pages/Ramadan";
+import Pilgrimage from "./pages/Pilgrimage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
