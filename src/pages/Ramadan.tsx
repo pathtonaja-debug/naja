@@ -310,6 +310,7 @@ const Ramadan = () => {
 
             {/* Carry Forward - Resolutions */}
             <PostRamadanResolutions />
+          </div>
         );
 
       case 'shawwal':
