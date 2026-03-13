@@ -138,6 +138,7 @@ const App = () => (
                   <Route path="/dhikr" element={<ProtectedRoute><Dhikr /></ProtectedRoute>} />
                   <Route path="/fintech" element={<ProtectedRoute><Fintech /></ProtectedRoute>} />
                   <Route path="/ramadan" element={<ProtectedRoute><Ramadan /></ProtectedRoute>} />
+                  <Route path="/pilgrimage" element={<ProtectedRoute><Pilgrimage /></ProtectedRoute>} />
                   
                   {/* Legacy routes redirect */}
                   <Route path="/calendar" element={<Navigate to="/dates" replace />} />

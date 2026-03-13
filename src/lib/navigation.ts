@@ -47,7 +47,11 @@ export const PLUS_MENU_ITEMS: PlusMenuItem[] = [
   { id: "learn", path: "/learn", labelKey: "nav.learn", icon: GraduationCap },
   { id: "dates", path: "/dates", labelKey: "nav.dates", icon: CalendarDays },
   { id: "fintech", path: "/fintech", labelKey: "fintech.title", icon: Coins },
+  { id: "pilgrimage", path: "/pilgrimage", labelKey: "pilgrimage.title", icon: Landmark },
 ];
+
+// Re-export Landmark for navigation
+import { Landmark } from "lucide-react";
 
 // Helper to check if a path is active
 export const isPathActive = (currentPath: string, navPath: string): boolean => {
