@@ -10,6 +10,7 @@ import {
   Coins,
   Star,
   GraduationCap,
+  Landmark,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -47,7 +48,9 @@ export const PLUS_MENU_ITEMS: PlusMenuItem[] = [
   { id: "learn", path: "/learn", labelKey: "nav.learn", icon: GraduationCap },
   { id: "dates", path: "/dates", labelKey: "nav.dates", icon: CalendarDays },
   { id: "fintech", path: "/fintech", labelKey: "fintech.title", icon: Coins },
+  { id: "pilgrimage", path: "/pilgrimage", labelKey: "pilgrimage.title", icon: Landmark },
 ];
+
 
 // Helper to check if a path is active
 export const isPathActive = (currentPath: string, navPath: string): boolean => {

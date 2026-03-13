@@ -33,6 +33,7 @@ import Quran from "./pages/Quran";
 import Dhikr from "./pages/Dhikr";
 import Fintech from "./pages/Fintech";
 import Ramadan from "./pages/Ramadan";
+import Pilgrimage from "./pages/Pilgrimage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -137,6 +138,7 @@ const App = () => (
                   <Route path="/dhikr" element={<ProtectedRoute><Dhikr /></ProtectedRoute>} />
                   <Route path="/fintech" element={<ProtectedRoute><Fintech /></ProtectedRoute>} />
                   <Route path="/ramadan" element={<ProtectedRoute><Ramadan /></ProtectedRoute>} />
+                  <Route path="/pilgrimage" element={<ProtectedRoute><Pilgrimage /></ProtectedRoute>} />
                   
                   {/* Legacy routes redirect */}
                   <Route path="/calendar" element={<Navigate to="/dates" replace />} />
