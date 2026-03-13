@@ -3609,6 +3609,148 @@ const resources = {
       "dashboard.prayerTimes": "Horaires de prière",
       "dashboard.nextIn": "Prochaine dans {{time}}",
       "dashboard.next": "Prochaine",
+
+      // Navigation - Pilgrimage (FR)
+      "nav.pilgrimage": "Pèlerinage",
+
+      // Pilgrimage (FR)
+      "pilgrimage.title": "Pèlerinage",
+      "pilgrimage.subtitle": "Guide complet du Hajj et de la Omra",
+      "pilgrimage.tabs.hajj": "Hajj",
+      "pilgrimage.tabs.umrah": "Omra",
+      "pilgrimage.tabs.history": "Histoire",
+      "pilgrimage.tabs.benefits": "Bienfaits",
+      "pilgrimage.tabs.duas": "Duas",
+      "pilgrimage.step": "Étape",
+
+      "pilgrimage.hajj.whatIs.title": "Qu'est-ce que le Hajj ?",
+      "pilgrimage.hajj.whatIs.content": "Le Hajj est le cinquième pilier de l'Islam — un pèlerinage annuel à la Mecque que tout musulman physiquement et financièrement capable doit accomplir au moins une fois dans sa vie. Il a lieu du 8 au 12 Dhoul Hijja, le dernier mois du calendrier islamique. Plus de 2 millions de musulmans du monde entier se rassemblent chaque année pour accomplir cette obligation sacrée, marchant sur les traces du Prophète Ibrahim (AS) et du Prophète Muhammad ﷺ.",
+
+      "pilgrimage.hajj.conditions.title": "Conditions du Hajj",
+      "pilgrimage.hajj.conditions.c1": "Être musulman",
+      "pilgrimage.hajj.conditions.c2": "Être sain d'esprit (raisonnable et mature)",
+      "pilgrimage.hajj.conditions.c3": "Avoir atteint l'âge de la puberté",
+      "pilgrimage.hajj.conditions.c4": "Être physiquement capable d'accomplir les rites",
+      "pilgrimage.hajj.conditions.c5": "Avoir les moyens financiers (après avoir pourvu aux besoins des personnes à charge)",
+
+      "pilgrimage.hajj.stepsTitle": "Comment accomplir le Hajj — Étape par étape",
+      "pilgrimage.hajj.step.ihram.title": "Entrer en état d'Ihram",
+      "pilgrimage.hajj.step.ihram.desc": "État de sacralisation au Miqat",
+      "pilgrimage.hajj.step.ihram.details": "Avant de franchir le Miqat (point de délimitation), faites le ghusl, revêtez les vêtements d'Ihram (deux tissus blancs non cousus pour les hommes ; vêtements modestes pour les femmes), priez deux rak'ahs et formulez votre niyyah (intention) pour le Hajj. Commencez à réciter la Talbiyah : « Labbayk Allāhumma labbayk... » À partir de ce moment, certains actes sont interdits : couper les cheveux/ongles, utiliser du parfum, chasser et les relations conjugales.",
+
+      "pilgrimage.hajj.step.tawafQudum.title": "Tawaf al-Qudum",
+      "pilgrimage.hajj.step.tawafQudum.desc": "Circumambulation d'arrivée autour de la Ka'bah",
+      "pilgrimage.hajj.step.tawafQudum.details": "En arrivant à la Mecque, effectuez sept tours autour de la Ka'bah, en commençant par la Pierre Noire (Hajar al-Aswad). Les hommes doivent effectuer l'Idtiba (découvrir l'épaule droite) et le Raml (marcher d'un pas vif) lors des trois premiers tours. Faites des duas pendant chaque tour. Après le Tawaf, priez deux rak'ahs derrière le Maqam Ibrahim si possible.",
+
+      "pilgrimage.hajj.step.sai.title": "Sa'i entre Safa et Marwah",
+      "pilgrimage.hajj.step.sai.desc": "Sept allers-retours entre les deux collines",
+      "pilgrimage.hajj.step.sai.details": "Marchez sept fois entre le Mont Safa et le Mont Marwah, en commençant par Safa. Cela commémore la recherche désespérée d'eau par Hajar (AS) pour son fils Isma'il (AS). Les hommes doivent courir entre les marqueurs verts. Faites des duas à chaque colline. C'est un total de 7 tours, se terminant à Marwah.",
+
+      "pilgrimage.hajj.step.mina8.title": "Jour de Tarwiyah (8 Dhoul Hijja)",
+      "pilgrimage.hajj.step.mina8.desc": "Se rendre à Mina et y passer la nuit",
+      "pilgrimage.hajj.step.mina8.details": "Le 8 Dhoul Hijja, rendez-vous à Mina après la prière du Fajr. Priez Dhouhr, Asr, Maghrib, Isha et Fajr à Mina, en raccourcissant les prières de 4 rak'ahs à 2. Passez la nuit en adoration, dua et préparation pour le Jour d'Arafat.",
+
+      "pilgrimage.hajj.step.arafat.title": "Jour d'Arafat (9 Dhoul Hijja)",
+      "pilgrimage.hajj.step.arafat.desc": "Le jour le plus important — la station à Arafat",
+      "pilgrimage.hajj.step.arafat.details": "C'est le pilier du Hajj — « Le Hajj, c'est Arafat » (Ahmad). Après le Fajr à Mina, rendez-vous dans la plaine d'Arafat. Après le zawal (midi), combinez et raccourcissez les prières de Dhouhr et Asr. Restez en supplication, faisant des duas sincères jusqu'au coucher du soleil. Le Prophète ﷺ a dit : « Il n'y a pas de jour où Allah libère plus de gens du Feu que le Jour d'Arafat. » Pleurez, repentez-vous et demandez à Allah tout ce que vous désirez.",
+
+      "pilgrimage.hajj.step.muzdalifah.title": "Nuit à Muzdalifah",
+      "pilgrimage.hajj.step.muzdalifah.desc": "Partir après le coucher du soleil, prier et ramasser des cailloux",
+      "pilgrimage.hajj.step.muzdalifah.details": "Après le coucher du soleil à Arafat, rendez-vous calmement à Muzdalifah. Combinez et raccourcissez les prières de Maghrib et Isha. Dormez à la belle étoile. Ramassez 49 cailloux (ou 70 si vous restez les 3 jours de Tashreeq) pour le rite de la lapidation. Priez le Fajr tôt, puis faites des duas jusqu'à juste avant le lever du soleil avant de partir pour Mina.",
+
+      "pilgrimage.hajj.step.rami.title": "Lapidation des Jamarat (10 Dhoul Hijja)",
+      "pilgrimage.hajj.step.rami.desc": "Lancer 7 cailloux sur la Jamrat al-Aqabah",
+      "pilgrimage.hajj.step.rami.details": "Le jour de l'Aïd (10e), lapidez uniquement le plus grand pilier (Jamrat al-Aqabah) avec 7 cailloux, en disant « Allahu Akbar » à chaque lancer. Cela commémore le rejet par Ibrahim (AS) de la tentation de Shaytan. Les 11e, 12e (et optionnellement 13e) de Dhoul Hijja, lapidez les trois piliers (du plus petit au plus grand), 7 cailloux chacun.",
+
+      "pilgrimage.hajj.step.sacrifice.title": "Sacrifice animal (Qurbani)",
+      "pilgrimage.hajj.step.sacrifice.desc": "Offrir un sacrifice pour la cause d'Allah",
+      "pilgrimage.hajj.step.sacrifice.details": "Après la lapidation du 10e jour, offrez un animal sacrificiel (mouton, chèvre, vache ou chameau). Cela suit la Sunnah d'Ibrahim (AS) lorsqu'Allah a racheté Isma'il (AS) par un bélier. La viande est distribuée aux pauvres, aux proches et gardée pour soi-même.",
+
+      "pilgrimage.hajj.step.halq.title": "Halq ou Taqsir",
+      "pilgrimage.hajj.step.halq.desc": "Se raser ou se couper les cheveux",
+      "pilgrimage.hajj.step.halq.details": "Les hommes se rasent complètement la tête (Halq — recommandé) ou se coupent les cheveux (Taqsir). Les femmes coupent une longueur de bout de doigt de leurs cheveux. Cela symbolise l'humilité et le renouveau. Après cela, la plupart des restrictions de l'Ihram sont levées.",
+
+      "pilgrimage.hajj.step.tawafIfadah.title": "Tawaf al-Ifadah",
+      "pilgrimage.hajj.step.tawafIfadah.desc": "Le Tawaf essentiel du Hajj",
+      "pilgrimage.hajj.step.tawafIfadah.details": "C'est un rukn (pilier essentiel) du Hajj. Effectuez 7 tours autour de la Ka'bah, suivis de 2 rak'ahs et du Sa'i entre Safa et Marwah. Après cela, toutes les restrictions de l'Ihram sont complètement levées.",
+
+      "pilgrimage.hajj.step.minaDays.title": "Jours de Tashreeq (11-13e)",
+      "pilgrimage.hajj.step.minaDays.desc": "Rester à Mina, lapider les trois Jamarat chaque jour",
+      "pilgrimage.hajj.step.minaDays.details": "Restez à Mina pendant les Jours de Tashreeq. Chaque jour après Dhouhr, lapidez les trois piliers (7 cailloux chacun), en commençant par le plus petit. Le Prophète ﷺ a dit : « Les Jours de Tashreeq sont des jours de nourriture, de boisson et de rappel d'Allah. »",
+
+      "pilgrimage.hajj.step.tawafWada.title": "Tawaf al-Wada (Tawaf d'adieu)",
+      "pilgrimage.hajj.step.tawafWada.desc": "Dernière circumambulation avant de quitter la Mecque",
+      "pilgrimage.hajj.step.tawafWada.details": "Avant de quitter la Mecque, effectuez un dernier Tawaf de 7 tours autour de la Ka'bah, suivi de 2 rak'ahs. C'est le dernier acte du Hajj. Le Prophète ﷺ a dit : « Que personne ne parte sans avoir effectué le dernier Tawaf autour de la Maison. »",
+
+      "pilgrimage.umrah.whatIs.title": "Qu'est-ce que la Omra ?",
+      "pilgrimage.umrah.whatIs.content": "La Omra est le « petit pèlerinage » à la Mecque. Contrairement au Hajj, elle peut être accomplie à tout moment de l'année et ne prend que quelques heures. La plupart des savants la considèrent comme une Sunnah fortement recommandée. Le Prophète ﷺ a dit : « D'une Omra à l'autre, c'est une expiation pour ce qui s'est passé entre les deux. » (Bukhari & Muslim)",
+
+      "pilgrimage.umrah.difference.title": "Hajj vs Omra — Différences clés",
+      "pilgrimage.umrah.difference.content": "Le Hajj est obligatoire (fard), la Omra est Sunnah mu'akkadah (fortement recommandée). Le Hajj ne peut être accompli que pendant des jours spécifiques de Dhoul Hijja, tandis que la Omra peut être faite toute l'année. Le Hajj comprend Arafat, Muzdalifah, Mina et la lapidation — pas la Omra. Le Hajj dure 5-6 jours, la Omra 2-3 heures.",
+
+      "pilgrimage.umrah.stepsTitle": "Comment accomplir la Omra — Étape par étape",
+      "pilgrimage.umrah.step.ihram.title": "Entrer en état d'Ihram",
+      "pilgrimage.umrah.step.ihram.desc": "État de sacralisation au Miqat",
+      "pilgrimage.umrah.step.ihram.details": "Faites le ghusl, revêtez les vêtements d'Ihram, priez 2 rak'ahs et déclarez votre intention pour la Omra : « Labbayk Allāhumma Umrah. » Commencez à réciter la Talbiyah continuellement jusqu'à atteindre la Ka'bah.",
+
+      "pilgrimage.umrah.step.tawaf.title": "Tawaf autour de la Ka'bah",
+      "pilgrimage.umrah.step.tawaf.desc": "Sept tours autour de la Ka'bah",
+      "pilgrimage.umrah.step.tawaf.details": "En arrivant à Masjid al-Haram, arrêtez la Talbiyah. Commencez le Tawaf depuis la Pierre Noire, en marchant dans le sens inverse des aiguilles d'une montre autour de la Ka'bah 7 fois. Après le Tawaf, priez 2 rak'ahs derrière le Maqam Ibrahim et buvez de l'eau de Zamzam.",
+
+      "pilgrimage.umrah.step.sai.title": "Sa'i entre Safa et Marwah",
+      "pilgrimage.umrah.step.sai.desc": "Sept allers-retours entre les deux collines",
+      "pilgrimage.umrah.step.sai.details": "Rendez-vous au Mont Safa, récitez le verset « Innas-Safa wal-Marwata min sha'a'irillah » et marchez 7 fois entre Safa et Marwah. Commencez à Safa, terminez à Marwah.",
+
+      "pilgrimage.umrah.step.halq.title": "Halq ou Taqsir",
+      "pilgrimage.umrah.step.halq.desc": "Se raser ou se couper les cheveux pour sortir de l'Ihram",
+      "pilgrimage.umrah.step.halq.details": "Les hommes se rasent complètement la tête (préféré) ou se coupent les cheveux. Les femmes coupent une longueur de bout de doigt. Après cela, toutes les restrictions de l'Ihram sont levées et votre Omra est terminée. Félicitations — qu'Allah accepte votre Omra !",
+
+      "pilgrimage.history.title": "Histoire du pèlerinage",
+      "pilgrimage.history.ibrahim.title": "Le Prophète Ibrahim (AS) et la Ka'bah",
+      "pilgrimage.history.ibrahim.content": "Allah a commandé au Prophète Ibrahim (AS) et à son fils Isma'il (AS) de construire la Ka'bah à la Mecque comme première maison de culte pour l'humanité. « Et [rappelez-vous] quand Ibrahim élevait les fondations de la Maison et [avec lui] Isma'il : \"Notre Seigneur, accepte [ceci] de nous. Tu es certes l'Audient, l'Omniscient.\" » (Coran 2:127)\n\nAprès avoir construit la Ka'bah, Allah a commandé à Ibrahim (AS) d'appeler les gens au pèlerinage : « Et fais aux gens une annonce pour le Hajj. Ils viendront vers toi, à pied et sur toute monture. » (Coran 22:27)",
+
+      "pilgrimage.history.kaaba.title": "La Ka'bah — Maison d'Allah",
+      "pilgrimage.history.kaaba.content": "La Ka'bah est la première maison de culte établie pour l'humanité. « La première Maison qui a été édifiée pour les gens, c'est bien celle de Bakka [la Mecque] — bénie et guidée pour les univers. » (Coran 3:96)\n\nLa Pierre Noire (Hajar al-Aswad) a été envoyée du Paradis. Le Prophète ﷺ a dit : « La Pierre Noire est descendue du Paradis plus blanche que le lait, mais les péchés des fils d'Adam l'ont noircie. » (Tirmidhi)",
+
+      "pilgrimage.history.zamzam.title": "L'histoire de Zamzam",
+      "pilgrimage.history.zamzam.content": "Quand Ibrahim (AS) a laissé Hajar et le bébé Isma'il (AS) dans la vallée aride de la Mecque par le commandement d'Allah, Hajar a couru désespérément entre les collines de Safa et Marwah sept fois à la recherche d'eau. Allah a alors fait jaillir la source de Zamzam sous les pieds d'Isma'il.\n\nZamzam coule sans interruption depuis plus de 4 000 ans. Le Prophète ﷺ a dit : « L'eau de Zamzam est pour ce pour quoi elle est bue. » (Ibn Majah)",
+
+      "pilgrimage.history.preIslam.title": "Le pèlerinage avant et après l'Islam",
+      "pilgrimage.history.preIslam.content": "Au fil des siècles après Ibrahim (AS), les Arabes ont progressivement mélangé le Hajj monothéiste pur avec le culte des idoles. À l'époque du Prophète Muhammad ﷺ, la Ka'bah abritait 360 idoles.\n\nQuand le Prophète ﷺ a conquis la Mecque en l'an 8 de l'Hégire, il a purifié la Ka'bah de toutes les idoles, récitant : « La vérité est venue et le faux a disparu. Certes le faux est voué à disparaître. » (Coran 17:81)\n\nIl a restauré le Hajj dans sa forme abrahamique originelle de pur monothéisme.",
+
+      "pilgrimage.history.farewell.title": "Le Hajj d'adieu du Prophète ﷺ",
+      "pilgrimage.history.farewell.content": "En l'an 10 de l'Hégire, le Prophète ﷺ a accompli son unique Hajj, connu sous le nom de Hajjat al-Wada, avec plus de 100 000 compagnons. Durant son sermon à Arafat, il a délivré des principes intemporels :\n\n• « Toute l'humanité descend d'Adam et Ève. Un Arabe n'a aucune supériorité sur un non-Arabe, ni un non-Arabe sur un Arabe — sauf par la piété et les bonnes actions. »\n• « Je vous laisse deux choses : le Livre d'Allah et ma Sunnah. Si vous les suivez, vous ne vous égarerez jamais. »\n\nLe Hajj que nous accomplissons aujourd'hui suit exactement les rites qu'il nous a enseignés ce jour-là.",
+
+      "pilgrimage.benefits.title": "Bienfaits et vertus du pèlerinage",
+      "pilgrimage.benefits.hadith": "Quiconque accomplit le Hajj sans commettre d'obscénité ni de transgression reviendra [libre de péchés] comme le jour où sa mère l'a mis au monde.",
+      "pilgrimage.benefits.hadithSource": "Sahih al-Bukhari",
+
+      "pilgrimage.benefits.forgiveness.title": "Pardon complet des péchés",
+      "pilgrimage.benefits.forgiveness.content": "Un Hajj sincère efface tous les péchés passés. Le Prophète ﷺ a dit : « D'une Omra à l'autre, c'est une expiation pour ce qui s'est passé entre les deux, et le Hajj Mabrur (Hajj accepté) n'a pas d'autre récompense que le Paradis. » (Bukhari & Muslim)",
+
+      "pilgrimage.benefits.equality.title": "Égalité devant Allah",
+      "pilgrimage.benefits.equality.content": "Le Hajj est la plus grande démonstration d'égalité humaine. Riches et pauvres, rois et gens du commun, tous portent les mêmes vêtements simples, se tiennent au même endroit et invoquent le même Seigneur.",
+
+      "pilgrimage.benefits.unity.title": "Unité de la Oummah",
+      "pilgrimage.benefits.unity.content": "Le Hajj est le plus grand rassemblement annuel sur Terre. Des musulmans de plus de 180 pays, parlant des centaines de langues, se réunissent avec un seul but : adorer Allah seul.",
+
+      "pilgrimage.benefits.spiritual.title": "Renouveau spirituel et renaissance",
+      "pilgrimage.benefits.spiritual.content": "Le Hajj est un voyage de l'âme. Le pèlerin laisse derrière lui les conforts mondains, affronte les épreuves physiques et se tient devant Allah en toute humilité. C'est une répétition pour le Jour du Jugement.",
+
+      "pilgrimage.benefits.patience.title": "Construire la patience et la gratitude",
+      "pilgrimage.benefits.patience.content": "Les défis du Hajj — les foules, la chaleur, l'effort physique — construisent le sabr (patience) et la gratitude. Chaque difficulté endurée pour la cause d'Allah est récompensée.",
+
+      "pilgrimage.duas.title": "Duas essentielles pour le pèlerinage",
+      "pilgrimage.dua.talbiyah.context": "Talbiyah — De l'Ihram jusqu'à la lapidation",
+      "pilgrimage.dua.talbiyah.translation": "Me voici, ô Allah, me voici. Me voici, Tu n'as pas d'associé, me voici. Certes, la louange, la grâce et la souveraineté T'appartiennent. Tu n'as pas d'associé.",
+      "pilgrimage.dua.tawafStart.context": "Début de chaque tour du Tawaf",
+      "pilgrimage.dua.tawafStart.translation": "Au nom d'Allah, et Allah est le Plus Grand.",
+      "pilgrimage.dua.betweenCorners.context": "Entre le coin yéménite et la Pierre Noire",
+      "pilgrimage.dua.betweenCorners.translation": "Notre Seigneur, accorde-nous le bien dans ce monde et le bien dans l'Au-delà, et protège-nous du châtiment du Feu.",
+      "pilgrimage.dua.saiSafa.context": "En arrivant à Safa",
+      "pilgrimage.dua.saiSafa.translation": "Certes, Safa et Marwah sont parmi les symboles d'Allah.",
+      "pilgrimage.dua.arafat.context": "À Arafat — la meilleure dua",
+      "pilgrimage.dua.arafat.translation": "Il n'y a de divinité qu'Allah seul, sans associé. À Lui la souveraineté et à Lui la louange, et Il est capable de toute chose.",
     }
   }
 };
