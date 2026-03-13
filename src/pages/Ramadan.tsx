@@ -36,6 +36,7 @@ import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { DailyDuaCard } from '@/components/ramadan/DailyDuaCard';
 import { RamadanReport } from '@/components/ramadan/RamadanReport';
+import { PostRamadanResolutions } from '@/components/ramadan/PostRamadanResolutions';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
 import { PrayerSettingsSheet } from '@/components/settings/PrayerSettingsSheet';
@@ -201,6 +202,9 @@ const Ramadan = () => {
       case 'preparing':
         return (
           <div className="space-y-6">
+            {/* Ramadan Resolutions - year-round tracking */}
+            <PostRamadanResolutions />
+
             {/* Interactive Preparation Checklist */}
             <PrepChecklist />
 
@@ -304,17 +308,17 @@ const Ramadan = () => {
               <p className="text-sm text-muted-foreground italic">"{t('ramadan.reflection.prompt')}"</p>
             </Card>
 
-            {/* Carry Forward Message */}
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">{t('ramadan.carryForward.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('ramadan.carryForward.message')}</p>
-            </Card>
+            {/* Carry Forward - Resolutions */}
+            <PostRamadanResolutions />
           </div>
         );
 
       case 'shawwal':
         return (
           <div className="space-y-6">
+            {/* Ramadan Resolutions - carried forward */}
+            <PostRamadanResolutions />
+
             {/* Shawwal Tips */}
             <div>
               <h3 className="text-lg font-semibold mb-3">{t('ramadan.shawwal.title')}</h3>
