@@ -319,6 +319,9 @@ const Ramadan = () => {
       case 'shawwal':
         return (
           <div className="space-y-6">
+            {/* Ramadan Resolutions - carried forward */}
+            <PostRamadanResolutions />
+
             {/* Shawwal Tips */}
             <div>
               <h3 className="text-lg font-semibold mb-3">{t('ramadan.shawwal.title')}</h3>
