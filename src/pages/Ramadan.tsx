@@ -202,6 +202,9 @@ const Ramadan = () => {
       case 'preparing':
         return (
           <div className="space-y-6">
+            {/* Ramadan Resolutions - year-round tracking */}
+            <PostRamadanResolutions />
+
             {/* Interactive Preparation Checklist */}
             <PrepChecklist />
 
