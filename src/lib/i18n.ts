@@ -553,6 +553,9 @@ const resources = {
 
       // Plus Menu
       "plusMenu.title": "Quick Actions",
+      "plusMenu.worship": "Worship",
+      "plusMenu.growth": "Growth",
+      "plusMenu.tools": "Tools",
 
       // Dashboard
       "dashboard.greeting.morning": "Assalamu Alaikum",
