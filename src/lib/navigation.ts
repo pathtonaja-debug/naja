@@ -10,6 +10,7 @@ import {
   Coins,
   Star,
   GraduationCap,
+  Landmark,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
