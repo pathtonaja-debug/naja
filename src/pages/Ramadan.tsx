@@ -308,12 +308,8 @@ const Ramadan = () => {
               <p className="text-sm text-muted-foreground italic">"{t('ramadan.reflection.prompt')}"</p>
             </Card>
 
-            {/* Carry Forward Message */}
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">{t('ramadan.carryForward.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('ramadan.carryForward.message')}</p>
-            </Card>
-          </div>
+            {/* Carry Forward - Resolutions */}
+            <PostRamadanResolutions />
         );
 
       case 'shawwal':
