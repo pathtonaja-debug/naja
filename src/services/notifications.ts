@@ -58,7 +58,7 @@ export function isQuietHours(
 export function scheduleNotification(
   title: string,
   options: NotificationOptions & { delay?: number }
-): NodeJS.Timeout | null {
+): ReturnType<typeof setTimeout> | null {
   if (!isNotificationSupported() || Notification.permission !== "granted") {
     return null;
   }
