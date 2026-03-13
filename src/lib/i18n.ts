@@ -1735,6 +1735,155 @@ const resources = {
       "dashboard.prayerTimes": "Prayer Times",
       "dashboard.nextIn": "Next in {{time}}",
       "dashboard.next": "Next",
+
+      // Navigation - Pilgrimage
+      "nav.pilgrimage": "Pilgrimage",
+
+      // Pilgrimage
+      "pilgrimage.title": "Pilgrimage",
+      "pilgrimage.subtitle": "Complete guide to Hajj & Umrah",
+      "pilgrimage.tabs.hajj": "Hajj",
+      "pilgrimage.tabs.umrah": "Umrah",
+      "pilgrimage.tabs.history": "History",
+      "pilgrimage.tabs.benefits": "Benefits",
+      "pilgrimage.tabs.duas": "Duas",
+      "pilgrimage.step": "Step",
+
+      // Hajj - What is it
+      "pilgrimage.hajj.whatIs.title": "What is Hajj?",
+      "pilgrimage.hajj.whatIs.content": "Hajj is the fifth pillar of Islam — an annual pilgrimage to Makkah that every Muslim who is physically and financially able must perform at least once in their lifetime. It takes place during the 8th to 12th of Dhul Hijjah, the last month of the Islamic calendar. Over 2 million Muslims from around the world gather each year to fulfill this sacred obligation, walking in the footsteps of Prophet Ibrahim (AS) and Prophet Muhammad ﷺ.",
+
+      // Hajj - Conditions
+      "pilgrimage.hajj.conditions.title": "Conditions for Hajj",
+      "pilgrimage.hajj.conditions.c1": "Being Muslim",
+      "pilgrimage.hajj.conditions.c2": "Being of sound mind (sane and mature)",
+      "pilgrimage.hajj.conditions.c3": "Having reached the age of puberty",
+      "pilgrimage.hajj.conditions.c4": "Being physically able to perform the rites",
+      "pilgrimage.hajj.conditions.c5": "Having the financial means (after providing for dependents)",
+
+      // Hajj - Steps
+      "pilgrimage.hajj.stepsTitle": "How to Perform Hajj — Step by Step",
+      "pilgrimage.hajj.step.ihram.title": "Enter Ihram",
+      "pilgrimage.hajj.step.ihram.desc": "State of consecration at the Miqat",
+      "pilgrimage.hajj.step.ihram.details": "Before crossing the Miqat (boundary point), make ghusl, put on the Ihram garments (two white unstitched cloths for men; modest clothing for women), pray two rak'ahs, and make your niyyah (intention) for Hajj. Begin reciting the Talbiyah: 'Labbayk Allāhumma labbayk...' From this point, certain actions are prohibited: cutting hair/nails, using perfume, hunting, and marital relations.",
+
+      "pilgrimage.hajj.step.tawafQudum.title": "Tawaf al-Qudum",
+      "pilgrimage.hajj.step.tawafQudum.desc": "Arrival circumambulation of the Ka'bah",
+      "pilgrimage.hajj.step.tawafQudum.details": "Upon arriving in Makkah, perform seven circuits around the Ka'bah, starting from the Black Stone (Hajar al-Aswad). Men should perform Idtiba (exposing the right shoulder) and Raml (walking briskly) in the first three rounds. Make dua during each circuit. After completing Tawaf, pray two rak'ahs behind Maqam Ibrahim if possible.",
+
+      "pilgrimage.hajj.step.sai.title": "Sa'i between Safa & Marwah",
+      "pilgrimage.hajj.step.sai.desc": "Walking seven times between the two hills",
+      "pilgrimage.hajj.step.sai.details": "Walk seven times between Mount Safa and Mount Marwah, starting at Safa. This commemorates Hajar's (AS) desperate search for water for her son Isma'il (AS). Men should jog between the green markers. Make dua at each hill. This is a total of 7 laps, ending at Marwah.",
+
+      "pilgrimage.hajj.step.mina8.title": "Day of Tarwiyah (8th Dhul Hijjah)",
+      "pilgrimage.hajj.step.mina8.desc": "Travel to Mina and spend the night",
+      "pilgrimage.hajj.step.mina8.details": "On the 8th of Dhul Hijjah, proceed to Mina after Fajr prayer. Pray Dhuhr, Asr, Maghrib, Isha, and Fajr in Mina, shortening the 4-rak'ah prayers to 2 rak'ahs. Spend the night in worship, dua, and preparation for the Day of Arafat.",
+
+      "pilgrimage.hajj.step.arafat.title": "Day of Arafat (9th Dhul Hijjah)",
+      "pilgrimage.hajj.step.arafat.desc": "The most important day — standing at Arafat",
+      "pilgrimage.hajj.step.arafat.details": "This is the pillar of Hajj — 'Hajj is Arafat' (Ahmad). After Fajr in Mina, proceed to the plain of Arafat. After zawal (noon), combine and shorten Dhuhr and Asr prayers. Stand in supplication, making sincere dua until sunset. The Prophet ﷺ said: 'There is no day on which Allah frees more people from the Fire than the Day of Arafat.' Cry, repent, and ask Allah for everything.",
+
+      "pilgrimage.hajj.step.muzdalifah.title": "Night at Muzdalifah",
+      "pilgrimage.hajj.step.muzdalifah.desc": "Proceed after sunset, pray and collect pebbles",
+      "pilgrimage.hajj.step.muzdalifah.details": "After sunset at Arafat, proceed calmly to Muzdalifah. Combine and shorten Maghrib and Isha prayers. Sleep under the open sky. Collect 49 pebbles (or 70 if staying all 3 days of Tashreeq) for the stoning ritual. Pray Fajr early, then make dua until just before sunrise before departing for Mina.",
+
+      "pilgrimage.hajj.step.rami.title": "Stoning of Jamarat (10th Dhul Hijjah)",
+      "pilgrimage.hajj.step.rami.desc": "Throw 7 pebbles at Jamrat al-Aqabah",
+      "pilgrimage.hajj.step.rami.details": "On Eid day (10th), stone only the largest pillar (Jamrat al-Aqabah) with 7 pebbles, saying 'Allahu Akbar' with each throw. This commemorates Ibrahim's (AS) rejection of Shaytan's temptation. On the 11th, 12th (and optionally 13th) of Dhul Hijjah, stone all three pillars (smallest to largest), 7 pebbles each.",
+
+      "pilgrimage.hajj.step.sacrifice.title": "Animal Sacrifice (Qurbani)",
+      "pilgrimage.hajj.step.sacrifice.desc": "Offering a sacrifice for the sake of Allah",
+      "pilgrimage.hajj.step.sacrifice.details": "After stoning on the 10th, offer a sacrificial animal (sheep, goat, cow, or camel). This follows the Sunnah of Ibrahim (AS) when Allah ransomed Isma'il (AS) with a ram. The meat is distributed to the poor, relatives, and kept for oneself. Many pilgrims arrange this through licensed services.",
+
+      "pilgrimage.hajj.step.halq.title": "Halq or Taqsir",
+      "pilgrimage.hajj.step.halq.desc": "Shaving or trimming the hair",
+      "pilgrimage.hajj.step.halq.details": "Men shave their heads completely (Halq — recommended) or trim their hair (Taqsir). Women cut a fingertip's length from their hair. This symbolizes humility and renewal. After this, most Ihram restrictions are lifted (called the first Tahallul). Marital relations remain prohibited until Tawaf al-Ifadah.",
+
+      "pilgrimage.hajj.step.tawafIfadah.title": "Tawaf al-Ifadah",
+      "pilgrimage.hajj.step.tawafIfadah.desc": "The essential Tawaf of Hajj",
+      "pilgrimage.hajj.step.tawafIfadah.details": "This is a rukn (essential pillar) of Hajj. Perform 7 circuits around the Ka'bah, followed by 2 rak'ahs and Sa'i between Safa and Marwah. After this, all Ihram restrictions are completely lifted. This Tawaf can be performed on the 10th, 11th, or 12th of Dhul Hijjah.",
+
+      "pilgrimage.hajj.step.minaDays.title": "Days of Tashreeq (11th-13th)",
+      "pilgrimage.hajj.step.minaDays.desc": "Stay in Mina, stone all three Jamarat daily",
+      "pilgrimage.hajj.step.minaDays.details": "Stay in Mina during the Days of Tashreeq. Each day after Dhuhr, stone all three pillars (7 pebbles each), starting from the smallest, then medium, then largest. The Prophet ﷺ said: 'The Days of Tashreeq are days of eating, drinking, and remembering Allah.' You may leave on the 12th after stoning if you wish.",
+
+      "pilgrimage.hajj.step.tawafWada.title": "Tawaf al-Wada (Farewell Tawaf)",
+      "pilgrimage.hajj.step.tawafWada.desc": "Final circumambulation before leaving Makkah",
+      "pilgrimage.hajj.step.tawafWada.details": "Before departing Makkah, perform a final Tawaf of 7 circuits around the Ka'bah, followed by 2 rak'ahs. This is the last act of Hajj. The Prophet ﷺ said: 'Let none of you leave without performing the last Tawaf around the House.' Make dua, as this may be your last time at the Ka'bah.",
+
+      // Umrah
+      "pilgrimage.umrah.whatIs.title": "What is Umrah?",
+      "pilgrimage.umrah.whatIs.content": "Umrah is the 'lesser pilgrimage' to Makkah. Unlike Hajj, it can be performed at any time of the year and takes only a few hours to complete. While most scholars consider it a highly recommended Sunnah, some (Hanbali and some Shafi'i scholars) consider it obligatory once in a lifetime. The Prophet ﷺ said: 'Umrah to Umrah is an expiation for whatever comes between them.' (Bukhari & Muslim)",
+
+      "pilgrimage.umrah.difference.title": "Hajj vs Umrah — Key Differences",
+      "pilgrimage.umrah.difference.content": "Hajj is obligatory (fard), Umrah is Sunnah mu'akkadah (strongly recommended). Hajj can only be performed during specific days of Dhul Hijjah, while Umrah can be done year-round. Hajj includes Arafat, Muzdalifah, Mina, and stoning — Umrah does not. Hajj takes 5-6 days, Umrah takes 2-3 hours. Both share Ihram, Tawaf, Sa'i, and Halq/Taqsir.",
+
+      "pilgrimage.umrah.stepsTitle": "How to Perform Umrah — Step by Step",
+      "pilgrimage.umrah.step.ihram.title": "Enter Ihram",
+      "pilgrimage.umrah.step.ihram.desc": "State of consecration at the Miqat",
+      "pilgrimage.umrah.step.ihram.details": "Make ghusl, wear Ihram garments, pray 2 rak'ahs, and declare your intention for Umrah: 'Labbayk Allāhumma Umrah.' Begin reciting the Talbiyah continuously until you reach the Ka'bah. The same Ihram restrictions as Hajj apply.",
+
+      "pilgrimage.umrah.step.tawaf.title": "Tawaf around the Ka'bah",
+      "pilgrimage.umrah.step.tawaf.desc": "Seven circuits around the Ka'bah",
+      "pilgrimage.umrah.step.tawaf.details": "Upon reaching Masjid al-Haram, stop the Talbiyah. Begin Tawaf from the Black Stone, walking counter-clockwise around the Ka'bah 7 times. Men perform Idtiba and Raml in the first 3 rounds. Make dua freely during Tawaf. Between the Yemeni Corner and the Black Stone, recite: 'Rabbana atina fid-dunya hasanah...' After Tawaf, pray 2 rak'ahs behind Maqam Ibrahim and drink Zamzam water.",
+
+      "pilgrimage.umrah.step.sai.title": "Sa'i between Safa & Marwah",
+      "pilgrimage.umrah.step.sai.desc": "Seven laps between the two hills",
+      "pilgrimage.umrah.step.sai.details": "Proceed to Mount Safa, recite the verse 'Innas-Safa wal-Marwata min sha'a'irillah,' and walk 7 times between Safa and Marwah. Start at Safa, end at Marwah. Men jog between the green markers. Make dua at each hill, facing the Ka'bah.",
+
+      "pilgrimage.umrah.step.halq.title": "Halq or Taqsir",
+      "pilgrimage.umrah.step.halq.desc": "Shave or trim the hair to exit Ihram",
+      "pilgrimage.umrah.step.halq.details": "Men shave their heads completely (preferred) or trim their hair. Women cut a fingertip's length. After this, all Ihram restrictions are lifted and your Umrah is complete. Congratulations — may Allah accept your Umrah!",
+
+      // History
+      "pilgrimage.history.title": "History of Pilgrimage",
+      "pilgrimage.history.ibrahim.title": "Prophet Ibrahim (AS) and the Ka'bah",
+      "pilgrimage.history.ibrahim.content": "Allah commanded Prophet Ibrahim (AS) and his son Isma'il (AS) to build the Ka'bah in Makkah as the first house of worship for humanity. 'And [remember] when Ibrahim was raising the foundations of the House and [with him] Isma'il, [saying], \"Our Lord, accept [this] from us. Indeed, You are the Hearing, the Knowing.\"' (Quran 2:127)\n\nAfter building the Ka'bah, Allah commanded Ibrahim (AS) to call people to pilgrimage: 'And proclaim to the people the Hajj; they will come to you on foot and on every lean camel; they will come from every distant pass.' (Quran 22:27)",
+
+      "pilgrimage.history.kaaba.title": "The Ka'bah — House of Allah",
+      "pilgrimage.history.kaaba.content": "The Ka'bah is the first house of worship established for humanity. 'Indeed, the first House [of worship] established for mankind was that at Bakkah [Makkah] — blessed and a guidance for the worlds.' (Quran 3:96)\n\nThe Black Stone (Hajar al-Aswad) was sent from Paradise. The Prophet ﷺ said: 'The Black Stone descended from Paradise whiter than milk, but the sins of the sons of Adam turned it black.' (Tirmidhi)\n\nThe Ka'bah has been rebuilt several times throughout history, including by the Quraysh before Islam, and it remains the qiblah (direction of prayer) for all Muslims worldwide.",
+
+      "pilgrimage.history.zamzam.title": "The Story of Zamzam",
+      "pilgrimage.history.zamzam.content": "When Ibrahim (AS) left Hajar and baby Isma'il (AS) in the barren valley of Makkah by Allah's command, Hajar ran desperately between the hills of Safa and Marwah seven times searching for water. Allah then caused the spring of Zamzam to gush forth beneath Isma'il's feet.\n\nThe Prophet ﷺ said: 'May Allah have mercy on the mother of Isma'il. Had she left Zamzam, it would have been a flowing stream.' (Bukhari)\n\nZamzam has flowed continuously for over 4,000 years. The Prophet ﷺ said: 'The water of Zamzam is for whatever it is drunk for.' (Ibn Majah)",
+
+      "pilgrimage.history.preIslam.title": "Pilgrimage Before and After Islam",
+      "pilgrimage.history.preIslam.content": "Over centuries after Ibrahim (AS), the Arabs gradually mixed the pure monotheistic Hajj with idol worship. By the time of Prophet Muhammad ﷺ, the Ka'bah housed 360 idols, and pilgrims performed Tawaf naked, clapping and whistling.\n\nWhen the Prophet ﷺ conquered Makkah in 8 AH, he cleansed the Ka'bah of all idols, reciting: 'Truth has come, and falsehood has departed. Indeed, falsehood is bound to depart.' (Quran 17:81)\n\nHe restored Hajj to its original Abrahamic form of pure monotheism.",
+
+      "pilgrimage.history.farewell.title": "The Farewell Hajj of the Prophet ﷺ",
+      "pilgrimage.history.farewell.content": "In 10 AH, the Prophet ﷺ performed his only Hajj, known as Hajjat al-Wada (the Farewell Pilgrimage), with over 100,000 companions. During his sermon at Arafat, he delivered timeless principles:\n\n• 'All mankind is from Adam and Eve. An Arab has no superiority over a non-Arab, nor a non-Arab over an Arab — except by piety and good deeds.'\n• 'I am leaving you two things: the Book of Allah and my Sunnah. If you follow them, you will never go astray.'\n• 'Have I conveyed the message?' — The people replied: 'Yes!' — He said: 'O Allah, be witness.'\n\nThe Hajj we perform today follows exactly the rites he taught us on that day.",
+
+      // Benefits
+      "pilgrimage.benefits.title": "Benefits & Virtues of Pilgrimage",
+      "pilgrimage.benefits.hadith": "Whoever performs Hajj and does not commit any obscenity or transgression shall return [free from sins] as on the day his mother bore him.",
+      "pilgrimage.benefits.hadithSource": "Sahih al-Bukhari",
+
+      "pilgrimage.benefits.forgiveness.title": "Complete Forgiveness of Sins",
+      "pilgrimage.benefits.forgiveness.content": "A sincere Hajj wipes away all previous sins. The Prophet ﷺ said: 'From one Umrah to the next is an expiation for whatever came between them, and Hajj Mabrur (accepted Hajj) has no reward except Paradise.' (Bukhari & Muslim)",
+
+      "pilgrimage.benefits.equality.title": "Equality Before Allah",
+      "pilgrimage.benefits.equality.content": "Hajj is the greatest demonstration of human equality. Rich and poor, king and commoner, all wear the same simple garments, stand in the same place, and call upon the same Lord. No distinction of race, wealth, or status — only taqwa (God-consciousness) differentiates people.",
+
+      "pilgrimage.benefits.unity.title": "Unity of the Ummah",
+      "pilgrimage.benefits.unity.content": "Hajj is the largest annual gathering on Earth. Muslims from over 180 countries, speaking hundreds of languages, come together with one purpose: to worship Allah alone. It is a living reminder that despite our diversity, we are one Ummah, bound by la ilaha illallah.",
+
+      "pilgrimage.benefits.spiritual.title": "Spiritual Renewal & Rebirth",
+      "pilgrimage.benefits.spiritual.content": "Hajj is a journey of the soul. The pilgrim leaves behind worldly comforts, faces physical hardship, and stands before Allah in total humility. It is a rehearsal for the Day of Judgment — when all of humanity will stand before their Lord. Many pilgrims describe returning from Hajj feeling 'reborn.'",
+
+      "pilgrimage.benefits.patience.title": "Building Patience & Gratitude",
+      "pilgrimage.benefits.patience.content": "The challenges of Hajj — the crowds, the heat, the physical effort — build sabr (patience) and gratitude. Every difficulty endured for Allah's sake is rewarded. The Prophet ﷺ said: 'The reward of Hajj Mabrur is nothing except Paradise.' Make every hardship an act of worship.",
+
+      // Duas
+      "pilgrimage.duas.title": "Essential Duas for Pilgrimage",
+      "pilgrimage.dua.talbiyah.context": "Talbiyah — From Ihram until stoning",
+      "pilgrimage.dua.talbiyah.translation": "Here I am, O Allah, here I am. Here I am, You have no partner, here I am. Indeed, all praise, favor, and sovereignty belong to You. You have no partner.",
+      "pilgrimage.dua.tawafStart.context": "Starting each circuit of Tawaf",
+      "pilgrimage.dua.tawafStart.translation": "In the name of Allah, and Allah is the Greatest.",
+      "pilgrimage.dua.betweenCorners.context": "Between Yemeni Corner & Black Stone",
+      "pilgrimage.dua.betweenCorners.translation": "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.",
+      "pilgrimage.dua.saiSafa.context": "Upon reaching Safa",
+      "pilgrimage.dua.saiSafa.translation": "Indeed, Safa and Marwah are among the symbols of Allah.",
+      "pilgrimage.dua.arafat.context": "At Arafat — the best dua",
+      "pilgrimage.dua.arafat.translation": "There is no god but Allah alone, with no partner. To Him belongs the dominion and to Him belongs all praise, and He is over all things capable.",
     }
   },
   fr: {
