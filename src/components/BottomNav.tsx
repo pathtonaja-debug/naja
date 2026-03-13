@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS, PLUS_MENU_ITEMS, isPathActive } from "@/lib/navigation";
-import { PlusPopover, type PlusMenuItem as UiPlusMenuItem } from "@/components/ui/plus-popover";
+import { NAV_ITEMS, PLUS_MENU_ITEMS, PLUS_MENU_CATEGORIES, isPathActive, getRecentItems, recordRecentItem } from "@/lib/navigation";
+import { PlusPopover, type PlusMenuItem as UiPlusMenuItem, type PlusMenuCategory } from "@/components/ui/plus-popover";
 
 const BottomNav = () => {
   const { t } = useTranslation();
@@ -18,15 +18,26 @@ const BottomNav = () => {
   const leftTabs = NAV_ITEMS.slice(0, 2);
   const rightTabs = NAV_ITEMS.slice(2, 4);
 
+  const recentIds = useMemo(() => (plusOpen ? getRecentItems() : []), [plusOpen]);
+
   const plusItems: UiPlusMenuItem[] = useMemo(
     () =>
       PLUS_MENU_ITEMS.map((item) => ({
         id: item.id,
         label: t(item.labelKey),
         icon: item.icon,
-        onSelect: () => navigate(item.path),
+        category: item.category,
+        onSelect: () => {
+          recordRecentItem(item.id);
+          navigate(item.path);
+        },
       })),
     [navigate, t]
+  );
+
+  const categoryLabels: PlusMenuCategory[] = useMemo(
+    () => PLUS_MENU_CATEGORIES.map((c) => ({ key: c.key, label: t(c.labelKey) })),
+    [t]
   );
 
   const NavButton = ({ item }: { item: typeof NAV_ITEMS[0] }) => {
@@ -141,6 +152,8 @@ const BottomNav = () => {
         anchorRef={plusBtnRef}
         title={t("plusMenu.title")}
         items={plusItems}
+        categories={categoryLabels}
+        recentIds={recentIds}
       />
     </>
   );

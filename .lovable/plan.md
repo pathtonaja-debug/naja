@@ -1,94 +1,104 @@
 
 
-# App Improvement Roadmap
+# Reduce Animations to Minimal Premium
 
-Based on your feedback, here is a phased plan addressing all five areas -- navigation confusion (your biggest pain point) first, then data persistence, gamification, content, and social.
+## Problem
 
----
+The app has 83 files using framer-motion, with heavy animation patterns causing lag and visual bugs:
+- Page transitions slide 60% of viewport width on every route change
+- LevelUpModal has 20 infinitely-repeating Sparkle animations
+- CelebrationOverlay spawns 50 confetti particles
+- BeadsAnimation and TasbihArc animate 11 beads each with springs, scales, rotations
+- Bottom nav uses `layoutId` shared animation + AnimatePresence for label width
+- Nearly every page wraps its root in `motion.div` with fade-in
+- Swipe indicator loops infinitely with opacity + position animation
+- `popLayout` mode causes overlapping enter/exit renders (two full pages in DOM at once)
 
-## Phase 1: Fix Navigation Confusion
+## Strategy
 
-**Problem:** The + menu has 9 items in a flat list. Users cannot quickly find what they need. The relationship between Dashboard, Practices, and the + menu items is unclear.
+Keep only two categories of animation:
+1. **Functional feedback** -- brief scale on tap, progress bar fills, checkmarks
+2. **Single premium touch** -- bottom nav active pill slide, modal/sheet entrance
 
-**Solution: Reorganize into clear categories**
-
-- Group the + menu into 2-3 sections with headers: "Worship" (Quran, Dhikr, Dua), "Growth" (Learn, Goals, Journal), "Tools" (Dates, Fintech, Pilgrimage)
-- Add a search/filter to the + popover for quick access
-- Add subtle section dividers and category labels in the popover
-- Show recently-used items at the top (stored in localStorage)
-- Reduce visual clutter: smaller icons, tighter spacing
-
-**Files:** `src/components/ui/plus-popover.tsx`, `src/lib/navigation.ts`
-
----
-
-## Phase 2: Sync Local Data to Cloud
-
-**Problem:** Critical user data lives only in localStorage (`naja_*` keys) and is lost on device switch or browser clear. This includes: daily progress, reflections, duas, quiz attempts, gamification stats, goals, Ramadan resolutions, Quran reading state, dhikr history.
-
-**Solution: Dual-write pattern**
-
-- Create a `src/services/syncService.ts` that writes to both localStorage (instant) and the cloud DB (async)
-- On login, merge local data with cloud data (cloud wins on conflict, local fills gaps)
-- New DB tables needed: `daily_progress`, `quran_reading_state`, `user_goals`
-- Migrate `useGuestProfile` to read from cloud when authenticated, fall back to local
-- Add a "Syncing..." indicator in Profile settings
-
-**New tables:**
-- `daily_progress` (user_id, date, acts jsonb, points, completed_count, total_count)
-- `quran_reading_state` (user_id, last_surah, last_verse, bookmarks jsonb, read_surahs int[])
-- `user_goals` (user_id, goal_config jsonb, daily_completions jsonb, streak, status)
-
-**Files:** New `src/services/syncService.ts`, updates to `useGuestProfile.ts`, `dailyProgressService.ts`, `quranReadingState.ts`, `goalsStore.ts`, `ramadanResolutionsStore.ts`
+Remove everything else: page slide transitions, staggered list entrances, infinite loops, confetti, repeated sparkles, and unnecessary motion wrappers.
 
 ---
 
-## Phase 3: Gamification Overhaul
+## Changes
 
-**Problem:** Gamification is split between `useGuestProfile` (localStorage), `localStore.ts` (localStorage), and `user_gamification` (DB). Points feel arbitrary. No visible progression loop.
+### 1. PageTransition.tsx -- Replace slide with simple opacity fade (0.15s)
 
-**Solution: Unified progression system**
+Remove the `slideVariants` with `x: 60%` offsets. Replace with a minimal opacity-only transition. Switch `AnimatePresence` mode from `popLayout` to `wait` so only one page renders at a time (eliminates the dual-DOM overlap bug).
 
-- Single source of truth: cloud `user_gamification` table (with local cache)
-- Add milestone rewards at key thresholds (100, 500, 1000 points)
-- Add weekly challenges (e.g., "Read Quran 5 days this week") stored in a new `weekly_challenges` table
-- Show streak calendar on Dashboard (dot per active day, like GitHub contribution graph)
-- Badge system: auto-award badges based on DB triggers (first prayer logged, 7-day streak, 30 days, etc.)
+### 2. BottomNav.tsx -- Simplify nav animation
 
-**New table:** `weekly_challenges` (id, user_id, challenge_type, target, progress, week_start, completed)
+Keep the `layoutId` active bubble (it's lightweight and premium). Remove `AnimatePresence` + `motion.span` for label width animation -- just show/hide the label with CSS `overflow-hidden` and a fast CSS transition instead. Remove the `whileTap={{ scale: 0.92 }}` from the plus button (keep the CSS `active:scale-95` approach).
+
+### 3. LevelUpModal.tsx -- Remove sparkle loop, simplify entrance
+
+Remove the 20 infinitely-repeating Sparkle divs. Keep a single spring entrance for the modal card. Replace staggered content animations (4 sequential delays) with a single fade-in for all content.
+
+### 4. CelebrationOverlay.tsx -- Replace confetti with simple message pulse
+
+Remove the 50 confetti particles. Keep just the centered message with a simple scale-in. Reduce auto-dismiss from 3s to 2s.
+
+### 5. BeadsAnimation.tsx -- Remove per-bead spring animations
+
+Replace `motion.div` per bead with plain `div` using CSS transitions for color changes only. Remove the staggered `delay: index * 0.02` spring animation. Keep the drag gesture (functional). Remove the infinitely-looping swipe indicator animation -- show it as static text.
+
+### 6. TasbihArc.tsx -- Simplify bead animation
+
+Remove per-bead scale/rotate keyframe arrays. Keep simple position transition on active bead only. Remove infinite swipe indicator loop. Reduce animation duration from 280ms to 200ms.
+
+### 7. All page-level motion wrappers -- Remove fade-in wrappers
+
+Pages like Goals, Fintech, Achievements, Dashboard, HabitCategory, etc. wrap their root in `<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>`. These are redundant with the PageTransition and cause double-animation. Replace with plain `<div>`.
+
+Affected pages: Goals.tsx, Fintech.tsx, Achievements.tsx, HabitCategory.tsx, and any others found.
+
+### 8. In-page tab content animations -- Simplify
+
+Components like TodaysActsModule, QuickQuizWidget that use staggered `initial={{ opacity: 0, x: -20 }}` per list item -- remove the stagger, use a single CSS `animate-fade-in` on the container if needed.
+
+### 9. PlusPopover.tsx -- Simplify
+
+Remove the staggered `listItemVariants` with per-item delay. Remove the `layoutId="plus-popover-highlight"` liquid hover blob. Keep simple panel entrance (opacity + slight scale).
+
+### 10. vite.config.ts -- Deduplicate React
+
+Add `resolve.dedupe: ["react", "react-dom", "react/jsx-runtime"]` to prevent duplicate React instances which cause hook failures and animation glitches.
+
+### 11. index.css -- Add prefers-reduced-motion to framer-motion
+
+The CSS already has a `prefers-reduced-motion` block for CSS animations, but framer-motion ignores it. Since we're removing most framer-motion usage anyway, this is handled implicitly.
 
 ---
 
-## Phase 4: Content Depth
+## Files Changed
 
-- **Quran:** Add Juz-based navigation alongside Surah list; add audio recitation links (external)
-- **Learn:** Add 3 more modules: Seerah (Prophet's life), Islamic Finance basics, Family in Islam
-- **Pilgrimage:** Add interactive packing checklist with localStorage persistence
-- **Dua:** Add "Dua of the Day" rotation on Dashboard from Quranic duas data
-- **Practices:** Add Tahajjud/Qiyam tracking as optional night prayer
+| File | Action |
+|------|--------|
+| src/components/PageTransition.tsx | Simplify to opacity-only, mode="wait" |
+| src/components/BottomNav.tsx | Remove label AnimatePresence, simplify plus button |
+| src/components/gamification/LevelUpModal.tsx | Remove sparkle loop, simplify |
+| src/components/ui/celebration-overlay.tsx | Remove confetti, keep message |
+| src/components/dhikr/BeadsAnimation.tsx | Remove per-bead springs, static indicator |
+| src/components/dhikr/TasbihArc.tsx | Simplify bead animation |
+| src/components/ui/plus-popover.tsx | Remove stagger + hover blob |
+| src/components/game/TodaysActsModule.tsx | Remove stagger |
+| src/components/game/QuickQuizWidget.tsx | Remove pulse loop |
+| src/pages/Goals.tsx | Plain div |
+| src/pages/Fintech.tsx | Plain div |
+| src/pages/Achievements.tsx | Plain div |
+| src/pages/HabitCategory.tsx | Plain div |
+| vite.config.ts | Add dedupe |
 
----
+## What Stays
 
-## Phase 5: Social Features
-
-- **Accountability partners:** Pair with a friend via invite code, see each other's streak (not details)
-- **Community duas:** Anonymous shared dua wall (new `community_duas` table, moderated)
-- **Leaderboard:** Currently a page but likely empty -- populate from `user_gamification` table with opt-in visibility
-- **Shared goals:** Create a group goal (e.g., "Read Quran together") with aggregate progress
-
-**New tables:** `friendships`, `community_duas`, `group_goals`
-
----
-
-## Recommended Execution Order
-
-Each phase is independent but builds on the previous. I recommend tackling them in order:
-
-1. **Phase 1** (Navigation) -- immediate UX win, ~1 session
-2. **Phase 2** (Data sync) -- critical for retention, ~2-3 sessions
-3. **Phase 3** (Gamification) -- engagement driver, ~1-2 sessions
-4. **Phase 4** (Content) -- depth, ~1-2 sessions per module
-5. **Phase 5** (Social) -- growth, ~2-3 sessions
-
-Which phase would you like to start with?
+- Bottom nav active pill slide (lightweight, premium)
+- Sheet/dialog entrance animations (handled by Radix, not custom)
+- Progress bar fills (functional feedback)
+- `whileTap={{ scale: 0.95 }}` on important action buttons only (brief, no spring)
+- Drag gesture on tasbih beads (core functionality)
+- AnimatedCheckmark component (small, functional)
 

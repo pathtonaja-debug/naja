@@ -4,12 +4,19 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import { Clock } from "lucide-react";
 
 export type PlusMenuItem = {
   id: string;
   label: string;
   icon: LucideIcon;
   onSelect: () => void;
+  category?: string;
+};
+
+export type PlusMenuCategory = {
+  key: string;
+  label: string;
 };
 
 type PlusPopoverProps = {
@@ -18,6 +25,8 @@ type PlusPopoverProps = {
   anchorRef: React.RefObject<HTMLButtonElement>;
   title?: string;
   items: PlusMenuItem[];
+  categories?: PlusMenuCategory[];
+  recentIds?: string[];
   className?: string;
 };
 
@@ -27,6 +36,8 @@ export function PlusPopover({
   anchorRef,
   title,
   items,
+  categories,
+  recentIds,
   className,
 }: PlusPopoverProps) {
   const panelWidth = 320;
@@ -56,15 +67,11 @@ export function PlusPopover({
 
   React.useEffect(() => {
     if (!open) return;
-
     updatePosition();
-
     const onResize = () => updatePosition();
     const onScroll = () => updatePosition();
-
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onScroll, true);
-
     return () => {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onScroll, true);
@@ -74,27 +81,38 @@ export function PlusPopover({
   // click outside
   React.useEffect(() => {
     if (!open) return;
-
     const onDown = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node | null;
-      const panel = panelRef.current;
-      const anchor = anchorRef.current;
-
       if (!target) return;
-      if (panel?.contains(target)) return;
-      if (anchor?.contains(target)) return;
-
+      if (panelRef.current?.contains(target)) return;
+      if (anchorRef.current?.contains(target)) return;
       onOpenChange(false);
     };
-
     document.addEventListener("mousedown", onDown);
     document.addEventListener("touchstart", onDown);
-
     return () => {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("touchstart", onDown);
     };
   }, [open, onOpenChange, anchorRef]);
+
+  // Build recent items + categorized sections
+  const recentItems = React.useMemo(() => {
+    if (!recentIds || recentIds.length === 0) return [];
+    return recentIds
+      .map((id) => items.find((item) => item.id === id))
+      .filter(Boolean) as PlusMenuItem[];
+  }, [recentIds, items]);
+
+  const groupedItems = React.useMemo(() => {
+    if (!categories || categories.length === 0) {
+      return [{ label: undefined, items }];
+    }
+    return categories.map((cat) => ({
+      label: cat.label,
+      items: items.filter((item) => item.category === cat.key),
+    }));
+  }, [categories, items]);
 
   return (
     <AnimatePresence>
@@ -153,38 +171,45 @@ export function PlusPopover({
                   <div className="pt-2" />
                 )}
 
-                <div className="relative p-2">
-                  <div className="relative z-10 flex flex-col">
-                    {items.map((item) => {
-                      const Icon = item.icon;
+                <div className="relative max-h-[60vh] overflow-y-auto p-2">
+                  {/* Recent items */}
+                  {recentItems.length > 0 && (
+                    <div className="mb-1">
+                      <div className="flex items-center gap-1.5 px-3 pb-1 pt-2">
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                          Recent
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        {recentItems.map((item) => (
+                          <MenuItemButton key={`recent-${item.id}`} item={item} onOpenChange={onOpenChange} compact />
+                        ))}
+                      </div>
+                      <div className="mx-3 my-1 border-t border-border/30" />
+                    </div>
+                  )}
 
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            item.onSelect();
-                            onOpenChange(false);
-                          }}
-                          className={cn(
-                            "relative z-10 w-full",
-                            "flex items-center gap-3",
-                            "px-3 py-3",
-                            "rounded-2xl",
-                            "text-left",
-                            "transition-colors hover:bg-primary/10"
-                          )}
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                            <Icon className="h-5 w-5" />
-                          </div>
-
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium text-foreground">{item.label}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {/* Categorized items */}
+                  {groupedItems.map((group, gi) => (
+                    <div key={gi}>
+                      {group.label && (
+                        <div className="px-3 pb-1 pt-2">
+                          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                            {group.label}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex flex-col">
+                        {group.items.map((item) => (
+                          <MenuItemButton key={item.id} item={item} onOpenChange={onOpenChange} />
+                        ))}
+                      </div>
+                      {gi < groupedItems.length - 1 && (
+                        <div className="mx-3 my-1 border-t border-border/30" />
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -203,6 +228,44 @@ export function PlusPopover({
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function MenuItemButton({
+  item,
+  onOpenChange,
+  compact,
+}: {
+  item: PlusMenuItem;
+  onOpenChange: (open: boolean) => void;
+  compact?: boolean;
+}) {
+  const Icon = item.icon;
+  return (
+    <button
+      onClick={() => {
+        item.onSelect();
+        onOpenChange(false);
+      }}
+      className={cn(
+        "relative z-10 w-full",
+        "flex items-center gap-3",
+        compact ? "px-3 py-2" : "px-3 py-2.5",
+        "rounded-2xl",
+        "text-left",
+        "transition-colors hover:bg-primary/10"
+      )}
+    >
+      <div className={cn(
+        "flex shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary",
+        compact ? "h-8 w-8" : "h-9 w-9"
+      )}>
+        <Icon className={compact ? "h-4 w-4" : "h-[18px] w-[18px]"} />
+      </div>
+      <span className={cn("font-medium text-foreground", compact ? "text-[13px]" : "text-sm")}>
+        {item.label}
+      </span>
+    </button>
   );
 }
 
