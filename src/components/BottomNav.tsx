@@ -152,6 +152,8 @@ const BottomNav = () => {
         anchorRef={plusBtnRef}
         title={t("plusMenu.title")}
         items={plusItems}
+        categories={categoryLabels}
+        recentIds={recentIds}
       />
     </>
   );

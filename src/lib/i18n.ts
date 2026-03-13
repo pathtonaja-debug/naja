@@ -2443,6 +2443,9 @@ const resources = {
 
       // Plus Menu
       "plusMenu.title": "Actions Rapides",
+      "plusMenu.worship": "Adoration",
+      "plusMenu.growth": "Croissance",
+      "plusMenu.tools": "Outils",
 
       // Dashboard
       "dashboard.greeting.morning": "Assalamou Alaykoum",
