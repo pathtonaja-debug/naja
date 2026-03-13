@@ -36,6 +36,7 @@ import { CharityTracker } from '@/components/ramadan/CharityTracker';
 import { RamadanInsights } from '@/components/ramadan/RamadanInsights';
 import { DailyDuaCard } from '@/components/ramadan/DailyDuaCard';
 import { RamadanReport } from '@/components/ramadan/RamadanReport';
+import { PostRamadanResolutions } from '@/components/ramadan/PostRamadanResolutions';
 import { getTodayIbadah, updateIbadah } from '@/services/ramadanDailyTracker';
 import { usePrayerSync } from '@/hooks/usePrayerSync';
 import { PrayerSettingsSheet } from '@/components/settings/PrayerSettingsSheet';
