@@ -98,7 +98,7 @@ export function sendNotification(
 export function schedulePrayerReminder(
   prayerName: string,
   minutesBefore: number = 15
-): NodeJS.Timeout | null {
+): ReturnType<typeof setTimeout> | null {
   return scheduleNotification(`${prayerName} Prayer Soon`, {
     body: `${prayerName} is in ${minutesBefore} minutes. Prepare for prayer.`,
     tag: `prayer-${prayerName.toLowerCase()}`,
