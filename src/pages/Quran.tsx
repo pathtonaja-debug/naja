@@ -36,7 +36,7 @@ const Quran = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
-  const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'hifdh' | 'khatam'>('reading');
+  const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'juz' | 'hifdh' | 'khatam'>('reading');
   const [progress, setProgress] = useState<QuranProgress>({
     todayPages: 0,
     dailyGoal: 5,
