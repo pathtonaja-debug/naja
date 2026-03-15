@@ -446,6 +446,11 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Dua of the Day */}
+      <div className="px-4 pb-4">
+        <DuaOfTheDay />
+      </div>
+
       {/* Quiz of the Day */}
       <div className="px-4 pb-4">
         <h2 className="text-lg font-bold mb-3">{t('dashboard.quizOfDay')}</h2>
