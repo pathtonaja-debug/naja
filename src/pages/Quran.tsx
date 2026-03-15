@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, ChevronLeft, Plus, Minus, Target, Trophy, Brain, Award, BookMarked } from 'lucide-react';
+import { BookOpen, ChevronLeft, Plus, Minus, Target, Trophy, Brain, Award, BookMarked, Layers } from 'lucide-react';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
