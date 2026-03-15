@@ -34,10 +34,10 @@ function generateChallenges(weekStart: string): Challenge[] {
   // Deterministic challenges based on week
   const weekNum = Math.floor(new Date(weekStart).getTime() / (7 * 86400000));
   const templates = [
-    { type: 'prayer', title: 'challenges.pray5Days', desc: 'challenges.pray5DaysDesc', target: 5, icon: <Moon className="w-4 h-4" />, reward: 75 },
-    { type: 'quran', title: 'challenges.readQuran', desc: 'challenges.readQuranDesc', target: 3, icon: <BookOpen className="w-4 h-4" />, reward: 50 },
-    { type: 'sadaqah', title: 'challenges.giveSadaqah', desc: 'challenges.giveSadaqahDesc', target: 2, icon: <Heart className="w-4 h-4" />, reward: 40 },
-    { type: 'streak', title: 'challenges.keepStreak', desc: 'challenges.keepStreakDesc', target: 7, icon: <Star className="w-4 h-4" />, reward: 100 },
+    { type: 'prayer', title: 'challenges.pray5Days', description: 'challenges.pray5DaysDesc', target: 5, icon: <Moon className="w-4 h-4" />, reward: 75 },
+    { type: 'quran', title: 'challenges.readQuran', description: 'challenges.readQuranDesc', target: 3, icon: <BookOpen className="w-4 h-4" />, reward: 50 },
+    { type: 'sadaqah', title: 'challenges.giveSadaqah', description: 'challenges.giveSadaqahDesc', target: 2, icon: <Heart className="w-4 h-4" />, reward: 40 },
+    { type: 'streak', title: 'challenges.keepStreak', description: 'challenges.keepStreakDesc', target: 7, icon: <Star className="w-4 h-4" />, reward: 100 },
   ];
 
   // Pick 3 challenges per week (rotating)

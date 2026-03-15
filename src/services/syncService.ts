@@ -75,7 +75,7 @@ export async function syncQuranReadingState(): Promise<void> {
 
     await supabase
       .from('quran_reading_state')
-      .upsert(row, { onConflict: 'user_id' });
+      .upsert(row as any, { onConflict: 'user_id' });
   } catch (e) {
     console.warn('[sync] quran state sync failed:', e);
   }
