@@ -101,6 +101,7 @@ const Dashboard = () => {
     const handleActsUpdated = () => {
       setReloadKey(prev => prev + 1);
       loadData();
+      scheduleSyncDebounced();
     };
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
