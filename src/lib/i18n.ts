@@ -1040,9 +1040,7 @@ const resources = {
 
       // Quran extras
       "quran.juzTab": "Juz",
-      "quran.juz": "Juz",
       "quran.currentJuz": "Current Juz",
-      "quran.surah": "Surah",
 
       // Level names
       "levels.1": "The Seeker",
