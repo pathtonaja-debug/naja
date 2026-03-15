@@ -210,6 +210,7 @@ const Quran = () => {
           {[
             { id: 'reading', labelKey: 'quran.read', icon: BookOpen },
             { id: 'surahs', labelKey: 'quran.surahs', icon: BookMarked },
+            { id: 'juz', labelKey: 'quran.juzTab', icon: Layers },
             { id: 'hifdh', labelKey: 'quran.hifdh', icon: Brain },
             { id: 'khatam', labelKey: 'quran.khatam', icon: Award },
           ].map((tab) => (
