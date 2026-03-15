@@ -368,6 +368,17 @@ const Quran = () => {
           />
         )}
 
+        {/* Juz Tab */}
+        {activeTab === 'juz' && (
+          <JuzNavigation
+            currentJuz={progress.currentJuz}
+            onSelectJuz={(surah, verse) => {
+              sessionStorage.setItem('naja_scroll_to_verse', `${surah}:${verse}`);
+              navigate(`/quran?surah=${surah}&verse=${verse}`);
+            }}
+          />
+        )}
+
         {/* Hifdh Tab */}
         {activeTab === 'hifdh' && (
           <HifdhTracker onSelectSurah={handleSurahSelect} />
