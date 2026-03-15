@@ -332,6 +332,16 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Streak Calendar */}
+      <div className="px-4 pb-4">
+        <StreakCalendar />
+      </div>
+
+      {/* Weekly Challenges */}
+      <div className="px-4 pb-4">
+        <WeeklyChallenges />
+      </div>
+
       {/* Level Progress Card */}
       <div className="px-4 pb-4">
         <div className="p-4 rounded-2xl bg-card border border-border shadow-sm">
