@@ -118,6 +118,44 @@ export type Database = {
           },
         ]
       }
+      community_duas: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          is_approved: boolean
+          prayer_count: number
+          text: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          prayer_count?: number
+          text: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          prayer_count?: number
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_duas_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companion_profiles: {
         Row: {
           appearance: Json | null
@@ -181,6 +219,50 @@ export type Database = {
             foreignKeyName: "companion_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_progress: {
+        Row: {
+          acts: Json
+          completed_count: number
+          created_at: string
+          date: string
+          id: string
+          points: number
+          total_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acts?: Json
+          completed_count?: number
+          created_at?: string
+          date: string
+          id?: string
+          points?: number
+          total_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acts?: Json
+          completed_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          points?: number
+          total_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -643,6 +725,7 @@ export type Database = {
           id: string
           language: string | null
           latitude: number | null
+          leaderboard_visible: boolean | null
           longitude: number | null
           notifications_enabled: boolean | null
           prayer_method: Database["public"]["Enums"]["prayer_method"] | null
@@ -659,6 +742,7 @@ export type Database = {
           id: string
           language?: string | null
           latitude?: number | null
+          leaderboard_visible?: boolean | null
           longitude?: number | null
           notifications_enabled?: boolean | null
           prayer_method?: Database["public"]["Enums"]["prayer_method"] | null
@@ -675,6 +759,7 @@ export type Database = {
           id?: string
           language?: string | null
           latitude?: number | null
+          leaderboard_visible?: boolean | null
           longitude?: number | null
           notifications_enabled?: boolean | null
           prayer_method?: Database["public"]["Enums"]["prayer_method"] | null
@@ -762,6 +847,65 @@ export type Database = {
             foreignKeyName: "quiz_attempts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quran_reading_state: {
+        Row: {
+          bookmarks: Json
+          current_juz: number
+          daily_goal: number
+          id: string
+          khatams: number
+          last_chapter_name: string | null
+          last_surah: number | null
+          last_verse: number | null
+          last_verse_key: string | null
+          read_surahs: number[]
+          today_pages: number
+          total_pages: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bookmarks?: Json
+          current_juz?: number
+          daily_goal?: number
+          id?: string
+          khatams?: number
+          last_chapter_name?: string | null
+          last_surah?: number | null
+          last_verse?: number | null
+          last_verse_key?: string | null
+          read_surahs?: number[]
+          today_pages?: number
+          total_pages?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bookmarks?: Json
+          current_juz?: number
+          daily_goal?: number
+          id?: string
+          khatams?: number
+          last_chapter_name?: string | null
+          last_surah?: number | null
+          last_verse?: number | null
+          last_verse_key?: string | null
+          read_surahs?: number[]
+          today_pages?: number
+          total_pages?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quran_reading_state_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -894,6 +1038,47 @@ export type Database = {
           },
         ]
       }
+      user_goals: {
+        Row: {
+          created_at: string
+          daily_completions: Json
+          goal_config: Json
+          id: string
+          status: string
+          streak: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_completions?: Json
+          goal_config?: Json
+          id?: string
+          status?: string
+          streak?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_completions?: Json
+          goal_config?: Json
+          id?: string
+          status?: string
+          streak?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -913,6 +1098,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_challenges: {
+        Row: {
+          challenge_type: string
+          completed: boolean
+          created_at: string
+          description: string | null
+          id: string
+          progress: number
+          target: number
+          title: string
+          user_id: string
+          week_start: string
+          xp_reward: number
+        }
+        Insert: {
+          challenge_type: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          progress?: number
+          target?: number
+          title: string
+          user_id: string
+          week_start: string
+          xp_reward?: number
+        }
+        Update: {
+          challenge_type?: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          progress?: number
+          target?: number
+          title?: string
+          user_id?: string
+          week_start?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_challenges_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
