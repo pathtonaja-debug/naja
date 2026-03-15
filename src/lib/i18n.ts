@@ -2567,6 +2567,7 @@ const resources = {
       "quran.solid": "Mémorisé",
       "quran.page": "Page",
       "quran.juz": "Juz",
+      "quran.surah": "Sourate",
       "quran.searchSurahs": "Rechercher des sourates...",
       "quran.allSurahs": "Toutes les Sourates",
       "quran.markAllMemorizing": "Tout marquer En cours",
