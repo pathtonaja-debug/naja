@@ -642,6 +642,7 @@ const resources = {
       "quran.solid": "Solid",
       "quran.page": "Page",
       "quran.juz": "Juz",
+      "quran.surah": "Surah",
       "quran.searchSurahs": "Search surahs...",
       "quran.allSurahs": "All Surahs",
       "quran.markAllMemorizing": "Mark All Memorizing",
@@ -1007,6 +1008,40 @@ const resources = {
       "leaderboard.soloJourneyDescription": "Focus on your personal growth. Your niyyah is what matters most.",
       "leaderboard.you": "You",
       "leaderboard.disclaimer": "Focus on your own journey — this is just for friendly motivation. Your niyyah is what matters.",
+      "leaderboard.rankings": "Rankings",
+      "leaderboard.visibleOn": "Visible on leaderboard",
+      "leaderboard.visibleOff": "Hidden from leaderboard",
+
+      // Dashboard extras
+      "dashboard.streakCalendar": "Activity Calendar",
+      "dashboard.activeDays": "active days",
+      "dashboard.less": "Less",
+      "dashboard.more": "More",
+      "dashboard.weeklyChallenges": "Weekly Challenges",
+      "dashboard.duaOfDay": "Dua of the Day",
+      "dashboard.moreDuas": "More Duas",
+
+      // Weekly Challenges
+      "challenges.pray5Days": "Pray 5 days this week",
+      "challenges.pray5DaysDesc": "Complete at least one prayer daily",
+      "challenges.readQuran": "Read Quran 3 days",
+      "challenges.readQuranDesc": "Open and read the Quran",
+      "challenges.giveSadaqah": "Give Sadaqah twice",
+      "challenges.giveSadaqahDesc": "Any act of charity counts",
+      "challenges.keepStreak": "7-day streak",
+      "challenges.keepStreakDesc": "Stay active every day this week",
+
+      // Community Duas
+      "community.duaWall": "Community Duas",
+      "community.sharePlaceholder": "Share a dua request (anonymous)...",
+      "community.duaShared": "Dua shared — may it be answered",
+      "community.shareFailed": "Could not share dua",
+      "community.noDuas": "No community duas yet. Be the first to share.",
+      "community.prayed": "prayed",
+
+      // Quran extras
+      "quran.juzTab": "Juz",
+      "quran.currentJuz": "Current Juz",
 
       // Level names
       "levels.1": "The Seeker",
@@ -2532,6 +2567,7 @@ const resources = {
       "quran.solid": "Mémorisé",
       "quran.page": "Page",
       "quran.juz": "Juz",
+      "quran.surah": "Sourate",
       "quran.searchSurahs": "Rechercher des sourates...",
       "quran.allSurahs": "Toutes les Sourates",
       "quran.markAllMemorizing": "Tout marquer En cours",
@@ -2899,6 +2935,40 @@ const resources = {
       "leaderboard.soloJourneyDescription": "Concentrez-vous sur votre croissance personnelle. Votre niyyah est ce qui compte le plus.",
       "leaderboard.you": "Vous",
       "leaderboard.disclaimer": "Concentrez-vous sur votre propre parcours — ceci est juste pour la motivation. Votre niyyah est ce qui compte.",
+      "leaderboard.rankings": "Classement",
+      "leaderboard.visibleOn": "Visible sur le classement",
+      "leaderboard.visibleOff": "Masqué du classement",
+
+      // Dashboard extras
+      "dashboard.streakCalendar": "Calendrier d'activité",
+      "dashboard.activeDays": "jours actifs",
+      "dashboard.less": "Moins",
+      "dashboard.more": "Plus",
+      "dashboard.weeklyChallenges": "Défis de la semaine",
+      "dashboard.duaOfDay": "Dua du jour",
+      "dashboard.moreDuas": "Plus de Duas",
+
+      // Weekly Challenges
+      "challenges.pray5Days": "Prier 5 jours cette semaine",
+      "challenges.pray5DaysDesc": "Compléter au moins une prière par jour",
+      "challenges.readQuran": "Lire le Coran 3 jours",
+      "challenges.readQuranDesc": "Ouvrir et lire le Coran",
+      "challenges.giveSadaqah": "Donner la Sadaqah 2 fois",
+      "challenges.giveSadaqahDesc": "Tout acte de charité compte",
+      "challenges.keepStreak": "Série de 7 jours",
+      "challenges.keepStreakDesc": "Rester actif chaque jour cette semaine",
+
+      // Community Duas
+      "community.duaWall": "Duas communautaires",
+      "community.sharePlaceholder": "Partagez une demande de dua (anonyme)...",
+      "community.duaShared": "Dua partagée — qu'elle soit exaucée",
+      "community.shareFailed": "Impossible de partager la dua",
+      "community.noDuas": "Aucune dua communautaire. Soyez le premier à partager.",
+      "community.prayed": "ont prié",
+
+      // Quran extras
+      "quran.juzTab": "Juz",
+      "quran.currentJuz": "Juz actuel",
 
       // Level names
       "levels.1": "Le Chercheur",

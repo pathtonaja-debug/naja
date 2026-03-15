@@ -13,6 +13,9 @@ import { useGuestProfile, SPIRITUAL_LEVELS, getProgressInLevel } from '@/hooks/u
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { WeeklySummaryCard } from '@/components/dashboard/WeeklySummaryCard';
+import { StreakCalendar } from '@/components/dashboard/StreakCalendar';
+import { WeeklyChallenges } from '@/components/dashboard/WeeklyChallenges';
+import { DuaOfTheDay } from '@/components/dashboard/DuaOfTheDay';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
@@ -20,6 +23,7 @@ import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dail
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { getUserLocation } from '@/services/locationStore';
 import { CityOnboarding } from '@/components/onboarding/CityOnboarding';
+import { scheduleSyncDebounced } from '@/services/syncService';
 
 // Ayah keys for i18n (using i18n translations)
 const AYAH_KEYS = [1, 2, 3, 4];
@@ -97,6 +101,7 @@ const Dashboard = () => {
     const handleActsUpdated = () => {
       setReloadKey(prev => prev + 1);
       loadData();
+      scheduleSyncDebounced();
     };
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -327,6 +332,16 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Streak Calendar */}
+      <div className="px-4 pb-4">
+        <StreakCalendar />
+      </div>
+
+      {/* Weekly Challenges */}
+      <div className="px-4 pb-4">
+        <WeeklyChallenges />
+      </div>
+
       {/* Level Progress Card */}
       <div className="px-4 pb-4">
         <div className="p-4 rounded-2xl bg-card border border-border shadow-sm">
@@ -429,6 +444,11 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Dua of the Day */}
+      <div className="px-4 pb-4">
+        <DuaOfTheDay />
       </div>
 
       {/* Quiz of the Day */}

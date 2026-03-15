@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, ChevronLeft, Plus, Minus, Target, Trophy, Brain, Award, BookMarked } from 'lucide-react';
+import { BookOpen, ChevronLeft, Plus, Minus, Target, Trophy, Brain, Award, BookMarked, Layers } from 'lucide-react';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import { SurahList } from '@/components/quran/SurahList';
 import { SurahReader } from '@/components/quran/SurahReader';
 import { HifdhTracker } from '@/components/quran/HifdhTracker';
 import { preloadFrenchTafsir } from '@/services/tafsirFrStatic';
+import { JuzNavigation } from '@/components/quran/JuzNavigation';
 
 interface QuranProgress {
   todayPages: number;
@@ -35,7 +36,7 @@ const Quran = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
-  const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'hifdh' | 'khatam'>('reading');
+  const [activeTab, setActiveTab] = useState<'reading' | 'surahs' | 'juz' | 'hifdh' | 'khatam'>('reading');
   const [progress, setProgress] = useState<QuranProgress>({
     todayPages: 0,
     dailyGoal: 5,
@@ -209,6 +210,7 @@ const Quran = () => {
           {[
             { id: 'reading', labelKey: 'quran.read', icon: BookOpen },
             { id: 'surahs', labelKey: 'quran.surahs', icon: BookMarked },
+            { id: 'juz', labelKey: 'quran.juzTab', icon: Layers },
             { id: 'hifdh', labelKey: 'quran.hifdh', icon: Brain },
             { id: 'khatam', labelKey: 'quran.khatam', icon: Award },
           ].map((tab) => (
@@ -363,6 +365,17 @@ const Quran = () => {
             chapter={selectedChapter} 
             onBack={handleBackFromReader} 
             onNavigateToSurah={setSelectedChapter}
+          />
+        )}
+
+        {/* Juz Tab */}
+        {activeTab === 'juz' && (
+          <JuzNavigation
+            currentJuz={progress.currentJuz}
+            onSelectJuz={(surah, verse) => {
+              sessionStorage.setItem('naja_scroll_to_verse', `${surah}:${verse}`);
+              navigate(`/quran?surah=${surah}&verse=${verse}`);
+            }}
           />
         )}
 
