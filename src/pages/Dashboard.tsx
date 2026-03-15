@@ -13,6 +13,9 @@ import { useGuestProfile, SPIRITUAL_LEVELS, getProgressInLevel } from '@/hooks/u
 import { RamadanCountdown } from '@/components/dashboard/RamadanCountdown';
 import { GoalTrackerWidget } from '@/components/dashboard/GoalTrackerWidget';
 import { WeeklySummaryCard } from '@/components/dashboard/WeeklySummaryCard';
+import { StreakCalendar } from '@/components/dashboard/StreakCalendar';
+import { WeeklyChallenges } from '@/components/dashboard/WeeklyChallenges';
+import { DuaOfTheDay } from '@/components/dashboard/DuaOfTheDay';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
@@ -20,6 +23,7 @@ import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dail
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { getUserLocation } from '@/services/locationStore';
 import { CityOnboarding } from '@/components/onboarding/CityOnboarding';
+import { scheduleSyncDebounced } from '@/services/syncService';
 
 // Ayah keys for i18n (using i18n translations)
 const AYAH_KEYS = [1, 2, 3, 4];
