@@ -642,6 +642,7 @@ const resources = {
       "quran.solid": "Solid",
       "quran.page": "Page",
       "quran.juz": "Juz",
+      "quran.surah": "Surah",
       "quran.searchSurahs": "Search surahs...",
       "quran.allSurahs": "All Surahs",
       "quran.markAllMemorizing": "Mark All Memorizing",
