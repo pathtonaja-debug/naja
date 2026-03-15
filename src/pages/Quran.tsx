@@ -17,6 +17,7 @@ import { SurahList } from '@/components/quran/SurahList';
 import { SurahReader } from '@/components/quran/SurahReader';
 import { HifdhTracker } from '@/components/quran/HifdhTracker';
 import { preloadFrenchTafsir } from '@/services/tafsirFrStatic';
+import { JuzNavigation } from '@/components/quran/JuzNavigation';
 
 interface QuranProgress {
   todayPages: number;
