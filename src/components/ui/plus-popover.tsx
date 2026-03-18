@@ -99,23 +99,30 @@ export function PlusPopover({
     };
   }, [open, onOpenChange, anchorRef]);
 
+  // Filter items by search
+  const filteredItems = React.useMemo(() => {
+    if (!search.trim()) return items;
+    const q = search.toLowerCase();
+    return items.filter(item => item.label.toLowerCase().includes(q));
+  }, [items, search]);
+
   // Build recent items + categorized sections
   const recentItems = React.useMemo(() => {
-    if (!recentIds || recentIds.length === 0) return [];
+    if (search.trim() || !recentIds || recentIds.length === 0) return [];
     return recentIds
-      .map((id) => items.find((item) => item.id === id))
+      .map((id) => filteredItems.find((item) => item.id === id))
       .filter(Boolean) as PlusMenuItem[];
-  }, [recentIds, items]);
+  }, [recentIds, filteredItems, search]);
 
   const groupedItems = React.useMemo(() => {
     if (!categories || categories.length === 0) {
-      return [{ label: undefined, items }];
+      return [{ label: undefined, items: filteredItems }];
     }
     return categories.map((cat) => ({
       label: cat.label,
-      items: items.filter((item) => item.category === cat.key),
-    }));
-  }, [categories, items]);
+      items: filteredItems.filter((item) => item.category === cat.key),
+    })).filter(g => g.items.length > 0);
+  }, [categories, filteredItems]);
 
   return (
     <AnimatePresence>
