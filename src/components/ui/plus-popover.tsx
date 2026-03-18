@@ -41,6 +41,8 @@ export function PlusPopover({
   recentIds,
   className,
 }: PlusPopoverProps) {
+  const { t } = useTranslation();
+  const [search, setSearch] = React.useState("");
   const panelWidth = 320;
   const [pos, setPos] = React.useState<{ left: number; bottom: number; caretLeft: number }>({
     left: 16,
