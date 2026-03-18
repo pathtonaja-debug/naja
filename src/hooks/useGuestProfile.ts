@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 // Generate a stable UUID for this device
 import { generateUUID } from '@/lib/uuid';
+import { checkMilestone } from '@/services/milestoneService';
 
 const getDeviceId = (): string => {
   const stored = localStorage.getItem('naja_device_id');
