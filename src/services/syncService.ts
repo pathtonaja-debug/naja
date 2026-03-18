@@ -7,6 +7,26 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getAuthenticatedUserId } from '@/lib/auth';
 
+// ── Sync status tracking ──
+
+type SyncStatus = 'idle' | 'syncing' | 'done' | 'error';
+let _syncStatus: SyncStatus = 'idle';
+const _listeners: Set<(status: SyncStatus) => void> = new Set();
+
+function setSyncStatus(status: SyncStatus) {
+  _syncStatus = status;
+  _listeners.forEach(fn => fn(status));
+}
+
+export function getSyncStatus(): SyncStatus {
+  return _syncStatus;
+}
+
+export function onSyncStatusChange(fn: (status: SyncStatus) => void): () => void {
+  _listeners.add(fn);
+  return () => _listeners.delete(fn);
+}
+
 // ── Daily Progress Sync ──
 
 export async function syncDailyProgress(): Promise<void> {
@@ -20,7 +40,6 @@ export async function syncDailyProgress(): Promise<void> {
     const dates = Object.keys(localData);
     if (dates.length === 0) return;
 
-    // Batch upsert local data to cloud
     const rows = dates.map(date => ({
       user_id: userId,
       date,
@@ -46,7 +65,6 @@ export async function syncQuranReadingState(): Promise<void> {
   try {
     const userId = await getAuthenticatedUserId();
     
-    // Read local state
     const lastReadRaw = localStorage.getItem('naja_quran_lastRead_v1');
     const bookmarksRaw = localStorage.getItem('naja_quran_bookmarks_v1');
     const progressRaw = localStorage.getItem('naja_quran_progress_v2');
@@ -81,6 +99,74 @@ export async function syncQuranReadingState(): Promise<void> {
   }
 }
 
+// ── Gamification Sync ──
+
+export async function syncGamification(): Promise<void> {
+  try {
+    const userId = await getAuthenticatedUserId();
+    const profileRaw = localStorage.getItem('naja_guest_profile');
+    if (!profileRaw) return;
+
+    const profile = JSON.parse(profileRaw);
+    const today = new Date().toISOString().split('T')[0];
+
+    await supabase
+      .from('user_gamification')
+      .upsert({
+        user_id: userId,
+        xp: profile.barakahPoints || 0,
+        level: profile.level || 1,
+        streak_days: profile.hasanatStreak || 0,
+        last_activity_date: profile.lastActivityDate || today,
+      }, { onConflict: 'user_id' });
+  } catch (e) {
+    console.warn('[sync] gamification sync failed:', e);
+  }
+}
+
+// ── Goals Sync ──
+
+export async function syncGoals(): Promise<void> {
+  try {
+    const userId = await getAuthenticatedUserId();
+    const goalRaw = localStorage.getItem('naja_active_goal');
+    if (!goalRaw) return;
+
+    const goal = JSON.parse(goalRaw);
+    const completionsRaw = localStorage.getItem('naja_goal_completions');
+    const completions = completionsRaw ? JSON.parse(completionsRaw) : [];
+
+    // Calculate streak from completions
+    let streak = 0;
+    const sorted = [...completions].filter((c: any) => c.completed).sort((a: any, b: any) => b.date.localeCompare(a.date));
+    if (sorted.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      let checkDate = new Date(today);
+      if (!sorted.some((c: any) => c.date === today)) {
+        checkDate.setDate(checkDate.getDate() - 1);
+      }
+      for (const c of sorted) {
+        if (c.date === checkDate.toISOString().split('T')[0]) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else break;
+      }
+    }
+
+    await supabase
+      .from('user_goals')
+      .upsert({
+        user_id: userId,
+        goal_config: goal,
+        daily_completions: completions,
+        streak,
+        status: goal.status || 'active',
+      }, { onConflict: 'user_id' });
+  } catch (e) {
+    console.warn('[sync] goals sync failed:', e);
+  }
+}
+
 // ── Pull from Cloud (on login) ──
 
 export async function pullFromCloud(): Promise<{ merged: boolean }> {
@@ -101,7 +187,6 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
       const localData: Record<string, any> = localRaw ? JSON.parse(localRaw) : {};
 
       for (const row of cloudProgress) {
-        // Cloud wins on conflict
         if (!localData[row.date] || new Date(row.updated_at) > new Date(localData[row.date]?.lastUpdated || 0)) {
           localData[row.date] = {
             date: row.date,
@@ -124,7 +209,6 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
       .maybeSingle();
 
     if (cloudQuran) {
-      // Update last read
       if (cloudQuran.last_surah) {
         localStorage.setItem('naja_quran_lastRead_v1', JSON.stringify({
           chapterId: cloudQuran.last_surah,
@@ -135,7 +219,6 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
         }));
       }
 
-      // Update bookmarks
       const bookmarks = typeof cloudQuran.bookmarks === 'string'
         ? JSON.parse(cloudQuran.bookmarks)
         : cloudQuran.bookmarks;
@@ -143,7 +226,6 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
         localStorage.setItem('naja_quran_bookmarks_v1', JSON.stringify(bookmarks));
       }
 
-      // Update progress
       localStorage.setItem('naja_quran_progress_v2', JSON.stringify({
         todayPages: cloudQuran.today_pages,
         dailyGoal: cloudQuran.daily_goal,
@@ -152,6 +234,44 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
         khatams: cloudQuran.khatams,
         readSurahs: cloudQuran.read_surahs || [],
       }));
+    }
+
+    // Pull gamification
+    const { data: cloudGamification } = await supabase
+      .from('user_gamification')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (cloudGamification) {
+      const localProfile = localStorage.getItem('naja_guest_profile');
+      const profile = localProfile ? JSON.parse(localProfile) : {};
+      
+      // Cloud wins if cloud has more points
+      if (cloudGamification.xp > (profile.barakahPoints || 0)) {
+        profile.barakahPoints = cloudGamification.xp;
+        profile.level = cloudGamification.level;
+        profile.hasanatStreak = cloudGamification.streak_days;
+        profile.lastActivityDate = cloudGamification.last_activity_date;
+        localStorage.setItem('naja_guest_profile', JSON.stringify(profile));
+      }
+    }
+
+    // Pull goals
+    const { data: cloudGoals } = await supabase
+      .from('user_goals')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (cloudGoals && cloudGoals.goal_config) {
+      const localGoal = localStorage.getItem('naja_active_goal');
+      if (!localGoal) {
+        // No local goal, use cloud
+        localStorage.setItem('naja_active_goal', JSON.stringify(cloudGoals.goal_config));
+        localStorage.setItem('naja_goal_completions', JSON.stringify(cloudGoals.daily_completions || []));
+      }
     }
 
     return { merged: true };
@@ -164,10 +284,20 @@ export async function pullFromCloud(): Promise<{ merged: boolean }> {
 // ── Full Sync (push local → cloud) ──
 
 export async function pushToCloud(): Promise<void> {
-  await Promise.allSettled([
-    syncDailyProgress(),
-    syncQuranReadingState(),
-  ]);
+  setSyncStatus('syncing');
+  try {
+    await Promise.allSettled([
+      syncDailyProgress(),
+      syncQuranReadingState(),
+      syncGamification(),
+      syncGoals(),
+    ]);
+    setSyncStatus('done');
+    setTimeout(() => setSyncStatus('idle'), 2000);
+  } catch {
+    setSyncStatus('error');
+    setTimeout(() => setSyncStatus('idle'), 3000);
+  }
 }
 
 // ── Auto-sync on activity ──
@@ -178,5 +308,5 @@ export function scheduleSyncDebounced(): void {
   if (syncTimeout) clearTimeout(syncTimeout);
   syncTimeout = setTimeout(() => {
     pushToCloud().catch(() => {});
-  }, 5000); // 5 second debounce
+  }, 5000);
 }
