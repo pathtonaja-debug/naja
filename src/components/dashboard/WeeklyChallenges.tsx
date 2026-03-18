@@ -10,16 +10,23 @@ import { Target, Check, BookOpen, Moon, Heart, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getAllDailyProgress } from '@/services/dailyProgressService';
 
-interface Challenge {
+interface ChallengeData {
   id: string;
   type: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   target: number;
   progress: number;
-  icon: React.ReactNode;
+  iconType: 'moon' | 'book' | 'heart' | 'star';
   reward: number;
 }
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  moon: <Moon className="w-4 h-4" />,
+  book: <BookOpen className="w-4 h-4" />,
+  heart: <Heart className="w-4 h-4" />,
+  star: <Star className="w-4 h-4" />,
+};
 
 const STORAGE_KEY = 'naja_weekly_challenges_v1';
 
@@ -30,17 +37,15 @@ function getWeekStart(): string {
   return new Date(d.setDate(diff)).toISOString().split('T')[0];
 }
 
-function generateChallenges(weekStart: string): Challenge[] {
-  // Deterministic challenges based on week
+function generateChallenges(weekStart: string): ChallengeData[] {
   const weekNum = Math.floor(new Date(weekStart).getTime() / (7 * 86400000));
   const templates = [
-    { type: 'prayer', title: 'challenges.pray5Days', description: 'challenges.pray5DaysDesc', target: 5, icon: <Moon className="w-4 h-4" />, reward: 75 },
-    { type: 'quran', title: 'challenges.readQuran', description: 'challenges.readQuranDesc', target: 3, icon: <BookOpen className="w-4 h-4" />, reward: 50 },
-    { type: 'sadaqah', title: 'challenges.giveSadaqah', description: 'challenges.giveSadaqahDesc', target: 2, icon: <Heart className="w-4 h-4" />, reward: 40 },
-    { type: 'streak', title: 'challenges.keepStreak', description: 'challenges.keepStreakDesc', target: 7, icon: <Star className="w-4 h-4" />, reward: 100 },
+    { type: 'prayer', titleKey: 'challenges.pray5Days', descKey: 'challenges.pray5DaysDesc', target: 5, iconType: 'moon' as const, reward: 75 },
+    { type: 'quran', titleKey: 'challenges.readQuran', descKey: 'challenges.readQuranDesc', target: 3, iconType: 'book' as const, reward: 50 },
+    { type: 'sadaqah', titleKey: 'challenges.giveSadaqah', descKey: 'challenges.giveSadaqahDesc', target: 2, iconType: 'heart' as const, reward: 40 },
+    { type: 'streak', titleKey: 'challenges.keepStreak', descKey: 'challenges.keepStreakDesc', target: 7, iconType: 'star' as const, reward: 100 },
   ];
 
-  // Pick 3 challenges per week (rotating)
   const picked = [
     templates[weekNum % 4],
     templates[(weekNum + 1) % 4],
@@ -54,14 +59,13 @@ function generateChallenges(weekStart: string): Challenge[] {
   }));
 }
 
-function computeProgress(challenges: Challenge[]): Challenge[] {
+function computeProgress(challenges: ChallengeData[]): ChallengeData[] {
   const all = getAllDailyProgress();
   const weekStart = getWeekStart();
   
   return challenges.map(ch => {
     let progress = 0;
     
-    // Count days this week with relevant activity
     for (let i = 0; i < 7; i++) {
       const d = new Date(weekStart);
       d.setDate(d.getDate() + i);
@@ -81,12 +85,12 @@ function computeProgress(challenges: Challenge[]): Challenge[] {
 
 export function WeeklyChallenges() {
   const { t } = useTranslation();
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [challenges, setChallenges] = useState<ChallengeData[]>([]);
 
   useEffect(() => {
     const weekStart = getWeekStart();
     const stored = localStorage.getItem(STORAGE_KEY);
-    let current: Challenge[];
+    let current: ChallengeData[];
 
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -135,12 +139,12 @@ export function WeeklyChallenges() {
                 "w-8 h-8 rounded-lg flex items-center justify-center",
                 isComplete ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"
               )}>
-                {isComplete ? <Check className="w-4 h-4" /> : ch.icon}
+                {isComplete ? <Check className="w-4 h-4" /> : ICON_MAP[ch.iconType]}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <p className={cn("text-xs font-medium truncate", isComplete && "line-through text-muted-foreground")}>
-                    {t(ch.title)}
+                    {t(ch.titleKey)}
                   </p>
                   <span className="text-[10px] text-muted-foreground ml-2">
                     {ch.progress}/{ch.target}
