@@ -128,6 +128,24 @@ const DEFAULT_MODULES: Module[] = [
       { id: 'f6', title: 'Wealth & Contentment', titleFr: 'Richesse et Contentement', description: 'Balancing dunya', descriptionFr: 'Équilibrer la dunya', completed: false, quizPassed: false },
     ]
   },
+  { 
+    id: 'family', 
+    title: 'Family in Islam', 
+    titleFr: 'La Famille en Islam',
+    description: 'Rights & relationships',
+    descriptionFr: 'Droits et relations',
+    icon: '👨‍👩‍👧‍👦',
+    color: 'bg-pink-500/10 border-pink-500/20',
+    unlocked: false,
+    quizPassed: false,
+    lessons: [
+      { id: 'fam1', title: 'Marriage in Islam', titleFr: 'Le Mariage en Islam', description: 'A sacred bond', descriptionFr: 'Un lien sacré', completed: false, quizPassed: false },
+      { id: 'fam2', title: 'Rights of Parents', titleFr: 'Droits des Parents', description: 'Honoring mother & father', descriptionFr: 'Honorer père et mère', completed: false, quizPassed: false },
+      { id: 'fam3', title: 'Raising Children', titleFr: 'Élever les Enfants', description: 'Islamic parenting', descriptionFr: 'La parentalité islamique', completed: false, quizPassed: false },
+      { id: 'fam4', title: 'Rights of Spouses', titleFr: 'Droits des Époux', description: 'Mutual respect', descriptionFr: 'Respect mutuel', completed: false, quizPassed: false },
+      { id: 'fam5', title: 'Kinship & Community', titleFr: 'Parenté et Communauté', description: 'Silat ar-Rahim', descriptionFr: 'Silat ar-Rahim', completed: false, quizPassed: false },
+    ]
+  },
 ];
 
 // Module quiz questions (5 questions per module)
@@ -258,6 +276,38 @@ export const MODULE_QUIZZES: Record<string, LessonQuizQuestion[]> = {
       options: ['Yes, business is business', 'No, it is discouraged', 'Only for luxury goods', 'Only in emergencies'],
       correctIndex: 1,
       explanation: 'Islam discourages excessive profits and emphasizes fair dealing.'
+    },
+  ],
+  family: [
+    {
+      question: 'What is the status of marriage in Islam?',
+      options: ['Optional luxury', 'Sunnah of the Prophet ﷺ', 'Only for the wealthy', 'Cultural custom'],
+      correctIndex: 1,
+      explanation: 'Marriage is a Sunnah of the Prophet ﷺ, considered half of one\'s faith.'
+    },
+    {
+      question: 'Which parent is given special emphasis for kindness?',
+      options: ['Father only', 'Mother (three times)', 'Both equally', 'Neither'],
+      correctIndex: 1,
+      explanation: 'The Prophet ﷺ said "Your mother" three times when asked who deserves most kindness.'
+    },
+    {
+      question: 'What does "Silat ar-Rahim" mean?',
+      options: ['Fasting for family', 'Maintaining family ties', 'Charity to relatives', 'Family prayers'],
+      correctIndex: 1,
+      explanation: 'Silat ar-Rahim means maintaining and honoring family ties, a major obligation in Islam.'
+    },
+    {
+      question: 'What is the Islamic view on children\'s education?',
+      options: ['Optional', 'Father\'s responsibility alone', 'Both parents share responsibility', 'Community duty only'],
+      correctIndex: 2,
+      explanation: 'Both parents share the responsibility of educating and raising children with good values.'
+    },
+    {
+      question: 'What is the mahr (dowry)?',
+      options: ['Payment to the bride\'s father', 'A gift from the groom to the bride', 'Wedding party cost', 'Family contribution'],
+      correctIndex: 1,
+      explanation: 'The mahr is a mandatory gift from the groom to the bride, symbolizing honor and respect.'
     },
   ],
 };

@@ -833,5 +833,157 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       correctIndex: 2,
       explanation: 'The Prophet ﷺ taught that true richness is "richness of the soul" (ghinan-nafs), meaning contentment and satisfaction with what Allah has provided, rather than the accumulation of material possessions.'
     }
+  },
+
+  // Family in Islam Module
+  'fam1': {
+    id: 'fam1',
+    title: 'Marriage in Islam',
+    sections: [
+      {
+        heading: 'A Sacred Bond',
+        content: 'Marriage (Nikah) in Islam is a sacred contract and a fundamental building block of society. The Prophet ﷺ said: "When a man marries, he has fulfilled half of his religion, so let him fear Allah regarding the remaining half."\n\nMarriage is not merely a legal arrangement but a source of tranquility, love, and mercy as described in the Quran.',
+        keyPoints: [
+          'Marriage is a Sunnah of the Prophet ﷺ',
+          'It provides spiritual and emotional stability',
+          'Both partners have defined rights and duties'
+        ]
+      },
+      {
+        heading: 'The Marriage Contract',
+        content: 'The Islamic marriage requires:\n\n- **Mutual consent** of both partners\n- **Mahr (dowry)**: A gift from the groom to the bride\n- **Witnesses**: At least two witnesses\n- **Wali (guardian)**: The bride\'s guardian\n- **Public announcement**: Marriage should be made known\n\n"And among His Signs is that He created for you mates from among yourselves, that you may dwell in tranquility with them, and He has put love and mercy between your hearts." (Quran 30:21)',
+        keyPoints: [
+          'Consent is absolutely essential',
+          'The mahr belongs to the bride alone',
+          'Marriage should be celebrated publicly'
+        ]
+      }
+    ],
+    quiz: {
+      question: 'What is the mahr in Islamic marriage?',
+      options: ['A wedding ceremony', 'A gift from the groom to the bride', 'A family feast', 'A prayer'],
+      correctIndex: 1,
+      explanation: 'The mahr is a mandatory gift from the groom to the bride, which is her right and her property alone.'
+    }
+  },
+  'fam2': {
+    id: 'fam2',
+    title: 'Rights of Parents',
+    sections: [
+      {
+        heading: 'The Greatest Obligation After Allah',
+        content: 'After the worship of Allah, honoring one\'s parents is the greatest obligation in Islam. The Quran places kindness to parents immediately after the command to worship Allah alone.\n\n"And your Lord has decreed that you not worship except Him, and to parents, good treatment." (Quran 17:23)',
+        keyPoints: [
+          'Kindness to parents is next to worship of Allah',
+          'Disobedience to parents is among major sins',
+          'This obligation continues even after their death'
+        ]
+      },
+      {
+        heading: 'Special Status of the Mother',
+        content: 'A man came to the Prophet ﷺ and asked: "Who among people is most deserving of my fine treatment?" He replied: "Your mother." The man asked again, and the Prophet ﷺ again said: "Your mother." When asked a third time, the answer was again: "Your mother." Only on the fourth time did he say: "Your father."\n\nThis hadith emphasizes the special status of mothers due to the hardships of pregnancy, childbirth, and nursing.',
+        keyPoints: [
+          'The mother has three times the emphasis for kindness',
+          'Paradise lies at the feet of mothers',
+          'Both parents deserve respect and care'
+        ]
+      }
+    ],
+    quiz: {
+      question: 'How many times did the Prophet ﷺ say "your mother" before mentioning the father?',
+      options: ['Once', 'Twice', 'Three times', 'Four times'],
+      correctIndex: 2,
+      explanation: 'The Prophet ﷺ said "your mother" three times before saying "your father" on the fourth time, highlighting the special emphasis on kindness to mothers.'
+    }
+  },
+  'fam3': {
+    id: 'fam3',
+    title: 'Raising Children',
+    sections: [
+      {
+        heading: 'A Trust from Allah',
+        content: 'Children are a trust (amanah) from Allah. Parents bear the responsibility of nurturing them physically, emotionally, intellectually, and spiritually.\n\nThe Prophet ﷺ said: "Each of you is a shepherd, and each of you is responsible for his flock."\n\nIslamic parenting balances love and discipline, gentleness and guidance.',
+        keyPoints: [
+          'Children are a blessing and a responsibility',
+          'Education begins at home',
+          'Teaching by example is the most powerful method'
+        ]
+      },
+      {
+        heading: 'Key Principles',
+        content: '**Love & Affection**: The Prophet ﷺ kissed his grandchildren and showed physical affection openly.\n\n**Teaching Salah**: "Command your children to pray at age seven."\n\n**Fairness**: Treat all children equally regardless of gender.\n\n**Du\'a**: Regularly make du\'a for your children\'s guidance.\n\n**Play & Leisure**: Allow children time for play and joy—the Prophet ﷺ raced with children and played with them.',
+        keyPoints: [
+          'Show love openly and frequently',
+          'Be fair between children',
+          'Make du\'a for their guidance consistently'
+        ]
+      }
+    ],
+    quiz: {
+      question: 'At what age should children be taught to pray?',
+      options: ['Five', 'Seven', 'Ten', 'Twelve'],
+      correctIndex: 1,
+      explanation: 'The Prophet ﷺ instructed parents to teach their children prayer at age seven.'
+    }
+  },
+  'fam4': {
+    id: 'fam4',
+    title: 'Rights of Spouses',
+    sections: [
+      {
+        heading: 'Mutual Rights & Respect',
+        content: '"And they (women) have rights similar to those (of men) over them in kindness." (Quran 2:228)\n\nIslam establishes a framework of mutual rights and responsibilities between spouses, built on love, mercy, and consultation.',
+        keyPoints: [
+          'Both spouses have defined rights',
+          'Marriage is built on mutual consultation (shura)',
+          'The best Muslim is the best to their spouse'
+        ]
+      },
+      {
+        heading: 'Practical Guidelines',
+        content: '**Husband\'s responsibilities**: Financial provision, kind treatment, protection, emotional support.\n\n**Wife\'s responsibilities**: Managing the household, supporting the family unit, mutual respect.\n\n**Both share**: Raising children, maintaining family ties, supporting each other spiritually.\n\nThe Prophet ﷺ said: "The best of you are those who are the best to their wives, and I am the best of you to my wives."',
+        keyPoints: [
+          'The Prophet ﷺ helped with household chores',
+          'Communication is essential in marriage',
+          'Patience and forgiveness strengthen bonds'
+        ]
+      }
+    ],
+    quiz: {
+      question: 'What did the Prophet ﷺ say about the best Muslim?',
+      options: ['The one who prays the most', 'The one who fasts the most', 'The best to their wife', 'The wealthiest'],
+      correctIndex: 2,
+      explanation: 'The Prophet ﷺ said "The best of you are those who are the best to their wives."'
+    }
+  },
+  'fam5': {
+    id: 'fam5',
+    title: 'Kinship & Community',
+    sections: [
+      {
+        heading: 'Silat ar-Rahim',
+        content: 'Silat ar-Rahim (maintaining family ties) is one of the most emphasized obligations in Islam. The Prophet ﷺ said: "Whoever believes in Allah and the Last Day, let him maintain his ties of kinship."\n\nBreaking family ties is considered a major sin, and maintaining them—even when difficult—brings immense reward.',
+        keyPoints: [
+          'Maintaining ties is obligatory',
+          'Breaking ties is a major sin',
+          'Reward extends even to distant relatives'
+        ]
+      },
+      {
+        heading: 'Building Community',
+        content: 'The Muslim community (Ummah) is an extension of the family concept.\n\n- **Neighbors**: Have 40 houses of rights in every direction\n- **Orphans**: Caring for orphans is among the greatest deeds\n- **Elderly**: "He is not one of us who does not show mercy to our young ones and respect to our elders"\n- **The needy**: Feeding and supporting those in need\n\nThe Prophet ﷺ described the Ummah as one body—when one part hurts, the whole body responds with sleeplessness and fever.',
+        keyPoints: [
+          'The Ummah is one body',
+          'Neighbors have extensive rights',
+          'Caring for orphans is among the highest deeds'
+        ]
+      }
+    ],
+    quiz: {
+      question: 'What does "Silat ar-Rahim" mean?',
+      options: ['Charity giving', 'Maintaining family ties', 'Fasting for relatives', 'Group prayer'],
+      correctIndex: 1,
+      explanation: 'Silat ar-Rahim means maintaining and nurturing family ties, which is a major obligation in Islam.'
+    }
   }
 };

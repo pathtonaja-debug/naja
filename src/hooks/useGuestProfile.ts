@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 // Generate a stable UUID for this device
 import { generateUUID } from '@/lib/uuid';
+import { checkMilestone } from '@/services/milestoneService';
 
 const getDeviceId = (): string => {
   const stored = localStorage.getItem('naja_device_id');
@@ -212,15 +213,25 @@ export const useGuestProfile = () => {
     });
   }, []);
 
-  const addBarakahPoints = useCallback((amount: number): { leveledUp: boolean; newLevel: number } => {
+  const addBarakahPoints = useCallback((amount: number): { leveledUp: boolean; newLevel: number; milestone?: string } => {
     let leveledUp = false;
     let newLevel = profile?.level || 1;
+    let milestoneHit: string | undefined;
     
     setProfile(current => {
       if (!current) return current;
       
       const oldLevel = current.level;
-      const newPoints = (current.barakahPoints || 0) + amount;
+      const oldPoints = current.barakahPoints || 0;
+      let newPoints = oldPoints + amount;
+      
+      // Check for milestone bonus
+      const milestone = checkMilestone(oldPoints, newPoints);
+      if (milestone) {
+        newPoints += milestone.bonus;
+        milestoneHit = milestone.milestoneName;
+      }
+      
       newLevel = getLevelFromPoints(newPoints);
       leveledUp = newLevel > oldLevel;
       
@@ -242,7 +253,7 @@ export const useGuestProfile = () => {
       return updated;
     });
     
-    return { leveledUp, newLevel };
+    return { leveledUp, newLevel, milestone: milestoneHit };
   }, [profile?.level]);
 
   const incrementActsCompleted = useCallback(() => {

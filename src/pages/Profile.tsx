@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PrayerSettingsSheet } from "@/components/settings/PrayerSettingsSheet";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { getUserLocation } from "@/services/locationStore";
+import { SyncIndicator } from "@/components/settings/SyncIndicator";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
@@ -268,6 +269,18 @@ const Profile = () => {
             <div className="border-t border-border/20 px-3">
               <NotificationSettings />
             </div>
+          </Card>
+        </motion.div>
+
+        {/* Cloud Sync */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.33 }}
+        >
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.cloudSync')}</h2>
+          <Card className="bg-white border-border/30 p-1">
+            <SyncIndicator />
           </Card>
         </motion.div>
 

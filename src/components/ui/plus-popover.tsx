@@ -4,7 +4,8 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
-import { Clock } from "lucide-react";
+import { Clock, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type PlusMenuItem = {
   id: string;
@@ -40,6 +41,8 @@ export function PlusPopover({
   recentIds,
   className,
 }: PlusPopoverProps) {
+  const { t } = useTranslation();
+  const [search, setSearch] = React.useState("");
   const panelWidth = 320;
   const [pos, setPos] = React.useState<{ left: number; bottom: number; caretLeft: number }>({
     left: 16,
@@ -96,23 +99,30 @@ export function PlusPopover({
     };
   }, [open, onOpenChange, anchorRef]);
 
+  // Filter items by search
+  const filteredItems = React.useMemo(() => {
+    if (!search.trim()) return items;
+    const q = search.toLowerCase();
+    return items.filter(item => item.label.toLowerCase().includes(q));
+  }, [items, search]);
+
   // Build recent items + categorized sections
   const recentItems = React.useMemo(() => {
-    if (!recentIds || recentIds.length === 0) return [];
+    if (search.trim() || !recentIds || recentIds.length === 0) return [];
     return recentIds
-      .map((id) => items.find((item) => item.id === id))
+      .map((id) => filteredItems.find((item) => item.id === id))
       .filter(Boolean) as PlusMenuItem[];
-  }, [recentIds, items]);
+  }, [recentIds, filteredItems, search]);
 
   const groupedItems = React.useMemo(() => {
     if (!categories || categories.length === 0) {
-      return [{ label: undefined, items }];
+      return [{ label: undefined, items: filteredItems }];
     }
     return categories.map((cat) => ({
       label: cat.label,
-      items: items.filter((item) => item.category === cat.key),
-    }));
-  }, [categories, items]);
+      items: filteredItems.filter((item) => item.category === cat.key),
+    })).filter(g => g.items.length > 0);
+  }, [categories, filteredItems]);
 
   return (
     <AnimatePresence>
@@ -170,6 +180,21 @@ export function PlusPopover({
                 ) : (
                   <div className="pt-2" />
                 )}
+
+                {/* Search */}
+                <div className="px-3 pt-2">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/50">
+                    <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={t('common.search') + '...'}
+                      className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                      autoFocus={false}
+                    />
+                  </div>
+                </div>
 
                 <div className="relative max-h-[60vh] overflow-y-auto p-2">
                   {/* Recent items */}

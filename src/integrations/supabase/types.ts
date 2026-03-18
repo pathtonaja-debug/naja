@@ -437,6 +437,140 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          friend_id: string
+          id: string
+          invite_code: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          friend_id: string
+          id?: string
+          invite_code: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          friend_id?: string
+          id?: string
+          invite_code?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_friend_id_fkey"
+            columns: ["friend_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_goal_members: {
+        Row: {
+          contribution: number
+          group_goal_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          contribution?: number
+          group_goal_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          contribution?: number
+          group_goal_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_goal_members_group_goal_id_fkey"
+            columns: ["group_goal_id"]
+            isOneToOne: false
+            referencedRelation: "group_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_goal_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_goals: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string | null
+          goal_type: string
+          id: string
+          invite_code: string
+          is_active: boolean
+          progress: number
+          target: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          goal_type?: string
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          progress?: number
+          target?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          goal_type?: string
+          id?: string
+          invite_code?: string
+          is_active?: boolean
+          progress?: number
+          target?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_goals_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habit_logs: {
         Row: {
           completed: boolean | null
@@ -723,6 +857,7 @@ export type Database = {
           device_id: string | null
           display_name: string | null
           id: string
+          invite_code: string | null
           language: string | null
           latitude: number | null
           leaderboard_visible: boolean | null
@@ -740,6 +875,7 @@ export type Database = {
           device_id?: string | null
           display_name?: string | null
           id: string
+          invite_code?: string | null
           language?: string | null
           latitude?: number | null
           leaderboard_visible?: boolean | null
@@ -757,6 +893,7 @@ export type Database = {
           device_id?: string | null
           display_name?: string | null
           id?: string
+          invite_code?: string | null
           language?: string | null
           latitude?: number | null
           leaderboard_visible?: boolean | null

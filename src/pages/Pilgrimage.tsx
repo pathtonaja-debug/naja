@@ -12,6 +12,7 @@ import {
   BENEFITS_SECTIONS,
   PILGRIMAGE_DUAS,
 } from "@/data/pilgrimageContent";
+import { PackingChecklist } from "@/components/pilgrimage/PackingChecklist";
 
 const Pilgrimage = () => {
   const { t } = useTranslation();
@@ -52,7 +53,7 @@ const Pilgrimage = () => {
       {/* Main tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="px-4 pt-3">
-          <TabsList className="w-full grid grid-cols-5 h-10 bg-muted/50">
+          <TabsList className="w-full grid grid-cols-6 h-10 bg-muted/50">
             <TabsTrigger value="hajj" className="text-xs font-medium">
               {t("pilgrimage.tabs.hajj")}
             </TabsTrigger>
@@ -67,6 +68,9 @@ const Pilgrimage = () => {
             </TabsTrigger>
             <TabsTrigger value="duas" className="text-xs font-medium">
               {t("pilgrimage.tabs.duas")}
+            </TabsTrigger>
+            <TabsTrigger value="packing" className="text-xs font-medium">
+              {t("pilgrimage.tabs.packing")}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -323,6 +327,11 @@ const Pilgrimage = () => {
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        {/* PACKING TAB */}
+        <TabsContent value="packing" className="px-4 pt-4">
+          <PackingChecklist />
         </TabsContent>
       </Tabs>
     </div>
