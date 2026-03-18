@@ -4,7 +4,8 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
-import { Clock } from "lucide-react";
+import { Clock, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type PlusMenuItem = {
   id: string;
