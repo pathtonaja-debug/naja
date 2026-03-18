@@ -128,6 +128,24 @@ const DEFAULT_MODULES: Module[] = [
       { id: 'f6', title: 'Wealth & Contentment', titleFr: 'Richesse et Contentement', description: 'Balancing dunya', descriptionFr: 'Équilibrer la dunya', completed: false, quizPassed: false },
     ]
   },
+  { 
+    id: 'family', 
+    title: 'Family in Islam', 
+    titleFr: 'La Famille en Islam',
+    description: 'Rights & relationships',
+    descriptionFr: 'Droits et relations',
+    icon: '👨‍👩‍👧‍👦',
+    color: 'bg-pink-500/10 border-pink-500/20',
+    unlocked: false,
+    quizPassed: false,
+    lessons: [
+      { id: 'fam1', title: 'Marriage in Islam', titleFr: 'Le Mariage en Islam', description: 'A sacred bond', descriptionFr: 'Un lien sacré', completed: false, quizPassed: false },
+      { id: 'fam2', title: 'Rights of Parents', titleFr: 'Droits des Parents', description: 'Honoring mother & father', descriptionFr: 'Honorer père et mère', completed: false, quizPassed: false },
+      { id: 'fam3', title: 'Raising Children', titleFr: 'Élever les Enfants', description: 'Islamic parenting', descriptionFr: 'La parentalité islamique', completed: false, quizPassed: false },
+      { id: 'fam4', title: 'Rights of Spouses', titleFr: 'Droits des Époux', description: 'Mutual respect', descriptionFr: 'Respect mutuel', completed: false, quizPassed: false },
+      { id: 'fam5', title: 'Kinship & Community', titleFr: 'Parenté et Communauté', description: 'Silat ar-Rahim', descriptionFr: 'Silat ar-Rahim', completed: false, quizPassed: false },
+    ]
+  },
 ];
 
 // Module quiz questions (5 questions per module)
