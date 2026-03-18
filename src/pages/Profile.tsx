@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PrayerSettingsSheet } from "@/components/settings/PrayerSettingsSheet";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { getUserLocation } from "@/services/locationStore";
+import { SyncIndicator } from "@/components/settings/SyncIndicator";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
