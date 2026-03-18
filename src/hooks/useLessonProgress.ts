@@ -278,6 +278,38 @@ export const MODULE_QUIZZES: Record<string, LessonQuizQuestion[]> = {
       explanation: 'Islam discourages excessive profits and emphasizes fair dealing.'
     },
   ],
+  family: [
+    {
+      question: 'What is the status of marriage in Islam?',
+      options: ['Optional luxury', 'Sunnah of the Prophet ﷺ', 'Only for the wealthy', 'Cultural custom'],
+      correctIndex: 1,
+      explanation: 'Marriage is a Sunnah of the Prophet ﷺ, considered half of one\'s faith.'
+    },
+    {
+      question: 'Which parent is given special emphasis for kindness?',
+      options: ['Father only', 'Mother (three times)', 'Both equally', 'Neither'],
+      correctIndex: 1,
+      explanation: 'The Prophet ﷺ said "Your mother" three times when asked who deserves most kindness.'
+    },
+    {
+      question: 'What does "Silat ar-Rahim" mean?',
+      options: ['Fasting for family', 'Maintaining family ties', 'Charity to relatives', 'Family prayers'],
+      correctIndex: 1,
+      explanation: 'Silat ar-Rahim means maintaining and honoring family ties, a major obligation in Islam.'
+    },
+    {
+      question: 'What is the Islamic view on children\'s education?',
+      options: ['Optional', 'Father\'s responsibility alone', 'Both parents share responsibility', 'Community duty only'],
+      correctIndex: 2,
+      explanation: 'Both parents share the responsibility of educating and raising children with good values.'
+    },
+    {
+      question: 'What is the mahr (dowry)?',
+      options: ['Payment to the bride\'s father', 'A gift from the groom to the bride', 'Wedding party cost', 'Family contribution'],
+      correctIndex: 1,
+      explanation: 'The mahr is a mandatory gift from the groom to the bride, symbolizing honor and respect.'
+    },
+  ],
 };
 
 export function useLessonProgress() {
