@@ -181,6 +181,21 @@ export function PlusPopover({
                   <div className="pt-2" />
                 )}
 
+                {/* Search */}
+                <div className="px-3 pt-2">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/50">
+                    <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={t('common.search') + '...'}
+                      className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                      autoFocus={false}
+                    />
+                  </div>
+                </div>
+
                 <div className="relative max-h-[60vh] overflow-y-auto p-2">
                   {/* Recent items */}
                   {recentItems.length > 0 && (
