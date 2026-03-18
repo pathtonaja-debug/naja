@@ -12,6 +12,7 @@ import {
   BENEFITS_SECTIONS,
   PILGRIMAGE_DUAS,
 } from "@/data/pilgrimageContent";
+import { PackingChecklist } from "@/components/pilgrimage/PackingChecklist";
 
 const Pilgrimage = () => {
   const { t } = useTranslation();
