@@ -272,6 +272,18 @@ const Profile = () => {
           </Card>
         </motion.div>
 
+        {/* Cloud Sync */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.33 }}
+        >
+          <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.cloudSync')}</h2>
+          <Card className="bg-white border-border/30 p-1">
+            <SyncIndicator />
+          </Card>
+        </motion.div>
+
         {/* Data Management */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

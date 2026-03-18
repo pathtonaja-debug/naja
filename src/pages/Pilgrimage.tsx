@@ -328,6 +328,11 @@ const Pilgrimage = () => {
             </Card>
           ))}
         </TabsContent>
+
+        {/* PACKING TAB */}
+        <TabsContent value="packing" className="px-4 pt-4">
+          <PackingChecklist />
+        </TabsContent>
       </Tabs>
     </div>
   );
