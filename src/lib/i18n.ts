@@ -2768,7 +2768,6 @@ const resources = {
       "adhkar.history": "Historique des complétions",
       "adhkar.noHistory": "Aucune complétion. Commencez votre première routine !",
       "adhkar.itemsCompleted": "adhkar complétés",
-      "dhikr.counter": "Compteur",
 
       // Dashboard
       "dashboard.weeklyRecap": "Récap Hebdomadaire",
