@@ -776,7 +776,6 @@ const resources = {
       "adhkar.history": "Completion History",
       "adhkar.noHistory": "No completions yet. Start your first routine!",
       "adhkar.itemsCompleted": "adhkar completed",
-      "dhikr.counter": "Counter",
 
       // Dashboard
       "dashboard.weeklyRecap": "Weekly Recap",
