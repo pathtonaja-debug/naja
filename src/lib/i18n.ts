@@ -2763,6 +2763,13 @@ const resources = {
       "adhkar.morningDesc": "Adhkar al-Sabah",
       "adhkar.eveningDesc": "Adhkar al-Masa",
       "adhkar.allCompleted": "Tous les adhkar sont complétés !",
+      "adhkar.routineComplete": "Routine terminée !",
+      "adhkar.dayStreak": "jours de suite",
+      "adhkar.viewLog": "Historique",
+      "adhkar.history": "Historique des complétions",
+      "adhkar.noHistory": "Aucune complétion. Commencez votre première routine !",
+      "adhkar.itemsCompleted": "adhkar complétés",
+      "dhikr.counter": "Compteur",
 
       // Dashboard
       "dashboard.weeklyRecap": "Récap Hebdomadaire",
