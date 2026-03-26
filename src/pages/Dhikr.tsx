@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, RotateCcw, Check, Sparkles, Plus } from 'lucide-react';
+import { ChevronLeft, RotateCcw, Check, Sparkles, Plus, Sunrise, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { TopBar } from '@/components/ui/top-bar';
 import BottomNav from '@/components/BottomNav';
 import { TasbihArc } from '@/components/dhikr/TasbihArc';
+import { AdhkarRoutineTab } from '@/components/dhikr/AdhkarRoutineTab';
+import { MORNING_ADHKAR, EVENING_ADHKAR } from '@/data/adhkarData';
 import { useGuestProfile } from '@/hooks/useGuestProfile';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +64,8 @@ const DHIKR_PRESETS: DhikrPreset[] = [
 
 const TARGET_OPTIONS = [33, 99, 100];
 
+type DhikrTab = 'counter' | 'morning' | 'evening';
+
 /* ── Manual log sub-component ── */
 function ManualDhikrLog({ onAdd, t }: { onAdd: (n: number) => void; t: (k: string) => string }) {
   const [value, setValue] = useState('');
@@ -74,7 +78,7 @@ function ManualDhikrLog({ onAdd, t }: { onAdd: (n: number) => void; t: (k: strin
     toast.success(`+${num} ${t('dhikr.dhikrCounted')}`);
   };
   return (
-    <div className="px-4 pt-4">
+    <div className="pt-4">
       <form onSubmit={handleSubmit} className="flex items-center gap-2 p-3 rounded-2xl bg-card border border-border shadow-sm">
         <Input
           type="number"
@@ -99,6 +103,7 @@ const Dhikr = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { addBarakahPoints } = useGuestProfile();
+  const [activeTab, setActiveTab] = useState<DhikrTab>('counter');
   const [selectedPreset, setSelectedPreset] = useState<DhikrPreset>(DHIKR_PRESETS[0]);
   const [count, setCount] = useState(0);
   const [customTarget, setCustomTarget] = useState(33);
@@ -120,28 +125,18 @@ const Dhikr = () => {
   const handleIncrement = () => {
     const newCount = count + 1;
     setCount(newCount);
-
-    // Haptic feedback
     hapticLight();
 
-    // Check if target reached
     if (newCount === customTarget) {
       hapticSuccess();
       setShowCompleted(true);
-      
-      // Award points
       const points = BARAKAH_REWARDS.DHIKR_33;
       addBarakahPoints(points);
-      
-      // Update today's total
       const today = new Date().toISOString().split('T')[0];
       const newTotal = totalToday + customTarget;
       setTotalToday(newTotal);
       localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
-      
       toast.success(`${t('dhikr.mashallah')} ${customTarget} ${t('dhikr.completed')}. +${points} ${t('dashboard.barakahPoints')}`);
-      
-      // Auto-reset after animation
       setTimeout(() => {
         setShowCompleted(false);
         setCount(0);
@@ -163,198 +158,241 @@ const Dhikr = () => {
 
   const progress = (count / customTarget) * 100;
 
+  const tabs: { id: DhikrTab; label: string; icon: React.ReactNode }[] = [
+    { id: 'counter', label: t('dhikr.counter') || 'Counter', icon: <Sparkles className="w-4 h-4" /> },
+    { id: 'morning', label: t('adhkar.morning') || 'Morning', icon: <Sunrise className="w-4 h-4" /> },
+    { id: 'evening', label: t('adhkar.evening') || 'Evening', icon: <Moon className="w-4 h-4" /> },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen bg-background pb-24"
     >
-      <TopBar 
-        title={t('nav.dhikr')} 
+      <TopBar
+        title={t('nav.dhikr')}
         leftElement={
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ChevronLeft className="w-5 h-5" />
           </button>
         }
         rightElement={
-          <button 
-            onClick={handleReset}
-            className="p-2 rounded-full hover:bg-muted transition-colors"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
+          activeTab === 'counter' ? (
+            <button onClick={handleReset} className="p-2 rounded-full hover:bg-muted transition-colors">
+              <RotateCcw className="w-5 h-5" />
+            </button>
+          ) : undefined
         }
       />
 
-      {/* Preset Selector */}
+      {/* Tab Selector */}
       <div className="px-4 pb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {DHIKR_PRESETS.map((preset) => (
-            <motion.button
-              key={preset.id}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => selectPreset(preset)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
-                selectedPreset.id === preset.id
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
-              )}
-            >
-              {preset.transliteration}
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Main Dhikr Display */}
-      <div className="px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative p-6 rounded-3xl bg-card border border-border shadow-sm overflow-hidden"
-        >
-          {/* Completion Overlay */}
-          <AnimatePresence>
-            {showCompleted && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/95 backdrop-blur-sm"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", damping: 10 }}
-                  className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4"
-                >
-                  <Check className="w-10 h-10 text-primary" />
-                </motion.div>
-                <h3 className="text-xl font-bold text-foreground mb-1">{t('dhikr.mashallah')}</h3>
-                <p className="text-sm text-muted-foreground">{t('dhikr.mayAllahAccept')}</p>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex items-center gap-2 mt-3 px-4 py-2 rounded-full bg-primary/10"
-                >
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_33} {t('common.points')}</span>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Arabic Text */}
-          <div className="text-center mb-4">
-            <h2 className="text-4xl font-arabic text-foreground mb-2 leading-relaxed">
-              {selectedPreset.arabic}
-            </h2>
-            <p className="text-lg font-medium text-foreground">
-              {selectedPreset.transliteration}
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {t(selectedPreset.translationKey)}
-            </p>
-          </div>
-
-          {/* Counter Display */}
-          <div className="text-center mb-6">
-            <motion.span
-              key={count}
-              initial={{ scale: 1.2, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-6xl font-bold text-foreground"
-            >
-              {count}
-            </motion.span>
-            <span className="text-2xl text-muted-foreground ml-2">/ {customTarget}</span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="h-3 bg-muted rounded-full overflow-hidden mb-6">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
-              className="h-full bg-primary rounded-full"
-            />
-          </div>
-
-          {/* Realistic Tasbih Arc */}
-          <TasbihArc 
-            count={count} 
-            onIncrement={handleIncrement} 
-            target={customTarget} 
-          />
-        </motion.div>
-      </div>
-
-      {/* Target Selector */}
-      <div className="px-4 pt-4">
-        <p className="text-xs text-muted-foreground text-center mb-2">{t('dhikr.targetCount')}</p>
-        <div className="flex justify-center gap-2">
-          {TARGET_OPTIONS.map((target) => (
+        <div className="flex gap-1 p-1 rounded-2xl bg-muted/50">
+          {tabs.map((tab) => (
             <button
-              key={target}
-              onClick={() => {
-                setCustomTarget(target);
-                setCount(0);
-              }}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "w-16 h-10 rounded-xl text-sm font-medium transition-all",
-                customTarget === target
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition-all",
+                activeTab === tab.id
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground"
               )}
             >
-              {target}
+              {tab.icon}
+              {tab.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Manual Log */}
-      <ManualDhikrLog
-        onAdd={(amount) => {
-          const newCount = Math.min(count + amount, customTarget);
-          const overflow = count + amount - customTarget;
-          setCount(newCount);
+      {/* Tab Content */}
+      <div className="px-4">
+        <AnimatePresence mode="wait">
+          {activeTab === 'counter' && (
+            <motion.div
+              key="counter"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              {/* Preset Selector */}
+              <div className="pb-4">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {DHIKR_PRESETS.map((preset) => (
+                    <motion.button
+                      key={preset.id}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => selectPreset(preset)}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+                        selectedPreset.id === preset.id
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {preset.transliteration}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
 
-          // Update today total
-          const today = new Date().toISOString().split('T')[0];
-          const added = Math.min(amount, customTarget - count + (overflow > 0 ? 0 : 0));
-          const newTotal = totalToday + amount;
-          setTotalToday(newTotal);
-          localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
+              {/* Main Dhikr Display */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative p-6 rounded-3xl bg-card border border-border shadow-sm overflow-hidden"
+              >
+                {/* Completion Overlay */}
+                <AnimatePresence>
+                  {showCompleted && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/95 backdrop-blur-sm"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", damping: 10 }}
+                        className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4"
+                      >
+                        <Check className="w-10 h-10 text-primary" />
+                      </motion.div>
+                      <h3 className="text-xl font-bold text-foreground mb-1">{t('dhikr.mashallah')}</h3>
+                      <p className="text-sm text-muted-foreground">{t('dhikr.mayAllahAccept')}</p>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex items-center gap-2 mt-3 px-4 py-2 rounded-full bg-primary/10"
+                      >
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">+{BARAKAH_REWARDS.DHIKR_33} {t('common.points')}</span>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-          if (newCount >= customTarget && !showCompleted) {
-            setShowCompleted(true);
-            const points = BARAKAH_REWARDS.DHIKR_33;
-            addBarakahPoints(points);
-            toast.success(`${t('dhikr.mashallah')} ${customTarget} ${t('dhikr.completed')}. +${points} ${t('dashboard.barakahPoints')}`);
-            setTimeout(() => {
-              setShowCompleted(false);
-              setCount(0);
-            }, 2000);
-          }
-        }}
-        t={t}
-      />
+                {/* Arabic Text */}
+                <div className="text-center mb-4">
+                  <h2 className="text-4xl font-arabic text-foreground mb-2 leading-relaxed">
+                    {selectedPreset.arabic}
+                  </h2>
+                  <p className="text-lg font-medium text-foreground">
+                    {selectedPreset.transliteration}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t(selectedPreset.translationKey)}
+                  </p>
+                </div>
 
-      {/* Today's Stats */}
-      <div className="px-4 pt-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="p-4 rounded-2xl bg-card border border-border shadow-sm text-center"
-        >
-          <p className="text-xs text-muted-foreground mb-1">{t('dhikr.todaysTotal')}</p>
-          <p className="text-2xl font-bold text-foreground">{totalToday}</p>
-          <p className="text-xs text-muted-foreground">{t('dhikr.dhikrCounted')}</p>
-        </motion.div>
+                {/* Counter Display */}
+                <div className="text-center mb-6">
+                  <motion.span
+                    key={count}
+                    initial={{ scale: 1.2, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-6xl font-bold text-foreground"
+                  >
+                    {count}
+                  </motion.span>
+                  <span className="text-2xl text-muted-foreground ml-2">/ {customTarget}</span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-3 bg-muted rounded-full overflow-hidden mb-6">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full bg-primary rounded-full"
+                  />
+                </div>
+
+                {/* Tasbih Arc */}
+                <TasbihArc count={count} onIncrement={handleIncrement} target={customTarget} />
+              </motion.div>
+
+              {/* Target Selector */}
+              <div className="pt-4">
+                <p className="text-xs text-muted-foreground text-center mb-2">{t('dhikr.targetCount')}</p>
+                <div className="flex justify-center gap-2">
+                  {TARGET_OPTIONS.map((target) => (
+                    <button
+                      key={target}
+                      onClick={() => { setCustomTarget(target); setCount(0); }}
+                      className={cn(
+                        "w-16 h-10 rounded-xl text-sm font-medium transition-all",
+                        customTarget === target
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {target}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Manual Log */}
+              <ManualDhikrLog
+                onAdd={(amount) => {
+                  const newCount = Math.min(count + amount, customTarget);
+                  setCount(newCount);
+                  const today = new Date().toISOString().split('T')[0];
+                  const newTotal = totalToday + amount;
+                  setTotalToday(newTotal);
+                  localStorage.setItem('naja_dhikr_today', JSON.stringify({ date: today, total: newTotal }));
+                  if (newCount >= customTarget && !showCompleted) {
+                    setShowCompleted(true);
+                    const points = BARAKAH_REWARDS.DHIKR_33;
+                    addBarakahPoints(points);
+                    toast.success(`${t('dhikr.mashallah')} ${customTarget} ${t('dhikr.completed')}. +${points} ${t('dashboard.barakahPoints')}`);
+                    setTimeout(() => { setShowCompleted(false); setCount(0); }, 2000);
+                  }
+                }}
+                t={t}
+              />
+
+              {/* Today's Stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="p-4 rounded-2xl bg-card border border-border shadow-sm text-center mt-4"
+              >
+                <p className="text-xs text-muted-foreground mb-1">{t('dhikr.todaysTotal')}</p>
+                <p className="text-2xl font-bold text-foreground">{totalToday}</p>
+                <p className="text-xs text-muted-foreground">{t('dhikr.dhikrCounted')}</p>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {activeTab === 'morning' && (
+            <motion.div
+              key="morning"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <AdhkarRoutineTab routineType="morning" items={MORNING_ADHKAR} />
+            </motion.div>
+          )}
+
+          {activeTab === 'evening' && (
+            <motion.div
+              key="evening"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <AdhkarRoutineTab routineType="evening" items={EVENING_ADHKAR} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Niyyah Disclaimer */}
