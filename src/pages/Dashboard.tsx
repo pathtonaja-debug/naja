@@ -57,6 +57,14 @@ const Dashboard = () => {
   const [actualActsCompleted, setActualActsCompleted] = useState(0);
   const [, setReloadKey] = useState(0);
   const [needsLocation, setNeedsLocation] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  // Check if should show onboarding tour
+  useEffect(() => {
+    if (!hasSeenOnboarding()) {
+      setShowTour(true);
+    }
+  }, []);
 
   // Check if user has location set
   useEffect(() => {
