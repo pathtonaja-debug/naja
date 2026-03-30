@@ -395,7 +395,7 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
             {/* Step counter + skip */}
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-medium text-muted-foreground">
-                {t('tour.stepOf', { current: stepIndex + 1, total: steps.length })}
+                {t('tour.stepOf', { current: stepIndex + 1, total: steps.length, defaultValue: 'Step {{current}} of {{total}}' })}
               </span>
               <button
                 onClick={handleSkip}
