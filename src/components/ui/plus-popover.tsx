@@ -116,10 +116,11 @@ export function PlusPopover({
 
   const groupedItems = React.useMemo(() => {
     if (!categories || categories.length === 0) {
-      return [{ label: undefined, items: filteredItems }];
+      return [{ label: undefined, categoryKey: undefined, items: filteredItems }];
     }
     return categories.map((cat) => ({
       label: cat.label,
+      categoryKey: cat.key,
       items: filteredItems.filter((item) => item.category === cat.key),
     })).filter(g => g.items.length > 0);
   }, [categories, filteredItems]);
