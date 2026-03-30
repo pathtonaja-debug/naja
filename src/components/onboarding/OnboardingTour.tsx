@@ -169,13 +169,13 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
       return;
     }
 
-    // Open plus menu if needed
+    // Open/keep plus menu if needed
     if (step.openPlusMenu) {
       window.dispatchEvent(new CustomEvent('naja-tour-plus', { detail: { open: true } }));
-      // Wait for open animation
+      // Allow time for menu to open/re-render before measuring
       setTimeout(() => {
         setStepIndex(idx);
-      }, 250);
+      }, 300);
       return;
     }
 
