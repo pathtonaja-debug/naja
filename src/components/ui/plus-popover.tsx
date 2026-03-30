@@ -162,7 +162,7 @@ export function PlusPopover({
               />
 
               {/* Glass panel */}
-              <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-card/80 shadow-2xl backdrop-blur-2xl">
+              <div data-tour="plus-panel" className="relative overflow-hidden rounded-3xl border border-white/15 bg-card/80 shadow-2xl backdrop-blur-2xl">
                 {/* Soft top shine */}
                 <div
                   className="pointer-events-none absolute inset-x-0 top-0 h-px"
