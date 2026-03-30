@@ -79,6 +79,12 @@ const Profile = () => {
     setCurrentLang(lang);
   };
 
+  const handleRestartTour = () => {
+    resetOnboardingFlag();
+    toast.success(t('tour.restartSuccess', 'Tour will start on next visit to Home'));
+    navigate('/dashboard');
+  };
+
   const levelTitle = SPIRITUAL_LEVELS[profile.level - 1] || 'The Seeker';
 
   return (

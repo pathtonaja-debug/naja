@@ -186,6 +186,8 @@ const Dashboard = () => {
 
   return (
     <>
+      {showTour && <OnboardingTour onComplete={() => setShowTour(false)} />}
+
       {showWelcome && <WelcomePrompt onDismiss={() => setShowWelcome(false)} />}
       
       {showFirstActCelebration && (
