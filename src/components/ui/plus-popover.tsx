@@ -81,10 +81,12 @@ export function PlusPopover({
     };
   }, [open, updatePosition]);
 
-  // click outside
+  // click outside — skip when onboarding tour is active
   React.useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent | TouchEvent) => {
+      // Don't close if tour is active
+      if (document.querySelector('[data-tour-active="true"]')) return;
       const target = e.target as Node | null;
       if (!target) return;
       if (panelRef.current?.contains(target)) return;
