@@ -19,6 +19,7 @@ import { DuaOfTheDay } from '@/components/dashboard/DuaOfTheDay';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
+import { OnboardingTour, hasSeenOnboarding } from '@/components/onboarding/OnboardingTour';
 import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dailyProgressService';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { getUserLocation } from '@/services/locationStore';
