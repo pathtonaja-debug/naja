@@ -127,6 +127,10 @@ export function PlusPopover({
     })).filter(g => g.items.length > 0);
   }, [categories, filteredItems]);
 
+  // Raise z-index during tour so popover is visible above tour overlay
+  const isTourActive = typeof document !== 'undefined' && !!document.querySelector('[data-tour-active="true"]');
+  const zClass = isTourActive ? 'z-[201]' : 'z-[100]';
+
   return (
     <AnimatePresence>
       {open && (
@@ -135,7 +139,7 @@ export function PlusPopover({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[100]"
+          className={cn("fixed inset-0", zClass)}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
