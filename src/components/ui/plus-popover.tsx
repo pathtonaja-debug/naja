@@ -81,10 +81,12 @@ export function PlusPopover({
     };
   }, [open, updatePosition]);
 
-  // click outside
+  // click outside — skip when onboarding tour is active
   React.useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent | TouchEvent) => {
+      // Don't close if tour is active
+      if (document.querySelector('[data-tour-active="true"]')) return;
       const target = e.target as Node | null;
       if (!target) return;
       if (panelRef.current?.contains(target)) return;
@@ -125,6 +127,10 @@ export function PlusPopover({
     })).filter(g => g.items.length > 0);
   }, [categories, filteredItems]);
 
+  // Raise z-index during tour so popover is visible above tour overlay
+  const isTourActive = typeof document !== 'undefined' && !!document.querySelector('[data-tour-active="true"]');
+  const zClass = isTourActive ? 'z-[201]' : 'z-[100]';
+
   return (
     <AnimatePresence>
       {open && (
@@ -133,10 +139,10 @@ export function PlusPopover({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[100]"
+          className={cn("fixed inset-0", zClass)}
         >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          {/* Backdrop — hidden during tour since tour provides its own overlay */}
+          {!isTourActive && <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />}
 
           {/* Panel */}
           <motion.div

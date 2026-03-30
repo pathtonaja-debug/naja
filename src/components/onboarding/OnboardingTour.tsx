@@ -82,16 +82,19 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
       target: 'plus-category-worship',
       title: t('tour.step5.title', 'Worship Features'),
       description: t('tour.step5.desc', 'Access the Quran, track your Dhikr, and manage your personal Dua list — all in one place.'),
+      openPlusMenu: true,
     },
     {
       target: 'plus-category-growth',
       title: t('tour.step6.title', 'Personal Growth'),
       description: t('tour.step6.desc', 'Journal your reflections, set meaningful goals, and explore curated learning content to grow every day.'),
+      openPlusMenu: true,
     },
     {
       target: 'plus-category-tools',
       title: t('tour.step7.title', 'Practical Tools'),
       description: t('tour.step7.desc', 'Use the Islamic dates converter, explore ethical finance guidance, and plan your Pilgrimage journey.'),
+      openPlusMenu: true,
     },
     {
       target: 'nav-ramadan',
@@ -166,13 +169,13 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
       return;
     }
 
-    // Open plus menu if needed
+    // Open/keep plus menu if needed
     if (step.openPlusMenu) {
       window.dispatchEvent(new CustomEvent('naja-tour-plus', { detail: { open: true } }));
-      // Wait for open animation
+      // Allow time for menu to open/re-render before measuring
       setTimeout(() => {
         setStepIndex(idx);
-      }, 250);
+      }, 300);
       return;
     }
 
@@ -320,7 +323,7 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
 
   // Tour overlay with spotlight
   return (
-    <div ref={overlayRef} className="fixed inset-0 z-[200]" style={{ pointerEvents: 'auto' }}>
+    <div ref={overlayRef} data-tour-active="true" className="fixed inset-0 z-[200]" style={{ pointerEvents: 'auto' }}>
       {/* SVG overlay with cutout */}
       <svg
         className="absolute inset-0 w-full h-full"
@@ -383,7 +386,7 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="fixed z-[201]"
+          className="fixed z-[210]"
           style={{
             top: tooltipPos.top,
             left: tooltipPos.left,
