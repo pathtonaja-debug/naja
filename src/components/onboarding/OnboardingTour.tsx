@@ -82,16 +82,19 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
       target: 'plus-category-worship',
       title: t('tour.step5.title', 'Worship Features'),
       description: t('tour.step5.desc', 'Access the Quran, track your Dhikr, and manage your personal Dua list — all in one place.'),
+      openPlusMenu: true,
     },
     {
       target: 'plus-category-growth',
       title: t('tour.step6.title', 'Personal Growth'),
       description: t('tour.step6.desc', 'Journal your reflections, set meaningful goals, and explore curated learning content to grow every day.'),
+      openPlusMenu: true,
     },
     {
       target: 'plus-category-tools',
       title: t('tour.step7.title', 'Practical Tools'),
       description: t('tour.step7.desc', 'Use the Islamic dates converter, explore ethical finance guidance, and plan your Pilgrimage journey.'),
+      openPlusMenu: true,
     },
     {
       target: 'nav-ramadan',
