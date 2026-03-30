@@ -61,6 +61,7 @@ const BottomNav = () => {
 
     return (
       <button
+        data-tour={`nav-${item.id}`}
         onClick={() => navigate(item.path)}
         className={cn(
           "relative flex items-center justify-center",
