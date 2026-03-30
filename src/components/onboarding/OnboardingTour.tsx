@@ -323,7 +323,7 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
 
   // Tour overlay with spotlight
   return (
-    <div ref={overlayRef} className="fixed inset-0 z-[200]" style={{ pointerEvents: 'auto' }}>
+    <div ref={overlayRef} data-tour-active="true" className="fixed inset-0 z-[200]" style={{ pointerEvents: 'auto' }}>
       {/* SVG overlay with cutout */}
       <svg
         className="absolute inset-0 w-full h-full"
