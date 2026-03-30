@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +14,21 @@ const BottomNav = () => {
 
   const [plusOpen, setPlusOpen] = useState(false);
   const plusBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Listen for tour events to open/close plus menu
+  const handleTourPlus = useCallback((e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (detail?.open) {
+      setPlusOpen(true);
+    } else {
+      setPlusOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('naja-tour-plus', handleTourPlus);
+    return () => window.removeEventListener('naja-tour-plus', handleTourPlus);
+  }, [handleTourPlus]);
 
   const leftTabs = NAV_ITEMS.slice(0, 2);
   const rightTabs = NAV_ITEMS.slice(2, 4);
@@ -46,6 +61,7 @@ const BottomNav = () => {
 
     return (
       <button
+        data-tour={`nav-${item.id}`}
         onClick={() => navigate(item.path)}
         className={cn(
           "relative flex items-center justify-center",
@@ -112,6 +128,7 @@ const BottomNav = () => {
                 <div className="relative mx-1 flex items-center justify-center">
                   <button
                     ref={plusBtnRef}
+                    data-tour="nav-plus"
                     onClick={() => setPlusOpen((v) => !v)}
                     className={cn(
                       "relative z-10",

@@ -19,6 +19,7 @@ import { DuaOfTheDay } from '@/components/dashboard/DuaOfTheDay';
 import { getLastReadPosition, LastReadPosition } from '@/services/quranReadingState';
 import { cn } from '@/lib/utils';
 import { WelcomePrompt, FirstActPrompt, FirstActCelebration } from '@/components/onboarding/OnboardingPrompts';
+import { OnboardingTour, hasSeenOnboarding } from '@/components/onboarding/OnboardingTour';
 import { isNewUser, getOnboardingState, getTodayProgress } from '@/services/dailyProgressService';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { getUserLocation } from '@/services/locationStore';
@@ -56,6 +57,14 @@ const Dashboard = () => {
   const [actualActsCompleted, setActualActsCompleted] = useState(0);
   const [, setReloadKey] = useState(0);
   const [needsLocation, setNeedsLocation] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  // Check if should show onboarding tour
+  useEffect(() => {
+    if (!hasSeenOnboarding()) {
+      setShowTour(true);
+    }
+  }, []);
 
   // Check if user has location set
   useEffect(() => {
@@ -177,6 +186,8 @@ const Dashboard = () => {
 
   return (
     <>
+      {showTour && <OnboardingTour onComplete={() => setShowTour(false)} />}
+
       {showWelcome && <WelcomePrompt onDismiss={() => setShowWelcome(false)} />}
       
       {showFirstActCelebration && (

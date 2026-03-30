@@ -116,10 +116,11 @@ export function PlusPopover({
 
   const groupedItems = React.useMemo(() => {
     if (!categories || categories.length === 0) {
-      return [{ label: undefined, items: filteredItems }];
+      return [{ label: undefined, categoryKey: undefined, items: filteredItems }];
     }
     return categories.map((cat) => ({
       label: cat.label,
+      categoryKey: cat.key,
       items: filteredItems.filter((item) => item.category === cat.key),
     })).filter(g => g.items.length > 0);
   }, [categories, filteredItems]);
@@ -162,7 +163,7 @@ export function PlusPopover({
               />
 
               {/* Glass panel */}
-              <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-card/80 shadow-2xl backdrop-blur-2xl">
+              <div data-tour="plus-panel" className="relative overflow-hidden rounded-3xl border border-white/15 bg-card/80 shadow-2xl backdrop-blur-2xl">
                 {/* Soft top shine */}
                 <div
                   className="pointer-events-none absolute inset-x-0 top-0 h-px"
@@ -217,7 +218,7 @@ export function PlusPopover({
 
                   {/* Categorized items */}
                   {groupedItems.map((group, gi) => (
-                    <div key={gi}>
+                    <div key={gi} data-tour={group.categoryKey ? `plus-category-${group.categoryKey}` : undefined}>
                       {group.label && (
                         <div className="px-3 pb-1 pt-2">
                           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
