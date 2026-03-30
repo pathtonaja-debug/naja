@@ -217,7 +217,7 @@ export function PlusPopover({
 
                   {/* Categorized items */}
                   {groupedItems.map((group, gi) => (
-                    <div key={gi}>
+                    <div key={gi} data-tour={group.categoryKey ? `plus-category-${group.categoryKey}` : undefined}>
                       {group.label && (
                         <div className="px-3 pb-1 pt-2">
                           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
