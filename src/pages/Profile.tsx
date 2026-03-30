@@ -300,6 +300,12 @@ const Profile = () => {
           <h2 className="text-sm font-semibold text-foreground mb-2 px-1">{t('profile.dataManagement')}</h2>
           <Card className="bg-white border-border/30">
             <ListCell
+              title={t('tour.restartTour', 'Restart App Tour')}
+              subtitle={t('tour.restartTourDesc', 'See the guided walkthrough again')}
+              leftElement={<RotateCcw className="w-4 h-4 text-primary" />}
+              onPress={handleRestartTour}
+            />
+            <ListCell
               title={t('profile.resetData')}
               subtitle={t('profile.resetConfirm').slice(0, 40) + '...'}
               leftElement={<Trash2 className="w-4 h-4 text-destructive" />}
