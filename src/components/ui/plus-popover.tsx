@@ -141,8 +141,8 @@ export function PlusPopover({
           transition={{ duration: 0.15 }}
           className={cn("fixed inset-0", zClass)}
         >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          {/* Backdrop — hidden during tour since tour provides its own overlay */}
+          {!isTourActive && <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />}
 
           {/* Panel */}
           <motion.div
