@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Moon, Sun, Trash2, Trophy, TrendingUp, 
-  Star, Flame, Users, Globe, LogOut, Mail, MapPin
+  Star, Flame, Users, Globe, LogOut, Mail, MapPin, RotateCcw
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useState, useEffect } from "react";
@@ -25,6 +25,7 @@ import { PrayerSettingsSheet } from "@/components/settings/PrayerSettingsSheet";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { getUserLocation } from "@/services/locationStore";
 import { SyncIndicator } from "@/components/settings/SyncIndicator";
+import { resetOnboardingFlag } from "@/components/onboarding/OnboardingTour";
 
 const Profile = () => {
   const { theme, setTheme } = useTheme();
