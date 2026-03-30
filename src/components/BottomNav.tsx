@@ -15,6 +15,21 @@ const BottomNav = () => {
   const [plusOpen, setPlusOpen] = useState(false);
   const plusBtnRef = useRef<HTMLButtonElement>(null);
 
+  // Listen for tour events to open/close plus menu
+  const handleTourPlus = useCallback((e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (detail?.open) {
+      setPlusOpen(true);
+    } else {
+      setPlusOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('naja-tour-plus', handleTourPlus);
+    return () => window.removeEventListener('naja-tour-plus', handleTourPlus);
+  }, [handleTourPlus]);
+
   const leftTabs = NAV_ITEMS.slice(0, 2);
   const rightTabs = NAV_ITEMS.slice(2, 4);
 
