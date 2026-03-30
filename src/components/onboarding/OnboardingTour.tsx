@@ -386,7 +386,7 @@ export const OnboardingTour = ({ onComplete }: OnboardingTourProps) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="fixed z-[201]"
+          className="fixed z-[210]"
           style={{
             top: tooltipPos.top,
             left: tooltipPos.left,
