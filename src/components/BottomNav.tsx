@@ -128,6 +128,7 @@ const BottomNav = () => {
                 <div className="relative mx-1 flex items-center justify-center">
                   <button
                     ref={plusBtnRef}
+                    data-tour="nav-plus"
                     onClick={() => setPlusOpen((v) => !v)}
                     className={cn(
                       "relative z-10",
